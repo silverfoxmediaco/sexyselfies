@@ -4,8 +4,8 @@ services:
     name: sexyselfies-app
     env: node
     plan: starter
-    buildCommand: ls -la && cd frontend && npm install && npm run build && cd ../backend && npm install
-    startCommand: cd backend && npm start
+    buildCommand: npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
