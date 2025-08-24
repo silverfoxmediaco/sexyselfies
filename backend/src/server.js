@@ -292,7 +292,8 @@ app.use('/webhooks', require('./routes/webhook.routes'));
 // Serve frontend static files in production
 if (process.env.NODE_ENV === 'production') {
   // Serve static files from frontend build
-  app.use(express.static(path.join(__dirname, '../../frontend/dist'), {
+  const frontendPath = path.join(__dirname, '../../frontend/dist');
+  app.use(express.static(frontendPath, {
     maxAge: '1y',
     etag: true,
     lastModified: true,
@@ -310,7 +311,9 @@ if (process.env.NODE_ENV === 'production') {
       return next();
     }
     
-    res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
+    const indexPath = path.join(frontendPath, 'index.html');
+    console.log('Serving frontend from:', indexPath);
+    res.sendFile(indexPath);
   });
 }
 
