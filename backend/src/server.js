@@ -291,6 +291,13 @@ app.use('/webhooks', require('./routes/webhook.routes'));
 
 // Serve frontend static files in production
 if (process.env.NODE_ENV === 'production') {
+  // Debug: Check what files exist
+  const fs = require('fs');
+  console.log('Server __dirname:', __dirname);
+  console.log('Files in project root:', fs.existsSync(path.join(__dirname, '../../')) ? fs.readdirSync(path.join(__dirname, '../../')) : 'Root not found');
+  console.log('Frontend dir exists:', fs.existsSync(path.join(__dirname, '../../frontend')));
+  console.log('Dist dir exists:', fs.existsSync(path.join(__dirname, '../../frontend/dist')));
+  
   // Serve static files from frontend build
   const frontendPath = path.join(__dirname, '../../frontend/dist');
   app.use(express.static(frontendPath, {
