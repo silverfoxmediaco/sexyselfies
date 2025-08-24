@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "SexySelfies monorepo deployment",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install",
-    "start": "cd backend && npm start"
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run install:frontend && npm run build:frontend && npm run install:backend",
+    "start": "cd backend && npm start",
+    "postinstall": "npm run build"
   },
   "engines": {
     "node": ">=18.0.0",
