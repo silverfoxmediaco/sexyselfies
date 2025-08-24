@@ -1,0 +1,432 @@
+/* AdminHeader.css - Admin Navigation Component Styles */
+
+/* Root Variables (if not already defined in global CSS) */
+:root {
+  --admin-header-navbar-height: 60px;
+}
+
+/* Top Navigation Bar - Mobile First */
+.admin-header-navbar {
+  background: #121212;
+  border-bottom: 1px solid #2A2A2C;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--admin-header-navbar-height);
+}
+
+.admin-header-navbar-container {
+  height: 100%;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.admin-header-navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.admin-header-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #001310;
+  font-size: 14px;
+}
+
+.admin-header-logo-text {
+  font-size: 18px;
+  font-weight: 600;
+  display: none; /* Hidden on mobile */
+}
+
+/* Desktop Navigation - Hidden on Mobile */
+.admin-header-desktop-only {
+  display: none;
+}
+
+/* Mobile Hamburger Menu */
+.admin-header-mobile-only {
+  display: flex;
+}
+
+.admin-header-hamburger-menu {
+  background: transparent;
+  border: none;
+  color: #C7C7CC;
+  padding: 8px;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.admin-header-hamburger-menu:active {
+  background: #1C1C1E;
+}
+
+/* Mobile Menu Overlay */
+.admin-header-mobile-menu-overlay {
+  position: fixed;
+  top: var(--admin-header-navbar-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 99;
+  animation: adminHeaderFadeIn 0.2s ease;
+}
+
+@keyframes adminHeaderFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.admin-header-mobile-menu {
+  background: #121212;
+  border-left: 1px solid #2A2A2C;
+  height: 100%;
+  width: 85%;
+  max-width: 320px;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  animation: adminHeaderSlideInFromRight 0.3s ease;
+}
+
+@keyframes adminHeaderSlideInFromRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Mobile User Info */
+.admin-header-mobile-user-info {
+  padding: 24px;
+  background: #1C1C1E;
+  border-bottom: 1px solid #2A2A2C;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-header-user-avatar {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #001310;
+  font-size: 18px;
+}
+
+.admin-header-user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-header-user-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.admin-header-user-role {
+  font-size: 13px;
+  color: #8E8E93;
+  text-transform: capitalize;
+}
+
+/* Mobile Navigation Links */
+.admin-header-mobile-nav-links {
+  padding: 16px 0;
+}
+
+.admin-header-mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  color: #C7C7CC;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.admin-header-mobile-nav-link:active {
+  background: #1C1C1E;
+}
+
+.admin-header-mobile-nav-link.active {
+  background: linear-gradient(135deg, rgba(18, 183, 171, 0.1) 0%, rgba(23, 210, 194, 0.1) 100%);
+  color: #17D2C2;
+  border-right: 3px solid #17D2C2;
+}
+
+.admin-header-nav-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.admin-header-nav-badge {
+  position: absolute;
+  left: 24px;
+  background: #EF4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Mobile Actions */
+.admin-header-mobile-actions {
+  padding: 16px;
+  border-top: 1px solid #2A2A2C;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-header-mobile-refresh-btn,
+.admin-header-mobile-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: transparent;
+  border: 1px solid #2A2A2C;
+  border-radius: 8px;
+  color: #C7C7CC;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin-header-mobile-refresh-btn:active {
+  background: #1C1C1E;
+  color: #17D2C2;
+}
+
+.admin-header-mobile-logout-btn:active {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #EF4444;
+}
+
+/* Page Header */
+.admin-header-page-header {
+  padding: 24px 16px;
+  background: #121212;
+  border-bottom: 1px solid #2A2A2C;
+}
+
+.admin-header-page-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 4px 0;
+}
+
+.admin-header-page-subtitle {
+  font-size: 14px;
+  color: #8E8E93;
+  margin: 0;
+}
+
+/* Tablet Styles - 768px and up */
+@media (min-width: 768px) {
+  .admin-header-navbar-container {
+    padding: 0 24px;
+  }
+  
+  .admin-header-logo-text {
+    display: inline;
+  }
+  
+  .admin-header-page-header {
+    padding: 32px 24px;
+  }
+}
+
+/* Desktop Styles - 1024px and up */
+@media (min-width: 1024px) {
+  :root {
+    --admin-header-navbar-height: 64px;
+  }
+  
+  /* Hide mobile elements */
+  .admin-header-mobile-only {
+    display: none;
+  }
+  
+  /* Show desktop elements */
+  .admin-header-desktop-only {
+    display: flex;
+  }
+  
+  .admin-header-navbar-container {
+    padding: 0 32px;
+    max-width: 1920px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  /* Desktop Navigation Menu */
+  .admin-header-navbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 32px;
+  }
+  
+  .admin-header-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    color: #C7C7CC;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    position: relative;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .admin-header-nav-link:hover {
+    background: #1C1C1E;
+    color: #FFFFFF;
+  }
+  
+  .admin-header-nav-link.active {
+    background: linear-gradient(135deg, rgba(18, 183, 171, 0.1) 0%, rgba(23, 210, 194, 0.1) 100%);
+    color: #17D2C2;
+    border: 1px solid rgba(23, 210, 194, 0.2);
+  }
+  
+  .admin-header-nav-link .admin-header-nav-badge {
+    position: static;
+    margin-left: 8px;
+  }
+  
+  /* User Menu & Actions */
+  .admin-header-navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
+  }
+  
+  .admin-header-refresh-btn {
+    padding: 8px;
+    background: #1C1C1E;
+    border: 1px solid #2A2A2C;
+    border-radius: 8px;
+    color: #C7C7CC;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .admin-header-refresh-btn:hover {
+    background: #2A2A2C;
+    color: #17D2C2;
+  }
+  
+  .admin-header-refresh-btn:hover svg {
+    transform: rotate(180deg);
+  }
+  
+  .admin-header-refresh-btn svg {
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  
+  .admin-header-user-menu {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .admin-header-user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    background: #1C1C1E;
+    border-radius: 8px;
+  }
+  
+  .admin-header-user-info .admin-header-user-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .admin-header-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid #2A2A2C;
+    border-radius: 8px;
+    color: #C7C7CC;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .admin-header-logout-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #EF4444;
+  }
+  
+  /* Page Header Desktop */
+  .admin-header-page-header {
+    padding: 32px;
+    background: transparent;
+    border-bottom: none;
+    max-width: 1920px;
+    margin: 0 auto;
+  }
+  
+  .admin-header-page-header h1 {
+    font-size: 32px;
+  }
+}
+
+/* Large Desktop - 1440px and up */
+@media (min-width: 1440px) {
+  .admin-header-navbar-container {
+    max-width: 1920px;
+  }
+  
+  .admin-header-page-header {
+    max-width: 1920px;
+  }
+}

@@ -1,0 +1,879 @@
+/* MemberRegistration.css - PWA-Optimized Multi-Step Form */
+
+/* ========================
+   CSS VARIABLES - Brand Guide + PWA Spacing
+   ======================== */
+:root {
+  /* Brand colors from Brand Guide */
+  --memberreg-bg-primary: #0A0A0A;        /* bg-900 */
+  --memberreg-bg-secondary: #121212;      /* bg-800 */
+  --memberreg-bg-tertiary: #1C1C1E;       /* surface-700 */
+  --memberreg-border-color: #2A2A2C;      /* border-600 */
+  --memberreg-text-primary: #FFFFFF;      /* text */
+  --memberreg-text-secondary: #C7C7CC;    /* text-2 */
+  --memberreg-text-tertiary: #8E8E93;     /* muted */
+  --memberreg-accent-primary: #17D2C2;    /* brand primary */
+  --memberreg-accent-secondary: #12B7AB;  /* primary-600 */
+  --memberreg-accent-tertiary: #47E0D2;   /* primary-300 */
+  --memberreg-gradient: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  --memberreg-error: #EF4444;
+  --memberreg-success: #22C55E;
+  --memberreg-warning: #F59E0B;
+
+  /* PWA-optimized spacing scale (8-point grid system) */
+  --memberreg-space-xs: 4px;
+  --memberreg-space-sm: 8px;
+  --memberreg-space-md: 16px;
+  --memberreg-space-lg: 24px;
+  --memberreg-space-xl: 32px;
+  --memberreg-space-2xl: 48px;
+
+  /* Brand radius scale */
+  --memberreg-radius-sm: 8px;
+  --memberreg-radius-md: 12px;
+  --memberreg-radius-lg: 16px;
+  --memberreg-radius-xl: 24px;
+
+  /* Brand shadows and effects */
+  --memberreg-shadow-elev: 0 10px 30px rgba(0,0,0,.35);
+  --memberreg-overlay: rgba(0,0,0,.6);
+
+  /* Typography */
+  --memberreg-font-sans: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* PWA Touch targets */
+  --memberreg-touch-target-min: 44px;
+  --memberreg-touch-target-optimal: 48px;
+}
+
+/* ========================
+   PAGE LAYOUT
+   ======================== */
+.memberreg-page {
+  min-height: 100vh;
+  background: var(--memberreg-bg-primary);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--memberreg-font-sans);
+}
+
+.memberreg-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--memberreg-space-md);
+  /* PWA safe area support */
+  padding-top: max(var(--memberreg-space-md), env(safe-area-inset-top, 16px));
+  padding-bottom: max(var(--memberreg-space-md), env(safe-area-inset-bottom, 16px));
+  padding-left: max(var(--memberreg-space-md), env(safe-area-inset-left, 16px));
+  padding-right: max(var(--memberreg-space-md), env(safe-area-inset-right, 16px));
+}
+
+.memberreg-content {
+  width: 100%;
+  max-width: 100%;
+  background: var(--memberreg-bg-secondary);
+  border-radius: var(--memberreg-radius-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--memberreg-shadow-elev);
+}
+
+/* ========================
+   BENEFITS SECTION
+   ======================== */
+.memberreg-benefits-section {
+  padding: var(--memberreg-space-lg);
+  background: var(--memberreg-bg-tertiary);
+  border-bottom: 1px solid var(--memberreg-border-color);
+}
+
+.memberreg-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--memberreg-space-md);
+  margin-bottom: var(--memberreg-space-md);
+}
+
+.memberreg-logo svg {
+  color: var(--memberreg-accent-primary);
+}
+
+.memberreg-logo h1 {
+  font-size: clamp(32px, 5vw, 48px); /* H1 from brand guide */
+  font-weight: 600;
+  background: var(--memberreg-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  letter-spacing: 0.2px;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.memberreg-tagline {
+  text-align: center;
+  font-size: 16px;
+  color: var(--memberreg-text-secondary);
+  margin-bottom: var(--memberreg-space-lg);
+  line-height: 1.6;
+}
+
+.memberreg-benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--memberreg-space-md);
+  margin-bottom: var(--memberreg-space-lg);
+}
+
+.memberreg-benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--memberreg-space-md);
+  padding: var(--memberreg-space-md);
+  border-radius: var(--memberreg-radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.benefit-icon-wrapper {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--memberreg-radius-md);
+  background: var(--memberreg-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #001310;
+}
+
+.benefit-content h3 {
+  font-size: clamp(20px, 2.4vw, 24px); /* H3 from brand guide */
+  font-weight: 600;
+  color: var(--memberreg-text-primary);
+  margin: 0 0 var(--memberreg-space-xs) 0;
+  line-height: 1.25;
+  letter-spacing: 0.2px;
+}
+
+.benefit-content p {
+  font-size: 16px;
+  color: var(--memberreg-text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.memberreg-testimonial {
+  text-align: center;
+  padding: var(--memberreg-space-md);
+  border-radius: var(--memberreg-radius-lg);
+  background: rgba(23, 210, 194, 0.05);
+  border: 1px solid rgba(23, 210, 194, 0.1);
+}
+
+.testimonial-stars {
+  display: flex;
+  justify-content: center;
+  gap: var(--memberreg-space-xs);
+  margin-bottom: var(--memberreg-space-sm);
+  color: var(--memberreg-accent-primary);
+}
+
+.memberreg-testimonial p {
+  font-size: 16px;
+  color: var(--memberreg-text-primary);
+  margin: 0 0 var(--memberreg-space-sm) 0;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.memberreg-testimonial span {
+  font-size: 13px;
+  color: var(--memberreg-text-tertiary);
+  letter-spacing: 0.2px;
+}
+
+/* ========================
+   FORM SECTION
+   ======================== */
+.memberreg-form-section {
+  padding: var(--memberreg-space-lg);
+}
+
+.memberreg-form {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ========================
+   PROGRESS BAR
+   ======================== */
+.memberreg-progress {
+  margin-bottom: var(--memberreg-space-xl);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--memberreg-border-color);
+  border-radius: 2px;
+  margin-bottom: var(--memberreg-space-md);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--memberreg-gradient);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-step {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--memberreg-bg-tertiary);
+  border: 2px solid var(--memberreg-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--memberreg-text-tertiary);
+  transition: all 0.3s ease;
+}
+
+.progress-step.active {
+  border-color: var(--memberreg-accent-primary);
+  color: var(--memberreg-accent-primary);
+  background: rgba(23, 210, 194, 0.1);
+}
+
+.progress-step.completed {
+  background: var(--memberreg-accent-primary);
+  border-color: var(--memberreg-accent-primary);
+  color: #001310;
+}
+
+/* ========================
+   STEP CONTENT
+   ======================== */
+.memberreg-step-content {
+  margin-bottom: var(--memberreg-space-xl);
+}
+
+.memberreg-step-title {
+  font-size: clamp(24px, 3.2vw, 32px); /* H2 from brand guide */
+  font-weight: 600;
+  color: var(--memberreg-text-primary);
+  margin: 0 0 var(--memberreg-space-sm) 0;
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: 0.2px;
+}
+
+.memberreg-step-subtitle {
+  font-size: 16px;
+  color: var(--memberreg-text-secondary);
+  text-align: center;
+  margin: 0 0 var(--memberreg-space-xl) 0;
+  line-height: 1.6;
+}
+
+/* ========================
+   FORM ELEMENTS
+   ======================== */
+.memberreg-form-group {
+  margin-bottom: var(--memberreg-space-lg);
+}
+
+.memberreg-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--memberreg-space-md);
+}
+
+.memberreg-label {
+  display: flex;
+  align-items: center;
+  gap: var(--memberreg-space-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--memberreg-text-secondary);
+  margin-bottom: var(--memberreg-space-sm);
+  letter-spacing: 0.2px;
+}
+
+.memberreg-label svg {
+  color: var(--memberreg-text-tertiary);
+}
+
+/* Input Fields */
+.memberreg-input,
+.memberreg-select {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--memberreg-bg-tertiary);
+  border: 1px solid var(--memberreg-border-color);
+  border-radius: var(--memberreg-radius-md);
+  color: var(--memberreg-text-primary);
+  font-size: 16px;
+  font-family: var(--memberreg-font-sans);
+  transition: all 0.2s ease;
+  min-height: var(--memberreg-touch-target-optimal);
+  line-height: 1.6;
+}
+
+.memberreg-input:focus,
+.memberreg-select:focus {
+  outline: 2px solid var(--memberreg-accent-secondary);
+  outline-offset: 2px;
+  border-color: var(--memberreg-accent-secondary);
+}
+
+.memberreg-input::placeholder {
+  color: var(--memberreg-text-tertiary);
+}
+
+.memberreg-input.error,
+.memberreg-select.error {
+  border-color: var(--memberreg-error);
+}
+
+/* Input Wrapper for icons */
+.memberreg-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.memberreg-input-wrapper .memberreg-input {
+  padding-right: 48px;
+}
+
+.memberreg-input-toggle,
+.memberreg-input-icon {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  color: var(--memberreg-text-tertiary);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.memberreg-input-icon.success {
+  color: var(--memberreg-success);
+}
+
+.memberreg-input-icon.error {
+  color: var(--memberreg-error);
+}
+
+/* Error Messages */
+.memberreg-error-text {
+  display: flex;
+  align-items: center;
+  gap: var(--memberreg-space-xs);
+  color: var(--memberreg-error);
+  font-size: 13px;
+  margin-top: var(--memberreg-space-xs);
+  letter-spacing: 0.2px;
+}
+
+/* ========================
+   RADIO & CHECKBOX GROUPS
+   ======================== */
+.memberreg-radio-group,
+.memberreg-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--memberreg-space-md);
+}
+
+.memberreg-radio-option,
+.memberreg-checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: var(--memberreg-space-md);
+  padding: var(--memberreg-space-md);
+  border-radius: var(--memberreg-radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--memberreg-border-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: var(--memberreg-touch-target-min);
+}
+
+.memberreg-radio-option:hover,
+.memberreg-checkbox-option:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--memberreg-accent-tertiary);
+}
+
+.memberreg-radio-option.large,
+.memberreg-checkbox-option.large {
+  align-items: flex-start;
+  padding: var(--memberreg-space-lg);
+}
+
+.memberreg-radio-option input,
+.memberreg-checkbox-option input {
+  display: none;
+}
+
+.radio-custom,
+.checkbox-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--memberreg-border-color);
+  background: var(--memberreg-bg-tertiary);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.radio-custom {
+  border-radius: 50%;
+}
+
+.checkbox-custom {
+  border-radius: var(--memberreg-radius-sm);
+}
+
+.memberreg-radio-option input:checked + .radio-custom {
+  border-color: var(--memberreg-accent-primary);
+  background: var(--memberreg-accent-primary);
+  position: relative;
+}
+
+.memberreg-radio-option input:checked + .radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: #001310;
+  border-radius: 50%;
+}
+
+.memberreg-checkbox-option input:checked + .checkbox-custom {
+  border-color: var(--memberreg-accent-primary);
+  background: var(--memberreg-accent-primary);
+  position: relative;
+}
+
+.memberreg-checkbox-option input:checked + .checkbox-custom::after {
+  content: '✓';
+  position: absolute;
+  color: #001310;
+  font-size: 12px;
+  font-weight: 600;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.memberreg-radio-option span:last-child,
+.memberreg-checkbox-option span:last-child {
+  font-size: 16px;
+  color: var(--memberreg-text-primary);
+  line-height: 1.6;
+}
+
+/* ========================
+   RANGE INPUTS
+   ======================== */
+.memberreg-range-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--memberreg-space-lg); /* Increased gap for better thumb movement */
+}
+
+.memberreg-range-inputs .memberreg-range:first-child {
+  margin-bottom: var(--memberreg-space-sm); /* Extra space for top slider thumb */
+}
+
+.memberreg-range {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--memberreg-border-color);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.memberreg-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--memberreg-gradient);
+  cursor: pointer;
+  box-shadow: var(--memberreg-shadow-elev);
+}
+
+.memberreg-range::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--memberreg-gradient);
+  cursor: pointer;
+  border: none;
+  box-shadow: var(--memberreg-shadow-elev);
+}
+
+/* ========================
+   PASSWORD STRENGTH
+   ======================== */
+.memberreg-password-strength {
+  margin-top: var(--memberreg-space-sm);
+}
+
+.strength-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--memberreg-border-color);
+  border-radius: 2px;
+  margin-bottom: var(--memberreg-space-sm);
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.strength-fill.strength-20 { background: var(--memberreg-error); width: 20%; }
+.strength-fill.strength-40 { background: #F59E0B; width: 40%; }
+.strength-fill.strength-60 { background: #F59E0B; width: 60%; }
+.strength-fill.strength-80 { background: var(--memberreg-success); width: 80%; }
+.strength-fill.strength-100 { background: var(--memberreg-success); width: 100%; }
+
+.strength-requirements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--memberreg-space-md);
+}
+
+.strength-requirements span {
+  display: flex;
+  align-items: center;
+  gap: var(--memberreg-space-xs);
+  font-size: 12px;
+  color: var(--memberreg-text-tertiary);
+  transition: color 0.2s ease;
+}
+
+.strength-requirements span.met {
+  color: var(--memberreg-success);
+}
+
+.strength-requirements span svg {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.strength-requirements span.met svg {
+  opacity: 1;
+}
+
+/* ========================
+   SPECIAL SECTIONS
+   ======================== */
+.memberreg-agreements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--memberreg-space-lg);
+  margin-bottom: var(--memberreg-space-xl);
+}
+
+.memberreg-bonus-info {
+  display: flex;
+  align-items: center;
+  gap: var(--memberreg-space-md);
+  padding: var(--memberreg-space-lg);
+  border-radius: var(--memberreg-radius-lg);
+  background: rgba(23, 210, 194, 0.05);
+  border: 1px solid rgba(23, 210, 194, 0.2);
+  margin-bottom: var(--memberreg-space-xl);
+}
+
+.memberreg-bonus-info svg {
+  color: var(--memberreg-accent-primary);
+  flex-shrink: 0;
+}
+
+.memberreg-bonus-info h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--memberreg-text-primary);
+  margin: 0 0 var(--memberreg-space-xs) 0;
+}
+
+.memberreg-bonus-info p {
+  font-size: 14px;
+  color: var(--memberreg-text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.memberreg-submit-error {
+  display: flex;
+  align-items: center;
+  gap: var(--memberreg-space-sm);
+  color: var(--memberreg-error);
+  font-size: 16px;
+  padding: var(--memberreg-space-lg);
+  border-radius: var(--memberreg-radius-lg);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  margin-bottom: var(--memberreg-space-lg);
+}
+
+/* ========================
+   BUTTONS
+   ======================== */
+.memberreg-btn-primary,
+.memberreg-btn-secondary,
+.memberreg-btn-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: var(--memberreg-radius-lg);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--memberreg-font-sans);
+  cursor: pointer;
+  transition: transform .06s ease, box-shadow .2s ease, background .2s ease;
+  min-height: var(--memberreg-touch-target-optimal);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.memberreg-btn-primary,
+.memberreg-btn-submit {
+  background: var(--memberreg-gradient);
+  color: #001310;
+  box-shadow: var(--memberreg-shadow-elev);
+}
+
+.memberreg-btn-primary:hover,
+.memberreg-btn-submit:hover {
+  transform: translateY(-1px);
+}
+
+.memberreg-btn-primary:active,
+.memberreg-btn-submit:active {
+  transform: translateY(0);
+}
+
+.memberreg-btn-primary:focus-visible,
+.memberreg-btn-submit:focus-visible {
+  outline: 2px solid var(--memberreg-accent-tertiary);
+  outline-offset: 3px;
+}
+
+.memberreg-btn-secondary {
+  background: transparent;
+  color: var(--memberreg-text-primary);
+  border: 1px solid var(--memberreg-border-color);
+}
+
+.memberreg-btn-secondary:hover {
+  background: rgba(255,255,255,.04);
+}
+
+.memberreg-btn-primary:disabled,
+.memberreg-btn-secondary:disabled,
+.memberreg-btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ========================
+   FORM ACTIONS
+   ======================== */
+.memberreg-form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--memberreg-space-md);
+  margin-bottom: var(--memberreg-space-lg);
+}
+
+.memberreg-form-actions > * {
+  flex: 1;
+}
+
+.memberreg-form-actions > *:only-child {
+  margin-left: auto;
+}
+
+/* ========================
+   LOGIN LINK
+   ======================== */
+.memberreg-login-link {
+  text-align: center;
+  font-size: 16px;
+  color: var(--memberreg-text-secondary);
+  padding-top: var(--memberreg-space-lg);
+  border-top: 1px solid var(--memberreg-border-color);
+}
+
+.memberreg-link {
+  color: var(--memberreg-accent-tertiary);
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: var(--memberreg-space-sm);
+}
+
+.memberreg-link:hover,
+.memberreg-link:focus {
+  text-decoration: underline;
+}
+
+/* ========================
+   SPINNER
+   ======================== */
+.memberreg-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(0, 19, 16, 0.3);
+  border-top: 2px solid #001310;
+  border-radius: 50%;
+  animation: memberreg-spin 1s linear infinite;
+}
+
+@keyframes memberreg-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ========================
+   RESPONSIVE BREAKPOINTS
+   ======================== */
+
+/* Tablet - 768px and up */
+@media (min-width: 768px) {
+  .memberreg-container {
+    padding: var(--memberreg-space-lg);
+    padding-top: max(var(--memberreg-space-lg), env(safe-area-inset-top, 24px));
+    padding-bottom: max(var(--memberreg-space-lg), env(safe-area-inset-bottom, 24px));
+    padding-left: max(var(--memberreg-space-lg), env(safe-area-inset-left, 24px));
+    padding-right: max(var(--memberreg-space-lg), env(safe-area-inset-right, 24px));
+  }
+
+  .memberreg-content {
+    max-width: 900px;
+    flex-direction: row;
+  }
+
+  .memberreg-benefits-section {
+    flex: 1;
+    padding: var(--memberreg-space-xl);
+    border-bottom: none;
+    border-right: 1px solid var(--memberreg-border-color);
+  }
+
+  .memberreg-form-section {
+    flex: 1;
+    padding: var(--memberreg-space-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .memberreg-radio-group,
+  .memberreg-checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--memberreg-space-md);
+  }
+
+  .memberreg-form-actions {
+    justify-content: flex-end;
+  }
+
+  .memberreg-form-actions > * {
+    flex: initial;
+    min-width: 140px;
+  }
+}
+
+/* Desktop - 1024px and up */
+@media (min-width: 1024px) {
+  .memberreg-container {
+    padding: var(--memberreg-space-xl);
+    padding-top: max(var(--memberreg-space-xl), env(safe-area-inset-top, 32px));
+    padding-bottom: max(var(--memberreg-space-xl), env(safe-area-inset-bottom, 32px));
+    padding-left: max(var(--memberreg-space-xl), env(safe-area-inset-left, 32px));
+    padding-right: max(var(--memberreg-space-xl), env(safe-area-inset-right, 32px));
+  }
+
+  .memberreg-content {
+    max-width: 1200px;
+  }
+
+  .memberreg-benefits-section {
+    padding: var(--memberreg-space-2xl);
+  }
+
+  .memberreg-form-section {
+    padding: var(--memberreg-space-2xl);
+  }
+
+  .memberreg-radio-group,
+  .memberreg-checkbox-group {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile landscape adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .memberreg-benefits-section {
+    display: none;
+  }
+  
+  .memberreg-content {
+    flex-direction: column;
+  }
+  
+  .memberreg-form-section {
+    padding: var(--memberreg-space-md);
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

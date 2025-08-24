@@ -1,0 +1,87 @@
+:root{
+  --brand: #17D2C2;
+  --brand-600: #12B7AB;
+  --brand-300: #47E0D2;
+  --bg-900: #0A0A0A;
+  --surface: #1C1C1E;
+  --border: #2A2A2C;
+  --text: #FFFFFF;
+  --text-2: #C7C7CC;
+  --grad: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  --shadow-elev: 0 10px 30px rgba(0,0,0,.35);
+}
+
+.ftr{
+  padding: 64px 0;
+  background:
+    radial-gradient(900px 480px at 110% -20%, rgba(71,224,210,.10), transparent 60%),
+    var(--bg-900);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.ftr-inner{
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.ftr-title{
+  font-weight: 600;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  margin: 0 0 20px;
+}
+
+.ftr-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 600px){ .ftr-grid{ grid-template-columns: repeat(2,1fr); } }
+@media (min-width: 1024px){ .ftr-grid{ grid-template-columns: repeat(3,1fr); } }
+
+.ftr-card{
+  border: 1px solid var(--border) !important;
+  background: var(--surface) !important;
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.ftr-card-hover:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 20px 50px rgba(0,0,0,.35);
+  border-color: rgba(71,224,210,.35) !important;
+}
+.ftr-card-content{
+  display: grid;
+  gap: 8px;
+  padding: 20px 18px !important;
+}
+.ftr-badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  width: 40px; height: 40px; border-radius: 999px;
+  background: rgba(71,224,210,.12);
+  border: 1px solid rgba(71,224,210,.35);
+  color: var(--brand-300);
+  font-size: 20px;
+}
+.ftr-card-title{ font-weight: 600; margin: 4px 0 0; }
+.ftr-card-desc{ color: var(--text-2); margin: 0; }
+
+.ftr-cta{
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.btn-primary-cta{
+  background: var(--grad) !important;
+  color: #001310 !important;
+  box-shadow: var(--shadow-elev) !important;
+}
+.btn-primary-cta:hover{ transform: translateY(-1px); }
+.btn-outline{ border-color: var(--border) !important; color: var(--text) !important; }
+
+@media (min-width: 1280px){
+  .ftr{ padding: 88px 0; }
+}

@@ -1,0 +1,163 @@
+﻿Brand basics
+Name: Sexy Selfies
+Tone: Confident, playful, modern
+Default theme: Dark (with optional Light variant)
+Color system
+Core brand
+* Primary / Teal: #17D2C2
+* Primary-600: #12B7AB
+* Primary-700: #0FA093
+* Primary-300: #47E0D2
+* Primary-100: #CFF8F4
+* Gradient: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%)
+Neutrals (Dark UI)
+* Bg-900: #0A0A0A
+* Bg-800: #121212
+* Surface-700: #1C1C1E
+* Border-600: #2A2A2C
+* Text-Primary: #FFFFFF
+* Text-Secondary: #C7C7CC
+* Muted: #8E8E93
+Feedback
+* Success: #22C55E
+* Warning: #F59E0B
+* Error: #EF4444
+* Info: #38BDF8
+Shadow / Overlay
+* Overlay: rgba(0,0,0,.6)
+* Shadow: 0 10px 30px rgba(0,0,0,.35)
+Typography
+Font family: Poppins (system fallback: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif)
+Weights used: 400 (Regular), 500 (Medium), 600 (Semibold), 700 (Bold)
+Scale (mobile → desktop)
+* Display: 48/56 → 64/72, 1.05 tracking, 700
+* H1: 32/40 → 48/56, 600
+* H2: 24/32 → 32/40, 600
+* H3: 20/28 → 24/32, 600
+* Body-Lg: 18/28, 400–500
+* Body: 16/26, 400
+* Caption: 13/20, 500, +0.2px
+* Overline: 11/16, 600, +0.6px, uppercase
+Links: underline on hover/focus, color Primary-300; visited Primary-600.
+Spacing & layout
+* Spacing scale (px): 4, 8, 12, 16, 20, 24, 32, 40, 56, 72
+* Container widths: 640, 768, 1024, 1280
+* Breakpoints: sm 480, md 768, lg 1024, xl 1280
+* Radius: sm 8, md 12, lg 16, xl 24, pill 9999
+* Blur (glass): backdrop-filter: blur(10px); background: rgba(18,18,18,.6);
+Iconography & imagery
+* Icon set: rounded/duotone; 24px grid, 2px stroke.
+* Imagery: high-contrast, teal accents on dark backgrounds; avoid heavy filters that mute skin tones.
+* Corner style: soft-rounded.
+Accessibility
+* Contrast: AA minimum (text contrast ≥ 4.5:1; large text ≥ 3:1).
+* Focus rings: 2px outline #47E0D2 + 2px offset.
+* Motion reduce: respect prefers-reduced-motion.
+* Tap targets: ≥ 44×44px.
+Style Guide CSS
+/* tokens.css */
+:root {
+  /* Brand */
+  --brand-100: #CFF8F4;
+  --brand-300: #47E0D2;
+  --brand-600: #12B7AB;
+  --brand-700: #0FA093;
+  --brand: #17D2C2;
+  --brand-gradient: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  /* Neutrals (Dark theme default) */
+  --bg-900: #0A0A0A;
+  --bg-800: #121212;
+  --surface-700: #1C1C1E;
+  --border-600: #2A2A2C;
+  --text: #FFFFFF;
+  --text-2: #C7C7CC;
+  --muted: #8E8E93;
+  /* Feedback */
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --info: #38BDF8;
+  /* Effects */
+  --shadow-elev: 0 10px 30px rgba(0,0,0,.35);
+  --overlay: rgba(0,0,0,.6);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  /* Spacing */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px;
+  --space-6: 24px; --space-7: 32px; --space-8: 40px; --space-9: 56px; --space-10: 72px;
+  /* Typography */
+  --font-sans: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --fs-display: clamp(48px, 6vw, 64px);
+  --fs-h1: clamp(32px, 5vw, 48px);
+  --fs-h2: clamp(24px, 3.2vw, 32px);
+  --fs-h3: clamp(20px, 2.4vw, 24px);
+  --fs-body-lg: 18px;
+  --fs-body: 16px;
+  --fs-caption: 13px;
+}
+/* Light theme opt-in */
+.light {
+  --bg-900: #FFFFFF;
+  --bg-800: #F7F7F8;
+  --surface-700: #FFFFFF;
+  --border-600: #E6E6EA;
+  --text: #0A0A0A;
+  --text-2: #3C3C43;
+  --muted: #6B7280;
+}
+Base app styles
+/* base.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import './tokens.css';
+html, body, #root {
+  height: 100%;
+  background: var(--bg-900);
+  color: var(--text);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+.container {
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+  max-width: 1280px;
+}
+h1, h2, h3 { letter-spacing: .2px; }
+h1 { font-size: var(--fs-h1); font-weight: 600; line-height: 1.15; }
+h2 { font-size: var(--fs-h2); font-weight: 600; line-height: 1.2; }
+h3 { font-size: var(--fs-h3); font-weight: 600; line-height: 1.25; }
+p  { font-size: var(--fs-body); line-height: 1.6; color: var(--text-2); }
+a { color: var(--brand-300); text-decoration: none; }
+a:hover, a:focus { text-decoration: underline; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 10px; padding: 12px 18px; border-radius: var(--radius-lg);
+  font-weight: 600; line-height: 1; cursor: pointer; border: 0;
+  transition: transform .06s ease, box-shadow .2s ease, background .2s ease;
+}
+.btn:focus-visible { outline: 2px solid var(--brand-300); outline-offset: 3px; }
+.btn-primary {
+  color: #001310; background: var(--brand-gradient); box-shadow: var(--shadow-elev);
+}
+.btn-primary:hover { transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-ghost {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border-600);
+}
+.btn-ghost:hover { background: rgba(255,255,255,.04); }
+.input {
+  width: 100%; padding: 12px 14px; border-radius: var(--radius-md);
+  background: var(--surface-700); color: var(--text);
+  border: 1px solid var(--border-600);
+}
+.input::placeholder { color: var(--muted); }
+.input:focus { outline: 2px solid var(--brand-600); outline-offset: 2px; }
+.card {
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elev);
+}

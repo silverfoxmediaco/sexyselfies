@@ -1,0 +1,147 @@
+/* LandingPageV2.css - Main Wrapper and Background Only */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+/* CSS Variables */
+:root {
+  /* Brand Colors */
+  --brand: #17D2C2;
+  --brand-gradient: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  --brand-gradient-2: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+  --brand-gradient-3: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  
+  /* Dark Theme */
+  --bg-900: #0A0A0A;
+  --text-primary: #FFFFFF;
+  
+  /* Typography */
+  --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main Landing Page Wrapper */
+.landing-page-v2 {
+  min-height: 100vh;
+  background: var(--bg-900);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Animated Background */
+.animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.5;
+  animation: float 20s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  background: var(--brand-gradient);
+  top: -200px;
+  right: -200px;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 400px;
+  height: 400px;
+  background: var(--brand-gradient-2);
+  bottom: -100px;
+  left: -100px;
+  animation-delay: 5s;
+}
+
+.orb-3 {
+  width: 500px;
+  height: 500px;
+  background: var(--brand-gradient-3);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: 10s;
+}
+
+.noise-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Content Layering - Ensure all content appears above background */
+.landing-page-v2 > *:not(.animated-bg) {
+  position: relative;
+  z-index: 10;
+}
+
+/* Ensure MainHeader is visible and positioned correctly */
+.landing-page-v2 .mainheader-navbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1001 !important;
+  background: rgba(10, 10, 10, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: 60px !important;
+  min-height: 60px !important;
+  width: 100vw !important;
+  margin: 0 !important;
+}
+
+/* Add top padding to landing page content to account for fixed header */
+.landing-page-v2 {
+  padding-top: 60px;
+}
+
+/* High Performance Optimizations */
+.landing-page-v2 * {
+  will-change: auto;
+}
+
+.gradient-orb {
+  will-change: transform;
+}

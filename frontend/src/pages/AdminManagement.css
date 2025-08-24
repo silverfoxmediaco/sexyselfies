@@ -1,0 +1,1074 @@
+/* AdminManagement.css - Mobile-First Responsive Design */
+
+/* CSS Reset and Base Styles */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Root Variables for Easy Theming */
+:root {
+  --admin-management-bg-primary: #0A0A0A;
+  --admin-management-bg-secondary: #121212;
+  --admin-management-bg-tertiary: #1C1C1E;
+  --admin-management-border-color: #2A2A2C;
+  --admin-management-text-primary: #FFFFFF;
+  --admin-management-text-secondary: #C7C7CC;
+  --admin-management-text-tertiary: #8E8E93;
+  --admin-management-accent-primary: #17D2C2;
+  --admin-management-accent-secondary: #12B7AB;
+  --admin-management-accent-tertiary: #47E0D2;
+  --admin-management-error: #EF4444;
+  --admin-management-warning: #F59E0B;
+  --admin-management-success: #22C55E;
+  --admin-management-info: #38BDF8;
+  
+  /* Mobile-first spacing */
+  --admin-management-spacing-xs: 4px;
+  --admin-management-spacing-sm: 8px;
+  --admin-management-spacing-md: 16px;
+  --admin-management-spacing-lg: 24px;
+  --admin-management-spacing-xl: 32px;
+  
+  /* Touch-friendly sizes */
+  --admin-management-touch-target: 44px;
+  --admin-management-border-radius: 8px;
+  --admin-management-border-radius-lg: 12px;
+  
+  /* Typography - Mobile First */
+  --admin-management-font-size-xs: 11px;
+  --admin-management-font-size-sm: 13px;
+  --admin-management-font-size-base: 14px;
+  --admin-management-font-size-md: 16px;
+  --admin-management-font-size-lg: 18px;
+  --admin-management-font-size-xl: 20px;
+  --admin-management-font-size-2xl: 24px;
+  --admin-management-font-size-3xl: 28px;
+}
+
+/* Base Container - Mobile First */
+.admin-management-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Content Actions Bar - Mobile First */
+.admin-management-content-actions-bar {
+  display: flex;
+  gap: var(--admin-management-spacing-sm);
+  padding: var(--admin-management-spacing-md);
+  background: var(--admin-management-bg-secondary);
+  border-bottom: 1px solid var(--admin-management-border-color);
+  position: sticky;
+  top: var(--admin-header-navbar-height, 60px);
+  z-index: 40;
+}
+
+/* Pull to Refresh Indicator */
+.admin-management-refresh-indicator {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: var(--admin-management-bg-secondary);
+  padding: var(--admin-management-spacing-sm);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.admin-management-refresh-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--admin-management-border-color);
+  border-top-color: var(--admin-management-accent-primary);
+  border-radius: 50%;
+  animation: adminManagementSpin 0.8s linear infinite;
+}
+
+/* Loading State - Mobile Optimized */
+.admin-management-admins-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--admin-management-spacing-lg);
+  color: var(--admin-management-text-tertiary);
+}
+
+.admin-management-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--admin-management-border-color);
+  border-top-color: var(--admin-management-accent-primary);
+  border-radius: 50%;
+  animation: adminManagementSpin 1s linear infinite;
+  margin-bottom: var(--admin-management-spacing-md);
+}
+
+@keyframes adminManagementSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Header - Mobile First */
+.admin-management-header {
+  display: flex;
+  flex-direction: column;
+  padding: var(--admin-management-spacing-md);
+  background: var(--admin-management-bg-secondary);
+  border-bottom: 1px solid var(--admin-management-border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: var(--admin-management-spacing-md);
+}
+
+.admin-management-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-management-spacing-sm);
+}
+
+.admin-management-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--admin-management-spacing-sm);
+  padding: 8px 16px;
+  background: var(--admin-management-bg-tertiary);
+  border: 1px solid var(--admin-management-border-color);
+  border-radius: var(--admin-management-border-radius);
+  color: var(--admin-management-text-secondary);
+  font-size: var(--admin-management-font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+  margin-bottom: var(--admin-management-spacing-sm);
+}
+
+.admin-management-back-btn:active {
+  background: var(--admin-management-border-color);
+  color: var(--admin-management-accent-primary);
+  transform: scale(0.98);
+}
+
+.admin-management-back-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.admin-management-header-title h1 {
+  font-size: var(--admin-management-font-size-2xl);
+  font-weight: 600;
+  color: var(--admin-management-text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.admin-management-subtitle {
+  font-size: var(--admin-management-font-size-sm);
+  color: var(--admin-management-text-tertiary);
+  margin: var(--admin-management-spacing-xs) 0 0 0;
+}
+
+.admin-management-header-actions {
+  display: flex;
+  gap: var(--admin-management-spacing-sm);
+  align-items: center;
+  width: 100%;
+}
+
+/* Buttons - Mobile Optimized with Touch Targets */
+.admin-management-create-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--admin-management-spacing-sm);
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--admin-management-accent-secondary) 0%, var(--admin-management-accent-primary) 50%, var(--admin-management-accent-tertiary) 100%);
+  color: #001310;
+  border: none;
+  border-radius: var(--admin-management-border-radius);
+  font-size: var(--admin-management-font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: var(--admin-management-touch-target);
+  justify-content: center;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.admin-management-create-btn:active {
+  transform: scale(0.98);
+}
+
+.admin-management-btn-text {
+  display: inline;
+  white-space: nowrap;
+}
+
+.admin-management-refresh-btn {
+  padding: var(--admin-management-spacing-sm);
+  background: var(--admin-management-bg-tertiary);
+  border: 1px solid var(--admin-management-border-color);
+  border-radius: var(--admin-management-border-radius);
+  color: var(--admin-management-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: var(--admin-management-touch-target);
+  min-height: var(--admin-management-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.admin-management-refresh-btn:active {
+  background: var(--admin-management-border-color);
+  color: var(--admin-management-accent-primary);
+}
+
+.admin-management-refresh-btn svg {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.admin-management-refresh-btn:active svg {
+  transform: rotate(180deg);
+}
+
+/* Admin Grid - Mobile First */
+.admin-management-admins-grid {
+  padding: var(--admin-management-spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-management-spacing-md);
+}
+
+/* Admin Card - Mobile Optimized */
+.admin-management-admin-card {
+  background: var(--admin-management-bg-secondary);
+  border: 1px solid var(--admin-management-border-color);
+  border-radius: var(--admin-management-border-radius-lg);
+  padding: var(--admin-management-spacing-md);
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--admin-management-spacing-sm);
+}
+
+.admin-management-admin-card-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--admin-management-spacing-sm);
+}
+
+.admin-management-admin-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--admin-management-accent-secondary) 0%, var(--admin-management-accent-primary) 50%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--admin-management-font-size-md);
+  color: #001310;
+}
+
+.admin-management-admin-info {
+  min-width: 0; /* Important for text truncation in grid */
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.admin-management-admin-info h3 {
+  font-size: var(--admin-management-font-size-md);
+  font-weight: 600;
+  color: var(--admin-management-text-primary);
+  margin: 0 0 2px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-management-admin-info p {
+  font-size: var(--admin-management-font-size-sm);
+  color: var(--admin-management-text-tertiary);
+  margin: 0;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.admin-management-expand-btn {
+  background: transparent;
+  border: none;
+  color: var(--admin-management-text-secondary);
+  padding: var(--admin-management-spacing-sm);
+  cursor: pointer;
+  min-width: var(--admin-management-touch-target);
+  min-height: var(--admin-management-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+/* Role and Status Badges */
+.admin-management-admin-role {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: var(--admin-management-spacing-sm);
+}
+
+.admin-management-role-badge,
+.admin-management-status-badge {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: var(--admin-management-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.admin-management-role-super {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--admin-management-error);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.admin-management-role-moderator {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--admin-management-warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.admin-management-role-verification {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--admin-management-info);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.admin-management-status-badge.active {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--admin-management-success);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.admin-management-status-badge.inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--admin-management-error);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Expandable Details - Mobile Optimized */
+.admin-management-admin-details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--admin-management-spacing-md);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.admin-management-admin-details.expanded {
+  max-height: 500px;
+}
+
+/* Admin Stats - Mobile Grid */
+.admin-management-admin-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--admin-management-spacing-sm);
+  margin-bottom: var(--admin-management-spacing-md);
+  padding-top: var(--admin-management-spacing-md);
+  border-top: 1px solid var(--admin-management-border-color);
+}
+
+.admin-management-stat {
+  display: flex;
+  flex-direction: column;
+  padding: var(--admin-management-spacing-sm);
+  background: var(--admin-management-bg-tertiary);
+  border-radius: var(--admin-management-border-radius);
+  text-align: center;
+}
+
+.admin-management-stat-label {
+  font-size: var(--admin-management-font-size-xs);
+  color: var(--admin-management-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: var(--admin-management-spacing-xs);
+}
+
+.admin-management-stat-value {
+  font-size: var(--admin-management-font-size-sm);
+  font-weight: 600;
+  color: var(--admin-management-text-primary);
+}
+
+/* Permissions Section */
+.admin-management-permissions-section {
+  margin-bottom: var(--admin-management-spacing-md);
+}
+
+.admin-management-permissions-section h4 {
+  font-size: var(--admin-management-font-size-sm);
+  font-weight: 600;
+  color: var(--admin-management-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 var(--admin-management-spacing-sm) 0;
+}
+
+.admin-management-permissions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--admin-management-spacing-xs);
+}
+
+.admin-management-permission-tag {
+  padding: 6px 10px;
+  background: rgba(23, 210, 194, 0.1);
+  border: 1px solid rgba(23, 210, 194, 0.3);
+  color: var(--admin-management-accent-primary);
+  border-radius: 6px;
+  font-size: var(--admin-management-font-size-xs);
+  font-weight: 500;
+}
+
+/* Admin Actions - Mobile Optimized */
+.admin-management-admin-actions {
+  display: flex;
+  gap: var(--admin-management-spacing-sm);
+  padding-top: var(--admin-management-spacing-md);
+  border-top: 1px solid var(--admin-management-border-color);
+}
+
+.admin-management-action-btn {
+  flex: 1;
+  padding: var(--admin-management-spacing-sm) var(--admin-management-spacing-md);
+  border: none;
+  border-radius: var(--admin-management-border-radius);
+  font-size: var(--admin-management-font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: var(--admin-management-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--admin-management-spacing-xs);
+  touch-action: manipulation;
+}
+
+.admin-management-action-btn.edit {
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--admin-management-info);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.admin-management-action-btn.edit:active {
+  background: rgba(56, 189, 248, 0.2);
+  transform: scale(0.98);
+}
+
+.admin-management-action-btn.delete {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--admin-management-error);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.admin-management-action-btn.delete:active {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(0.98);
+}
+
+/* Pagination - Mobile Optimized */
+.admin-management-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--admin-management-spacing-sm);
+  padding: var(--admin-management-spacing-lg) var(--admin-management-spacing-md);
+  background: var(--admin-management-bg-secondary);
+  border-top: 1px solid var(--admin-management-border-color);
+  position: sticky;
+  bottom: 0;
+  z-index: 40;
+}
+
+.admin-management-page-btn {
+  padding: var(--admin-management-spacing-sm);
+  background: var(--admin-management-bg-tertiary);
+  border: 1px solid var(--admin-management-border-color);
+  border-radius: var(--admin-management-border-radius);
+  color: var(--admin-management-text-secondary);
+  cursor: pointer;
+  min-width: var(--admin-management-touch-target);
+  min-height: var(--admin-management-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.admin-management-page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-management-page-btn:not(:disabled):active {
+  background: var(--admin-management-border-color);
+}
+
+.admin-management-page-numbers {
+  display: flex;
+  gap: var(--admin-management-spacing-xs);
+  overflow-x: auto;
+  max-width: 200px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.admin-management-page-numbers::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-management-page-number {
+  min-width: 36px;
+  height: 36px;
+  padding: var(--admin-management-spacing-xs);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--admin-management-text-secondary);
+  border-radius: var(--admin-management-border-radius);
+  font-size: var(--admin-management-font-size-base);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.admin-management-page-number.active {
+  background: var(--admin-management-accent-primary);
+  color: #001310;
+  font-weight: 600;
+}
+
+/* Modal - Mobile Optimized */
+.admin-management-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+  padding: 0;
+  animation: adminManagementFadeIn 0.2s ease;
+}
+
+@keyframes adminManagementFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.admin-management-modal-content {
+  background: var(--admin-management-bg-secondary);
+  border: 1px solid var(--admin-management-border-color);
+  border-radius: var(--admin-management-border-radius-lg) var(--admin-management-border-radius-lg) 0 0;
+  padding: var(--admin-management-spacing-lg) var(--admin-management-spacing-md) env(safe-area-inset-bottom);
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: adminManagementSlideUp 0.3s ease;
+  position: relative;
+}
+
+@keyframes adminManagementSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.admin-management-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--admin-management-spacing-lg);
+}
+
+.admin-management-modal-header h2 {
+  font-size: var(--admin-management-font-size-xl);
+  font-weight: 600;
+  color: var(--admin-management-text-primary);
+  margin: 0;
+}
+
+.admin-management-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--admin-management-text-secondary);
+  padding: var(--admin-management-spacing-md);
+  cursor: pointer;
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.admin-management-modal-close:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-management-edit-info {
+  color: var(--admin-management-text-secondary);
+  margin: 0 0 var(--admin-management-spacing-lg) 0;
+  font-size: var(--admin-management-font-size-base);
+}
+
+/* Form Groups - Mobile Optimized */
+.admin-management-form-group {
+  margin-bottom: var(--admin-management-spacing-lg);
+}
+
+.admin-management-form-group label {
+  display: block;
+  font-size: var(--admin-management-font-size-sm);
+  font-weight: 500;
+  color: var(--admin-management-text-secondary);
+  margin-bottom: var(--admin-management-spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.admin-management-form-group input,
+.admin-management-form-group select {
+  width: 100%;
+  padding: 14px;
+  background: var(--admin-management-bg-tertiary);
+  border: 1px solid var(--admin-management-border-color);
+  border-radius: var(--admin-management-border-radius);
+  color: var(--admin-management-text-primary);
+  font-size: var(--admin-management-font-size-md);
+  outline: none;
+  transition: all 0.2s ease;
+  min-height: var(--admin-management-touch-target);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.admin-management-form-group input::placeholder {
+  color: var(--admin-management-text-tertiary);
+}
+
+.admin-management-form-group input:focus,
+.admin-management-form-group select:focus {
+  border-color: var(--admin-management-accent-primary);
+  box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.1);
+}
+
+.admin-management-form-group input.error {
+  border-color: var(--admin-management-error);
+}
+
+/* Password Input with Toggle */
+.admin-management-password-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-management-password-input input {
+  padding-right: calc(var(--admin-management-touch-target) + var(--admin-management-spacing-sm));
+}
+
+.admin-management-password-toggle {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--admin-management-text-secondary);
+  padding: var(--admin-management-spacing-sm);
+  cursor: pointer;
+  min-width: var(--admin-management-touch-target);
+  min-height: var(--admin-management-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+/* Error Messages */
+.admin-management-error-message {
+  display: block;
+  color: var(--admin-management-error);
+  font-size: var(--admin-management-font-size-sm);
+  margin-top: var(--admin-management-spacing-xs);
+  animation: adminManagementSlideDown 0.2s ease;
+}
+
+@keyframes adminManagementSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Role & Status Descriptions */
+.admin-management-role-description,
+.admin-management-status-description {
+  padding: var(--admin-management-spacing-md);
+  border-radius: var(--admin-management-border-radius);
+  margin-bottom: var(--admin-management-spacing-lg);
+}
+
+.admin-management-role-description {
+  background: rgba(23, 210, 194, 0.05);
+  border: 1px solid rgba(23, 210, 194, 0.2);
+}
+
+.admin-management-role-description p {
+  font-size: var(--admin-management-font-size-sm);
+  color: var(--admin-management-accent-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.admin-management-status-description p {
+  font-size: var(--admin-management-font-size-sm);
+  margin: 0;
+  line-height: 1.5;
+  padding: var(--admin-management-spacing-md);
+  border-radius: var(--admin-management-border-radius);
+}
+
+.admin-management-status-description .admin-management-status-active {
+  color: var(--admin-management-success);
+  background: rgba(34, 197, 94, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.admin-management-status-description .admin-management-status-inactive {
+  color: var(--admin-management-error);
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Modal Actions */
+.admin-management-modal-actions {
+  display: flex;
+  gap: var(--admin-management-spacing-sm);
+  justify-content: flex-end;
+  margin-top: var(--admin-management-spacing-xl);
+}
+
+.admin-management-modal-btn {
+  padding: 14px 24px;
+  border-radius: var(--admin-management-border-radius);
+  font-size: var(--admin-management-font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-height: var(--admin-management-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--admin-management-spacing-sm);
+  touch-action: manipulation;
+  flex: 1;
+}
+
+.admin-management-modal-btn.cancel {
+  background: var(--admin-management-bg-tertiary);
+  color: var(--admin-management-text-secondary);
+  border: 1px solid var(--admin-management-border-color);
+}
+
+.admin-management-modal-btn.cancel:active {
+  background: var(--admin-management-border-color);
+  transform: scale(0.98);
+}
+
+.admin-management-modal-btn.confirm {
+  background: linear-gradient(135deg, var(--admin-management-accent-secondary) 0%, var(--admin-management-accent-primary) 50%, var(--admin-management-accent-tertiary) 100%);
+  color: #001310;
+}
+
+.admin-management-modal-btn.confirm:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.admin-management-modal-btn.confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Button Spinner */
+.admin-management-btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 19, 16, 0.3);
+  border-top-color: #001310;
+  border-radius: 50%;
+  animation: adminManagementSpin 0.8s linear infinite;
+}
+
+/* Tablet Styles - 768px and up */
+@media (min-width: 768px) {
+  :root {
+    --admin-management-font-size-base: 15px;
+    --admin-management-font-size-lg: 20px;
+    --admin-management-font-size-xl: 22px;
+    --admin-management-font-size-2xl: 26px;
+    --admin-management-font-size-3xl: 32px;
+  }
+  
+  .admin-management-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--admin-management-spacing-lg);
+  }
+  
+  .admin-management-header-title {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--admin-management-spacing-lg);
+  }
+  
+  .admin-management-back-btn {
+    margin-bottom: 0;
+  }
+  
+  .admin-management-header-actions {
+    width: auto;
+    gap: var(--admin-management-spacing-md);
+  }
+  
+  .admin-management-create-btn {
+    padding: 12px 24px;
+  }
+  
+  .admin-management-admins-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: var(--admin-management-spacing-lg);
+    gap: var(--admin-management-spacing-lg);
+  }
+  
+  .admin-management-admin-card {
+    padding: var(--admin-management-spacing-lg);
+    width: 100%;
+  }
+  
+  .admin-management-admin-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: var(--admin-management-font-size-lg);
+  }
+  
+  .admin-management-admin-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .admin-management-modal-overlay {
+    align-items: center;
+    padding: var(--admin-management-spacing-lg);
+  }
+  
+  .admin-management-modal-content {
+    border-radius: var(--admin-management-border-radius-lg);
+    max-width: 500px;
+    padding: var(--admin-management-spacing-xl);
+    max-height: 90vh;
+  }
+  
+  .admin-management-modal-btn {
+    flex: 0;
+    padding: 12px 32px;
+  }
+}
+
+/* Desktop Styles - 1024px and up */
+@media (min-width: 1024px) {
+  .admin-management-admins-grid {
+    grid-template-columns: 1fr;
+    padding: var(--admin-management-spacing-xl);
+  }
+  
+  .admin-management-admin-card {
+    width: 100%;
+  }
+  
+  .admin-management-admin-stats {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .admin-management-admin-details {
+    max-height: none;
+  }
+  
+  .admin-management-admin-details.expanded {
+    max-height: none;
+  }
+  
+  .admin-management-expand-btn {
+    display: none;
+  }
+  
+  .admin-management-admin-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .admin-management-pagination {
+    position: static;
+    background: transparent;
+    border-top: none;
+    padding: var(--admin-management-spacing-xl);
+  }
+  
+  .admin-management-page-numbers {
+    max-width: none;
+  }
+}
+
+/* Large Desktop - 1280px and up */
+@media (min-width: 1280px) {
+  .admin-management-header {
+    padding: var(--admin-management-spacing-xl) 48px;
+  }
+  
+  .admin-management-admins-grid {
+    grid-template-columns: 1fr;
+    padding: var(--admin-management-spacing-xl) 48px;
+    gap: var(--admin-management-spacing-xl);
+  }
+  
+  .admin-management-admin-card {
+    width: 100%;
+  }
+  
+  .admin-management-modal-content {
+    max-width: 600px;
+  }
+}
+
+/* XL Desktop - 1536px and up */
+@media (min-width: 1536px) {
+  .admin-management-admins-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-management-admin-card {
+    width: 100%;
+  }
+}
+
+/* Hover Effects for Non-Touch Devices */
+@media (hover: hover) and (pointer: fine) {
+  .admin-management-back-btn:hover {
+    background: var(--admin-management-border-color);
+    color: var(--admin-management-accent-primary);
+    transform: translateX(-2px);
+  }
+  
+  .admin-management-create-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(23, 210, 194, 0.4);
+  }
+  
+  .admin-management-refresh-btn:hover {
+    background: var(--admin-management-border-color);
+    color: var(--admin-management-accent-primary);
+  }
+  
+  .admin-management-refresh-btn:hover svg {
+    transform: rotate(180deg);
+  }
+  
+  .admin-management-admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-color: var(--admin-management-accent-primary);
+  }
+  
+  .admin-management-action-btn.edit:hover {
+    background: rgba(56, 189, 248, 0.2);
+  }
+  
+  .admin-management-action-btn.delete:hover {
+    background: rgba(239, 68, 68, 0.2);
+  }
+  
+  .admin-management-page-btn:not(:disabled):hover {
+    background: var(--admin-management-border-color);
+    color: var(--admin-management-accent-primary);
+  }
+  
+  .admin-management-modal-btn.cancel:hover {
+    background: var(--admin-management-border-color);
+    color: var(--admin-management-text-primary);
+  }
+  
+  .admin-management-modal-btn.confirm:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(23, 210, 194, 0.3);
+  }
+}
+
+/* Accessibility - Focus States */
+*:focus-visible {
+  outline: 2px solid var(--admin-management-accent-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .admin-management-header-actions,
+  .admin-management-admin-actions,
+  .admin-management-pagination,
+  .admin-management-expand-btn {
+    display: none;
+  }
+  
+  .admin-management-admin-details {
+    max-height: none !important;
+  }
+}

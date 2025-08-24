@@ -1,0 +1,223 @@
+/* CreatorSuccessStories.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+/* CSS Variables */
+:root {
+  /* Brand Colors */
+  --brand: #17D2C2;
+  --brand-gradient: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  
+  /* Dark Theme */
+  --bg-900: #0A0A0A;
+  --border-600: #2A2A2C;
+  --text-primary: #FFFFFF;
+  --text-secondary: #C7C7CC;
+  
+  /* Feedback Colors */
+  --warning: #F59E0B;
+  
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-3xl: 64px;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-xl: 24px;
+  
+  /* Typography */
+  --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  position: relative;
+  z-index: 1;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  padding: var(--space-3xl) 0;
+  text-align: center;
+  position: relative;
+}
+
+.testimonials-section h2 {
+  font-size: clamp(32px, 6vw, 48px);
+  font-weight: 700;
+  margin-bottom: var(--space-3xl);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+/* Testimonial Carousel */
+.testimonial-carousel {
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  min-height: 320px;
+}
+
+/* Testimonial Card */
+.testimonial-card {
+  padding: var(--space-xl);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-600);
+  position: absolute;
+  width: 100%;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.testimonial-card.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* Glass Card Effect */
+.glass-card {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Rating */
+.rating {
+  color: var(--warning);
+  font-size: 24px;
+  margin-bottom: var(--space-lg);
+  letter-spacing: 4px;
+}
+
+/* Testimonial Text */
+.testimonial-text {
+  font-size: 20px;
+  line-height: 1.6;
+  margin-bottom: var(--space-lg);
+  font-style: italic;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+/* Testimonial Author */
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  justify-content: center;
+}
+
+.author-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--bg-900);
+  font-family: var(--font-sans);
+}
+
+.author-info {
+  text-align: left;
+}
+
+.author-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.author-role {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-family: var(--font-sans);
+}
+
+/* Carousel Dots */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-600);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.dot:hover {
+  background: rgba(23, 210, 194, 0.5);
+}
+
+.dot.active {
+  width: 24px;
+  border-radius: 4px;
+  background: var(--brand);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 767px) {
+  .container {
+    padding: 0 var(--space-md);
+  }
+  
+  .testimonial-carousel {
+    min-height: 360px;
+  }
+  
+  .testimonial-text {
+    font-size: 18px;
+  }
+  
+  .carousel-dots {
+    bottom: -30px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .testimonial-card {
+    transition: opacity 0.3s ease;
+  }
+  
+  .dot {
+    transition: none;
+  }
+}

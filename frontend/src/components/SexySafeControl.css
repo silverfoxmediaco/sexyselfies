@@ -1,0 +1,117 @@
+:root{
+  --brand: #17D2C2;
+  --brand-600: #12B7AB;
+  --brand-700: #0FA093;
+  --brand-300: #47E0D2;
+  --brand-100: #CFF8F4;
+  --bg-900: #0A0A0A;
+  --bg-800: #121212;
+  --surface: #1C1C1E;
+  --border: #2A2A2C;
+  --text: #FFFFFF;
+  --text-2: #C7C7CC;
+  --muted: #8E8E93;
+  --shadow-elev: 0 10px 30px rgba(0,0,0,.35);
+  --grad: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+}
+
+.ssc{
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(23,210,194,.18), transparent),
+    radial-gradient(900px 500px at 110% 10%, rgba(71,224,210,.14), transparent),
+    var(--bg-900);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 72px 0;
+  overflow: clip;
+}
+
+.ssc::before,
+.ssc::after{
+  content:"";
+  position:absolute;
+  width: 420px; height: 420px; border-radius: 50%;
+  filter: blur(30px);
+  pointer-events: none;
+}
+.ssc::before{
+  left: -10%; bottom: 10%;
+  background: radial-gradient(circle at 30% 30%, rgba(23,210,194,.35), rgba(23,210,194,0) 60%);
+  animation: ssc-float1 12s ease-in-out infinite;
+}
+.ssc::after{
+  right: -10%; top: -8%;
+  background: radial-gradient(circle at 70% 70%, rgba(71,224,210,.35), rgba(71,224,210,0) 60%);
+  animation: ssc-float2 16s ease-in-out infinite;
+}
+@keyframes ssc-float1 { 0%,100%{transform: translate(0,0)} 50%{transform: translate(8px, -10px)} }
+@keyframes ssc-float2 { 0%,100%{transform: translate(0,0)} 50%{transform: translate(-12px, 6px)} }
+
+.ssc-inner{
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.ssc-headline{
+  font-weight: 700 !important;
+  font-size: clamp(2rem, 5vw, 3rem) !important;
+  line-height: 1.12 !important;
+  text-shadow: 0 6px 30px rgba(23,210,194,.25);
+  margin: 0;
+}
+
+/* Force the block to center with auto margins, overriding MUI's margin:0 */
+.ssc .ssc-subhead,
+.MuiTypography-root.ssc-subhead{
+  display: block;
+  max-width: 780px;
+  margin: 14px auto 0 !important;
+  text-align: center;
+  color: var(--text-2);
+  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+}
+
+.ssc-cta{
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.ssc-chips{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.btn-primary-cta{
+  background: var(--grad) !important;
+  color: #001310 !important;
+  box-shadow: var(--shadow-elev) !important;
+}
+.btn-primary-cta:hover{ transform: translateY(-1px); }
+
+.btn-outline{
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+.chip-tag{
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid var(--border) !important;
+}
+
+@media (min-width: 1280px){
+  .ssc{ padding: 88px 0; }
+}

@@ -1,0 +1,54 @@
+:root{
+  --brand: #17D2C2;
+  --brand-600: #12B7AB;
+  --brand-300: #47E0D2;
+  --bg-900: #0A0A0A;
+  --surface: #1C1C1E;
+  --border: #2A2A2C;
+  --text: #FFFFFF;
+  --text-2: #C7C7CC;
+  --grad: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  --shadow-elev: 0 10px 30px rgba(0,0,0,.35);
+}
+
+.faqc{
+  padding: 64px 0;
+  background:
+    radial-gradient(900px 520px at 0% 100%, rgba(23,210,194,.10), transparent 60%),
+    var(--bg-900);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.faqc-inner{
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.faqc-title{
+  font-weight: 600;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  margin: 0 0 20px;
+}
+
+.faqc-list{ display: grid; gap: 12px; }
+.faqc-accordion{
+  background: var(--surface) !important;
+  border: 1px solid var(--border);
+  box-shadow: none !important;
+}
+.faqc-accordion.Mui-expanded{
+  border-color: rgba(71,224,210,.35);
+}
+.faqc-q{ font-weight: 600 !important; }
+.faqc-a{ color: var(--text-2); }
+
+.faqc-cta{
+  display: flex; justify-content: center; margin-top: 20px;
+}
+
+.btn-outline{ border-color: var(--border) !important; color: var(--text) !important; }
+
+@media (min-width: 1280px){
+  .faqc{ padding: 88px 0; }
+}

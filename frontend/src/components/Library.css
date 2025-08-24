@@ -1,0 +1,603 @@
+/* Library.css - Mobile-First PWA Design */
+
+/* Base Container */
+.lib-container {
+  min-height: 100vh;
+  background: #0A0A0A;
+  color: #FFFFFF;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0));
+  overflow-x: hidden;
+}
+
+/* Loading State */
+.lib-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+}
+
+.lib-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #17D2C2;
+  border-radius: 50%;
+  animation: libSpin 1s linear infinite;
+}
+
+@keyframes libSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Header */
+.lib-header {
+  background: rgba(18, 18, 18, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+.lib-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  min-height: 56px;
+}
+
+.lib-back-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #17D2C2;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.lib-back-btn:active {
+  transform: scale(0.95);
+}
+
+.lib-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: #FFFFFF;
+}
+
+.lib-header-spacer {
+  width: 40px;
+}
+
+/* Stats Bar */
+.lib-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px;
+  background: rgba(28, 28, 30, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lib-stat {
+  text-align: center;
+}
+
+.lib-stat-value {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: #17D2C2;
+  margin-bottom: 4px;
+}
+
+.lib-stat-label {
+  display: block;
+  font-size: 11px;
+  color: #8E8E93;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Controls Section */
+.lib-controls {
+  padding: 16px;
+  background: #121212;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Search Bar */
+.lib-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.lib-search-bar svg {
+  color: #8E8E93;
+  flex-shrink: 0;
+}
+
+.lib-search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 14px;
+  outline: none;
+}
+
+.lib-search-bar input::placeholder {
+  color: #8E8E93;
+}
+
+.lib-clear-search {
+  background: transparent;
+  border: none;
+  color: #8E8E93;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* Filter Controls */
+.lib-filter-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.lib-filter-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.lib-filter-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.lib-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: #8E8E93;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lib-chip.active {
+  background: rgba(23, 210, 194, 0.1);
+  border-color: #17D2C2;
+  color: #17D2C2;
+}
+
+/* View Toggle */
+.lib-view-toggle {
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.lib-view-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #8E8E93;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lib-view-btn.active {
+  background: rgba(23, 210, 194, 0.1);
+  color: #17D2C2;
+}
+
+/* Bulk Actions */
+.lib-bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(23, 210, 194, 0.05);
+  border-bottom: 1px solid rgba(23, 210, 194, 0.2);
+}
+
+.lib-bulk-actions span {
+  color: #17D2C2;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.lib-bulk-download {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #17D2C2;
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.lib-clear-selection {
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #8E8E93;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Content Area */
+.lib-content {
+  padding: 16px;
+}
+
+/* Empty State */
+.lib-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.lib-empty-state svg {
+  color: #8E8E93;
+  margin-bottom: 16px;
+}
+
+.lib-empty-state h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #FFFFFF;
+}
+
+.lib-empty-state p {
+  font-size: 14px;
+  color: #8E8E93;
+}
+
+/* Grid View - MOBILE FIRST: 1 column */
+.lib-items-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* List View */
+.lib-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Item Styles */
+.lib-item {
+  background: rgba(28, 28, 30, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.lib-item.selected {
+  border-color: #17D2C2;
+  background: rgba(23, 210, 194, 0.05);
+}
+
+/* Checkbox */
+.lib-item-checkbox {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+}
+
+.lib-item-checkbox input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Grid Item Layout */
+.lib-items-grid .lib-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.lib-items-grid .lib-item-thumbnail {
+  position: relative;
+  width: 100%;
+  padding-bottom: 150%; /* 2:3 aspect ratio */
+  background: #000;
+  overflow: hidden;
+}
+
+.lib-items-grid .lib-item-thumbnail img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lib-items-grid .lib-item-info {
+  padding: 12px;
+}
+
+.lib-items-grid .lib-item-info h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #FFFFFF;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lib-items-grid .lib-item-meta {
+  display: none; /* Hide in grid view for space */
+}
+
+.lib-items-grid .lib-item-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.lib-items-grid .lib-item-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 12px 12px 12px;
+}
+
+/* List Item Layout */
+.lib-items-list .lib-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+}
+
+.lib-items-list .lib-item-thumbnail {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #000;
+}
+
+.lib-items-list .lib-item-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lib-items-list .lib-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.lib-items-list .lib-item-info h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+  color: #FFFFFF;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lib-items-list .lib-item-meta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.lib-items-list .lib-item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Common Item Elements */
+.lib-item-type {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  color: #FFFFFF;
+}
+
+.lib-item-duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #FFFFFF;
+}
+
+.lib-item-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #8E8E93;
+}
+
+.lib-item-details {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lib-type-label {
+  padding: 2px 8px;
+  background: rgba(23, 210, 194, 0.1);
+  border-radius: 4px;
+  font-size: 11px;
+  color: #17D2C2;
+  font-weight: 500;
+}
+
+.lib-file-count,
+.lib-file-size {
+  font-size: 11px;
+  color: #8E8E93;
+}
+
+/* Action Buttons */
+.lib-download-btn,
+.lib-view-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lib-download-btn {
+  background: rgba(23, 210, 194, 0.1);
+  color: #17D2C2;
+}
+
+.lib-download-btn:hover {
+  background: rgba(23, 210, 194, 0.2);
+}
+
+.lib-view-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #8E8E93;
+}
+
+.lib-view-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+/* Tablet Support (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .lib-header-content {
+    padding: 20px 24px;
+  }
+  
+  .lib-header h1 {
+    font-size: 24px;
+  }
+  
+  .lib-stats-bar {
+    padding: 20px 24px;
+  }
+  
+  .lib-controls {
+    padding: 20px 24px;
+  }
+  
+  .lib-content {
+    padding: 20px 24px;
+  }
+  
+  /* 2 columns on tablet */
+  .lib-items-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .lib-items-list .lib-item {
+    padding: 16px;
+  }
+  
+  .lib-items-list .lib-item-thumbnail {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Desktop Support (1025px+) - For Admins */
+@media (min-width: 1025px) {
+  .lib-container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  
+  /* 3 columns on desktop for admin users */
+  .lib-items-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .lib-items-list .lib-item-thumbnail {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .lib-download-btn,
+  .lib-view-btn {
+    width: 40px;
+    height: 40px;
+  }
+}

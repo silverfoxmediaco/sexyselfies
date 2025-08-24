@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/icons/favicon.ico?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png?v=2">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#FF006E" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="SexySelfies" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-TileColor" content="#FF006E" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icons/apple-icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-icon-167x167.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+    
+    <!-- Android/Chrome Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/icons/android-icon-96x96.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/icons/icon-48x48.png">
+    
+    <!-- Windows Tiles -->
+    <meta name="msapplication-TileImage" content="/icons/ms-icon-144x144.png">
+    <meta name="msapplication-square70x70logo" content="/icons/ms-icon-70x70.png">
+    <meta name="msapplication-square150x150logo" content="/icons/ms-icon-150x150.png">
+    <meta name="msapplication-square310x310logo" content="/icons/ms-icon-310x310.png">
+    
+    <!-- Safari Pinned Tab -->
+    <link rel="mask-icon" href="/icons/logo.svg" color="#FF006E">
+    
+    <!-- iOS Splash Screens - Updated for all iPhone sizes -->
+    <!-- iPhone SE, 6s, 7, 8 -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-750x1334.png" 
+          media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    
+    <!-- iPhone 6+, 6s+, 7+, 8+ -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-1242x2208.png" 
+          media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    
+    <!-- iPhone X, XS, 11 Pro -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-1125x2436.png" 
+          media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    
+    <!-- iPhone XR, 11 -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-828x1792.png" 
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    
+    <!-- iPhone XS Max, 11 Pro Max -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-1242x2688.png" 
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    
+    <!-- iPhone 12, 12 Pro, 13, 13 Pro, 14, 14 Pro -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-1170x2532.png" 
+          media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    
+    <!-- iPhone 12 Pro Max, 13 Pro Max, 14 Plus, 14 Pro Max -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-1284x2778.png" 
+          media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    
+    <!-- iPhone 12 mini, 13 mini -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-1080x2340.png" 
+          media="(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    
+    <!-- iPad Splash Screens -->
+    <!-- iPad Mini, Air -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-1536x2048.png" 
+          media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    
+    <!-- iPad Pro 10.5" -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-1668x2224.png" 
+          media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    
+    <!-- iPad Pro 11" -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-1668x2388.png" 
+          media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    
+    <!-- iPad Pro 12.9" -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-2048x2732.png" 
+          media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Connect with creators, discover exclusive content, and monetize your selfies on SexySelfies - the premier platform for content creators." />
+    <meta name="keywords" content="content creators, selfies, monetize, social platform, exclusive content" />
+    <meta name="author" content="SexySelfies" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="SexySelfies - Swipe, Match, Monetize" />
+    <meta property="og:description" content="Connect with creators and discover exclusive content" />
+    <meta property="og:image" content="/icons/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://sexyselfies.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SexySelfies" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SexySelfies - Swipe, Match, Monetize" />
+    <meta name="twitter:description" content="Connect with creators and discover exclusive content" />
+    <meta name="twitter:image" content="/icons/twitter-card.png" />
+    <meta name="twitter:site" content="@sexyselfies" />
+    <meta name="twitter:creator" content="@sexyselfies" />
+    
+    <title>SexySelfies - Swipe, Match, Monetize</title>
+    
+    <!-- Preconnect to external services -->
+    <link rel="preconnect" href="https://res.cloudinary.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api.sexyselfies.com" />
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/icons/icon-192x192.png" as="image" />
+    
+    <!-- Critical CSS for faster initial paint -->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background: #0A0A0B;
+        color: #ffffff;
+        overscroll-behavior: none;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: pan-x pan-y;
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+      }
+      
+      html {
+        height: -webkit-fill-available;
+      }
+      
+      /* Prevent pull-to-refresh on PWA */
+      body.pwa-installed {
+        overscroll-behavior-y: none;
+      }
+      
+      /* Loading screen */
+      .app-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0A0A0B 0%, #1A1A1C 100%);
+        z-index: 9999;
+      }
+      
+      .loading-logo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 30px;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(255, 0, 110, 0.1);
+        border-top-color: #FF006E;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      .loading-text {
+        margin-top: 20px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+        letter-spacing: 1px;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+      }
+      
+      /* Safe area support for notched devices */
+      @supports (padding: env(safe-area-inset-top)) {
+        body {
+          padding-top: env(safe-area-inset-top);
+          padding-bottom: env(safe-area-inset-bottom);
+          padding-left: env(safe-area-inset-left);
+          padding-right: env(safe-area-inset-right);
+        }
+      }
+      
+      /* Offline indicator */
+      body.offline::before {
+        content: 'No internet connection';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #FF4444;
+        color: white;
+        text-align: center;
+        padding: 8px;
+        font-size: 14px;
+        z-index: 10000;
+        animation: slideDown 0.3s ease;
+      }
+      
+      @keyframes slideDown {
+        from { transform: translateY(-100%); }
+        to { transform: translateY(0); }
+      }
+      
+      /* Install banner */
+      .install-banner {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #FF006E 0%, #FF4B8C 100%);
+        color: white;
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(255, 0, 110, 0.3);
+        z-index: 1000;
+        animation: slideUp 0.3s ease;
+      }
+      
+      @keyframes slideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+      
+      .install-banner-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      
+      .install-banner-text {
+        flex: 1;
+      }
+      
+      .install-banner-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      
+      .install-banner-subtitle {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+      
+      .install-banner-buttons {
+        display: flex;
+        gap: 10px;
+      }
+      
+      .install-banner-button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      
+      .install-banner-button:active {
+        transform: scale(0.95);
+      }
+      
+      .install-banner-button.primary {
+        background: white;
+        color: #FF006E;
+      }
+      
+      .install-banner-button.secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading screen -->
+    <div id="app-loading" class="app-loading">
+      <img src="/icons/icon-192x192.png" alt="SexySelfies" class="loading-logo" />
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading amazing content...</div>
+    </div>
+    
+    <!-- Install Banner -->
+    <div id="install-banner" class="install-banner">
+      <div class="install-banner-content">
+        <div class="install-banner-text">
+          <div class="install-banner-title">Install SexySelfies</div>
+          <div class="install-banner-subtitle">Get the full app experience</div>
+        </div>
+        <div class="install-banner-buttons">
+          <button id="install-later" class="install-banner-button secondary">Later</button>
+          <button id="install-now" class="install-banner-button primary">Install</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- React Root -->
+    <div id="root"></div>
+    
+    <!-- Service Worker Registration & PWA Scripts -->
+    <script>
+      // Remove loading screen when app loads
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loader = document.getElementById('app-loading');
+          if (loader) {
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => loader.remove(), 300);
+          }
+        }, 100);
+      });
+      
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+          try {
+            const registration = await navigator.serviceWorker.register('/service-worker.js', {
+              scope: '/'
+            });
+            console.log('SW registered:', registration);
+            
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New service worker available
+                  console.log('New content available; please refresh.');
+                  // You could show a notification to the user here
+                }
+              });
+            });
+            
+            // Check for updates every hour
+            setInterval(() => {
+              registration.update();
+            }, 1000 * 60 * 60);
+          } catch (err) {
+            console.log('SW registration failed:', err);
+          }
+        });
+      }
+      
+      // Install prompt handling
+      let deferredPrompt;
+      let installBanner;
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install banner after 30 seconds or on second visit
+        const showInstallBanner = () => {
+          installBanner = document.getElementById('install-banner');
+          if (installBanner && !localStorage.getItem('install-dismissed')) {
+            installBanner.style.display = 'block';
+          }
+        };
+        
+        // Check if user has visited before
+        const visitCount = parseInt(localStorage.getItem('visit-count') || '0');
+        if (visitCount > 0) {
+          showInstallBanner();
+        } else {
+          setTimeout(showInstallBanner, 30000);
+        }
+        
+        // Update visit count
+        localStorage.setItem('visit-count', visitCount + 1);
+      });
+      
+      // Install button handlers
+      document.addEventListener('click', async (e) => {
+        if (e.target.id === 'install-now' && deferredPrompt) {
+          installBanner.style.display = 'none';
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`User response to install prompt: ${outcome}`);
+          deferredPrompt = null;
+        } else if (e.target.id === 'install-later') {
+          installBanner.style.display = 'none';
+          localStorage.setItem('install-dismissed', 'true');
+          // Clear dismissal after 7 days
+          setTimeout(() => {
+            localStorage.removeItem('install-dismissed');
+          }, 7 * 24 * 60 * 60 * 1000);
+        }
+      });
+      
+      // Detect if app is installed
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA installed');
+        document.body.classList.add('pwa-installed');
+        if (installBanner) {
+          installBanner.style.display = 'none';
+        }
+        // Track installation
+        if (window.gtag) {
+          window.gtag('event', 'app_installed');
+        }
+      });
+      
+      // Detect standalone mode (iOS)
+      if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+        document.body.classList.add('pwa-installed');
+      }
+      
+      // Handle online/offline status
+      let isOnline = navigator.onLine;
+      
+      const updateOnlineStatus = () => {
+        isOnline = navigator.onLine;
+        if (isOnline) {
+          console.log('Back online');
+          document.body.classList.remove('offline');
+          // Trigger any queued syncs
+          if ('sync' in self.registration) {
+            self.registration.sync.register('sync-queue');
+          }
+        } else {
+          console.log('Gone offline');
+          document.body.classList.add('offline');
+        }
+      };
+      
+      window.addEventListener('online', updateOnlineStatus);
+      window.addEventListener('offline', updateOnlineStatus);
+      
+      // Handle visibility change (for PWA lifecycle)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          // App became visible, check for updates
+          if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'CHECK_UPDATES' });
+          }
+        }
+      });
+      
+      // iOS specific fixes
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        // Prevent bounce scrolling
+        document.body.addEventListener('touchmove', (e) => {
+          if (e.target === document.body) {
+            e.preventDefault();
+          }
+        }, { passive: false });
+        
+        // Fix viewport height
+        const setVH = () => {
+          const vh = window.innerHeight * 0.01;
+          document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
+        setVH();
+        window.addEventListener('resize', setVH);
+        window.addEventListener('orientationchange', setVH);
+      }
+      
+      // Request notification permission after user interaction
+      let notificationPermissionRequested = false;
+      document.addEventListener('click', () => {
+        if (!notificationPermissionRequested && 'Notification' in window && Notification.permission === 'default') {
+          notificationPermissionRequested = true;
+          // Wait a bit before asking for permission
+          setTimeout(() => {
+            Notification.requestPermission();
+          }, 5000);
+        }
+      }, { once: true });
+    </script>
+    
+    <!-- Vite Module -->
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

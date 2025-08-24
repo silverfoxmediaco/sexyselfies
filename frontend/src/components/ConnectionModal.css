@@ -1,0 +1,586 @@
+/* ConnectionModal.css - Complete Updated Version */
+
+/* Backdrop */
+.connection-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 9998;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal Container - Using modern centering approach */
+.connection-modal {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: 90%;
+  max-width: 380px;
+  height: fit-content;
+  max-height: 90vh;
+  background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%);
+  border-radius: 24px;
+  padding: 60px 24px 24px;
+  z-index: 9999;
+  text-align: center;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.5),
+    0 0 100px rgba(23, 210, 194, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: visible;
+  animation: modalPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.connection-modal:active {
+  transform: scale(0.98);
+}
+
+/* Close Button */
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(60, 60, 60, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.close-button svg {
+  width: 20px;
+  height: 20px;
+  color: #FFFFFF;
+}
+
+.close-button:hover {
+  background: rgba(80, 80, 80, 0.9);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.close-button:active {
+  transform: scale(0.95);
+}
+
+/* Modal Animations */
+@keyframes modalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Alternative animation - slide up from bottom */
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Alternative animation - bounce in */
+@keyframes modalBounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Premium variant */
+.connection-modal.premium {
+  background: linear-gradient(135deg, #2A1F3D 0%, #3D2A4D 100%);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.5),
+    0 0 100px rgba(255, 215, 0, 0.2);
+}
+
+/* Highlight variant with glow */
+.connection-modal.highlight {
+  animation: modalPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), modalGlow 3s ease-in-out infinite;
+}
+
+@keyframes modalGlow {
+  0%, 100% { 
+    box-shadow: 
+      0 25px 50px rgba(0, 0, 0, 0.5),
+      0 0 80px rgba(23, 210, 194, 0.2);
+  }
+  50% { 
+    box-shadow: 
+      0 25px 50px rgba(0, 0, 0, 0.5),
+      0 0 120px rgba(23, 210, 194, 0.3);
+  }
+}
+
+/* Profile Photo - Positioned at top */
+.connection-profile-photo {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #17D2C2;
+  box-shadow: 
+    0 8px 32px rgba(23, 210, 194, 0.4),
+    0 0 60px rgba(23, 210, 194, 0.2);
+  background: #1C1C1E;
+  z-index: 10;
+}
+
+.connection-profile-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Animated glow ring around photo */
+.photo-glow {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    #17D2C2,
+    transparent
+  );
+  animation: rotateGlow 3s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes rotateGlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Icon Container (when no photo) */
+.connection-icon-container {
+  position: relative;
+  margin: 0 auto 24px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.connection-icon {
+  color: #17D2C2;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 20px rgba(23, 210, 194, 0.5));
+}
+
+/* Lightning bolt animation for instant connection */
+.connection-icon.flash {
+  animation: lightningFlash 2s ease-in-out infinite;
+}
+
+@keyframes lightningFlash {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 20px rgba(23, 210, 194, 0.5));
+  }
+  50% { 
+    opacity: 0.8;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 40px rgba(23, 210, 194, 0.8));
+  }
+}
+
+/* Other icon animations */
+.connection-icon.pulse {
+  animation: iconPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.connection-icon.bounce {
+  animation: iconBounce 1s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.connection-icon.spin {
+  animation: iconSpin 3s linear infinite;
+}
+
+@keyframes iconSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.connection-icon.sparkle {
+  animation: iconSparkle 1.5s ease-in-out infinite;
+}
+
+@keyframes iconSparkle {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1) drop-shadow(0 0 20px rgba(23, 210, 194, 0.5));
+  }
+  50% { 
+    transform: scale(1.2) rotate(180deg);
+    filter: brightness(1.5) drop-shadow(0 0 30px rgba(23, 210, 194, 0.8));
+  }
+}
+
+/* Background pulse effect */
+.icon-bg-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(23, 210, 194, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: bgPulse 2s ease-in-out infinite;
+}
+
+@keyframes bgPulse {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Content */
+.connection-content {
+  margin-bottom: 24px;
+}
+
+.connection-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #17D2C2;
+  margin: 0 0 12px 0;
+  text-shadow: 0 0 30px rgba(23, 210, 194, 0.5);
+  letter-spacing: -0.5px;
+}
+
+.connection-subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+}
+
+.connection-description {
+  font-size: 14px;
+  color: #C7C7CC;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Stats */
+.connection-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin: 20px 0;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #17D2C2;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Actions */
+.connection-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.connection-btn {
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.connection-btn.primary {
+  background: linear-gradient(135deg, #17D2C2, #12B7AB);
+  color: #001310;
+  box-shadow: 0 4px 20px rgba(23, 210, 194, 0.3);
+}
+
+.connection-btn.primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: buttonShine 3s ease-in-out infinite;
+}
+
+@keyframes buttonShine {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+.connection-btn.primary:active {
+  transform: scale(0.98);
+}
+
+.connection-btn.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #C7C7CC;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.connection-btn.secondary:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Compatibility Bar */
+.connection-compatibility {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.compatibility-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.compatibility-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #17D2C2, #47E0D2);
+  border-radius: 3px;
+  animation: fillBar 1.5s ease-out;
+}
+
+@keyframes fillBar {
+  from { width: 0; }
+}
+
+.compatibility-text {
+  font-size: 12px;
+  color: #17D2C2;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Tap Hint */
+.tap-hint {
+  margin-top: 16px;
+  font-size: 11px;
+  color: #8E8E93;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  animation: fadeInUp 1s ease 0.5s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 0.7;
+    transform: translateY(0);
+  }
+}
+
+/* Confetti Effect */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 9997;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #17D2C2;
+  animation: confettiFall 3s ease-out forwards;
+}
+
+.confetti-0 { 
+  background: #17D2C2; 
+  left: 10%;
+  animation-delay: 0s;
+  transform: rotate(0deg);
+}
+.confetti-1 { 
+  background: #FF006E; 
+  left: 30%;
+  animation-delay: 0.2s;
+  transform: rotate(45deg);
+}
+.confetti-2 { 
+  background: #FFD700; 
+  left: 50%;
+  animation-delay: 0.4s;
+  transform: rotate(90deg);
+}
+.confetti-3 { 
+  background: #8B5CF6; 
+  left: 70%;
+  animation-delay: 0.6s;
+  transform: rotate(135deg);
+}
+.confetti-4 { 
+  background: #34C759; 
+  left: 90%;
+  animation-delay: 0.8s;
+  transform: rotate(180deg);
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Tablet Support */
+@media (min-width: 768px) {
+  .connection-modal {
+    padding: 70px 32px 32px;
+    max-width: 420px;
+  }
+  
+  .connection-title {
+    font-size: 30px;
+  }
+  
+  .connection-subtitle {
+    font-size: 20px;
+  }
+  
+  .connection-btn {
+    padding: 16px 32px;
+    font-size: 17px;
+  }
+}
+
+/* Desktop Support */
+@media (min-width: 1025px) {
+  .connection-modal {
+    max-width: 450px;
+  }
+  
+  .connection-btn:hover {
+    transform: translateY(-2px);
+  }
+  
+  .connection-btn.primary:hover {
+    box-shadow: 0 6px 30px rgba(23, 210, 194, 0.4);
+  }
+  
+  .connection-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .connection-modal,
+  .connection-backdrop,
+  .connection-icon,
+  .connection-btn,
+  .confetti {
+    animation: none !important;
+  }
+  
+  .photo-glow {
+    display: none;
+  }
+}
