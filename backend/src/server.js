@@ -289,12 +289,28 @@ app.use('/webhooks', require('./routes/webhook.routes'));
 // PWA FALLBACK FOR CLIENT ROUTING
 // ==========================================
 
-// Serve React app for all other routes (client-side routing)
+// Serve frontend static files in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
+  // Serve static files from frontend build
+  app.use(express.static(path.join(__dirname, '../../frontend/dist'), {
+    maxAge: '1y',
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
+    }
+  }));
   
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  // Handle React router - serve index.html for all non-API routes
+  app.get('*', (req, res, next) => {
+    // Skip API routes
+    if (req.path.startsWith('/api/') || req.path.startsWith('/webhooks/')) {
+      return next();
+    }
+    
+    res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
   });
 }
 
