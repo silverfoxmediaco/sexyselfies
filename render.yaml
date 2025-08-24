@@ -1,7 +1,7 @@
 services:
-  # Backend API Service
+  # Monorepo - Backend serving both API and Frontend
   - type: web
-    name: sexyselfies-backend
+    name: sexyselfies-app
     env: node
     plan: starter
     buildCommand: cd backend && npm install
@@ -11,23 +11,4 @@ services:
         value: production
       - key: PORT
         value: 10000
-    healthCheckPath: /api/health
-    
-  # Frontend Static Site  
-  - type: web
-    name: sexyselfies-frontend
-    env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: ./frontend/dist
-    pullRequestPreviewsEnabled: false
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
-      - path: /*  
-        name: X-Content-Type-Options
-        value: nosniff
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    healthCheckPath: /health
