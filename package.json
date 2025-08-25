@@ -1,7 +1,7 @@
 {
   "name": "sexyselfies-monorepo",
   "version": "1.0.0",
-  "description": "SexySelfies PWA Platform",
+  "description": "SexySelfies PWA Platform - Monorepo",
   "main": "backend/src/server.js",
   "scripts": {
     "start": "node backend/src/server.js",
