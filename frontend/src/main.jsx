@@ -1,9 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import './index.css';
 
 console.log('🚀 SexySelfies App Starting...');
+
+// Handle redirects from 404.html
+function RedirectHandler() {
+  const navigate = useNavigate();
+  
+  React.useEffect(() => {
+    const redirectPath = sessionStorage.getItem('redirectPath');
+    if (redirectPath && redirectPath !== '/') {
+      sessionStorage.removeItem('redirectPath');
+      navigate(redirectPath, { replace: true });
+    }
+  }, [navigate]);
+  
+  return null;
+}
 
 // Import Layout
 import AppLayout from './components/AppLayout';
@@ -93,6 +108,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
       <AppLayout>
+        <RedirectHandler />
         <Routes>
           {/* Landing Pages */}
           <Route path="/" element={<LandingPageV2 />} />
