@@ -1,21 +1,10 @@
 import * as React from "react";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Snackbar,
-  Alert,
-  Chip,
-} from "@mui/material";
-import LinearProgress from "@mui/material/LinearProgress";
-import PeopleIcon from "@mui/icons-material/People";
-import ScheduleIcon from "@mui/icons-material/Schedule";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
-import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import Button from "../components/UI/Button";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "../components/UI/Dialog";
+import { Snackbar, Alert } from "../components/UI/Snackbar";
+import Chip from "../components/UI/Chip";
+import LinearProgress from "../components/UI/LinearProgress";
+import { PeopleIcon, ScheduleIcon, TrendingUpIcon, RocketLaunchIcon } from "../components/UI/Icons";
 
 import SexySafeControl from "../components/SexySafeControl.jsx";
 import SwipeChatUnlock from "../components/SwipeChatUnlock.jsx";
@@ -27,15 +16,6 @@ import FAQ from "../components/FAQ.jsx";
 
 import "./LandingPage.css";
 
-const theme = createTheme({
-  palette: { mode: "dark" },
-  shape: { borderRadius: 16 },
-  typography: {
-    fontFamily:
-      '"Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif',
-    button: { textTransform: "none", fontWeight: 600 },
-  },
-});
 
 export default function LandingPage({ logoSrc, onJoinWaitlist }) {
   const [spotsLeft, setSpotsLeft] = React.useState(1200);
@@ -91,14 +71,12 @@ export default function LandingPage({ logoSrc, onJoinWaitlist }) {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
       <div className="page hero-gradient-bg">
         <div className="container">
           <div className="glass-bar">
             <div className="bar-left">
-              <Chip className="chip-soft" icon={<PeopleIcon />} label={`${liveOnline.toLocaleString()} browsing now`} size="small" />
-              <Chip className="chip-soft" icon={<TrendingUpIcon />} label={`${progress}% spots claimed`} size="small" />
+              <Chip className="chip-soft" size="small"><PeopleIcon /> {liveOnline.toLocaleString()} browsing now</Chip>
+              <Chip className="chip-soft" size="small"><TrendingUpIcon /> {progress}% spots claimed</Chip>
             </div>
             <div className="bar-right">
               <ScheduleIcon fontSize="small" />
@@ -149,7 +127,7 @@ export default function LandingPage({ logoSrc, onJoinWaitlist }) {
             <Button
               fullWidth
               size="large"
-              variant="contained"
+              variant="primary"
               className="btn-primary-cta"
               onClick={() => setModalOpen(true)}
               startIcon={<RocketLaunchIcon />}
@@ -174,7 +152,7 @@ export default function LandingPage({ logoSrc, onJoinWaitlist }) {
           </DialogContent>
           <DialogActions className="dialog-actions">
             <Button onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button variant="contained" className="btn-primary-cta" onClick={handleJoin}>
+            <Button variant="primary" className="btn-primary-cta" onClick={handleJoin}>
               Get Early Access
             </Button>
           </DialogActions>
@@ -191,7 +169,6 @@ export default function LandingPage({ logoSrc, onJoinWaitlist }) {
           </Alert>
         </Snackbar>
       </div>
-    </ThemeProvider>
   );
 }
 

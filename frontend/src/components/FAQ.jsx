@@ -2,11 +2,11 @@ import * as React from "react";
 import {
   Accordion,
   AccordionSummary,
-  AccordionDetails,
-  Typography,
-  Button,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+  AccordionDetails
+} from "./UI/Accordion";
+import Typography from "./UI/Typography";
+import Button from "./UI/Button";
+import { ExpandMoreIcon } from "./UI/Icons";
 import "./FAQ.css";
 
 export default function FAQ({

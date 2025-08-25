@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Button, Card, CardContent } from "@mui/material";
-import ShieldIcon from "@mui/icons-material/Shield";
+import Button from "./UI/Button";
+import { Card, CardContent } from "./UI/Card";
+import { ShieldIcon } from "./UI/Icons";
 import "./SafetyAndStandards.css";
 
 export default function SafetyAndStandards({
@@ -59,7 +60,7 @@ export default function SafetyAndStandards({
           <div className="sas-cta">
             <CTA />
             {secondaryText && (
-              <Button variant="contained" className="btn-primary-cta" onClick={onSecondary}>
+              <Button variant="primary" className="btn-primary-cta" onClick={onSecondary}>
                 {secondaryText}
               </Button>
             )}

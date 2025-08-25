@@ -3,14 +3,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  plugins: [
-    react({
-      jsxImportSource: "@emotion/react",
-      babel: {
-        plugins: ["@emotion/babel-plugin"],
-      },
-    })
-  ],
+  plugins: [react()],
   base: '/',
   build: {
     outDir: 'dist',
@@ -20,9 +13,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          mui: ['@mui/material', '@mui/icons-material'],
-          emotion: ['@emotion/react', '@emotion/styled']
+          vendor: ['react', 'react-dom', 'react-router-dom']
         }
       }
     }

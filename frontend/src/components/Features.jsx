@@ -1,11 +1,14 @@
 import * as React from "react";
-import { Button, Card, CardContent } from "@mui/material";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import LockIcon from "@mui/icons-material/Lock";
-import BoltIcon from "@mui/icons-material/Bolt";
-import ShieldIcon from "@mui/icons-material/Shield";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import Button from "./UI/Button";
+import { Card, CardContent } from "./UI/Card";
+import { 
+  FavoriteIcon, 
+  LockIcon, 
+  BoltIcon, 
+  ShieldIcon, 
+  VerifiedIcon, 
+  TrendingUpIcon 
+} from "./UI/Icons";
 import "./Features.css";
 
 export default function Features({
@@ -47,7 +50,7 @@ export default function Features({
         {(ctaText || secondaryText) && (
           <div className="ftr-cta">
             {ctaText && (
-              <Button size="large" variant="contained" className="btn-primary-cta" onClick={onCTAClick}>
+              <Button size="large" variant="primary" className="btn-primary-cta" onClick={onCTAClick}>
                 {ctaText}
               </Button>
             )}

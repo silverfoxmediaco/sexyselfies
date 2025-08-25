@@ -1,8 +1,7 @@
 import * as React from "react";
-import { Button, Card, CardContent } from "@mui/material";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import ScheduleIcon from "@mui/icons-material/Schedule";
-import PeopleIcon from "@mui/icons-material/People";
+import Button from "./UI/Button";
+import { Card, CardContent } from "./UI/Card";
+import { TrendingUpIcon, ScheduleIcon, PeopleIcon } from "./UI/Icons";
 import "./CreatorsKeepControl.css";
 
 export default function CreatorsKeepControl({
@@ -44,7 +43,7 @@ export default function CreatorsKeepControl({
         {(primaryText || secondaryText) && (
           <div className="ckc-cta">
             {primaryText && (
-              <Button size="large" variant="contained" className="btn-primary-cta" onClick={onPrimary}>
+              <Button size="large" variant="primary" className="btn-primary-cta" onClick={onPrimary}>
                 {primaryText}
               </Button>
             )}

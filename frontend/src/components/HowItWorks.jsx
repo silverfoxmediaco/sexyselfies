@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Button, Card, CardContent } from "@mui/material";
+import Button from "./UI/Button";
+import { Card, CardContent } from "./UI/Card";
 import "./HowItWorks.css";
 
 export default function HowItWorks({
@@ -38,7 +39,7 @@ export default function HowItWorks({
         {(primaryText || secondaryText) && (
           <div className="hiw-cta">
             {primaryText && (
-              <Button size="large" variant="contained" className="btn-primary-cta" onClick={onPrimary}>
+              <Button size="large" variant="primary" className="btn-primary-cta" onClick={onPrimary}>
                 {primaryText}
               </Button>
             )}

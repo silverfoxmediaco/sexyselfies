@@ -1,9 +1,7 @@
 import * as React from "react";
-import { Button, Card, CardContent } from "@mui/material";
-import SwipeRightAltIcon from "@mui/icons-material/SwipeRightAlt";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import BoltIcon from "@mui/icons-material/Bolt";
-import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import Button from "./UI/Button";
+import { Card, CardContent } from "./UI/Card";
+import { SwipeRightAltIcon, ChatBubbleOutlineIcon, BoltIcon, RocketLaunchIcon } from "./UI/Icons";
 import "./SwipeChatUnlock.css";
 
 export default function SwipeChatUnlock({
@@ -58,7 +56,7 @@ export default function SwipeChatUnlock({
         <div className="scu-cta">
           <Button
             size="large"
-            variant="contained"
+            variant="primary"
             className="btn-primary-cta"
             onClick={onPrimary}
             startIcon={<RocketLaunchIcon />}

@@ -1,9 +1,8 @@
 import * as React from "react";
-import { Button, Chip, Typography } from "@mui/material";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import ShieldIcon from "@mui/icons-material/Shield";
-import BoltIcon from "@mui/icons-material/Bolt";
-import LockIcon from "@mui/icons-material/Lock";
+import Button from "./UI/Button";
+import Chip from "./UI/Chip";
+import Typography from "./UI/Typography";
+import { VerifiedIcon, ShieldIcon, BoltIcon, LockIcon } from "./UI/Icons";
 import "./SexySafeControl.css";
 
 export default function SexySafeControl({
@@ -30,7 +29,7 @@ export default function SexySafeControl({
         <Typography variant="h2" className="ssc-headline">{headline}</Typography>
         <Typography className="ssc-subhead">{subhead}</Typography>
         <div className="ssc-cta">
-          <Button size="large" variant="contained" className="btn-primary-cta" onClick={onPrimary}>
+          <Button size="large" variant="primary" className="btn-primary-cta" onClick={onPrimary}>
             {primaryText}
           </Button>
           <Button size="large" variant="outlined" className="btn-outline" onClick={onSecondary}>
