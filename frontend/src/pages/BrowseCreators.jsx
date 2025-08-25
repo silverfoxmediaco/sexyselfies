@@ -4,6 +4,7 @@ import { Heart, X, Star, RotateCcw, Info, Filter, Loader } from 'lucide-react';
 import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
 import memberService from '../services/member.service.js';
+import api from '../services/api.config.js'; // FIX: Add this import
 import './BrowseCreators.css';
 
 const BrowseCreators = () => {
@@ -72,11 +73,41 @@ const BrowseCreators = () => {
     
     try {
       const response = await memberService.getSwipeStack();
+      console.log('API Response:', response); // Debug log
 
-      if (response.success) {
-        setCreators(response.data || response.creators || []);
+      if (response && (response.success || response.data || response.creators)) {
+        const creatorsData = response.data || response.creators || [];
+        
+        // Transform creator data to match expected structure
+        const transformedCreators = creatorsData.map(creator => ({
+          id: creator._id || creator.id,
+          _id: creator._id || creator.id,
+          profileImage: creator.profileImage || creator.profilePhoto || '/placeholders/beaufitulbrunette1.png',
+          displayName: creator.displayName || creator.name || 'Unknown',
+          age: creator.age || 25,
+          verified: creator.isVerified || false,
+          isOnline: creator.isOnline || false,
+          gender: creator.gender || 'female',
+          bodyType: creator.bodyType || 'Average',
+          ethnicity: creator.ethnicity || 'Not specified',
+          hairColor: creator.hairColor || 'Brown',
+          height: creator.height || 65,
+          bio: creator.bio || '',
+          location: creator.location || { city: 'Unknown', state: '', distance: 0 },
+          lastActive: creator.lastActive || new Date(),
+          createdAt: creator.createdAt || new Date(),
+          // Additional fields for connections
+          hasMessaged: creator.hasMessaged || false,
+          hasPoked: creator.hasPoked || false,
+          isTopCreator: creator.isTopCreator || false,
+          monthlyEarnings: creator.monthlyEarnings || 0,
+          messagePreview: creator.messagePreview || null
+        }));
+        
+        setCreators(transformedCreators);
+        setFilteredCreators(transformedCreators);
       } else {
-        throw new Error(response.message || 'Failed to load creators');
+        throw new Error(response?.message || 'No creators found');
       }
     } catch (error) {
       console.error('Error loading creators:', error);
@@ -86,7 +117,8 @@ const BrowseCreators = () => {
       const mockCreators = [
         {
           id: '1',
-          profilePhoto: '/placeholders/beaufitulbrunette1.png',
+          _id: '1',
+          profileImage: '/placeholders/beaufitulbrunette1.png',
           displayName: 'Sophia',
           age: 24,
           verified: true,
@@ -95,16 +127,18 @@ const BrowseCreators = () => {
           bodyType: 'Athletic',
           ethnicity: 'Caucasian',
           hairColor: 'Brown',
-          height: 66, // 5'6"
+          height: 66,
+          bio: 'Living life to the fullest! 💕',
           location: { city: 'Los Angeles', state: 'CA', distance: 15 },
           hasMessaged: true,
           messagePreview: "Hey! I noticed you liked my content...",
           lastActive: new Date(),
-          createdAt: new Date(Date.now() - 86400000 * 10) // 10 days ago
+          createdAt: new Date(Date.now() - 86400000 * 10)
         },
         {
           id: '2',
-          profilePhoto: '/placeholders/beautifulbrunette2.png',
+          _id: '2',
+          profileImage: '/placeholders/beautifulbrunette2.png',
           displayName: 'Isabella',
           age: 22,
           verified: true,
@@ -113,15 +147,17 @@ const BrowseCreators = () => {
           bodyType: 'Slim',
           ethnicity: 'Hispanic/Latino',
           hairColor: 'Black',
-          height: 64, // 5'4"
+          height: 64,
+          bio: 'Dance is my passion 💃',
           location: { city: 'Miami', state: 'FL', distance: 23 },
           lastActive: new Date(Date.now() - 3600000),
           hasPoked: true,
-          createdAt: new Date(Date.now() - 86400000 * 5) // 5 days ago
+          createdAt: new Date(Date.now() - 86400000 * 5)
         },
         {
           id: '3',
-          profilePhoto: '/placeholders/beautifulbrunette4.png',
+          _id: '3',
+          profileImage: '/placeholders/beautifulbrunette4.png',
           displayName: 'Emma',
           age: 26,
           verified: true,
@@ -130,66 +166,18 @@ const BrowseCreators = () => {
           bodyType: 'Curvy',
           ethnicity: 'Caucasian',
           hairColor: 'Blonde',
-          height: 68, // 5'8"
+          height: 68,
+          bio: 'Top creator | Exclusive content daily',
           location: { city: 'New York', state: 'NY', distance: 8 },
           isTopCreator: true,
           monthlyEarnings: 15000,
           lastActive: new Date(),
-          createdAt: new Date(Date.now() - 86400000 * 45) // 45 days ago
-        },
-        {
-          id: '4',
-          profilePhoto: '/placeholders/cuteblondeselfie1.png',
-          displayName: 'Ashley',
-          age: 23,
-          verified: false,
-          isOnline: true,
-          gender: 'female',
-          bodyType: 'Average',
-          ethnicity: 'Asian',
-          hairColor: 'Blonde',
-          height: 62, // 5'2"
-          location: { city: 'San Francisco', state: 'CA', distance: 45 },
-          lastActive: new Date(),
-          createdAt: new Date(Date.now() - 86400000 * 15) // 15 days ago
-        },
-        {
-          id: '5',
-          profilePhoto: '/placeholders/beaufitulbrunette1.png',
-          displayName: 'Mia',
-          age: 25,
-          verified: true,
-          isOnline: false,
-          gender: 'female',
-          bodyType: 'Plus Size',
-          ethnicity: 'Black',
-          hairColor: 'Black',
-          height: 65, // 5'5"
-          location: { city: 'Chicago', state: 'IL', distance: 12 },
-          lastActive: new Date(Date.now() - 7200000),
-          hasMessaged: true,
-          messagePreview: "I have exclusive content just for you!",
-          createdAt: new Date(Date.now() - 86400000 * 3) // 3 days ago
-        },
-        {
-          id: '6',
-          profilePhoto: '/placeholders/beautifulbrunette2.png',
-          displayName: 'Olivia',
-          age: 21,
-          verified: false,
-          isOnline: true,
-          gender: 'female',
-          bodyType: 'Slender',
-          ethnicity: 'Mixed',
-          hairColor: 'Brown',
-          height: 67, // 5'7"
-          location: { city: 'Austin', state: 'TX', distance: 78 },
-          lastActive: new Date(),
-          createdAt: new Date(Date.now() - 86400000 * 1) // 1 day ago
+          createdAt: new Date(Date.now() - 86400000 * 45)
         }
       ];
       
       setCreators(mockCreators);
+      setFilteredCreators(mockCreators);
     } finally {
       setIsLoading(false);
     }
@@ -198,42 +186,46 @@ const BrowseCreators = () => {
   // Load existing connections and messages
   const loadExistingConnections = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await api.get('/members/connections');
+      const response = await api.get('/connections'); // Fixed endpoint
 
-      if (response.data.success) {
-        const { messages, connections } = response.data;
-        setExistingMessages(messages);
+      if (response.success) {
+        // Process connections into lookup objects
+        const connections = {};
+        const messages = {};
+        
+        response.data?.forEach(conn => {
+          const creatorId = conn.creator?._id || conn.creator;
+          connections[creatorId] = {
+            hasPoked: conn.creatorLiked || false,
+            hasLiked: conn.memberLiked || false,
+            isConnected: conn.isConnected || false
+          };
+          
+          if (conn.lastMessagePreview) {
+            messages[creatorId] = {
+              hasMessage: true,
+              messageCount: conn.messageCount || 0,
+              lastMessage: conn.lastMessagePreview.content
+            };
+          }
+        });
+        
         setExistingConnections(connections);
+        setExistingMessages(messages);
       }
     } catch (error) {
       console.error('Error loading connections:', error);
-      
-      // Fallback mock data
-      const mockExistingMessages = {
-        '1': { 
-          hasMessage: true, 
-          messageCount: 3,
-          lastMessage: "Hey! I noticed you liked my content..."
-        },
-        '5': { 
-          hasMessage: true, 
-          messageCount: 1,
-          lastMessage: "I have exclusive content just for you!"
-        }
-      };
-      
-      const mockExistingConnections = {
-        '2': { hasPoked: true, pokedAt: Date.now() - 7200000 }
-      };
-      
-      setExistingMessages(mockExistingMessages);
-      setExistingConnections(mockExistingConnections);
+      // Don't fail silently, just continue without connection data
     }
   };
 
   // Apply filters to creators
   const applyFiltersToCreators = () => {
+    if (!creators || creators.length === 0) {
+      setFilteredCreators([]);
+      return;
+    }
+
     if (!activeFilters || Object.keys(activeFilters).length === 0) {
       setFilteredCreators(creators);
       return;
@@ -308,78 +300,16 @@ const BrowseCreators = () => {
     setFilteredCreators(filtered);
     
     // Reset current index if it's out of bounds
-    if (currentIndex >= filtered.length) {
+    if (currentIndex >= filtered.length && filtered.length > 0) {
       setCurrentIndex(0);
       setKey(prev => prev + 1);
     }
   };
 
-  // Check for existing connections when swiping
-  const checkForConnection = (direction, creator) => {
-    // Check if this is a mutual connection
-    if (direction === 'right' || direction === 'super') {
-      // Check if creator already messaged the member
-      if (creator.hasMessaged || existingMessages?.[creator._id]) {
-        return {
-          type: 'mutual_interest',
-          data: {
-            creatorName: creator.displayName,
-            profilePhoto: creator.profilePhoto,
-            message: creator.messagePreview || existingMessages?.[creator._id]?.lastMessage
-          }
-        };
-      }
-      
-      // Check if creator already poked
-      if (creator.hasPoked || existingConnections?.[creator._id]?.hasPoked) {
-        return {
-          type: 'creator_poke',
-          data: {
-            creatorName: creator.displayName,
-            profilePhoto: creator.profilePhoto
-          }
-        };
-      }
-      
-      // Check if this is a top creator
-      if (creator.isTopCreator) {
-        return {
-          type: 'high_value_connection',
-          data: {
-            creatorName: creator.displayName,
-            profilePhoto: creator.profilePhoto,
-            earnings: creator.monthlyEarnings
-          }
-        };
-      }
-      
-      // Check if this is first connection
-      if (swipeHistory.filter(h => h.action === 'right' || h.action === 'super').length === 0) {
-        return {
-          type: 'first_connection',
-          data: {
-            creatorName: creator.displayName,
-            profilePhoto: creator.profilePhoto
-          }
-        };
-      }
-      
-      // Regular connection
-      return {
-        type: 'instant_connection',
-        data: {
-          creatorName: creator.displayName,
-          profilePhoto: creator.profilePhoto
-        }
-      };
-    }
-    
-    return null;
-  };
-
   // Handle swipe from SwipeCard
   const handleSwipe = async (direction, creatorId) => {
     const creator = filteredCreators[currentIndex];
+    if (!creator) return;
     
     try {
       // Make API call to process swipe
@@ -387,14 +317,15 @@ const BrowseCreators = () => {
       const response = await memberService.swipeAction(creator._id || creator.id, swipeAction);
       
       // Check for connection in response
-      if (response.connection) {
+      if (response && response.isConnected) {
         // Show connection modal
-        setConnectionType(response.connection.type || 'connection');
-        setConnectionData(response.connection);
+        setConnectionType('instant_connection');
+        setConnectionData({
+          creatorName: creator.displayName,
+          profileImage: creator.profileImage,
+          creatorId: creator._id
+        });
         setShowConnectionModal(true);
-        
-        // Log the connection
-        console.log('Connection made:', response.connection);
       }
     } catch (error) {
       console.error('Error processing swipe:', error);
@@ -415,7 +346,8 @@ const BrowseCreators = () => {
 
   // Handle button clicks
   const handleButtonSwipe = (direction) => {
-    handleSwipe(direction, filteredCreators[currentIndex]?._id);
+    if (!filteredCreators[currentIndex]) return;
+    handleSwipe(direction, filteredCreators[currentIndex]._id);
   };
 
   const handleRewind = () => {
@@ -433,7 +365,6 @@ const BrowseCreators = () => {
   };
 
   const currentCreator = filteredCreators?.[currentIndex];
-
 
   // Add visual indicators for creators who have already shown interest
   const getCardIndicators = (creator) => {
@@ -479,15 +410,15 @@ const BrowseCreators = () => {
     );
   }
 
-  // Error state
-  if (loadingError) {
+  // Error state with fallback to mock data
+  if (loadingError && (!creators || creators.length === 0)) {
     return (
       <div className="browse-creators-page">
         <div className="browse-creators-error">
           <X size={60} />
           <h2>Something went wrong</h2>
           <p>{loadingError}</p>
-          <button onClick={loadCreators}>
+          <button onClick={loadCreators} className="browse-retry-btn">
             Try Again
           </button>
         </div>
@@ -503,6 +434,9 @@ const BrowseCreators = () => {
           <Filter size={60} />
           <h2>No creators match your preferences</h2>
           <p>Try adjusting your browse settings to see more profiles</p>
+          <button onClick={() => setActiveFilters({})} className="browse-reset-filters-btn">
+            Reset Filters
+          </button>
         </div>
       </div>
     );
@@ -516,7 +450,7 @@ const BrowseCreators = () => {
           <Star size={60} />
           <h2>No more profiles</h2>
           <p>Check back later for new creators</p>
-          <button onClick={() => window.location.reload()}>
+          <button onClick={() => window.location.reload()} className="browse-refresh-btn">
             Refresh
           </button>
         </div>
@@ -530,7 +464,7 @@ const BrowseCreators = () => {
       <div className="browse-creators-card-stack">
         {filteredCreators.slice(currentIndex, currentIndex + 3).map((creator, index) => (
           <div
-            key={`${creator._id}-${key}`}
+            key={`${creator._id}-${key}-${index}`}
             className="browse-creators-card-wrapper"
             style={{
               position: 'absolute',
@@ -588,7 +522,7 @@ const BrowseCreators = () => {
         
         <button 
           className="browse-creators-action-btn browse-creators-super"
-          onClick={() => handleButtonSwipe('super')}
+          onClick={() => handleButtonSwipe('up')}
           aria-label="Super Like"
         >
           <Star size={26} />
@@ -612,13 +546,15 @@ const BrowseCreators = () => {
       </div>
 
       {/* Connection Modal */}
-      <ConnectionModal
-        isOpen={showConnectionModal}
-        onClose={() => setShowConnectionModal(false)}
-        connectionType={connectionType}
-        connectionData={connectionData}
-        userRole="member"
-      />
+      {showConnectionModal && (
+        <ConnectionModal
+          isOpen={showConnectionModal}
+          onClose={() => setShowConnectionModal(false)}
+          connectionType={connectionType}
+          connectionData={connectionData}
+          userRole="member"
+        />
+      )}
     </div>
   );
 };

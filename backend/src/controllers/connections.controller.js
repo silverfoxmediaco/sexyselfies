@@ -13,7 +13,17 @@ const Message = require('../models/Message');
 // @access  Private
 exports.getSwipeStack = async (req, res, next) => {
   try {
+    console.log('GetSwipeStack called by user:', req.user.id);
+    
+    // Get member document
     const member = await Member.findOne({ user: req.user.id });
+    
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        error: 'Member profile not found'
+      });
+    }
 
     // Get IDs of creators already interacted with
     const existingConnections = await Connection.find({ 
@@ -21,31 +31,128 @@ exports.getSwipeStack = async (req, res, next) => {
     }).select('creator');
     
     const excludedIds = existingConnections.map(c => c.creator);
+    console.log('Excluding creators:', excludedIds.length);
 
     // Build query for available creators
     const query = {
       _id: { $nin: excludedIds },
-      isPaused: { $ne: true }
+      // Check for both undefined and false for isPaused
+      $or: [
+        { isPaused: false },
+        { isPaused: { $exists: false } }
+      ],
+      // Check for verified status
+      isVerified: true
     };
 
-    // Remove location-based filtering as per user request
-    // Users don't care where creators are located
+    console.log('Query:', JSON.stringify(query, null, 2));
+
+    // First check how many creators exist
+    const totalCreators = await Creator.countDocuments({});
+    console.log('Total creators in database:', totalCreators);
+
+    // Check how many are verified
+    const verifiedCreators = await Creator.countDocuments({ isVerified: true });
+    console.log('Verified creators:', verifiedCreators);
 
     // Get creators matching preferences
     const creators = await Creator.find(query)
-      .populate('user', 'lastLogin')
+      .populate('user', 'email lastLogin')
       .limit(10)
-      .sort({ lastActive: -1 });
+      .sort({ lastActive: -1, createdAt: -1 })
+      .lean();
+
+    console.log('Found creators:', creators.length);
+
+    // Transform creators to match frontend expectations
+    const transformedCreators = creators.map(creator => {
+      // Handle location data
+      let location = { city: 'Unknown', state: '', distance: 0 };
+      if (creator.location) {
+        location = {
+          city: creator.location.city || 'Unknown',
+          state: creator.location.state || '',
+          distance: 0 // Calculate if needed
+        };
+      }
+
+      return {
+        _id: creator._id,
+        id: creator._id.toString(),
+        displayName: creator.displayName || 'Unknown',
+        profileImage: creator.profileImage || '/placeholders/beaufitulbrunette1.png',
+        bio: creator.bio || '',
+        isVerified: creator.isVerified || false,
+        isOnline: isUserOnline(creator.lastActive),
+        lastActive: creator.lastActive || creator.createdAt,
+        location: location,
+        contentPrice: creator.contentPrice || 2.99,
+        stats: creator.stats || {},
+        createdAt: creator.createdAt,
+        // Additional fields for UI
+        age: calculateAge(creator.birthDate) || 25,
+        gender: creator.gender || 'female',
+        verified: creator.isVerified || false
+      };
+    });
+
+    // If no creators found, return demo data for testing
+    if (transformedCreators.length === 0 && process.env.NODE_ENV === 'development') {
+      console.log('No creators found, returning demo data');
+      const demoCreators = [
+        {
+          _id: '507f1f77bcf86cd799439011',
+          id: '507f1f77bcf86cd799439011',
+          displayName: 'Demo Creator 1',
+          profileImage: '/placeholders/beaufitulbrunette1.png',
+          bio: 'This is a demo creator for testing',
+          isVerified: true,
+          isOnline: true,
+          lastActive: new Date(),
+          location: { city: 'Los Angeles', state: 'CA', distance: 10 },
+          contentPrice: 2.99,
+          age: 24,
+          gender: 'female',
+          verified: true,
+          createdAt: new Date()
+        },
+        {
+          _id: '507f1f77bcf86cd799439012',
+          id: '507f1f77bcf86cd799439012',
+          displayName: 'Demo Creator 2',
+          profileImage: '/placeholders/beautifulbrunette2.png',
+          bio: 'Another demo creator',
+          isVerified: true,
+          isOnline: false,
+          lastActive: new Date(Date.now() - 3600000),
+          location: { city: 'New York', state: 'NY', distance: 25 },
+          contentPrice: 3.99,
+          age: 26,
+          gender: 'female',
+          verified: true,
+          createdAt: new Date()
+        }
+      ];
+      
+      return res.status(200).json({
+        success: true,
+        count: demoCreators.length,
+        data: demoCreators,
+        isDemoData: true
+      });
+    }
 
     res.status(200).json({
       success: true,
-      count: creators.length,
-      data: creators
+      count: transformedCreators.length,
+      data: transformedCreators
     });
   } catch (error) {
+    console.error('GetSwipeStack error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };
@@ -65,6 +172,13 @@ exports.swipeAction = async (req, res, next) => {
     if (userRole === 'member') {
       const member = await Member.findOne({ user: userId });
       const creator = await Creator.findById(creatorId);
+
+      if (!creator) {
+        return res.status(404).json({
+          success: false,
+          error: 'Creator not found'
+        });
+      }
 
       // Check if connection exists
       connection = await Connection.findOne({
@@ -120,6 +234,7 @@ exports.swipeAction = async (req, res, next) => {
       data: connection
     });
   } catch (error) {
+    console.error('SwipeAction error:', error);
     res.status(500).json({
       success: false,
       error: error.message
@@ -144,9 +259,21 @@ exports.getConnections = async (req, res, next) => {
     // Build query based on user role
     if (userRole === 'member') {
       const member = await Member.findOne({ user: req.user.id });
+      if (!member) {
+        return res.status(404).json({
+          success: false,
+          error: 'Member profile not found'
+        });
+      }
       query.member = member._id;
     } else if (userRole === 'creator') {
       const creator = await Creator.findOne({ user: req.user.id });
+      if (!creator) {
+        return res.status(404).json({
+          success: false,
+          error: 'Creator profile not found'
+        });
+      }
       query.creator = creator._id;
     }
 
@@ -217,6 +344,7 @@ exports.getConnections = async (req, res, next) => {
       data: formattedConnections
     });
   } catch (error) {
+    console.error('GetConnections error:', error);
     res.status(500).json({
       success: false,
       error: error.message
@@ -746,6 +874,26 @@ function formatTime(date) {
   if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
   
   return messageDate.toLocaleDateString();
+}
+
+// Helper function to determine if user is online
+function isUserOnline(lastActive) {
+  if (!lastActive) return false;
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+  return new Date(lastActive) > fiveMinutesAgo;
+}
+
+// Helper function to calculate age from birthDate
+function calculateAge(birthDate) {
+  if (!birthDate) return null;
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
 }
 
 module.exports = exports;

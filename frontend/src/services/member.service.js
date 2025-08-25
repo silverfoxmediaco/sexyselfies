@@ -93,7 +93,15 @@ class MemberService {
       });
       return response;
     } catch (error) {
-      throw this.handleError(error);
+      // If the first endpoint fails, try the alternative
+      try {
+        const fallbackResponse = await api.get('/api/member/discover', {
+          params
+        });
+        return fallbackResponse;
+      } catch (fallbackError) {
+        throw this.handleError(error);
+      }
     }
   }
 
