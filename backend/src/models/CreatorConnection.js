@@ -420,4 +420,4 @@ creatorConnectionSchema.statics.findAtRiskConnections = function(creatorId) {
     .populate('member', 'username profileImage lastActive');
 };
 
-module.exports = mongoose.model('CreatorConnection', creatorConnectionSchema);
+module.exports = mongoose.model('CreatorConnection', creatorConnectionSchema, 'creatormatches');
