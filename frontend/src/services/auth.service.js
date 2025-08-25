@@ -14,7 +14,7 @@ class AuthService {
    */
   async memberRegister(data) {
     try {
-      const response = await api.post('/api/auth/member/register', {
+      const response = await api.post('/auth/member/register', {
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
@@ -52,7 +52,7 @@ class AuthService {
    */
   async memberLogin(email, password, rememberMe = false) {
     try {
-      const response = await api.post('/api/auth/member/login', {
+      const response = await api.post('/auth/member/login', {
         email,
         password,
         rememberMe,
@@ -101,7 +101,7 @@ class AuthService {
    */
   async creatorRegister(data) {
     try {
-      const response = await api.post('/api/auth/creator/register', {
+      const response = await api.post('/auth/creator/register', {
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
@@ -143,7 +143,7 @@ class AuthService {
    */
   async creatorLogin(email, password, rememberMe = false) {
     try {
-      const response = await api.post('/api/auth/creator/login', {
+      const response = await api.post('/auth/creator/login', {
         email,
         password,
         rememberMe,
@@ -193,7 +193,7 @@ class AuthService {
    */
   async adminLogin(email, password, twoFactorCode = null) {
     try {
-      const response = await api.post('/api/auth/admin/login', {
+      const response = await api.post('/auth/admin/login', {
         email,
         password,
         twoFactorCode,
@@ -242,7 +242,7 @@ class AuthService {
       
       // Call logout endpoint
       if (token) {
-        await api.post('/api/auth/logout', {}, {
+        await api.post('/auth/logout', {}, {
           queueIfOffline: false // Don't queue logout requests
         });
       }
@@ -301,8 +301,8 @@ class AuthService {
       }
 
       const endpoint = userRole === 'admin' 
-        ? '/api/auth/admin/me'
-        : `/api/auth/${userRole}/me`;
+        ? '/auth/admin/me'
+        : `/auth/${userRole}/me`;
 
       const response = await api.get(endpoint);
       
@@ -331,7 +331,7 @@ class AuthService {
         throw new Error('No refresh token available');
       }
 
-      const response = await api.post('/api/auth/refresh', {
+      const response = await api.post('/auth/refresh', {
         refreshToken
       });
 
@@ -366,7 +366,7 @@ class AuthService {
    */
   async requestPasswordReset(email, userType = 'member') {
     try {
-      const response = await api.post('/api/auth/password/reset-request', {
+      const response = await api.post('/auth/password/reset-request', {
         email,
         userType
       });
@@ -381,7 +381,7 @@ class AuthService {
    */
   async resetPassword(token, newPassword, confirmPassword) {
     try {
-      const response = await api.post('/api/auth/password/reset', {
+      const response = await api.post('/auth/password/reset', {
         token,
         newPassword,
         confirmPassword
@@ -397,7 +397,7 @@ class AuthService {
    */
   async changePassword(currentPassword, newPassword, confirmPassword) {
     try {
-      const response = await api.post('/api/auth/password/change', {
+      const response = await api.post('/auth/password/change', {
         currentPassword,
         newPassword,
         confirmPassword
@@ -413,7 +413,7 @@ class AuthService {
    */
   async verifyEmail(token) {
     try {
-      const response = await api.post('/api/auth/email/verify', {
+      const response = await api.post('/auth/email/verify', {
         token
       });
       return response;
@@ -427,7 +427,7 @@ class AuthService {
    */
   async resendVerificationEmail() {
     try {
-      const response = await api.post('/api/auth/email/resend-verification');
+      const response = await api.post('/auth/email/resend-verification');
       return response;
     } catch (error) {
       throw this.handleAuthError(error);
@@ -444,7 +444,7 @@ class AuthService {
   async socialAuth(provider, userType = 'member') {
     try {
       // Redirect to social auth endpoint
-      const redirectUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/auth/${userType}/social/${provider}`;
+      const redirectUrl = `${import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onrender.com/api/v1'}/auth/${userType}/social/${provider}`;
       window.location.href = redirectUrl;
     } catch (error) {
       throw this.handleAuthError(error);
@@ -456,7 +456,7 @@ class AuthService {
    */
   async handleSocialCallback(provider, code, userType = 'member') {
     try {
-      const response = await api.post(`/api/auth/${userType}/social/${provider}/callback`, {
+      const response = await api.post(`/auth/${userType}/social/${provider}/callback`, {
         code
       });
 
@@ -501,7 +501,7 @@ class AuthService {
    */
   async enableBiometric() {
     try {
-      const response = await api.post('/api/auth/biometric/enable');
+      const response = await api.post('/auth/biometric/enable');
       
       if (response.data.challenge) {
         // Create credentials for biometric
@@ -510,7 +510,7 @@ class AuthService {
         });
         
         // Send credential to server
-        const verifyResponse = await api.post('/api/auth/biometric/verify', {
+        const verifyResponse = await api.post('/auth/biometric/verify', {
           credentialId: credential.id,
           clientData: credential.response.clientDataJSON,
           attestation: credential.response.attestationObject
@@ -543,7 +543,7 @@ class AuthService {
       
       if (!subscription) {
         // Get public key from server
-        const response = await api.get('/api/auth/push/public-key');
+        const response = await api.get('/auth/push/public-key');
         const publicKey = response.data.publicKey;
         
         // Subscribe to push notifications
@@ -554,7 +554,7 @@ class AuthService {
       }
 
       // Send subscription to server
-      await api.post('/api/auth/push/subscribe', {
+      await api.post('/auth/push/subscribe', {
         subscription: subscription.toJSON(),
         deviceInfo: {
           platform: navigator.platform,
