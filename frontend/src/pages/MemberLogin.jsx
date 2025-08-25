@@ -25,8 +25,8 @@ const MemberLogin = () => {
   const [resetEmail, setResetEmail] = useState('');
   const [resetSent, setResetSent] = useState(false);
 
-  // Get redirect path from state or default to discover
-  const from = location.state?.from?.pathname || '/member/discover';
+  // Get redirect path from state or default to browse-creators
+  const from = location.state?.from?.pathname || '/member/browse-creators';
 
   useEffect(() => {
     // Check if user is already logged in

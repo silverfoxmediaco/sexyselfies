@@ -513,7 +513,7 @@ const MyConnections = () => {
             <p>Start exploring and connect with creators!</p>
             <button 
               className="explore-btn"
-              onClick={() => navigate('/member/discover')}
+              onClick={() => navigate('/member/browse-creators')}
             >
               Explore Creators
             </button>

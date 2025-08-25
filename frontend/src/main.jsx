@@ -266,14 +266,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             
-            {/* DISCOVER ROUTE - Alternative to browse */}
+            {/* DISCOVER ROUTE - Redirect to browse-creators */}
             <Route 
               path="discover" 
-              element={
-                <ProtectedMemberRoute>
-                  <BrowseCreators />
-                </ProtectedMemberRoute>
-              } 
+              element={<Navigate to="/member/browse-creators" replace />}
             />
             
             {/* BROWSE FILTERS ROUTE - Browse preferences/filters */}
