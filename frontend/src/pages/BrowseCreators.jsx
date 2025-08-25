@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Heart, X, Star, RotateCcw, Info, Filter, Loader } from 'lucide-react';
 import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
-import axios from 'axios';
+import api from '../services/api.config.js';
 import './BrowseCreators.css';
 
 const BrowseCreators = () => {
@@ -71,12 +71,7 @@ const BrowseCreators = () => {
     setLoadingError(null);
     
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/v1/connections/stack', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await api.get('/connections/stack');
 
       if (response.data.success) {
         setCreators(response.data.data);
@@ -204,11 +199,7 @@ const BrowseCreators = () => {
   const loadExistingConnections = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/v1/members/connections', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await api.get('/members/connections');
 
       if (response.data.success) {
         const { messages, connections } = response.data;
