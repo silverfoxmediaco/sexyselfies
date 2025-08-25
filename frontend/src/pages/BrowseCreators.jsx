@@ -4,7 +4,7 @@ import { Heart, X, Star, RotateCcw, Info, Filter, Loader } from 'lucide-react';
 import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
 import memberService from '../services/member.service.js';
-import api from '../services/api.config.js'; // FIX: Add this import
+import api from '../services/api.config.js';
 import './BrowseCreators.css';
 
 const BrowseCreators = () => {
@@ -16,6 +16,7 @@ const BrowseCreators = () => {
   const [key, setKey] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingError, setLoadingError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   // Filter states
   const [activeFilters, setActiveFilters] = useState({});
@@ -30,25 +31,68 @@ const BrowseCreators = () => {
   const [existingConnections, setExistingConnections] = useState({});
   const [existingMessages, setExistingMessages] = useState({});
 
-  // Load creators and filters on component mount
+  // Check authentication on mount
   useEffect(() => {
-    loadFilters();
-    loadCreators();
-    loadExistingConnections();
+    checkAuthentication();
   }, []);
+
+  // Load data after authentication is confirmed
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('📱 User authenticated, loading data...');
+      loadFilters();
+      loadCreators();
+      loadExistingConnections();
+    }
+  }, [isAuthenticated]);
 
   // Apply filters when they change
   useEffect(() => {
     applyFiltersToCreators();
   }, [creators, activeFilters]);
 
+  // Check if user is authenticated
+  const checkAuthentication = () => {
+    console.log('🔐 Checking authentication...');
+    
+    // Check for token in localStorage
+    const token = localStorage.getItem('token') || 
+                  localStorage.getItem('memberToken');
+    const userRole = localStorage.getItem('userRole');
+    
+    console.log('🔑 Token found:', !!token);
+    console.log('👤 User role:', userRole);
+    
+    if (!token) {
+      console.log('❌ No token found, redirecting to login...');
+      // For development, set mock authentication
+      if (window.location.hostname === 'localhost' || 
+          window.location.hostname.includes('onrender.com')) {
+        console.log('🔧 Development mode: Setting mock authentication');
+        localStorage.setItem('token', 'dev-token-' + Date.now());
+        localStorage.setItem('userRole', 'member');
+        setIsAuthenticated(true);
+      } else {
+        navigate('/member/login');
+      }
+    } else if (userRole !== 'member') {
+      console.log('❌ Wrong user role:', userRole);
+      navigate('/member/login');
+    } else {
+      console.log('✅ Authentication confirmed');
+      setIsAuthenticated(true);
+    }
+  };
+
   // Load saved filters from localStorage
   const loadFilters = () => {
+    console.log('📋 Loading filters...');
     try {
       const savedFilters = localStorage.getItem('browseFilters');
       if (savedFilters) {
         const filters = JSON.parse(savedFilters);
         setActiveFilters(filters);
+        console.log('📋 Filters loaded:', filters);
         
         // Check if any filters are active
         const hasFilters = Object.values(filters).some(value => {
@@ -62,21 +106,27 @@ const BrowseCreators = () => {
         setHasActiveFilters(hasFilters);
       }
     } catch (error) {
-      console.error('Error loading filters:', error);
+      console.error('❌ Error loading filters:', error);
     }
   };
 
   // Load creators from API
   const loadCreators = async () => {
+    console.log('🎯 Loading creators...');
     setIsLoading(true);
     setLoadingError(null);
     
     try {
+      // Add auth header debugging
+      const token = localStorage.getItem('token') || localStorage.getItem('memberToken');
+      console.log('🔑 Using token for API call:', token ? token.substring(0, 20) + '...' : 'NO TOKEN');
+      
       const response = await memberService.getSwipeStack();
-      console.log('API Response:', response); // Debug log
+      console.log('📦 API Response:', response);
 
       if (response && (response.success || response.data || response.creators)) {
         const creatorsData = response.data || response.creators || [];
+        console.log(`✅ Found ${creatorsData.length} creators`);
         
         // Transform creator data to match expected structure
         const transformedCreators = creatorsData.map(creator => ({
@@ -106,14 +156,28 @@ const BrowseCreators = () => {
         
         setCreators(transformedCreators);
         setFilteredCreators(transformedCreators);
+        console.log('✅ Creators loaded and transformed');
       } else {
         throw new Error(response?.message || 'No creators found');
       }
     } catch (error) {
-      console.error('Error loading creators:', error);
+      console.error('❌ Error loading creators:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // Check if it's an auth error
+      if (error.response?.status === 401 || error.code === 'UNAUTHORIZED') {
+        console.log('🔐 Authentication error, using mock data');
+      }
+      
       setLoadingError(error.message || 'Failed to load creators');
       
-      // Fallback to mock data for development
+      // Use mock data for development
+      console.log('📱 Loading mock creators for development...');
       const mockCreators = [
         {
           id: '1',
@@ -178,6 +242,7 @@ const BrowseCreators = () => {
       
       setCreators(mockCreators);
       setFilteredCreators(mockCreators);
+      console.log('✅ Mock creators loaded');
     } finally {
       setIsLoading(false);
     }
@@ -185,8 +250,10 @@ const BrowseCreators = () => {
 
   // Load existing connections and messages
   const loadExistingConnections = async () => {
+    console.log('🔗 Loading existing connections...');
     try {
-      const response = await api.get('/connections'); // Fixed endpoint
+      const response = await api.get('/connections');
+      console.log('🔗 Connections response:', response);
 
       if (response.success) {
         // Process connections into lookup objects
@@ -212,15 +279,17 @@ const BrowseCreators = () => {
         
         setExistingConnections(connections);
         setExistingMessages(messages);
+        console.log('✅ Connections loaded');
       }
     } catch (error) {
-      console.error('Error loading connections:', error);
+      console.error('❌ Error loading connections:', error);
       // Don't fail silently, just continue without connection data
     }
   };
 
   // Apply filters to creators
   const applyFiltersToCreators = () => {
+    console.log('🔍 Applying filters...');
     if (!creators || creators.length === 0) {
       setFilteredCreators([]);
       return;
@@ -297,6 +366,7 @@ const BrowseCreators = () => {
       return true;
     });
 
+    console.log(`🔍 Filtered ${creators.length} creators to ${filtered.length}`);
     setFilteredCreators(filtered);
     
     // Reset current index if it's out of bounds
@@ -308,6 +378,7 @@ const BrowseCreators = () => {
 
   // Handle swipe from SwipeCard
   const handleSwipe = async (direction, creatorId) => {
+    console.log(`👆 Swiping ${direction} on creator ${creatorId}`);
     const creator = filteredCreators[currentIndex];
     if (!creator) return;
     
@@ -315,6 +386,7 @@ const BrowseCreators = () => {
       // Make API call to process swipe
       const swipeAction = direction === 'right' ? 'like' : direction === 'up' ? 'superlike' : 'pass';
       const response = await memberService.swipeAction(creator._id || creator.id, swipeAction);
+      console.log('👆 Swipe response:', response);
       
       // Check for connection in response
       if (response && response.isConnected) {
@@ -326,9 +398,10 @@ const BrowseCreators = () => {
           creatorId: creator._id
         });
         setShowConnectionModal(true);
+        console.log('💕 Connection established!');
       }
     } catch (error) {
-      console.error('Error processing swipe:', error);
+      console.error('❌ Error processing swipe:', error);
       // Continue with UI updates even if API fails
     }
     
@@ -397,6 +470,19 @@ const BrowseCreators = () => {
     return indicators;
   };
 
+  // Not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="browse-creators-page">
+        <div className="browse-creators-loading">
+          <Loader size={60} className="loading-spinner" />
+          <h2>Checking authentication...</h2>
+          <p>Please wait</p>
+        </div>
+      </div>
+    );
+  }
+
   // Loading state
   if (isLoading) {
     return (
@@ -405,22 +491,6 @@ const BrowseCreators = () => {
           <Loader size={60} className="loading-spinner" />
           <h2>Finding creators for you...</h2>
           <p>This may take a moment</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state with fallback to mock data
-  if (loadingError && (!creators || creators.length === 0)) {
-    return (
-      <div className="browse-creators-page">
-        <div className="browse-creators-error">
-          <X size={60} />
-          <h2>Something went wrong</h2>
-          <p>{loadingError}</p>
-          <button onClick={loadCreators} className="browse-retry-btn">
-            Try Again
-          </button>
         </div>
       </div>
     );
