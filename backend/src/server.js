@@ -47,10 +47,10 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net"], // Added unsafe-eval for React
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "blob:"],
-      connectSrc: ["'self'", "wss:", "https:"],
+      connectSrc: ["'self'", "wss:", "ws:", "https:", process.env.CLIENT_URL || "http://localhost:5173"],
       mediaSrc: ["'self'", "https://res.cloudinary.com", "blob:"],
       manifestSrc: ["'self'"],
     },
@@ -61,6 +61,11 @@ app.use(helmet({
 // CORS configuration with multiple origins
 const corsOptions = {
   origin: function (origin, callback) {
+    // In production, allow the same origin (since frontend is served from same domain)
+    if (process.env.NODE_ENV === 'production' && !origin) {
+      return callback(null, true);
+    }
+    
     const allowedOrigins = [
       'http://localhost:5173',
       'http://localhost:5174',
@@ -157,32 +162,6 @@ if (process.env.NODE_ENV === 'development') {
 app.use(requestLogger);
 
 // ==========================================
-// STATIC FILES & PWA SUPPORT
-// ==========================================
-
-// Serve static files
-app.use('/static', express.static(path.join(__dirname, 'public'), {
-  maxAge: '1y',
-  etag: true,
-  lastModified: true,
-  setHeaders: (res, path) => {
-    if (path.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache');
-    }
-  }
-}));
-
-// Service Worker route (for PWA)
-app.get('/service-worker.js', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/public/service-worker.js'));
-});
-
-// Manifest route (for PWA)
-app.get('/manifest.json', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/public/manifest.json'));
-});
-
-// ==========================================
 // API ROUTES
 // ==========================================
 
@@ -226,7 +205,7 @@ app.use(`${API_V1}/auth`, authRoutes);
 app.use(`${API_V1}/creators`, creatorRoutes);
 app.use(`${API_V1}/members`, memberRoutes);
 app.use(`${API_V1}/content`, contentRoutes);
-app.use(`${API_V1}/connections`, connectionRoutes); // Primary connection routes
+app.use(`${API_V1}/connections`, connectionRoutes);
 app.use(`${API_V1}/transactions`, transactionRoutes);
 app.use(`${API_V1}/upload`, uploadRoutes);
 app.use(`${API_V1}/admin`, adminRoutes);
@@ -274,45 +253,53 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
   });
 }
 
-// Legacy support - redirect old /matches routes to /connections
-app.use(`${API_V1}/matches`, (req, res, next) => {
-  console.log('Legacy /matches route accessed, redirecting to /connections');
-  // The URL at this point doesn't include /matches, just the path after it
-  // So we don't need to replace anything, just pass it through
-  connectionRoutes(req, res, next);
-});
-
 // Webhook routes (no versioning, raw body)
 app.use('/webhooks', require('./routes/webhook.routes'));
 
 // ==========================================
-// PWA FALLBACK FOR CLIENT ROUTING
+// SERVE FRONTEND IN PRODUCTION
 // ==========================================
 
 // Serve frontend static files in production
 if (process.env.NODE_ENV === 'production') {
-  // Serve static files from frontend build
-  const frontendPath = path.join(__dirname, '../../frontend/dist');
-  app.use(express.static(frontendPath, {
-    maxAge: '1y',
-    etag: true,
-    lastModified: true,
+  // Frontend build path - adjust based on your structure
+  const frontendBuildPath = path.join(__dirname, '..', '..', 'frontend', 'dist');
+  
+  console.log('📁 Serving frontend from:', frontendBuildPath);
+  
+  // Serve static files with proper caching
+  app.use(express.static(frontendBuildPath, {
+    maxAge: '1d',
     setHeaders: (res, filePath) => {
+      // HTML files should not be cached
       if (filePath.endsWith('.html')) {
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
+      // Cache JS and CSS files for longer
+      else if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
       }
     }
   }));
   
-  // Handle React router - serve index.html for all non-API routes
-  app.get('*', (req, res, next) => {
-    // Skip API routes
+  // PWA manifest
+  app.get('/manifest.json', (req, res) => {
+    res.sendFile(path.join(frontendBuildPath, 'manifest.json'));
+  });
+  
+  // Service worker
+  app.get('/service-worker.js', (req, res) => {
+    res.sendFile(path.join(frontendBuildPath, 'service-worker.js'));
+  });
+  
+  // Handle React Router - must be last route
+  app.get('*', (req, res) => {
+    // Don't serve index.html for API routes
     if (req.path.startsWith('/api/') || req.path.startsWith('/webhooks/')) {
-      return next();
+      return res.status(404).json({ error: 'API endpoint not found' });
     }
     
-    const indexPath = path.join(frontendPath, 'index.html');
-    res.sendFile(indexPath);
+    res.sendFile(path.join(frontendBuildPath, 'index.html'));
   });
 }
 
@@ -331,26 +318,21 @@ app.use((req, res, next) => {
 app.use(errorMiddleware);
 
 // ==========================================
-// GRACEFUL SHUTDOWN
+// START SERVER
 // ==========================================
 
-const server = app.listen(process.env.PORT || 5002, () => {
+const PORT = process.env.PORT || 5002;
+
+const server = app.listen(PORT, () => {
   console.log('========================================');
   console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode`);
-  console.log(`📡 Port: ${process.env.PORT || 5002}`);
-  console.log(`🌐 Frontend URL: ${process.env.CLIENT_URL || 'http://localhost:5174'}`);
-  console.log(`🛠️  Admin URL: ${process.env.ADMIN_URL || 'http://localhost:5175'}`);
-  console.log(`❤️  Health Check: http://localhost:${process.env.PORT || 5002}/health`);
-  console.log(`📚 API Base: http://localhost:${process.env.PORT || 5002}/api/v1`);
-  console.log('========================================');
-  console.log('📋 API Routes:');
-  console.log(`   - Auth: ${API_V1}/auth`);
-  console.log(`   - Connections: ${API_V1}/connections`);
-  console.log(`   - Creators: ${API_V1}/creators`);
-  console.log(`   - Members: ${API_V1}/members`);
-  console.log(`   - Content: ${API_V1}/content`);
-  console.log(`   - Payments: ${API_V1}/payments`);
-  console.log(`   - Admin: ${API_V1}/admin`);
+  console.log(`📡 Port: ${PORT}`);
+  console.log(`🌐 URL: ${process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : `http://localhost:${PORT}`}`);
+  console.log(`❤️  Health Check: /health`);
+  console.log(`📚 API Base: /api/v1`);
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`🎨 Frontend: Serving from /frontend/dist`);
+  }
   console.log('========================================');
 });
 
