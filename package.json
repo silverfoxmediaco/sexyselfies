@@ -1,13 +1,11 @@
 {
-  "name": "sexyselfies-monorepo",
+  "name": "sexyselfies-app",
   "version": "1.0.0",
-  "description": "SexySelfies monorepo deployment",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install",
     "start": "cd backend && npm start"
   },
+  "dependencies": {},
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=18.0.0"
   }
 }
