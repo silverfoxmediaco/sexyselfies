@@ -7,7 +7,7 @@ import {
   Heart, Shield, CreditCard, Users, Sparkles, Gift,
   Camera, UserPlus, Star
 } from 'lucide-react';
-import axios from 'axios';
+import authService from '../services/auth.service';
 import './MemberRegistration.css';
 
 const MemberRegistration = () => {
@@ -248,11 +248,22 @@ const MemberRegistration = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('🚀 Registration form submitted');
+    console.log('📋 Current step:', currentStep);
+    console.log('📝 Form data:', formData);
     
-    if (!validateStep()) {
+    // Only process registration on final step
+    if (currentStep !== totalSteps) {
+      console.log('⚠️ Not on final step, ignoring submit');
       return;
     }
     
+    if (!validateStep()) {
+      console.log('❌ Validation failed');
+      return;
+    }
+    
+    console.log('✅ Validation passed, submitting registration...');
     setLoading(true);
     
     try {
@@ -261,30 +272,32 @@ const MemberRegistration = () => {
         email: formData.email,
         username: formData.username,
         password: formData.password,
-        role: 'member',
-        displayName: `${formData.firstName} ${formData.lastName}`.trim() || formData.username,
-        phone: formData.phone || undefined
+        confirmPassword: formData.confirmPassword,
+        birthDate: formData.dateOfBirth,
+        agreeToTerms: formData.agreedToTerms,
+        marketingOptIn: formData.subscribeNewsletter
       };
       
-      // API call to register
-      const response = await axios.post('/api/v1/auth/register', registrationData);
+      // API call to register using auth service
+      console.log('📤 Sending registration data:', registrationData);
+      const response = await authService.memberRegister(registrationData);
+      console.log('📥 Registration response:', response);
       
-      if (response.data.success) {
-        // Store token and user data
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('userRole', 'member');
-        localStorage.setItem('userId', response.data.user.id);
-        
+      if (response && !response.error) {
+        console.log('✅ Registration successful!');
         // Show success message
         alert('Registration successful! Welcome to SexySelfies!');
         
         // Redirect to browse creators page
         navigate('/member/browse-creators');
+      } else {
+        console.log('❌ Registration failed:', response);
+        throw new Error(response.message || 'Registration failed');
       }
     } catch (error) {
       console.error('Registration error:', error);
       setErrors({
-        submit: error.response?.data?.error || 'Registration failed. Please try again.'
+        submit: error.message || 'Registration failed. Please try again.'
       });
     } finally {
       setLoading(false);
