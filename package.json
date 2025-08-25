@@ -1,16 +1,16 @@
 {
-  "name": "sexy-selfies-backend",
+  "name": "sexyselfies-monorepo",
   "version": "1.0.0",
-  "description": "Backend for SexySelfies",
+  "description": "SexySelfies PWA Platform",
   "main": "backend/src/server.js",
   "scripts": {
     "start": "node backend/src/server.js",
     "dev": "nodemon backend/src/server.js",
     "install:backend": "cd backend && npm install",
     "install:frontend": "cd frontend && npm install",
-    "build:frontend": "cd frontend && npm install && npm run build",
-    "build": "npm run install:backend && npm run build:frontend",
-    "postinstall": "npm run install:backend"
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run install:backend && npm run install:frontend && npm run build:frontend",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
