@@ -84,9 +84,38 @@ class MemberService {
   // ==========================================
   
   /**
-   * Discover creators (swipe interface)
+   * Get swipe stack of creators to browse
    */
-  async discoverCreators(params = {}) {
+  async getSwipeStack(params = {}) {
+    try {
+      const response = await api.get('/connections/stack', {
+        params
+      });
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Process swipe action (like/pass/superlike)
+   */
+  async swipeAction(creatorId, action) {
+    try {
+      const response = await api.post('/connections/swipe', {
+        creatorId,
+        action // 'like', 'pass', 'superlike'
+      });
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Browse creators (swipe interface)
+   */
+  async browseCreators(params = {}) {
     try {
       const response = await api.get('/api/member/discover', {
         params: {

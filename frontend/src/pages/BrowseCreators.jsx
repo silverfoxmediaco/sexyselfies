@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Heart, X, Star, RotateCcw, Info, Filter, Loader } from 'lucide-react';
 import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
-import api from '../services/api.config.js';
+import memberService from '../services/member.service.js';
 import './BrowseCreators.css';
 
 const BrowseCreators = () => {
@@ -71,16 +71,16 @@ const BrowseCreators = () => {
     setLoadingError(null);
     
     try {
-      const response = await api.get('/connections/stack');
+      const response = await memberService.getSwipeStack();
 
-      if (response.data.success) {
-        setCreators(response.data.data);
+      if (response.success) {
+        setCreators(response.data || response.creators || []);
       } else {
-        throw new Error(response.data.message || 'Failed to load creators');
+        throw new Error(response.message || 'Failed to load creators');
       }
     } catch (error) {
       console.error('Error loading creators:', error);
-      setLoadingError(error.response?.data?.message || 'Failed to load creators');
+      setLoadingError(error.message || 'Failed to load creators');
       
       // Fallback to mock data for development
       const mockCreators = [
@@ -378,23 +378,27 @@ const BrowseCreators = () => {
   };
 
   // Handle swipe from SwipeCard
-  const handleSwipe = (direction, creatorId) => {
+  const handleSwipe = async (direction, creatorId) => {
     const creator = filteredCreators[currentIndex];
     
-    // Check for special connections
-    const connection = checkForConnection(direction, creator);
-    
-    if (connection) {
-      // Show exciting connection modal
-      setConnectionType(connection.type);
-      setConnectionData(connection.data);
-      setShowConnectionModal(true);
+    try {
+      // Make API call to process swipe
+      const swipeAction = direction === 'right' ? 'like' : direction === 'up' ? 'superlike' : 'pass';
+      const response = await memberService.swipeAction(creator._id || creator.id, swipeAction);
       
-      // Log the connection
-      console.log('Connection made:', connection);
-      
-      // Here you would make API call to create the connection
-      // await createConnection(creator._id, connection.type);
+      // Check for connection in response
+      if (response.connection) {
+        // Show connection modal
+        setConnectionType(response.connection.type || 'connection');
+        setConnectionData(response.connection);
+        setShowConnectionModal(true);
+        
+        // Log the connection
+        console.log('Connection made:', response.connection);
+      }
+    } catch (error) {
+      console.error('Error processing swipe:', error);
+      // Continue with UI updates even if API fails
     }
     
     // Add to history

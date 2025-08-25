@@ -196,7 +196,7 @@ const MainHeader = () => {
                               <Grid3x3 size={18} />
                               <span>Purchased Content</span>
                             </Link>
-                            <Link to="/member/matches" className="dropdown-item">
+                            <Link to="/member/connections" className="dropdown-item">
                               <Heart size={18} />
                               <span>My Connections</span>
                             </Link>
@@ -314,7 +314,7 @@ const MainHeader = () => {
                         <Grid3x3 size={20} />
                         <span>Purchased Content</span>
                       </Link>
-                      <Link to="/member/matches" className="mobile-nav-link">
+                      <Link to="/member/connections" className="mobile-nav-link">
                         <Heart size={20} />
                         <span>My Connections</span>
                       </Link>
