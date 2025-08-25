@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Base API URL from environment or fallback to localhost
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+// Base API URL from environment or fallback to production
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onrender.com/api/v1';
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'ws://localhost:5002';
 
 // Create axios instance with default config
