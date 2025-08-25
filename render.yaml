@@ -1,10 +1,10 @@
 services:
-  # Monorepo - Backend serving both API and Frontend  
   - type: web
-    name: sexyselfies-app
+    name: sexyselfies-backend
     env: node
     plan: starter
-    buildCommand: npm run build
+    rootDir: backend
+    buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV
