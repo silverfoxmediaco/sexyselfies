@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "build:frontend": "cd ../frontend && ../backend/node_modules/.bin/vite build",
+    "build:frontend": "cd ../frontend && NODE_PATH=../backend/node_modules npx vite build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
