@@ -2,9 +2,9 @@
   "name": "sexy-selfies-backend",
   "version": "1.0.0",
   "description": "Backend for SexySelfies",
-  "main": "backend/src/server.js",
+  "main": "../backend/src/server.js", 
   "scripts": {
-    "start": "node backend/src/server.js",
+    "start": "node ../backend/src/server.js",
     "dev": "nodemon backend/src/server.js",
     "build": "npm run build:frontend",
     "build:frontend": "cd ../frontend && npm install && npm run build",
