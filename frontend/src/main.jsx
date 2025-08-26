@@ -23,12 +23,13 @@ function RedirectHandler() {
 // Import Layout
 import AppLayout from './components/AppLayout';
 
-// Import Dev Helpers
+// Import Route Protection
 import { 
   ProtectedCreatorRoute, 
   ProtectedMemberRoute, 
   ComingSoon
-} from './components/DevHelpers';
+} from './components/RouteProtection';
+
 
 // Import Admin pages (all exist)
 import AdminLogin from './pages/AdminLogin';
@@ -104,9 +105,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="browse-members" 
               element={
-                <ProtectedCreatorRoute>
-                  <BrowseMembers />
-                </ProtectedCreatorRoute>
+<BrowseMembers />
               } 
             />
             
@@ -114,9 +113,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="members" 
               element={
-                <ProtectedCreatorRoute>
-                  <CreatorManageMembers />
-                </ProtectedCreatorRoute>
+<CreatorManageMembers />
               } 
             />
             
@@ -124,9 +121,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="messages" 
               element={
-                <ProtectedCreatorRoute>
-                  <Messages /> {/* Creators can use same Messages component */}
-                </ProtectedCreatorRoute>
+<Messages />
               } 
             />
             
@@ -134,9 +129,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="connections" 
               element={
-                <ProtectedCreatorRoute>
-                  <CreatorConnections />
-                </ProtectedCreatorRoute>
+<CreatorConnections />
               } 
             />
             
@@ -144,9 +137,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="chat/:connectionId" 
               element={
-                <ProtectedCreatorRoute>
-                  <Chat /> {/* Creators can use same Chat component */}
-                </ProtectedCreatorRoute>
+<Chat />
               } 
             />
             
@@ -154,9 +145,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="profile-setup" 
               element={
-                <ProtectedCreatorRoute>
-                  <CreatorProfileSetup />
-                </ProtectedCreatorRoute>
+<CreatorProfileSetup />
               } 
             />
             <Route 
