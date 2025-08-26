@@ -8,6 +8,7 @@ import {
   Grid3x3, Users, Bell, Gift, UserSearch,
   Zap, Compass
 } from 'lucide-react';
+import authService from '../services/auth.service';
 import './MainHeader.css';
 import logo from '../assets/sexysselfies_logo.png';
 
@@ -45,11 +46,15 @@ const MainHeader = () => {
     setShowMobileMenu(false);
   }, [location]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userId');
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Fallback
+      localStorage.clear();
+      window.location.href = '/';
+    }
     setShowUserMenu(false);
   };
 

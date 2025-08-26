@@ -8,6 +8,7 @@ import {
   BarChart3, Compass, FileText, HelpCircle,
   UserCheck, RefreshCw, Plus, Link2, Sliders
 } from 'lucide-react';
+import authService from '../services/auth.service';
 import logo from '../assets/sexysselfies_logo.png';
 import './BottomNavigation.css';
 
@@ -170,10 +171,16 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
     }
   };
 
-  const handleMenuItemClick = (item) => {
+  const handleMenuItemClick = async (item) => {
     if (item.action === 'logout') {
-      localStorage.clear();
-      navigate('/');
+      try {
+        await authService.logout();
+      } catch (error) {
+        console.error('Logout failed:', error);
+        // Fallback
+        localStorage.clear();
+        window.location.href = '/';
+      }
       setIsMenuOpen(false);
     } else if (item.action === 'refresh') {
       handleRefresh();

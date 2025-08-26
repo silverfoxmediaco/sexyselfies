@@ -7,6 +7,7 @@ import {
   Download, Bookmark, Activity, Award, CheckCircle,
   AlertCircle, X, Save, Sliders
 } from 'lucide-react';
+import authService from '../services/auth.service';
 import './MemberProfilePage.css';
 
 const MemberProfilePage = () => {
@@ -114,6 +115,16 @@ const MemberProfilePage = () => {
   const handleNotificationToggle = (key) => {
     setNotifications({ ...notifications, [key]: !notifications[key] });
     // Save notification preferences
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+      localStorage.clear();
+      window.location.href = '/member/login';
+    }
   };
 
   if (loading) {
@@ -494,7 +505,7 @@ const MemberProfilePage = () => {
                   <AlertCircle size={18} />
                   Danger Zone
                 </h3>
-                <button className="mpp-logout-btn">
+                <button className="mpp-logout-btn" onClick={handleLogout}>
                   <LogOut size={18} />
                   Log Out
                 </button>
