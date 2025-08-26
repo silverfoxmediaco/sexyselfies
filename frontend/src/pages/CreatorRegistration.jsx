@@ -195,11 +195,11 @@ const CreatorRegistration = () => {
     switch(step) {
       case 1:
         return (
-          <div className="registration-step">
+          <div className="creator-registration-step">
             <h2>Create Your Account</h2>
-            <p className="step-subtitle">Join thousands of creators earning on their own terms</p>
+            <p className="creator-registration-step-subtitle">Join thousands of creators earning on their own terms</p>
             
-            <div className="form-group">
+            <div className="creator-registration-form-group">
               <label htmlFor="email">Email Address</label>
               <input
                 type="email"
@@ -208,14 +208,14 @@ const CreatorRegistration = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="your@email.com"
-                className={errors.email ? 'error' : ''}
+                className={errors.email ? 'creator-registration-input-error' : ''}
               />
-              {errors.email && <span className="error-message">{errors.email}</span>}
+              {errors.email && <span className="creator-registration-error-message">{errors.email}</span>}
             </div>
             
-            <div className="form-group">
+            <div className="creator-registration-form-group">
               <label htmlFor="password">Password</label>
-              <div className="password-input-wrapper">
+              <div className="creator-registration-password-input-wrapper">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
@@ -223,20 +223,20 @@ const CreatorRegistration = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="At least 8 characters"
-                  className={errors.password ? 'error' : ''}
+                  className={errors.password ? 'creator-registration-input-error' : ''}
                 />
                 <button
                   type="button"
-                  className="toggle-password"
+                  className="creator-registration-toggle-password"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? '👁️' : '👁️‍🗨️'}
                 </button>
               </div>
-              {errors.password && <span className="error-message">{errors.password}</span>}
+              {errors.password && <span className="creator-registration-error-message">{errors.password}</span>}
             </div>
             
-            <div className="form-group">
+            <div className="creator-registration-form-group">
               <label htmlFor="confirmPassword">Confirm Password</label>
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -245,19 +245,19 @@ const CreatorRegistration = () => {
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 placeholder="Re-enter your password"
-                className={errors.confirmPassword ? 'error' : ''}
+                className={errors.confirmPassword ? 'creator-registration-input-error' : ''}
               />
-              {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+              {errors.confirmPassword && <span className="creator-registration-error-message">{errors.confirmPassword}</span>}
             </div>
             
-            <div className="password-strength">
-              <div className="strength-meter">
-                <div className={`strength-fill strength-${
+            <div className="creator-registration-password-strength">
+              <div className="creator-registration-strength-meter">
+                <div className={`creator-registration-strength-fill creator-registration-strength-${
                   formData.password.length >= 12 ? 'strong' :
                   formData.password.length >= 8 ? 'medium' : 'weak'
                 }`}></div>
               </div>
-              <span className="strength-text">
+              <span className="creator-registration-strength-text">
                 {formData.password.length >= 12 ? 'Strong' :
                  formData.password.length >= 8 ? 'Medium' : 
                  formData.password.length > 0 ? 'Weak' : ''}
@@ -268,11 +268,11 @@ const CreatorRegistration = () => {
         
       case 2:
         return (
-          <div className="registration-step">
+          <div className="creator-registration-step">
             <h2>Set Up Your Profile</h2>
-            <p className="step-subtitle">This is how fans will discover you</p>
+            <p className="creator-registration-step-subtitle">This is how fans will discover you</p>
             
-            <div className="form-group">
+            <div className="creator-registration-form-group">
               <label htmlFor="displayName">Display Name</label>
               <input
                 type="text"
@@ -281,14 +281,14 @@ const CreatorRegistration = () => {
                 value={formData.displayName}
                 onChange={handleInputChange}
                 placeholder="Choose your creator name"
-                className={errors.displayName ? 'error' : ''}
+                className={errors.displayName ? 'creator-registration-input-error' : ''}
                 maxLength="50"
               />
-              <span className="character-count">{formData.displayName.length}/50</span>
-              {errors.displayName && <span className="error-message">{errors.displayName}</span>}
+              <span className="creator-registration-character-count">{formData.displayName.length}/50</span>
+              {errors.displayName && <span className="creator-registration-error-message">{errors.displayName}</span>}
             </div>
             
-            <div className="form-group">
+            <div className="creator-registration-form-group">
               <label htmlFor="bio">Bio (Optional)</label>
               <textarea
                 id="bio"
@@ -298,13 +298,13 @@ const CreatorRegistration = () => {
                 placeholder="Tell fans what makes you unique..."
                 rows="4"
                 maxLength="500"
-                className={errors.bio ? 'error' : ''}
+                className={errors.bio ? 'creator-registration-input-error' : ''}
               />
-              <span className="character-count">{formData.bio.length}/500</span>
-              {errors.bio && <span className="error-message">{errors.bio}</span>}
+              <span className="creator-registration-character-count">{formData.bio.length}/500</span>
+              {errors.bio && <span className="creator-registration-error-message">{errors.bio}</span>}
             </div>
             
-            <div className="form-group">
+            <div className="creator-registration-form-group">
               <label htmlFor="dateOfBirth">Date of Birth</label>
               <input
                 type="date"
@@ -312,32 +312,32 @@ const CreatorRegistration = () => {
                 name="dateOfBirth"
                 value={formData.dateOfBirth}
                 onChange={handleInputChange}
-                className={errors.dateOfBirth ? 'error' : ''}
+                className={errors.dateOfBirth ? 'creator-registration-input-error' : ''}
                 max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
               />
-              {errors.dateOfBirth && <span className="error-message">{errors.dateOfBirth}</span>}
-              <p className="field-hint">You must be 18 or older to create content</p>
+              {errors.dateOfBirth && <span className="creator-registration-error-message">{errors.dateOfBirth}</span>}
+              <p className="creator-registration-field-hint">You must be 18 or older to create content</p>
             </div>
           </div>
         );
         
       case 3:
         return (
-          <div className="registration-step">
+          <div className="creator-registration-step">
             <h2>Content Preferences</h2>
-            <p className="step-subtitle">Choose what type of content you'll share</p>
+            <p className="creator-registration-step-subtitle">Choose what type of content you'll share</p>
             
-            <div className="form-group">
+            <div className="creator-registration-form-group">
               <label>Content Types</label>
-              <div className="content-type-grid">
+              <div className="creator-registration-content-type-grid">
                 {['Photos', 'Videos', 'Live Streams', 'Messages', 'Stories'].map(type => (
                   <button
                     key={type}
                     type="button"
-                    className={`content-type-card ${formData.contentTypes.includes(type) ? 'selected' : ''}`}
+                    className={`creator-registration-content-type-card ${formData.contentTypes.includes(type) ? 'creator-registration-selected' : ''}`}
                     onClick={() => handleContentTypeToggle(type)}
                   >
-                    <span className="content-icon">
+                    <span className="creator-registration-content-icon">
                       {type === 'Photos' && '📸'}
                       {type === 'Videos' && '🎥'}
                       {type === 'Live Streams' && '🔴'}
@@ -348,14 +348,14 @@ const CreatorRegistration = () => {
                   </button>
                 ))}
               </div>
-              {errors.contentTypes && <span className="error-message">{errors.contentTypes}</span>}
+              {errors.contentTypes && <span className="creator-registration-error-message">{errors.contentTypes}</span>}
             </div>
             
-            <div className="form-group">
+            <div className="creator-registration-form-group">
               <label>Default Content Price Range</label>
-              <div className="price-range-inputs">
-                <div className="price-input">
-                  <span className="currency">$</span>
+              <div className="creator-registration-price-range-inputs">
+                <div className="creator-registration-price-input">
+                  <span className="creator-registration-currency">$</span>
                   <input
                     type="number"
                     min="0.99"
@@ -368,9 +368,9 @@ const CreatorRegistration = () => {
                     }))}
                   />
                 </div>
-                <span className="range-separator">to</span>
-                <div className="price-input">
-                  <span className="currency">$</span>
+                <span className="creator-registration-range-separator">to</span>
+                <div className="creator-registration-price-input">
+                  <span className="creator-registration-currency">$</span>
                   <input
                     type="number"
                     min="0.99"
@@ -384,34 +384,34 @@ const CreatorRegistration = () => {
                   />
                 </div>
               </div>
-              <p className="field-hint">You can set individual prices for each piece of content</p>
+              <p className="creator-registration-field-hint">You can set individual prices for each piece of content</p>
             </div>
             
-            <div className="earning-estimate">
+            <div className="creator-registration-earning-estimate">
               <h3>Potential Earnings</h3>
               <p>With just 100 fans purchasing content at ${formData.priceRange.min.toFixed(2)}, you could earn:</p>
-              <div className="earnings-display">
-                <span className="earnings-amount">${(100 * formData.priceRange.min * 0.8).toFixed(2)}</span>
-                <span className="earnings-period">per day</span>
+              <div className="creator-registration-earnings-display">
+                <span className="creator-registration-earnings-amount">${(100 * formData.priceRange.min * 0.8).toFixed(2)}</span>
+                <span className="creator-registration-earnings-period">per day</span>
               </div>
-              <p className="earnings-note">You keep 80% of all earnings</p>
+              <p className="creator-registration-earnings-note">You keep 80% of all earnings</p>
             </div>
           </div>
         );
         
       case 4:
         return (
-          <div className="registration-step">
+          <div className="creator-registration-step">
             <h2>Verify Your Identity</h2>
-            <p className="step-subtitle">For everyone's safety, we need to verify you're a real person</p>
+            <p className="creator-registration-step-subtitle">For everyone's safety, we need to verify you're a real person</p>
             
-            <div className="verification-section">
-              <div className="verification-card">
-                <div className="verification-icon">🪪</div>
+            <div className="creator-registration-verification-section">
+              <div className="creator-registration-verification-card">
+                <div className="creator-registration-verification-icon">🪪</div>
                 <h3>Government-Issued ID Required</h3>
                 <p>We need a valid photo ID to verify your age and identity. This helps keep our platform safe.</p>
                 
-                <div className="accepted-ids">
+                <div className="creator-registration-accepted-ids">
                   <h4>Accepted Documents:</h4>
                   <ul>
                     <li>✔ Driver's License</li>
@@ -422,84 +422,84 @@ const CreatorRegistration = () => {
                 </div>
               </div>
               
-              <div className="privacy-notice">
-                <div className="notice-icon">🔐</div>
+              <div className="creator-registration-privacy-notice">
+                <div className="creator-registration-notice-icon">🔐</div>
                 <h4>Your Privacy Matters</h4>
                 <p>Your ID is encrypted and securely stored. We only use it for verification and never share it with anyone.</p>
               </div>
               
-              <div className="checkbox-group">
-                <label className="checkbox-label">
+              <div className="creator-registration-checkbox-group">
+                <label className="creator-registration-checkbox-label">
                   <input
                     type="checkbox"
                     name="confirmedAge"
                     checked={formData.confirmedAge}
                     onChange={handleInputChange}
                   />
-                  <span className="checkbox-text">
+                  <span className="creator-registration-checkbox-text">
                     I confirm that I am 18 years of age or older
                   </span>
                 </label>
-                {errors.confirmedAge && <span className="error-message">{errors.confirmedAge}</span>}
+                {errors.confirmedAge && <span className="creator-registration-error-message">{errors.confirmedAge}</span>}
               </div>
               
-              <div className="checkbox-group">
-                <label className="checkbox-label">
+              <div className="creator-registration-checkbox-group">
+                <label className="creator-registration-checkbox-label">
                   <input
                     type="checkbox"
                     name="confirmedRights"
                     checked={formData.confirmedRights}
                     onChange={handleInputChange}
                   />
-                  <span className="checkbox-text">
+                  <span className="creator-registration-checkbox-text">
                     I confirm that I own all rights to the content I will upload
                   </span>
                 </label>
-                {errors.confirmedRights && <span className="error-message">{errors.confirmedRights}</span>}
+                {errors.confirmedRights && <span className="creator-registration-error-message">{errors.confirmedRights}</span>}
               </div>
               
-              <div className="checkbox-group">
-                <label className="checkbox-label">
+              <div className="creator-registration-checkbox-group">
+                <label className="creator-registration-checkbox-label">
                   <input
                     type="checkbox"
                     name="agreedToTerms"
                     checked={formData.agreedToTerms}
                     onChange={handleInputChange}
                   />
-                  <span className="checkbox-text">
+                  <span className="creator-registration-checkbox-text">
                     I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>
                   </span>
                 </label>
-                {errors.agreedToTerms && <span className="error-message">{errors.agreedToTerms}</span>}
+                {errors.agreedToTerms && <span className="creator-registration-error-message">{errors.agreedToTerms}</span>}
               </div>
             </div>
             
-            <div className="verification-timeline">
+            <div className="creator-registration-verification-timeline">
               <h4>What Happens Next?</h4>
-              <div className="timeline-steps">
-                <div className="timeline-step">
-                  <span className="step-icon">1</span>
+              <div className="creator-registration-timeline-steps">
+                <div className="creator-registration-timeline-step">
+                  <span className="creator-registration-step-icon">1</span>
                   <div>
                     <strong>Submit Application</strong>
                     <p>Complete this form to create your account</p>
                   </div>
                 </div>
-                <div className="timeline-step">
-                  <span className="step-icon">2</span>
+                <div className="creator-registration-timeline-step">
+                  <span className="creator-registration-step-icon">2</span>
                   <div>
                     <strong>Verify Your ID</strong>
                     <p>You'll be redirected to securely upload your ID</p>
                   </div>
                 </div>
-                <div className="timeline-step">
-                  <span className="step-icon">3</span>
+                <div className="creator-registration-timeline-step">
+                  <span className="creator-registration-step-icon">3</span>
                   <div>
                     <strong>Quick Review</strong>
                     <p>Usually approved within 5-10 minutes</p>
                   </div>
                 </div>
-                <div className="timeline-step">
-                  <span className="step-icon">4</span>
+                <div className="creator-registration-timeline-step">
+                  <span className="creator-registration-step-icon">4</span>
                   <div>
                     <strong>Start Earning!</strong>
                     <p>Once approved, access your creator dashboard</p>
@@ -509,7 +509,7 @@ const CreatorRegistration = () => {
             </div>
             
             {errors.submit && (
-              <div className="submit-error">
+              <div className="creator-registration-submit-error">
                 {errors.submit}
               </div>
             )}
@@ -523,20 +523,20 @@ const CreatorRegistration = () => {
 
   return (
     <div className="creator-registration">
-      <div className="registration-container">
-        <div className="registration-title">
+      <div className="creator-registration-container">
+        <div className="creator-registration-title">
           <h1>Become a Creator</h1>
         </div>
         
-        <div className="progress-bar">
-          <div className="progress-steps">
+        <div className="creator-registration-progress-bar">
+          <div className="creator-registration-progress-steps">
             {[1, 2, 3, 4].map(num => (
               <div
                 key={num}
-                className={`progress-step ${step >= num ? 'active' : ''} ${step > num ? 'completed' : ''}`}
+                className={`creator-registration-progress-step ${step >= num ? 'creator-registration-active' : ''} ${step > num ? 'creator-registration-completed' : ''}`}
               >
-                <div className="step-number">{step > num ? '✔' : num}</div>
-                <span className="step-label">
+                <div className="creator-registration-step-number">{step > num ? '✔' : num}</div>
+                <span className="creator-registration-step-label">
                   {num === 1 && 'Account'}
                   {num === 2 && 'Profile'}
                   {num === 3 && 'Content'}
@@ -545,18 +545,18 @@ const CreatorRegistration = () => {
               </div>
             ))}
           </div>
-          <div className="progress-fill" style={{ width: `${(step / 4) * 100}%` }}></div>
+          <div className="creator-registration-progress-fill" style={{ width: `${(step / 4) * 100}%` }}></div>
         </div>
         
-        <form onSubmit={handleSubmit} className="registration-form">
+        <form onSubmit={handleSubmit} className="creator-registration-form">
           {renderStep()}
           
-          <div className="form-actions">
+          <div className="creator-registration-form-actions">
             {step > 1 && (
               <button
                 type="button"
                 onClick={handleBack}
-                className="btn-secondary"
+                className="creator-registration-btn-secondary"
               >
                 Back
               </button>
@@ -566,14 +566,14 @@ const CreatorRegistration = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="btn-primary"
+                className="creator-registration-btn-primary"
               >
                 Next Step
               </button>
             ) : (
               <button
                 type="submit"
-                className="btn-primary btn-submit"
+                className="creator-registration-btn-primary creator-registration-btn-submit"
                 disabled={loading}
               >
                 {loading ? 'Creating Account...' : 'Continue to ID Verification'}
@@ -582,7 +582,7 @@ const CreatorRegistration = () => {
           </div>
         </form>
         
-        <div className="registration-footer">
+        <div className="creator-registration-footer">
           <p>Already have an account? <a href="/creator/login">Sign In</a></p>
         </div>
       </div>
