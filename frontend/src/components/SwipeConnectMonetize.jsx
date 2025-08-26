@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './SwipeMatchMonetize.css';
+import './SwipeConnectMonetize.css';
 
-const SwipeMatchMonetize = () => {
+const SwipeConnectMonetize = () => {
   const navigate = useNavigate();
   const [videoOpen, setVideoOpen] = useState(false);
-  const [counters, setCounters] = useState({ creators: 0, earned: 0, matches: 0 });
+  const [counters, setCounters] = useState({ creators: 0, earned: 0, connections: 0 });
 
   useEffect(() => {
     const duration = 2000;
     const steps = 60;
     const stepDuration = duration / steps;
     
-    const targets = { creators: 102500, earned: 11850000, matches: 45000 };
+    const targets = { creators: 102500, earned: 11850000, connections: 45000 };
     const increments = {
       creators: targets.creators / steps,
       earned: targets.earned / steps,
-      matches: targets.matches / steps
+      connections: targets.connections / steps
     };
 
     let currentStep = 0;
@@ -25,7 +25,7 @@ const SwipeMatchMonetize = () => {
         setCounters(prev => ({
           creators: Math.min(prev.creators + increments.creators, targets.creators),
           earned: Math.min(prev.earned + increments.earned, targets.earned),
-          matches: Math.min(prev.matches + increments.matches, targets.matches)
+          connections: Math.min(prev.connections + increments.connections, targets.connections)
         }));
         currentStep++;
       } else {
@@ -49,7 +49,7 @@ const SwipeMatchMonetize = () => {
             
             <h1 className="hero-title">
               <span className="gradient-text">Swipe.</span>
-              <span className="gradient-text-2"> Match.</span>
+              <span className="gradient-text-2"> Connect.</span>
               <span className="gradient-text-3"> Monetize.</span>
             </h1>
             
@@ -94,9 +94,9 @@ const SwipeMatchMonetize = () => {
               <div className="stat-divider" />
               <div className="stat-item">
                 <div className="stat-number counter-number">
-                  {Math.floor(counters.matches).toLocaleString()}
+                  {Math.floor(counters.connections).toLocaleString()}
                 </div>
-                <div className="stat-label">Daily Matches</div>
+                <div className="stat-label">Daily Connections</div>
               </div>
             </div>
           </div>
@@ -126,4 +126,4 @@ const SwipeMatchMonetize = () => {
   );
 };
 
-export default SwipeMatchMonetize;
+export default SwipeConnectMonetize;

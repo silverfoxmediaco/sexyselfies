@@ -39,6 +39,7 @@ import AdminVerifications from './pages/AdminVerifications';
 import AdminReports from './pages/AdminReports';
 import AdminUsers from './pages/AdminUsers';
 import AdminContent from './pages/AdminContent';
+import AdminPayouts from './pages/AdminPayouts';
 import AdminManagement from './pages/AdminManagement';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 
@@ -445,6 +446,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               element={
                 <ProtectedAdminRoute>
                   <AdminContent />
+                </ProtectedAdminRoute>
+              } 
+            />
+            <Route 
+              path="payouts" 
+              element={
+                <ProtectedAdminRoute>
+                  <AdminPayouts />
                 </ProtectedAdminRoute>
               } 
             />

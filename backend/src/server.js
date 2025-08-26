@@ -8,6 +8,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
 const path = require('path');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 require('dotenv').config();
 
 // Import routes
@@ -23,6 +25,7 @@ const notificationRoutes = require('./routes/notification.routes');
 const verificationRoutes = require('./routes/verification.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const publicRoutes = require('./routes/public.routes');
+const payoutRoutes = require('./routes/payout.routes');
 
 // Import middleware
 const errorMiddleware = require('./middleware/error.middleware');
@@ -213,6 +216,7 @@ app.use(`${API_V1}/notifications`, notificationRoutes);
 app.use(`${API_V1}/verification`, verificationRoutes);
 app.use(`${API_V1}/payments`, paymentRoutes);
 app.use(`${API_V1}/public`, publicRoutes);
+app.use(`${API_V1}/payouts`, payoutRoutes);
 
 // Development-only seeding endpoint
 if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
@@ -323,13 +327,62 @@ app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5002;
 
-const server = app.listen(PORT, () => {
+// Create HTTP server and initialize Socket.io
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: function (origin, callback) {
+      // Use same CORS logic as Express
+      if (process.env.NODE_ENV === 'production' && !origin) {
+        return callback(null, true);
+      }
+      
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:5174', 
+        'http://localhost:3000',
+        process.env.CLIENT_URL,
+        process.env.ADMIN_URL,
+        process.env.MOBILE_URL
+      ].filter(Boolean);
+      
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Authorization", "Content-Type"]
+  },
+  transports: ['websocket', 'polling'],
+  pingTimeout: 60000,
+  pingInterval: 25000
+});
+
+// Import and initialize socket handlers
+const { initializeCreatorSalesSockets } = require('./sockets/creatorSales.socket');
+const { initializeMemberActivitySockets } = require('./sockets/memberActivity.socket');
+const { initializeMessagingSockets } = require('./sockets/messaging.socket');
+
+// Initialize socket namespaces
+initializeCreatorSalesSockets(io);
+initializeMemberActivitySockets(io);
+
+// Initialize main messaging sockets
+initializeMessagingSockets(io);
+
+server.listen(PORT, () => {
   console.log('========================================');
   console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode`);
   console.log(`📡 Port: ${PORT}`);
   console.log(`🌐 URL: ${process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : `http://localhost:${PORT}`}`);
   console.log(`❤️  Health Check: /health`);
   console.log(`📚 API Base: /api/v1`);
+  console.log(`🔗 Socket.io: Enabled with real-time messaging`);
   if (process.env.NODE_ENV === 'production') {
     console.log(`🎨 Frontend: Serving from /frontend/dist`);
   }

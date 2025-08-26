@@ -137,6 +137,21 @@ const AdminHeader = () => {
               <span>Content</span>
             </Link>
 
+            {adminData?.permissions?.canAccessFinancials && (
+              <Link 
+                to="/admin/payouts" 
+                className={`admin-header-nav-link ${isActive('/admin/payouts') ? 'active' : ''}`}
+              >
+                <svg className="admin-header-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1.81.45 1.61 1.67 1.61 1.16 0 1.6-.64 1.6-1.69 0-2.51-5.3-1.32-5.3-5.16 0-1.81 1.11-3.16 2.93-3.51V4h2.67v1.97c1.63.39 2.75 1.48 2.85 3.08h-1.96c-.05-.64-.42-1.32-1.56-1.32-1.03 0-1.51.52-1.51 1.34 0 2.51 5.3 1.23 5.3 5.08 0 1.98-1.35 3.35-3.21 3.44z" strokeWidth="2"/>
+                </svg>
+                <span>Payouts</span>
+                {stats?.financials?.pendingPayouts > 0 && (
+                  <span className="admin-header-nav-badge">{stats.financials.pendingPayouts}</span>
+                )}
+              </Link>
+            )}
+
             {adminData?.role === 'superAdmin' && (
               <Link 
                 to="/admin/admins" 
@@ -276,6 +291,21 @@ const AdminHeader = () => {
                   </svg>
                   <span>Content</span>
                 </Link>
+
+                {adminData?.permissions?.canAccessFinancials && (
+                  <Link 
+                    to="/admin/payouts" 
+                    className={`admin-header-mobile-nav-link ${isActive('/admin/payouts') ? 'active' : ''}`}
+                  >
+                    <svg className="admin-header-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1.81.45 1.61 1.67 1.61 1.16 0 1.6-.64 1.6-1.69 0-2.51-5.3-1.32-5.3-5.16 0-1.81 1.11-3.16 2.93-3.51V4h2.67v1.97c1.63.39 2.75 1.48 2.85 3.08h-1.96c-.05-.64-.42-1.32-1.56-1.32-1.03 0-1.51.52-1.51 1.34 0 2.51 5.3 1.23 5.3 5.08 0 1.98-1.35 3.35-3.21 3.44z" strokeWidth="2"/>
+                    </svg>
+                    <span>Creator Payouts</span>
+                    {stats?.financials?.pendingPayouts > 0 && (
+                      <span className="admin-header-nav-badge">{stats.financials.pendingPayouts}</span>
+                    )}
+                  </Link>
+                )}
 
                 {adminData?.role === 'superAdmin' && (
                   <Link 

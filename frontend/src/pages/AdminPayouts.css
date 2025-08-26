@@ -1,0 +1,437 @@
+/* Admin Payouts Styles */
+.admin-payouts {
+  padding: 24px;
+  background: var(--bg-900, #0A0A0A);
+  color: var(--text-primary, #FFFFFF);
+  min-height: 100vh;
+}
+
+.admin-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  font-size: 18px;
+  color: var(--text-secondary, #C7C7CC);
+}
+
+/* Header Section */
+.payouts-header {
+  margin-bottom: 32px;
+}
+
+.payouts-header h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-primary, #FFFFFF);
+  margin-bottom: 24px;
+}
+
+.payout-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--surface-700, #1C1C1E);
+  border: 1px solid var(--border-600, #2A2A2C);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.stat-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary, #C7C7CC);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--brand, #17D2C2);
+  margin-bottom: 4px;
+}
+
+.stat-card span {
+  font-size: 14px;
+  color: var(--text-secondary, #C7C7CC);
+}
+
+/* Controls Section */
+.payouts-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: var(--surface-700, #1C1C1E);
+  border-radius: 16px;
+  border: 1px solid var(--border-600, #2A2A2C);
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+}
+
+.filters button {
+  padding: 8px 16px;
+  border: 1px solid var(--border-600, #2A2A2C);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary, #C7C7CC);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filters button:hover {
+  background: var(--brand, #17D2C2);
+  color: var(--bg-900, #0A0A0A);
+  border-color: var(--brand, #17D2C2);
+}
+
+.filters button.active {
+  background: var(--brand, #17D2C2);
+  color: var(--bg-900, #0A0A0A);
+  border-color: var(--brand, #17D2C2);
+}
+
+.bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.selection-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.selection-info span {
+  font-size: 14px;
+  color: var(--text-secondary, #C7C7CC);
+}
+
+.total-amount {
+  font-weight: 600;
+  color: var(--brand, #17D2C2) !important;
+  font-size: 16px !important;
+}
+
+.bulk-payout-btn {
+  padding: 12px 24px;
+  background: var(--brand, #17D2C2);
+  color: var(--bg-900, #0A0A0A);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bulk-payout-btn:hover:not(:disabled) {
+  background: var(--brand-600, #12B7AB);
+  transform: translateY(-1px);
+}
+
+.bulk-payout-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Table Styles */
+.creators-table {
+  background: var(--surface-700, #1C1C1E);
+  border: 1px solid var(--border-600, #2A2A2C);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 50px 1fr 120px 180px 100px 100px 120px;
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-800, #121212);
+  border-bottom: 1px solid var(--border-600, #2A2A2C);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-secondary, #C7C7CC);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-body {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.creator-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 120px 180px 100px 100px 120px;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-600, #2A2A2C);
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.creator-row:hover {
+  background: rgba(23, 210, 194, 0.05);
+}
+
+.creator-row.selected {
+  background: rgba(23, 210, 194, 0.1);
+  border-color: var(--brand, #17D2C2);
+}
+
+.creator-row:last-child {
+  border-bottom: none;
+}
+
+.checkbox-col input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand, #17D2C2);
+  cursor: pointer;
+}
+
+.creator-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.creator-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-600, #2A2A2C);
+}
+
+.creator-name {
+  font-weight: 600;
+  color: var(--text-primary, #FFFFFF);
+  margin-bottom: 2px;
+}
+
+.creator-email {
+  font-size: 13px;
+  color: var(--text-secondary, #C7C7CC);
+}
+
+.amount {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.amount.ready {
+  color: var(--success, #22C55E);
+}
+
+.amount.pending {
+  color: var(--warning, #F59E0B);
+}
+
+.has-paypal {
+  color: var(--text-primary, #FFFFFF);
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.no-paypal {
+  color: var(--error, #EF4444);
+  font-style: italic;
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status.ready {
+  background: rgba(34, 197, 94, 0.2);
+  color: var(--success, #22C55E);
+}
+
+.status.waiting {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--warning, #F59E0B);
+}
+
+.individual-payout-btn {
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--brand, #17D2C2);
+  border: 1px solid var(--brand, #17D2C2);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.individual-payout-btn:hover:not(:disabled) {
+  background: var(--brand, #17D2C2);
+  color: var(--bg-900, #0A0A0A);
+}
+
+.individual-payout-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Payout History */
+.payout-history {
+  background: var(--surface-700, #1C1C1E);
+  border: 1px solid var(--border-600, #2A2A2C);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.payout-history h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary, #FFFFFF);
+  margin-bottom: 20px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--bg-800, #121212);
+  border-radius: 8px;
+}
+
+.history-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-info .creator-name {
+  font-weight: 600;
+  color: var(--text-primary, #FFFFFF);
+}
+
+.history-info .payout-amount {
+  color: var(--success, #22C55E);
+  font-weight: 600;
+}
+
+.history-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.payout-date {
+  font-size: 13px;
+  color: var(--text-secondary, #C7C7CC);
+}
+
+.payout-status {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.payout-status.completed {
+  background: rgba(34, 197, 94, 0.2);
+  color: var(--success, #22C55E);
+}
+
+.payout-status.pending {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--warning, #F59E0B);
+}
+
+.payout-status.failed {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--error, #EF4444);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .table-header,
+  .creator-row {
+    grid-template-columns: 40px 1fr 100px 150px 80px 80px 100px;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .creator-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .creator-name {
+    font-size: 14px;
+  }
+
+  .creator-email {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-payouts {
+    padding: 16px;
+  }
+
+  .payouts-controls {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .bulk-actions {
+    justify-content: space-between;
+  }
+
+  .table-header,
+  .creator-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .creator-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .creators-table {
+    border-radius: 12px;
+  }
+}

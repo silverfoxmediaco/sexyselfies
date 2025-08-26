@@ -216,6 +216,288 @@ const mockCreatorData = [
     coverImage: 'beautifulbrunette4.png',
     verified: true,
     showInBrowse: true
+  },
+  {
+    email: 'natalie.brooks@example.com',
+    displayName: 'Natalie Brooks',
+    age: 25,
+    gender: 'female',
+    orientation: 'straight',
+    bodyType: 'Curvy',
+    ethnicity: 'Caucasian',
+    hairColor: 'Brown',
+    height: 65, // 5'5"
+    bio: "Professional model & swimwear enthusiast 👙 Love beach days and sharing confident vibes",
+    categories: ['fashion', 'lifestyle', 'modeling'],
+    location: {
+      city: 'San Diego',
+      state: 'CA',
+      country: 'US',
+      coordinates: [-117.1611, 32.7157]
+    },
+    pricing: {
+      photos: { min: 0.99, default: 4.99, max: 9.99 },
+      videos: { min: 2.99, default: 9.99, max: 19.99 },
+      messages: { min: 0.99, default: 3.99, max: 9.99 }
+    },
+    profileImage: 'creator8.png',
+    coverImage: 'creator9.png',
+    verified: true,
+    showInBrowse: true
+  },
+  {
+    email: 'aria.rose@example.com',
+    displayName: 'Aria Rose',
+    age: 22,
+    gender: 'female',
+    orientation: 'bisexual',
+    bodyType: 'Slim',
+    ethnicity: 'Mixed',
+    hairColor: 'Brown',
+    height: 64, // 5'4"
+    bio: "Free spirit & nature lover 🌿 Photography student sharing my world through my lens",
+    categories: ['artistic', 'lifestyle', 'photography'],
+    location: {
+      city: 'Portland',
+      state: 'OR',
+      country: 'US',
+      coordinates: [-122.6750, 45.5152]
+    },
+    pricing: {
+      photos: { min: 0.99, default: 2.99, max: 9.99 },
+      videos: { min: 2.99, default: 5.99, max: 19.99 },
+      messages: { min: 0.99, default: 1.99, max: 9.99 }
+    },
+    profileImage: 'creator10.png',
+    coverImage: 'creator8.png',
+    verified: false,
+    showInBrowse: true
+  },
+  {
+    email: 'jessica.taylor@example.com',
+    displayName: 'Jessica Taylor',
+    age: 28,
+    gender: 'female',
+    orientation: 'straight',
+    bodyType: 'Athletic',
+    ethnicity: 'Black',
+    hairColor: 'Black',
+    height: 68, // 5'8"
+    bio: "Personal trainer & wellness coach 💪 Motivating others to live their best life",
+    categories: ['fitness', 'lifestyle', 'education'],
+    location: {
+      city: 'Atlanta',
+      state: 'GA',
+      country: 'US',
+      coordinates: [-84.3880, 33.7490]
+    },
+    pricing: {
+      photos: { min: 0.99, default: 5.49, max: 9.99 },
+      videos: { min: 2.99, default: 11.99, max: 19.99 },
+      messages: { min: 0.99, default: 4.49, max: 9.99 }
+    },
+    profileImage: 'creator11.png',
+    coverImage: 'creator12.png',
+    verified: true,
+    showInBrowse: true,
+    isTopCreator: true
+  },
+  {
+    email: 'luna.chen@example.com',
+    displayName: 'Luna Chen',
+    age: 24,
+    gender: 'female',
+    orientation: 'pansexual',
+    bodyType: 'Slender',
+    ethnicity: 'Asian',
+    hairColor: 'Black',
+    height: 61, // 5'1"
+    bio: "Cosplay artist & anime lover 🎭 Bringing fantasies to life one costume at a time",
+    categories: ['cosplay', 'artistic', 'gaming'],
+    location: {
+      city: 'Las Vegas',
+      state: 'NV',
+      country: 'US',
+      coordinates: [-115.1398, 36.1699]
+    },
+    pricing: {
+      photos: { min: 0.99, default: 3.99, max: 9.99 },
+      videos: { min: 2.99, default: 7.99, max: 19.99 },
+      messages: { min: 0.99, default: 2.99, max: 9.99 }
+    },
+    profileImage: 'creator13.png',
+    coverImage: 'creator14.png',
+    verified: true,
+    showInBrowse: true
+  },
+  {
+    email: 'savannah.white@example.com',
+    displayName: 'Savannah White',
+    age: 26,
+    gender: 'female',
+    orientation: 'straight',
+    bodyType: 'Average',
+    ethnicity: 'Caucasian',
+    hairColor: 'Blonde',
+    height: 66, // 5'6"
+    bio: "Southern belle with big city dreams ✨ Fashion blogger & lifestyle content creator",
+    categories: ['fashion', 'lifestyle', 'travel'],
+    location: {
+      city: 'Nashville',
+      state: 'TN',
+      country: 'US',
+      coordinates: [-86.7816, 36.1627]
+    },
+    pricing: {
+      photos: { min: 0.99, default: 4.49, max: 9.99 },
+      videos: { min: 2.99, default: 8.99, max: 19.99 },
+      messages: { min: 0.99, default: 3.49, max: 9.99 }
+    },
+    profileImage: 'creator15.png',
+    coverImage: 'creator16.png',
+    verified: true,
+    showInBrowse: true
+  },
+  {
+    email: 'dani.rodriguez@example.com',
+    displayName: 'Dani Rodriguez',
+    age: 23,
+    gender: 'female',
+    orientation: 'bisexual',
+    bodyType: 'Curvy',
+    ethnicity: 'Hispanic/Latino',
+    hairColor: 'Brown',
+    height: 63, // 5'3"
+    bio: "Dance instructor & music lover 💃 Teaching salsa and sharing my passion for movement",
+    categories: ['dance', 'music', 'lifestyle'],
+    location: {
+      city: 'Phoenix',
+      state: 'AZ',
+      country: 'US',
+      coordinates: [-112.0740, 33.4484]
+    },
+    pricing: {
+      photos: { min: 0.99, default: 3.49, max: 9.99 },
+      videos: { min: 2.99, default: 6.99, max: 19.99 },
+      messages: { min: 0.99, default: 2.49, max: 9.99 }
+    },
+    profileImage: 'creator16.png',
+    coverImage: 'creator17.png',
+    verified: false,
+    showInBrowse: true
+  },
+  {
+    email: 'taylor.green@example.com',
+    displayName: 'Taylor Green',
+    age: 29,
+    gender: 'female',
+    orientation: 'straight',
+    bodyType: 'Plus Size',
+    ethnicity: 'Caucasian',
+    hairColor: 'Red',
+    height: 67, // 5'7"
+    bio: "Body positivity advocate & chef 👩‍🍳 Sharing delicious recipes and self-love tips",
+    categories: ['food', 'lifestyle', 'body-positivity'],
+    location: {
+      city: 'Denver',
+      state: 'CO',
+      country: 'US',
+      coordinates: [-104.9903, 39.7392]
+    },
+    pricing: {
+      photos: { min: 0.99, default: 3.99, max: 9.99 },
+      videos: { min: 2.99, default: 7.99, max: 19.99 },
+      messages: { min: 0.99, default: 2.99, max: 9.99 }
+    },
+    profileImage: 'creator17.png',
+    coverImage: 'creator15.png',
+    verified: true,
+    showInBrowse: true
+  },
+  {
+    email: 'brooklyn.james@example.com',
+    displayName: 'Brooklyn James',
+    age: 21,
+    gender: 'female',
+    orientation: 'pansexual',
+    bodyType: 'Slim',
+    ethnicity: 'Black',
+    hairColor: 'Brown',
+    height: 65, // 5'5"
+    bio: "College athlete & study buddy 📚 Balancing sports, academics, and authentic connections",
+    categories: ['fitness', 'education', 'lifestyle'],
+    location: {
+      city: 'Boston',
+      state: 'MA',
+      country: 'US',
+      coordinates: [-71.0589, 42.3601]
+    },
+    pricing: {
+      photos: { min: 0.99, default: 2.49, max: 9.99 },
+      videos: { min: 2.99, default: 4.99, max: 19.99 },
+      messages: { min: 0.99, default: 1.49, max: 9.99 }
+    },
+    profileImage: 'creator12.png',
+    coverImage: 'creator13.png',
+    verified: false,
+    showInBrowse: true
+  },
+  {
+    email: 'mia.foster@example.com',
+    displayName: 'Mia Foster',
+    age: 27,
+    gender: 'female',
+    orientation: 'straight',
+    bodyType: 'Athletic',
+    ethnicity: 'Mixed',
+    hairColor: 'Blonde',
+    height: 64, // 5'4"
+    bio: "Surfer girl & ocean lover 🌊 Living the beach life and sharing good vibes only",
+    categories: ['sports', 'lifestyle', 'travel'],
+    location: {
+      city: 'Honolulu',
+      state: 'HI',
+      country: 'US',
+      coordinates: [-157.8583, 21.3099]
+    },
+    pricing: {
+      photos: { min: 0.99, default: 4.99, max: 9.99 },
+      videos: { min: 2.99, default: 9.99, max: 19.99 },
+      messages: { min: 0.99, default: 3.99, max: 9.99 }
+    },
+    profileImage: 'creator14.png',
+    coverImage: 'creator11.png',
+    verified: true,
+    showInBrowse: true
+  },
+  {
+    email: 'alexis.stone@example.com',
+    displayName: 'Alexis Stone',
+    age: 25,
+    gender: 'female',
+    orientation: 'bisexual',
+    bodyType: 'Slender',
+    ethnicity: 'Caucasian',
+    hairColor: 'Black',
+    height: 69, // 5'9"
+    bio: "Alternative model & tattoo enthusiast 🖤 Expressing art through body and soul",
+    categories: ['alternative', 'artistic', 'modeling'],
+    location: {
+      city: 'Tampa',
+      state: 'FL',
+      country: 'US',
+      coordinates: [-82.4572, 27.9506]
+    },
+    pricing: {
+      photos: { min: 0.99, default: 5.99, max: 9.99 },
+      videos: { min: 2.99, default: 12.99, max: 19.99 },
+      messages: { min: 0.99, default: 4.99, max: 9.99 }
+    },
+    profileImage: 'creator10.png',
+    coverImage: 'creator9.png',
+    verified: true,
+    showInBrowse: true,
+    isTopCreator: true
   }
 ];
 

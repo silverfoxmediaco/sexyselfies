@@ -6,7 +6,7 @@ import {
   Clock, CreditCard, Wallet, PieChart, BarChart3, Filter, 
   ArrowUp, ArrowDown, Minus, Star, Users, Camera, Video,
   MessageCircle, Gift, Zap, Target, Award, RefreshCw,
-  ChevronRight, ExternalLink, AlertCircle, CheckCircle
+  ChevronRight, ExternalLink, AlertCircle, CheckCircle, Send
 } from 'lucide-react';
 import './CreatorEarnings.css';
 
@@ -16,6 +16,17 @@ const CreatorEarnings = () => {
   const [loading, setLoading] = useState(true);
   const [earningsData, setEarningsData] = useState(null);
   const [payoutMethod, setPayoutMethod] = useState('weekly');
+  const [showPayoutModal, setShowPayoutModal] = useState(false);
+  const [payoutData, setPayoutData] = useState({
+    availableEarnings: 0,
+    hasPendingRequest: false,
+    pendingRequest: null
+  });
+  const [requestForm, setRequestForm] = useState({
+    amount: '',
+    message: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   const periods = [
     { value: '7d', label: '7 Days' },
@@ -26,6 +37,7 @@ const CreatorEarnings = () => {
 
   useEffect(() => {
     loadEarnings();
+    loadPayoutData();
   }, [selectedPeriod]);
 
   const loadEarnings = async () => {
@@ -130,6 +142,72 @@ const CreatorEarnings = () => {
           0%
         </span>
       );
+    }
+  };
+
+  const loadPayoutData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const isDevelopment = import.meta.env.DEV || token === 'dev-token-12345';
+      
+      if (isDevelopment) {
+        // Mock data for development
+        setPayoutData({
+          availableEarnings: 892.45,
+          hasPendingRequest: false,
+          pendingRequest: null
+        });
+        return;
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payouts/available`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPayoutData(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to load payout data:', error);
+    }
+  };
+
+  const handlePayoutRequest = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payouts/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          requestedAmount: parseFloat(requestForm.amount),
+          message: requestForm.message
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Payout request submitted! You will receive an email confirmation and we will process it within 1-2 business days.');
+        setShowPayoutModal(false);
+        setRequestForm({ amount: '', message: '' });
+        loadPayoutData(); // Refresh payout data
+      } else {
+        alert(data.error || 'Failed to submit payout request');
+      }
+    } catch (error) {
+      console.error('Payout request error:', error);
+      alert('Failed to submit payout request. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -422,13 +500,46 @@ const CreatorEarnings = () => {
       <div className="payout-section">
         <div className="payout-header">
           <h2>Payout History</h2>
-          <button 
-            className="payout-settings-btn"
-            onClick={() => navigate('/creator/settings')}
-          >
-            <CreditCard size={16} />
-            Payout Settings
-          </button>
+          <div className="payout-header-actions">
+            {!payoutData.hasPendingRequest && payoutData.availableEarnings >= 50 && (
+              <motion.button 
+                className="request-payout-btn"
+                onClick={() => setShowPayoutModal(true)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Send size={16} />
+                Request Payout
+              </motion.button>
+            )}
+            {payoutData.hasPendingRequest && (
+              <div className="pending-payout-notice">
+                <Clock size={16} />
+                Payout request pending
+              </div>
+            )}
+            <button 
+              className="payout-settings-btn"
+              onClick={() => navigate('/creator/settings')}
+            >
+              <CreditCard size={16} />
+              Payout Settings
+            </button>
+          </div>
+        </div>
+        
+        {/* Available Earnings Display */}
+        <div className="available-earnings">
+          <div className="earnings-info">
+            <span className="earnings-label">Available for Payout:</span>
+            <span className="earnings-amount">{formatCurrency(payoutData.availableEarnings)}</span>
+          </div>
+          {payoutData.availableEarnings < 50 && (
+            <div className="minimum-notice">
+              <AlertCircle size={14} />
+              Minimum payout is $50.00
+            </div>
+          )}
         </div>
         <div className="payout-list">
           {earningsData.payoutHistory.map((payout) => (
@@ -497,6 +608,102 @@ const CreatorEarnings = () => {
           </motion.button>
         </div>
       </div>
+
+      {/* Payout Request Modal */}
+      {showPayoutModal && (
+        <div className="payout-modal-overlay" onClick={() => setShowPayoutModal(false)}>
+          <motion.div 
+            className="payout-modal"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+          >
+            <div className="modal-header">
+              <h2>Request Payout</h2>
+              <button 
+                className="close-btn"
+                onClick={() => setShowPayoutModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handlePayoutRequest}>
+              <div className="modal-content">
+                <div className="available-display">
+                  <span className="available-label">Available for Payout:</span>
+                  <span className="available-value">{formatCurrency(payoutData.availableEarnings)}</span>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="amount">Payout Amount</label>
+                  <div className="amount-input-wrapper">
+                    <span className="currency-symbol">$</span>
+                    <input
+                      type="number"
+                      id="amount"
+                      value={requestForm.amount}
+                      onChange={(e) => setRequestForm(prev => ({ ...prev, amount: e.target.value }))}
+                      min="50"
+                      max={payoutData.availableEarnings}
+                      step="0.01"
+                      required
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="field-help">
+                    Minimum: $50.00 • Maximum: ${payoutData.availableEarnings.toFixed(2)}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="message">Message (Optional)</label>
+                  <textarea
+                    id="message"
+                    value={requestForm.message}
+                    onChange={(e) => setRequestForm(prev => ({ ...prev, message: e.target.value }))}
+                    placeholder="Any additional notes or requests..."
+                    maxLength={500}
+                    rows={3}
+                  />
+                  <div className="field-help">
+                    {requestForm.message.length}/500 characters
+                  </div>
+                </div>
+
+                <div className="payout-info">
+                  <div className="info-item">
+                    <AlertCircle size={16} />
+                    <span>Payouts are processed manually within 1-2 business days</span>
+                  </div>
+                  <div className="info-item">
+                    <CheckCircle size={16} />
+                    <span>You'll receive an email confirmation once processed</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="cancel-btn"
+                  onClick={() => setShowPayoutModal(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="submit-btn"
+                  disabled={submitting}
+                >
+                  {submitting ? 'Submitting...' : 'Request Payout'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

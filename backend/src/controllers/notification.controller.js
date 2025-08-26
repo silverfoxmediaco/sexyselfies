@@ -401,3 +401,131 @@ The Sexy Selfies Team
     });
   }
 };
+
+// @desc    Send payout request notification to admin
+// @route   Called internally when creator requests payout
+// @access  Internal
+exports.sendPayoutRequestNotification = async (options) => {
+  try {
+    const { payoutRequest, type } = options;
+    
+    // Populate creator details if not already populated
+    const populatedRequest = await payoutRequest.populate([
+      { path: 'creator', select: 'displayName profileImage user' },
+      { path: 'creator.user', select: 'email' }
+    ]);
+
+    const creator = populatedRequest.creator;
+    const creatorUser = creator.user;
+    
+    const transporter = createTransporter();
+    
+    const adminMailOptions = {
+      from: process.env.EMAIL_FROM || 'SexySelfies <admin@sexyselfies.com>',
+      to: 'james@sexyselfies.com', // Your specific email
+      subject: '💰 New Payout Request - SexySelfies Creator',
+      text: `
+🚨 NEW PAYOUT REQUEST 🚨
+
+Creator Details:
+- Name: ${creator.displayName}
+- Email: ${creatorUser.email}
+- PayPal Email: ${payoutRequest.paypalEmail}
+
+Payout Details:
+- Requested Amount: $${payoutRequest.requestedAmount.toFixed(2)}
+- Available Amount: $${payoutRequest.availableAmount.toFixed(2)}
+- Request ID: ${payoutRequest._id}
+- Submitted: ${new Date(payoutRequest.createdAt).toLocaleString()}
+
+${payoutRequest.message ? `Creator Message: "${payoutRequest.message}"` : ''}
+
+⚡ ACTION REQUIRED ⚡
+Please review this payout request in your admin dashboard.
+
+Admin Dashboard: ${process.env.ADMIN_DASHBOARD_URL || 'http://localhost:5173'}/admin/payouts
+
+To process:
+1. Login to your admin dashboard
+2. Go to the Payouts section  
+3. Review the request details
+4. Approve and send PayPal payment manually
+5. Mark as processed in the dashboard
+
+This is a real payout request that requires your immediate attention.
+      `,
+      html: `
+<div style="font-family: Poppins, Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 3px solid #17D2C2;">
+  <div style="background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%); padding: 20px; text-align: center;">
+    <h1 style="color: white; margin: 0;">💰 NEW PAYOUT REQUEST</h1>
+    <p style="color: white; margin: 5px 0; font-size: 18px; font-weight: bold;">IMMEDIATE ATTENTION REQUIRED</p>
+  </div>
+  
+  <div style="background: #121212; color: #ffffff; padding: 30px;">
+    <div style="background: #EF4444; color: white; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+      <p style="margin: 0; font-weight: bold;">🚨 ACTION REQUIRED - CREATOR PAYOUT REQUEST 🚨</p>
+    </div>
+    
+    <h2 style="color: #17D2C2;">Creator Details:</h2>
+    <div style="background: #1C1C1E; border-radius: 12px; padding: 20px; margin: 15px 0;">
+      <p><strong>Name:</strong> ${creator.displayName}</p>
+      <p><strong>Email:</strong> ${creatorUser.email}</p>
+      <p><strong>PayPal Email:</strong> ${payoutRequest.paypalEmail}</p>
+    </div>
+    
+    <h2 style="color: #F59E0B;">Payout Details:</h2>
+    <div style="background: #1C1C1E; border-radius: 12px; padding: 20px; margin: 15px 0;">
+      <p><strong>Requested Amount:</strong> <span style="color: #22C55E; font-size: 18px;">$${payoutRequest.requestedAmount.toFixed(2)}</span></p>
+      <p><strong>Available Amount:</strong> $${payoutRequest.availableAmount.toFixed(2)}</p>
+      <p><strong>Request ID:</strong> ${payoutRequest._id}</p>
+      <p><strong>Submitted:</strong> ${new Date(payoutRequest.createdAt).toLocaleString()}</p>
+    </div>
+    
+    ${payoutRequest.message ? `
+    <h3 style="color: #47E0D2;">Creator Message:</h3>
+    <div style="background: #1C1C1E; border-left: 4px solid #17D2C2; padding: 15px; margin: 15px 0;">
+      <p style="font-style: italic;">"${payoutRequest.message}"</p>
+    </div>
+    ` : ''}
+    
+    <div style="background: #22C55E; color: white; padding: 20px; border-radius: 12px; margin: 20px 0;">
+      <h3 style="margin-top: 0; color: white;">⚡ NEXT STEPS:</h3>
+      <ol style="margin: 10px 0;">
+        <li>Review the payout request details above</li>
+        <li>Login to your admin dashboard</li>
+        <li>Go to the Payouts section</li>
+        <li>Send PayPal payment to: <strong>${payoutRequest.paypalEmail}</strong></li>
+        <li>Mark the request as processed</li>
+      </ol>
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${process.env.ADMIN_DASHBOARD_URL || 'http://localhost:5173'}/admin/payouts" 
+         style="display: inline-block; background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%); 
+                color: #001310; padding: 15px 40px; border-radius: 16px; text-decoration: none; 
+                font-weight: 700; font-size: 18px; box-shadow: 0 4px 15px rgba(23, 210, 194, 0.4);">
+        🏦 PROCESS PAYOUT NOW
+      </a>
+    </div>
+    
+    <div style="background: #1C1C1E; border: 1px solid #F59E0B; border-radius: 8px; padding: 15px; margin-top: 20px;">
+      <p style="margin: 0; color: #F59E0B;"><strong>⏰ Time Sensitive:</strong> Creator is waiting for their earnings. Please process as soon as possible to maintain trust and satisfaction.</p>
+    </div>
+  </div>
+  
+  <div style="background: #0A0A0A; color: #8E8E93; padding: 20px; text-align: center; font-size: 12px;">
+    <p>This is an automated notification from your SexySelfies platform.</p>
+    <p>Request Time: ${new Date().toLocaleString()}</p>
+  </div>
+</div>
+      `
+    };
+    
+    await transporter.sendMail(adminMailOptions);
+    console.log('Payout request notification sent to admin:', payoutRequest._id);
+    
+  } catch (error) {
+    console.error('Failed to send payout request notification:', error);
+    throw error;
+  }
+};

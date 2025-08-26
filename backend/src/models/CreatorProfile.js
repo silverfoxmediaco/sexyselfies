@@ -265,7 +265,14 @@ const creatorProfileSchema = new mongoose.Schema({
       method: {
         type: String,
         enum: ['bank', 'paypal', 'crypto', 'check'],
-        default: 'bank'
+        default: 'paypal'
+      },
+      paypalEmail: {
+        type: String,
+        match: [
+          /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+          'Please provide a valid PayPal email'
+        ]
       },
       frequency: {
         type: String,

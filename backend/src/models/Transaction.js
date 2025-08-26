@@ -25,6 +25,12 @@ const transactionSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Creator',
+    required: true,
+    index: true
+  },
 
   // Transaction type - NO SUBSCRIPTIONS
   type: {
@@ -177,6 +183,13 @@ const transactionSchema = new mongoose.Schema({
     timeToUnlock: Number,  // Seconds from view to purchase
     memberSegment: String,  // 'whale', 'vip', 'regular', 'new'
     creatorTier: String
+  },
+
+  // Payout tracking
+  payoutProcessed: {
+    type: Boolean,
+    default: false,
+    index: true
   },
 
   // Metadata

@@ -147,6 +147,366 @@ router.post(
 );
 
 // ============================
+// FINANCIAL/PAYOUT ROUTES
+// ============================
+
+// Get payout data for admin dashboard
+router.get(
+  '/financials/payouts',
+  requirePermission('canAccessFinancials'),
+  async (req, res) => {
+    try {
+      const Creator = require('../models/Creator');
+      const CreatorProfile = require('../models/CreatorProfile');
+      const Transaction = require('../models/Transaction');
+      const PayoutRequest = require('../models/PayoutRequest');
+
+      // Get all creators with pending earnings
+      const creatorsWithProfiles = await Creator.aggregate([
+        {
+          $lookup: {
+            from: 'creatorprofiles',
+            localField: '_id',
+            foreignField: 'creator',
+            as: 'profile'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: { path: '$profile', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $unwind: '$user'
+        },
+        {
+          $lookup: {
+            from: 'transactions',
+            let: { creatorId: '$_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$creator', '$$creatorId'] },
+                      { $eq: ['$status', 'completed'] },
+                      { $eq: ['$payoutProcessed', false] }
+                    ]
+                  }
+                }
+              },
+              {
+                $group: {
+                  _id: null,
+                  totalEarnings: { $sum: '$creatorEarnings' }
+                }
+              }
+            ],
+            as: 'pendingEarnings'
+          }
+        },
+        {
+          $addFields: {
+            pendingAmount: { 
+              $ifNull: [{ $arrayElemAt: ['$pendingEarnings.totalEarnings', 0] }, 0] 
+            },
+            minimumPayout: { 
+              $ifNull: ['$profile.financials.payoutSettings.minimumPayout', 50] 
+            },
+            paypalEmail: '$profile.financials.payoutSettings.paypalEmail'
+          }
+        },
+        {
+          $match: {
+            pendingAmount: { $gt: 0 }
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            displayName: 1,
+            profileImage: 1,
+            email: '$user.email',
+            pendingAmount: 1,
+            minimumPayout: 1,
+            paypalEmail: 1
+          }
+        },
+        { $sort: { pendingAmount: -1 } }
+      ]);
+
+      // Get payout statistics
+      const totalPending = creatorsWithProfiles.reduce((sum, creator) => sum + creator.pendingAmount, 0);
+      
+      // Get today's payouts
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      
+      const todayPayouts = await Transaction.aggregate([
+        {
+          $match: {
+            type: 'payout',
+            createdAt: { $gte: todayStart },
+            status: 'completed'
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: { $abs: '$amount' } }
+          }
+        }
+      ]);
+
+      // Get this month's payouts
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      monthStart.setHours(0, 0, 0, 0);
+
+      const monthlyPayouts = await Transaction.aggregate([
+        {
+          $match: {
+            type: 'payout',
+            createdAt: { $gte: monthStart },
+            status: 'completed'
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: { $abs: '$amount' } },
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+
+      // Get payout requests
+      const pendingPayoutRequests = await PayoutRequest.find({ status: 'pending' })
+        .populate('creator', 'displayName profileImage')
+        .populate('creator.user', 'email')
+        .sort('-createdAt')
+        .limit(50);
+
+      // Get recent payout history from PayoutRequest model
+      const payoutHistory = await PayoutRequest.find({
+        status: { $in: ['processed', 'approved'] }
+      })
+      .populate('creator', 'displayName')
+      .sort('-createdAt')
+      .limit(20)
+      .lean();
+
+      const formattedHistory = payoutHistory.map(payout => ({
+        _id: payout._id,
+        creatorName: payout.creator?.displayName || 'Unknown',
+        amount: payout.requestedAmount,
+        status: payout.status,
+        processedAt: payout.processedAt || payout.reviewedAt,
+        paymentMethod: 'paypal'
+      }));
+
+      // Format payout requests for frontend
+      const formattedRequests = pendingPayoutRequests.map(request => ({
+        _id: request._id,
+        displayName: request.creator?.displayName || 'Unknown',
+        profileImage: request.creator?.profileImage || '',
+        email: request.creator?.user?.email || '',
+        pendingAmount: request.requestedAmount,
+        availableAmount: request.availableAmount,
+        paypalEmail: request.paypalEmail,
+        minimumPayout: 50, // Default minimum
+        createdAt: request.createdAt,
+        message: request.message
+      }));
+
+      // Calculate total pending from requests
+      const requestsPendingTotal = pendingPayoutRequests.reduce((sum, req) => sum + req.requestedAmount, 0);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          pendingPayouts: creatorsWithProfiles, // Keep for backwards compatibility
+          payoutRequests: formattedRequests, // New payout requests
+          payoutHistory: formattedHistory,
+          totalPending,
+          totalRequestsPending: requestsPendingTotal,
+          totalPaidToday: todayPayouts[0]?.total || 0,
+          stats: {
+            creatorsAwaitingPayout: creatorsWithProfiles.length,
+            pendingRequests: pendingPayoutRequests.length,
+            averagePayoutAmount: monthlyPayouts[0]?.count > 0 ? 
+              (monthlyPayouts[0].total / monthlyPayouts[0].count) : 0,
+            thisMonthPayouts: monthlyPayouts[0]?.total || 0
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Payout data fetch error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch payout data'
+      });
+    }
+  }
+);
+
+// Process PayPal payouts
+router.post(
+  '/financials/process-payouts',
+  requirePermission('canAccessFinancials'),
+  validateAdminRequest(['creatorIds', 'payoutMethod']),
+  rateLimitAdminAction('process_payouts', 10, 60000),
+  logAdminAction('process_payouts'),
+  async (req, res) => {
+    try {
+      const { creatorIds, payoutMethod } = req.body;
+      const Creator = require('../models/Creator');
+      const CreatorProfile = require('../models/CreatorProfile');
+      const Transaction = require('../models/Transaction');
+
+      if (!Array.isArray(creatorIds) || creatorIds.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Creator IDs array is required'
+        });
+      }
+
+      const results = [];
+      let totalProcessed = 0;
+      let successCount = 0;
+
+      for (const creatorId of creatorIds) {
+        try {
+          // Get creator with profile
+          const creator = await Creator.findById(creatorId)
+            .populate('user')
+            .lean();
+
+          if (!creator) {
+            results.push({
+              creatorId,
+              success: false,
+              error: 'Creator not found'
+            });
+            continue;
+          }
+
+          const profile = await CreatorProfile.findOne({ creator: creatorId }).lean();
+          
+          if (!profile?.financials?.payoutSettings?.paypalEmail) {
+            results.push({
+              creatorId,
+              success: false,
+              error: 'No PayPal email configured'
+            });
+            continue;
+          }
+
+          // Calculate pending earnings
+          const pendingTransactions = await Transaction.find({
+            creator: creatorId,
+            status: 'completed',
+            payoutProcessed: false
+          });
+
+          const totalEarnings = pendingTransactions.reduce((sum, t) => sum + t.creatorEarnings, 0);
+          const minimumPayout = profile.financials.payoutSettings.minimumPayout || 50;
+
+          if (totalEarnings < minimumPayout) {
+            results.push({
+              creatorId,
+              success: false,
+              error: `Amount $${totalEarnings} below minimum $${minimumPayout}`
+            });
+            continue;
+          }
+
+          // TODO: Integrate with actual PayPal Payouts API here
+          // const paypalResult = await processPayPalPayout(profile.financials.payoutSettings.paypalEmail, totalEarnings);
+
+          // For now, simulate successful payout
+          const payoutTransaction = new Transaction({
+            creator: creatorId,
+            type: 'payout',
+            amount: -totalEarnings, // Negative for payout
+            status: 'completed',
+            paymentMethod: 'paypal',
+            description: `PayPal payout to ${profile.financials.payoutSettings.paypalEmail}`,
+            metadata: {
+              paypalEmail: profile.financials.payoutSettings.paypalEmail,
+              transactionIds: pendingTransactions.map(t => t._id),
+              processedBy: req.admin.id
+            }
+          });
+
+          await payoutTransaction.save();
+
+          // Mark original transactions as payout processed
+          await Transaction.updateMany(
+            { _id: { $in: pendingTransactions.map(t => t._id) } },
+            { payoutProcessed: true }
+          );
+
+          results.push({
+            creatorId,
+            success: true,
+            amount: totalEarnings,
+            paypalEmail: profile.financials.payoutSettings.paypalEmail
+          });
+
+          totalProcessed += totalEarnings;
+          successCount++;
+
+        } catch (error) {
+          console.error(`Payout error for creator ${creatorId}:`, error);
+          results.push({
+            creatorId,
+            success: false,
+            error: error.message
+          });
+        }
+      }
+
+      // Log the action
+      await req.admin.logAction(
+        'process_payouts',
+        null,
+        null,
+        null,
+        `Processed ${successCount} payouts totaling $${totalProcessed.toFixed(2)}`
+      );
+
+      res.status(200).json({
+        success: true,
+        data: {
+          results,
+          summary: {
+            totalRequested: creatorIds.length,
+            successCount,
+            failedCount: creatorIds.length - successCount,
+            totalProcessed
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Batch payout processing error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to process payouts'
+      });
+    }
+  }
+);
+
+// ============================
 // ID VERIFICATION ROUTES
 // ============================
 

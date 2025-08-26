@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ChatInput from '../components/ChatInput';
 import MessageBubble from '../components/MessageBubble';
+import socketService from '../services/socket.service';
 import './Chat.css';
 
 const Chat = () => {
@@ -28,14 +29,105 @@ const Chat = () => {
     fetchCreatorInfo();
     fetchMessages();
     markMessagesAsRead();
+    initializeRealTimeChat();
     
-    // Simulate receiving messages (replace with Socket.io)
+    return () => {
+      cleanupRealTimeChat();
+    };
+  }, [connectionId]);
+
+  // Initialize real-time chat
+  const initializeRealTimeChat = () => {
+    try {
+      // Connect to Socket.io if not already connected
+      const token = localStorage.getItem('token');
+      if (token && !socketService.isConnected()) {
+        socketService.connect(token);
+      }
+
+      // Join chat room
+      socketService.socket?.emit('join_chat', { connectionId });
+
+      // Set up real-time event handlers
+      setupRealTimeHandlers();
+      
+      console.log('💬 Real-time chat initialized for connection:', connectionId);
+    } catch (error) {
+      console.error('Failed to initialize real-time chat:', error);
+      // Fall back to polling
+      startMessagePolling();
+    }
+  };
+
+  // Setup real-time event handlers
+  const setupRealTimeHandlers = () => {
+    if (!socketService.socket) return;
+
+    // Listen for new messages
+    socketService.socket.on('new_message', (messageData) => {
+      if (messageData.connectionId === connectionId) {
+        handleNewRealtimeMessage(messageData);
+      }
+    });
+
+    // Listen for typing indicators
+    socketService.socket.on('user_typing', (data) => {
+      setIsTyping(true);
+    });
+
+    socketService.socket.on('user_stopped_typing', (data) => {
+      setIsTyping(false);
+    });
+
+    // Listen for message status updates
+    socketService.socket.on('messages_read', (data) => {
+      if (data.connectionId === connectionId) {
+        updateMessageStatuses('read');
+      }
+    });
+
+    // Listen for message deletions
+    socketService.socket.on('message_deleted', (data) => {
+      if (data.connectionId === connectionId) {
+        removeMessageFromList(data.messageId);
+      }
+    });
+
+    // Listen for user status changes
+    socketService.socket.on('user_status_changed', (data) => {
+      if (creator && creator.id === data.userId) {
+        setCreator(prev => ({
+          ...prev,
+          isOnline: data.status === 'online'
+        }));
+      }
+    });
+  };
+
+  // Cleanup real-time chat
+  const cleanupRealTimeChat = () => {
+    if (socketService.socket) {
+      socketService.socket.emit('leave_chat', { connectionId });
+      
+      // Remove event listeners
+      socketService.socket.off('new_message');
+      socketService.socket.off('user_typing');
+      socketService.socket.off('user_stopped_typing');
+      socketService.socket.off('messages_read');
+      socketService.socket.off('message_deleted');
+      socketService.socket.off('user_status_changed');
+    }
+  };
+
+  // Fallback to polling if real-time fails
+  const startMessagePolling = () => {
     const interval = setInterval(() => {
       checkForNewMessages();
     }, 5000);
     
-    return () => clearInterval(interval);
-  }, [connectionId]);
+    // Store interval for cleanup
+    typingTimeoutRef.current = interval;
+  };
   
   useEffect(() => {
     scrollToBottom();
@@ -201,55 +293,142 @@ const Chat = () => {
       setTimeout(() => setIsTyping(false), 3000);
     }
   };
+
+  // Handle new real-time message
+  const handleNewRealtimeMessage = (messageData) => {
+    const newMessage = {
+      id: messageData.id,
+      text: messageData.content?.text,
+      type: messageData.content?.media ? 'image' : 'text',
+      mediaUrl: messageData.content?.media?.url,
+      thumbnail: messageData.content?.media?.thumbnail,
+      isLocked: messageData.content?.media?.isLocked || false,
+      price: messageData.content?.media?.price,
+      senderId: messageData.sender,
+      senderName: messageData.senderName,
+      timestamp: new Date(messageData.timestamp),
+      status: 'delivered',
+      replyTo: messageData.replyTo,
+      canDelete: messageData.senderModel === 'Member'
+    };
+
+    setMessages(prev => [...prev, newMessage]);
+
+    // Mark as read after a delay
+    setTimeout(() => {
+      updateMessageStatuses('read');
+      markMessagesAsRead();
+    }, 1000);
+  };
+
+  // Update message statuses
+  const updateMessageStatuses = (status) => {
+    setMessages(prev => prev.map(msg => ({ ...msg, status })));
+  };
+
+  // Remove message from list
+  const removeMessageFromList = (messageId) => {
+    setMessages(prev => prev.filter(msg => msg.id !== messageId));
+  };
   
   const handleSendMessage = async ({ text, replyTo }) => {
-    const messageToSend = {
-      content: {
-        text: text,
-        media: null
-      },
-      replyTo: replyTo
-    };
-    
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/connections/${connectionId}/messages`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(messageToSend)
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
+      // Try to send via Socket.io first (real-time)
+      if (socketService.isConnected()) {
+        const clientId = Date.now().toString();
         
-        // Add message to local state
-        const newMsg = {
-          id: data.data._id || Date.now().toString(),
+        // Add optimistic message immediately
+        const optimisticMsg = {
+          id: clientId,
           text: text,
           type: 'text',
           senderId: currentUserId,
           senderName: 'You',
           timestamp: new Date(),
-          status: 'sent',
+          status: 'sending',
           replyTo: replyTo ? messages.find(m => m.id === replyTo) : null,
           canDelete: true
         };
         
-        setMessages(prev => [...prev, newMsg]);
-        
-        // Update status to delivered after a short delay
-        setTimeout(() => {
-          setMessages(prev => prev.map(msg => 
-            msg.id === newMsg.id ? { ...msg, status: 'delivered' } : msg
-          ));
-        }, 1000);
+        setMessages(prev => [...prev, optimisticMsg]);
+
+        // Send via Socket.io
+        socketService.socket.emit('send_message', {
+          connectionId,
+          content: { text, media: null },
+          replyTo,
+          clientId
+        });
+
+        // Listen for confirmation
+        socketService.socket.once('message_sent', (data) => {
+          if (data.clientId === clientId) {
+            setMessages(prev => prev.map(msg => 
+              msg.id === clientId 
+                ? { ...msg, id: data.messageId, status: 'sent' }
+                : msg
+            ));
+          }
+        });
+
+        socketService.socket.once('message_error', (error) => {
+          if (error.clientId === clientId) {
+            // Remove failed message and fall back to API
+            setMessages(prev => prev.filter(msg => msg.id !== clientId));
+            fallbackToApiSend({ text, replyTo });
+          }
+        });
+
+      } else {
+        // Fall back to direct API call
+        await fallbackToApiSend({ text, replyTo });
       }
+
     } catch (error) {
       console.error('Error sending message:', error);
-      throw error; // Let ChatInput handle the error
+      throw error;
+    }
+  };
+
+  // Fallback API send method
+  const fallbackToApiSend = async ({ text, replyTo }) => {
+    const messageToSend = {
+      content: { text: text, media: null },
+      replyTo: replyTo
+    };
+    
+    const token = localStorage.getItem('token');
+    const response = await fetch(`/api/v1/connections/${connectionId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(messageToSend)
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      const newMsg = {
+        id: data.data._id || Date.now().toString(),
+        text: text,
+        type: 'text',
+        senderId: currentUserId,
+        senderName: 'You',
+        timestamp: new Date(),
+        status: 'sent',
+        replyTo: replyTo ? messages.find(m => m.id === replyTo) : null,
+        canDelete: true
+      };
+      
+      setMessages(prev => [...prev, newMsg]);
+      
+      setTimeout(() => {
+        setMessages(prev => prev.map(msg => 
+          msg.id === newMsg.id ? { ...msg, status: 'delivered' } : msg
+        ));
+      }, 1000);
     }
   };
   
@@ -394,7 +573,9 @@ const Chat = () => {
   
   const handleStartTyping = () => {
     // Send typing indicator to server via Socket.io
-    console.log('User started typing');
+    if (socketService.isConnected()) {
+      socketService.socket.emit('typing_start', { connectionId });
+    }
     
     // Clear existing timeout
     if (typingTimeoutRef.current) {
@@ -404,7 +585,9 @@ const Chat = () => {
   
   const handleStopTyping = () => {
     // Send stop typing to server via Socket.io
-    console.log('User stopped typing');
+    if (socketService.isConnected()) {
+      socketService.socket.emit('typing_stop', { connectionId });
+    }
   };
   
   const scrollToBottom = () => {

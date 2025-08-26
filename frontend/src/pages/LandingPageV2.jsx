@@ -1,7 +1,7 @@
 import React from 'react';
 import './LandingPageV2.css';
 import MainHeader from '../components/MainHeader';
-import SwipeMatchMonetize from '../components/SwipeMatchMonetize';
+import SwipeConnectMonetize from '../components/SwipeConnectMonetize';
 import PhoneSampleImage from '../components/PhoneSampleImage';
 import WhyCreatorsLoveUs from '../components/WhyCreatorsLoveUs';
 import StartEarning from '../components/StartEarning';
@@ -24,7 +24,7 @@ const LandingPageV2 = () => {
       </div>
 
       {/* Hero Section Component */}
-      <SwipeMatchMonetize />
+      <SwipeConnectMonetize />
 
       {/* Phone Demo Component */}
       <PhoneSampleImage />

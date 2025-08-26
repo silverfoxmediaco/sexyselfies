@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import socketService from '../services/socket.service';
 import './Messages.css';
 
 const Messages = () => {
@@ -11,7 +12,80 @@ const Messages = () => {
 
   useEffect(() => {
     fetchConversations();
+    initializeRealTimeUpdates();
+    
+    return () => {
+      cleanupRealTimeUpdates();
+    };
   }, [activeFilter]);
+
+  // Initialize real-time updates for conversation list
+  const initializeRealTimeUpdates = () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token && !socketService.isConnected()) {
+        socketService.connect(token);
+      }
+
+      // Listen for new messages to update conversation previews
+      socketService.on('new_message', (messageData) => {
+        updateConversationPreview(messageData);
+      });
+
+      // Listen for message read status to update unread counts
+      socketService.on('messages_read', (data) => {
+        updateUnreadCount(data.connectionId, 0);
+      });
+
+      // Listen for user status changes to update online indicators
+      socketService.on('user_status_changed', (data) => {
+        updateUserOnlineStatus(data.userId, data.status === 'online');
+      });
+
+    } catch (error) {
+      console.error('Failed to initialize real-time updates:', error);
+    }
+  };
+
+  // Cleanup real-time updates
+  const cleanupRealTimeUpdates = () => {
+    socketService.off('new_message', updateConversationPreview);
+    socketService.off('messages_read', updateUnreadCount);
+    socketService.off('user_status_changed', updateUserOnlineStatus);
+  };
+
+  // Update conversation preview with new message
+  const updateConversationPreview = (messageData) => {
+    setConversations(prev => prev.map(conv => {
+      if (conv.connectionId === messageData.connectionId) {
+        return {
+          ...conv,
+          lastMessage: messageData.content?.text || 'Media message',
+          lastMessageTime: 'Just now',
+          unreadCount: conv.unreadCount + 1
+        };
+      }
+      return conv;
+    }));
+  };
+
+  // Update unread count for a conversation
+  const updateUnreadCount = (connectionId, count) => {
+    setConversations(prev => prev.map(conv => {
+      if (conv.connectionId === connectionId) {
+        return { ...conv, unreadCount: count };
+      }
+      return conv;
+    }));
+  };
+
+  // Update user online status
+  const updateUserOnlineStatus = (userId, isOnline) => {
+    setConversations(prev => prev.map(conv => {
+      // This would need user mapping logic
+      return conv;
+    }));
+  };
 
   const fetchConversations = async () => {
     setIsLoading(true);
