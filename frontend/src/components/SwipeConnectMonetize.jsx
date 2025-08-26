@@ -44,7 +44,7 @@ const SwipeConnectMonetize = () => {
           <div className="hero-content">
             <div className="launch-chip pulse-animation">
               <span className="chip-icon">🚀</span>
-              <span>Launching January 2025</span>
+              <span>Launching January 2026</span>
             </div>
             
             <h1 className="hero-title">

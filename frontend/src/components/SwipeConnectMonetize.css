@@ -67,7 +67,7 @@
 
 /* Hero Section */
 .hero-section {
-  padding-top: 120px;
+  padding-top: 60px;
   padding-bottom: var(--space-3xl);
   min-height: 100vh;
   display: flex;
