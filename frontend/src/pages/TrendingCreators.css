@@ -713,9 +713,9 @@
 /* Desktop Styles - 1024px and up */
 @media (min-width: 1024px) {
   .trending-list {
-    padding: var(--trending-space-2xl);
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: var(--trending-space-2xl) 2rem;
+    max-width: none;
+    margin: 0;
   }
   
   .trending-creator-card {
@@ -749,12 +749,12 @@
 /* Large Desktop Styles - 1440px and up */
 @media (min-width: 1440px) {
   .trending-list {
-    max-width: 1400px;
-    padding: var(--trending-space-2xl) var(--trending-space-xl);
+    max-width: none;
+    padding: var(--trending-space-2xl) 3rem;
   }
   
   .trending-creator-card {
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
   }
 }

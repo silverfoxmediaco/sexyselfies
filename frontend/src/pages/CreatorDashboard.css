@@ -1,17 +1,24 @@
 /* CreatorDashboard.css - Premium Dashboard Styling */
 
-/* Hide Main Header on ALL viewports for dashboard */
-.mainheader-navbar {
+/* Hide Main Header only on creator dashboard page */
+.creator-dashboard .mainheader-navbar,
+.creator-dashboard-container .mainheader-navbar {
   display: none !important;
 }
 
-/* Also hide any other potential header classes */
-.main-header,
-.mainheader,
-.header-navbar,
-.navbar-header,
-.top-header,
-.site-header {
+/* Also hide any other potential header classes - only on creator dashboard */
+.creator-dashboard .main-header,
+.creator-dashboard .mainheader,
+.creator-dashboard .header-navbar,
+.creator-dashboard .navbar-header,
+.creator-dashboard .top-header,
+.creator-dashboard .site-header,
+.creator-dashboard-container .main-header,
+.creator-dashboard-container .mainheader,
+.creator-dashboard-container .header-navbar,
+.creator-dashboard-container .navbar-header,
+.creator-dashboard-container .top-header,
+.creator-dashboard-container .site-header {
   display: none !important;
 }
 
@@ -84,9 +91,9 @@
 .dashboard-container {
   position: relative;
   z-index: 1;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
+  max-width: none;
+  margin: 0;
+  padding: 20px 2rem;
 }
 
 @media (min-width: 768px) {

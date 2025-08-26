@@ -820,9 +820,9 @@
 /* Desktop Styles - 1024px and up */
 @media (min-width: 1024px) {
   .favorites-list {
-    padding: var(--favorites-space-2xl);
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: var(--favorites-space-2xl) 2rem;
+    max-width: none;
+    margin: 0;
   }
   
   .favorites-grid.grid {
@@ -851,8 +851,8 @@
 /* Large Desktop Styles - 1440px and up */
 @media (min-width: 1440px) {
   .favorites-list {
-    max-width: 1400px;
-    padding: var(--favorites-space-2xl) var(--favorites-space-xl);
+    max-width: none;
+    padding: var(--favorites-space-2xl) 3rem;
   }
   
   .favorites-grid.grid {
