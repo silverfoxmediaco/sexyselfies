@@ -7,11 +7,15 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './SearchCreators.css';
 
 const SearchCreators = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   
   // Search state
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
@@ -520,6 +524,9 @@ const SearchCreators = () => {
           </div>
         </div>
       )}
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

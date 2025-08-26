@@ -7,10 +7,14 @@ import {
   Star, Calendar, Check, Clock, AlertCircle
 } from 'lucide-react';
 // import CreatorProfilePreview from './CreatorProfilePreview';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorProfilePage.css';
 
 const CreatorProfilePage = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [profileData, setProfileData] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -339,6 +343,9 @@ const CreatorProfilePage = () => {
           <button onClick={() => setShowPreview(false)}>Close</button>
         </div>
       )}
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

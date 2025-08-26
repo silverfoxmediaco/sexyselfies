@@ -8,10 +8,14 @@ import {
   AlertCircle, X, Save, Sliders
 } from 'lucide-react';
 import authService from '../services/auth.service';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './MemberProfilePage.css';
 
 const MemberProfilePage = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   // State management
   const [member, setMember] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -517,6 +521,9 @@ const MemberProfilePage = () => {
           )}
         </div>
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

@@ -8,11 +8,15 @@ import {
   Check, Gift, ArrowLeft
 } from 'lucide-react';
 import authService from '../services/auth.service';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './MemberLogin.css';
 
 const MemberLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -475,6 +479,9 @@ const MemberLogin = () => {
           </div>
         </div>
       </div>
+
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

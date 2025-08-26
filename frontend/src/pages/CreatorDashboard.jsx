@@ -8,9 +8,13 @@ import {
   Upload, ArrowUp, ArrowDown, 
   Camera, Video, Star, ShoppingBag
 } from 'lucide-react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 
 const CreatorDashboard = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [timeRange, setTimeRange] = useState('7d');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -497,6 +501,9 @@ const CreatorDashboard = () => {
 
       {/* Quick Actions */}
       <QuickActions />
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

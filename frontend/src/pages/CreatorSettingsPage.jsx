@@ -5,9 +5,13 @@ import {
   ChevronRight, ChevronLeft, Save, Check, X, AlertTriangle,
   Download, Trash2, Menu, Eye, EyeOff
 } from 'lucide-react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorSettingsPage.css';
 
 const CreatorSettingsPage = () => {
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [activeSection, setActiveSection] = useState(null); // null = main menu on mobile
   const [settings, setSettings] = useState({
     // Account & Security
@@ -579,6 +583,9 @@ const CreatorSettingsPage = () => {
           </div>
         </div>
       )}
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

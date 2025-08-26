@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorRegistration.css';
 
 const CreatorRegistration = () => {
   const [step, setStep] = useState(1);
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [formData, setFormData] = useState({
     // Account info
     email: '',
@@ -586,6 +590,9 @@ const CreatorRegistration = () => {
           <p>Already have an account? <a href="/creator/login">Sign In</a></p>
         </div>
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

@@ -6,9 +6,13 @@ import {
   ChevronLeft, ChevronRight, BarChart3, PieChart, Activity,
   Target, Award, Zap, ArrowUp, ArrowDown, Minus
 } from 'lucide-react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorAnalytics.css';
 
 const CreatorAnalytics = () => {
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [selectedPeriod, setSelectedPeriod] = useState('7d');
   const [loading, setLoading] = useState(true);
   const [analyticsData, setAnalyticsData] = useState(null);
@@ -482,6 +486,9 @@ const CreatorAnalytics = () => {
           </motion.button>
         </div>
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

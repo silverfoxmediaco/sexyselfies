@@ -8,10 +8,14 @@ import {
   MessageCircle, Gift, Zap, Target, Award, RefreshCw,
   ChevronRight, ExternalLink, AlertCircle, CheckCircle, Send
 } from 'lucide-react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorEarnings.css';
 
 const CreatorEarnings = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [selectedPeriod, setSelectedPeriod] = useState('30d');
   const [loading, setLoading] = useState(true);
   const [earningsData, setEarningsData] = useState(null);
@@ -704,6 +708,9 @@ const CreatorEarnings = () => {
           </motion.div>
         </div>
       )}
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './MyConnections.css';
 
 const MyConnections = () => {
   // Replace with your navigation method
   const navigate = (path) => window.location.href = path;
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [activeTab, setActiveTab] = useState('active');
   const [connections, setConnections] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -630,6 +634,9 @@ const MyConnections = () => {
           ))
         )}
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

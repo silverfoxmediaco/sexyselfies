@@ -6,11 +6,15 @@ import {
   Sliders, X, Plus, Minus, Sparkles
 } from 'lucide-react';
 import axios from 'axios';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './BrowseFilters.css';
 
 const BrowseFilters = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   
   // Check if this is first-time setup from login
   const isFirstTimeSetup = location.state?.isFirstTime || false;
@@ -604,6 +608,9 @@ const BrowseFilters = () => {
           )}
         </button>
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

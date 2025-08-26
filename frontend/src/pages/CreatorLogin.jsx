@@ -6,10 +6,14 @@ import {
   Mail, Lock, Eye, EyeOff, LogIn, 
   ArrowRight, Sparkles, Heart, DollarSign 
 } from 'lucide-react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorLogin.css';
 
 const CreatorLogin = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -273,6 +277,9 @@ const CreatorLogin = () => {
           </div>
         </motion.div>
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

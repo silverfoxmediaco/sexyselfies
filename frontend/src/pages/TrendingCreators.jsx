@@ -7,10 +7,14 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './TrendingCreators.css';
 
 const TrendingCreators = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   
   // State management
   const [trendingCreators, setTrendingCreators] = useState([]);
@@ -434,6 +438,9 @@ const TrendingCreators = () => {
           <p>Check back later for trending creators</p>
         </div>
       )}
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

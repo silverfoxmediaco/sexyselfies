@@ -8,10 +8,14 @@ import {
   Camera, UserPlus, Star
 } from 'lucide-react';
 import authService from '../services/auth.service';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './MemberRegistration.css';
 
 const MemberRegistration = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   
   // Multi-step form state
   const [currentStep, setCurrentStep] = useState(1);
@@ -952,6 +956,9 @@ const MemberRegistration = () => {
           </div>
         </div>
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

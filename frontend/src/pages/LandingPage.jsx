@@ -13,11 +13,15 @@ import HowItWorks from "../components/HowItWorks.jsx";
 import SafetyAndStandards from "../components/SafetyAndStandards.jsx";
 import CreatorsKeepControl from "../components/CreatorsKeepControl.jsx";
 import FAQ from "../components/FAQ.jsx";
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 
 import "./LandingPage.css";
 
 
 export default function LandingPage({ logoSrc, onJoinWaitlist }) {
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [spotsLeft, setSpotsLeft] = React.useState(1200);
   const [liveOnline, setLiveOnline] = React.useState(387);
   const launchDate = React.useMemo(() => new Date("2025-09-15T17:00:00-05:00"), []);
@@ -168,6 +172,9 @@ export default function LandingPage({ logoSrc, onJoinWaitlist }) {
             {snack.msg}
           </Alert>
         </Snackbar>
+        
+        {/* Bottom Navigation - Mobile Only */}
+        {isMobile && <BottomNavigation userRole={userRole} />}
       </div>
   );
 }

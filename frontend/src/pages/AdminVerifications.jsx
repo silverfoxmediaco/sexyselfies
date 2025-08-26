@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdminHeader from '../components/AdminHeader';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './AdminVerifications.css';
 
 const AdminVerifications = () => {
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [verifications, setVerifications] = useState([]);
   const [selectedCreator, setSelectedCreator] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -448,6 +452,9 @@ const AdminVerifications = () => {
           </div>
         )}
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </>
   );
 };

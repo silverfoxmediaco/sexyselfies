@@ -7,10 +7,14 @@ import {
   TrendingUp, Clock, Award, Zap, SortAsc, SortDesc,
   UserPlus, ChevronRight, Activity, Crown, Heart
 } from 'lucide-react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorManageMembers.css';
 
 const CreatorManageMembers = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('totalSpent');
   const [sortOrder, setSortOrder] = useState('desc');
@@ -544,6 +548,9 @@ const CreatorManageMembers = () => {
           </motion.button>
         </div>
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

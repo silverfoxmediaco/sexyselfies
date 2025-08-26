@@ -6,10 +6,14 @@ import {
   Clock, ChevronRight, Eye, Gift, DollarSign, Calendar,
   MapPin, TrendingUp, Camera, MoreHorizontal
 } from 'lucide-react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorConnections.css';
 
 const CreatorConnections = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -451,6 +455,9 @@ const CreatorConnections = () => {
           </motion.button>
         </div>
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

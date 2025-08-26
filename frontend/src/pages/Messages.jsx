@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import socketService from '../services/socket.service';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './Messages.css';
 
 const Messages = () => {
   const navigate = (path) => window.location.href = path;
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [conversations, setConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -501,6 +505,9 @@ const Messages = () => {
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
         </svg>
       </button>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

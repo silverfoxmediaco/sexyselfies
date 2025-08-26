@@ -6,9 +6,13 @@ import {
   Eye, Share2, Bookmark, Send, Gift, Sparkles,
   ChevronLeft, ChevronRight, MoreHorizontal
 } from 'lucide-react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorProfilePreview.css';
 
 const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [viewMode, setViewMode] = useState('swipe'); // 'swipe' or 'profile'
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
@@ -443,6 +447,9 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
 
       {/* Unlock Modal */}
       <UnlockModal />
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

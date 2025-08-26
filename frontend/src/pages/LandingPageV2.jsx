@@ -8,8 +8,13 @@ import StartEarning from '../components/StartEarning';
 import CreatorSuccessStories from '../components/CreatorSuccessStories';
 import MainFAQ from '../components/MainFAQ';
 import ReadyToStartEarning from '../components/ReadyToStartEarning';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 
 const LandingPageV2 = () => {
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
+  
   return (
     <div className="landing-page-v2">
       {/* Main Navigation Header */}
@@ -43,6 +48,9 @@ const LandingPageV2 = () => {
 
       {/* Final CTA Component */}
       <ReadyToStartEarning />
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

@@ -9,9 +9,13 @@ import {
   Flame, Diamond, Trophy, Target, BarChart3
 } from 'lucide-react';
 import axios from 'axios';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './BrowseMembers.css';
 
 const BrowseMembers = () => {
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   // Core states for member discovery
   const [members, setMembers] = useState([]);
   const [filteredMembers, setFilteredMembers] = useState([]);
@@ -1134,6 +1138,9 @@ const BrowseMembers = () => {
           )}
         </AnimatePresence>
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

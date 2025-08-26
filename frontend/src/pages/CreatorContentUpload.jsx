@@ -6,12 +6,16 @@ import {
   Upload, X, Image, Video, DollarSign, Tag, Eye, EyeOff,
   AlertCircle, CheckCircle, Loader, Plus, Sparkles, TrendingUp,
   Calendar, Clock, FileText, Camera, Film, ArrowLeft, ArrowRight,
-  Save, Send, Info, Zap, Lock, Unlock, Star, Hash
+  Save, Send, Info, Zap, Lock, Unlock, Star, Hash, MessageCircle
 } from 'lucide-react';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorContentUpload.css';
 
 const CreatorContentUpload = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
@@ -835,6 +839,9 @@ const CreatorContentUpload = () => {
           )}
         </div>
       </div>
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

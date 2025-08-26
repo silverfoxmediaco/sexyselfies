@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import CreatorProfilePreview from './CreatorProfilePreview';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorProfileSetup.css';
 
 // Icons (using lucide-react or similar)
@@ -34,6 +36,8 @@ import {
 
 const CreatorProfileSetup = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [animationDirection, setAnimationDirection] = useState('forward');
@@ -1192,6 +1196,9 @@ const StepFive = ({ formData, setFormData, errors, aiSuggestions, onPreview }) =
       
       {errors.terms && <span className="error-message">{errors.terms}</span>}
       {errors.age && <span className="error-message">{errors.age}</span>}
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

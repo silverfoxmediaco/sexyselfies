@@ -2,12 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import ChatInput from '../components/ChatInput';
 import MessageBubble from '../components/MessageBubble';
 import socketService from '../services/socket.service';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './Chat.css';
 
 const Chat = () => {
   // Get connectionId from URL (e.g., /member/chat/123)
   const connectionId = window.location.pathname.split('/').pop();
   const navigate = (path) => window.location.href = path;
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -744,6 +748,9 @@ const Chat = () => {
         onStopTyping={handleStopTyping}
         disabled={isLoading}
       />
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };

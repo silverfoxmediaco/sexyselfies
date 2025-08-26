@@ -3,12 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { Heart, X, Star, RotateCcw, Info, Filter, Loader } from 'lucide-react';
 import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import memberService from '../services/member.service.js';
 import api from '../services/api.config.js';
 import './BrowseCreators.css';
 
 const BrowseCreators = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [creators, setCreators] = useState([]);
   const [filteredCreators, setFilteredCreators] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -625,6 +629,9 @@ const BrowseCreators = () => {
           userRole="member"
         />
       )}
+
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };
