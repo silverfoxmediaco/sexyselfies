@@ -18,7 +18,13 @@
 
 .success-container {
   text-align: center;
-  max-width: 600px;
+  max-width: var(--content-width-narrow);
+}
+
+@media (min-width: 1024px) {
+  .success-container {
+    max-width: var(--content-width-medium);
+  }
 }
 
 .verify-header {

@@ -332,8 +332,14 @@
 .step-header p {
   font-size: 16px;
   color: var(--text-secondary);
-  max-width: 500px;
+  max-width: var(--content-width-narrow);
   margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .step-header p {
+    max-width: var(--content-width-medium);
+  }
 }
 
 /* Photo upload section */

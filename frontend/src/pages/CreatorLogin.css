@@ -445,11 +445,18 @@
 @media (max-width: 968px) {
   .login-container {
     grid-template-columns: 1fr;
-    max-width: 500px;
+    max-width: var(--content-width-narrow);
   }
 
   .login-info-section {
     display: none;
+  }
+}
+
+/* Desktop expansion for better UX */
+@media (min-width: 1024px) {
+  .login-container {
+    max-width: var(--content-width-medium);
   }
 }
 

@@ -1,4 +1,5 @@
 @import './components/UI/ui.css';
+@import './styles/responsive-widths.css';
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
