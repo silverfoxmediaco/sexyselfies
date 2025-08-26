@@ -111,6 +111,21 @@ const memberSchema = new mongoose.Schema({
   lastActive: {
     type: Date,
     default: Date.now
+  },
+  profileComplete: {
+    type: Boolean,
+    default: false
+  },
+  displayName: String,
+  birthDate: Date,
+  phone: String,
+  agreeToTerms: {
+    type: Boolean,
+    default: false
+  },
+  marketingOptIn: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

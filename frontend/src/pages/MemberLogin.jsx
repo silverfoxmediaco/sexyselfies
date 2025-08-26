@@ -7,6 +7,7 @@ import {
   Facebook, Twitter, Instagram, ChevronRight,
   Check, Gift, ArrowLeft
 } from 'lucide-react';
+import authService from '../services/auth.service';
 import './MemberLogin.css';
 
 const MemberLogin = () => {
@@ -84,50 +85,49 @@ const MemberLogin = () => {
     setLoginError('');
     
     try {
-      // Use the correct backend URL (no v1 in path)
-      const API_URL = 'http://localhost:5002'; // Your backend port
-      const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          role: 'member'
-        }),
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        // Store auth data
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userRole', 'member');
-        localStorage.setItem('userId', data.user.id);
+      const response = await authService.memberLogin(
+        formData.email,
+        formData.password,
+        formData.rememberMe
+      );
+
+      if (response.data.success) {
+        console.log('Login successful:', response.data);
         
-        // Handle remember me
+        // Handle remember me (authService already handles token storage)
         if (formData.rememberMe) {
           localStorage.setItem('rememberedEmail', formData.email);
         } else {
           localStorage.removeItem('rememberedEmail');
         }
         
-        // Navigate to intended page or discover
-        navigate(from, { replace: true });
-      } else {
-        // Handle specific error cases
-        if (response.status === 401) {
-          setLoginError('Invalid email or password');
-        } else if (response.status === 423) {
-          setLoginError('Account locked. Please contact support.');
-        } else {
-          setLoginError(data.message || 'Login failed. Please try again.');
+        // Use backend's redirect logic
+        const redirectPath = response.data.redirectTo || '/member/browse-creators';
+        console.log('Redirecting to:', redirectPath);
+        
+        // Pass first-time setup flag if going to filters
+        const navigationOptions = { replace: true };
+        if (response.data.isFirstTimeSetup && redirectPath === '/member/filters') {
+          navigationOptions.state = { isFirstTime: true };
         }
+        
+        navigate(redirectPath, navigationOptions);
       }
     } catch (error) {
       console.error('Login error:', error);
-      setLoginError('Network error. Please check your connection.');
+      
+      if (error.error) {
+        // Handle auth service errors
+        if (error.code === 'INVALID_CREDENTIALS') {
+          setLoginError('Invalid email or password');
+        } else if (error.code === 'RATE_LIMITED') {
+          setLoginError('Too many login attempts. Please try again later.');
+        } else {
+          setLoginError(error.message || 'Login failed. Please try again.');
+        }
+      } else {
+        setLoginError('Network error. Please check your connection.');
+      }
     } finally {
       setIsLoading(false);
     }

@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   ChevronLeft, RotateCcw, Check, MapPin, Users, 
   Heart, Ruler, Globe, Calendar, Shield, Eye,
-  Sliders, X, Plus, Minus
+  Sliders, X, Plus, Minus, Sparkles
 } from 'lucide-react';
 import axios from 'axios';
 import './BrowseFilters.css';
 
 const BrowseFilters = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Check if this is first-time setup from login
+  const isFirstTimeSetup = location.state?.isFirstTime || false;
   
   // State for all filter options
   const [filters, setFilters] = useState({
@@ -223,10 +227,38 @@ const BrowseFilters = () => {
       
       setHasChanges(false);
       
-      // Navigate back
-      navigate(-1);
+      // Navigate based on context
+      if (isFirstTimeSetup) {
+        // Complete first-time setup and go to browse creators
+        await completeProfileSetup();
+      } else {
+        // Regular filter update - go back
+        navigate(-1);
+      }
     } catch (error) {
       console.error('Error saving filters:', error);
+    }
+  };
+
+  const completeProfileSetup = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Mark profile as complete
+        await axios.post('/api/v1/members/complete-profile', {}, {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+      
+      // Navigate to browse creators
+      navigate('/member/browse-creators', { replace: true });
+    } catch (error) {
+      console.error('Error completing profile setup:', error);
+      // Navigate anyway
+      navigate('/member/browse-creators', { replace: true });
     }
   };
 
@@ -260,7 +292,12 @@ const BrowseFilters = () => {
           <ChevronLeft size={24} />
         </button>
         
-        <h1 className="bf-title">Browse Preferences</h1>
+        <h1 className="bf-title">
+          {isFirstTimeSetup ? 'Complete Your Setup' : 'Browse Preferences'}
+        </h1>
+        {isFirstTimeSetup && (
+          <p className="bf-subtitle">Set your preferences to find the perfect creators</p>
+        )}
         
         <button 
           className="bf-reset-btn"
@@ -541,14 +578,29 @@ const BrowseFilters = () => {
 
       {/* Apply Button */}
       <div className="bf-footer">
+        {isFirstTimeSetup && (
+          <div className="bf-setup-message">
+            <Sparkles size={16} />
+            <span>Complete your setup to start discovering creators!</span>
+          </div>
+        )}
         <button 
-          className="bf-apply-btn"
+          className={`bf-apply-btn ${isFirstTimeSetup ? 'bf-setup-btn' : ''}`}
           onClick={applyFilters}
-          disabled={!hasChanges}
+          disabled={!hasChanges && !isFirstTimeSetup}
         >
-          Apply Filters
-          {activeFilterCount > 0 && (
-            <span className="bf-apply-count">{activeFilterCount}</span>
+          {isFirstTimeSetup ? (
+            <>
+              <Sparkles size={18} />
+              Start Discovering
+            </>
+          ) : (
+            <>
+              Apply Filters
+              {activeFilterCount > 0 && (
+                <span className="bf-apply-count">{activeFilterCount}</span>
+              )}
+            </>
           )}
         </button>
       </div>

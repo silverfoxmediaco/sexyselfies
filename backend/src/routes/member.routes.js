@@ -6,6 +6,7 @@ const {
   getMemberProfile,
   updateMemberProfile,
   updatePreferences,
+  completeProfile,
   purchaseContent,
   getPurchasedContent,
   likeCreator,
@@ -23,6 +24,7 @@ router.use(authorize('member')); // Only members can access these routes
 router.get('/profile', getMemberProfile);
 router.put('/profile', updateMemberProfile);
 router.put('/preferences', updatePreferences);
+router.post('/complete-profile', completeProfile);
 
 // ==========================================
 // CONTENT & PURCHASES (Direct Payment)

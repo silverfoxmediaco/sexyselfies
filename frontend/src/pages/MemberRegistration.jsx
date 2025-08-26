@@ -283,16 +283,17 @@ const MemberRegistration = () => {
       const response = await authService.memberRegister(registrationData);
       console.log('📥 Registration response:', response);
       
-      if (response && !response.error) {
+      if (response && response.data && response.data.success) {
         console.log('✅ Registration successful!');
-        // Show success message
-        alert('Registration successful! Welcome to SexySelfies!');
+        // Show success message - let them know to check email
+        alert(response.data.message || 'Registration successful! Please check your email to verify your account, then login.');
         
-        // Redirect to browse creators page
-        navigate('/member/browse-creators');
+        // Redirect to login page as per new flow
+        const redirectPath = response.data.redirectTo || '/member/login';
+        navigate(redirectPath);
       } else {
         console.log('❌ Registration failed:', response);
-        throw new Error(response.message || 'Registration failed');
+        throw new Error(response.message || response.data?.error || 'Registration failed');
       }
     } catch (error) {
       console.error('Registration error:', error);

@@ -3,13 +3,39 @@ const Creator = require('../models/Creator');
 const Member = require('../models/Member');
 const CreatorProfile = require('../models/CreatorProfile');
 const crypto = require('crypto');
+const { sendVerificationEmail } = require('../services/notification.service');
 
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
 exports.register = async (req, res, next) => {
   try {
-    const { email, password, role, username, displayName, phone } = req.body;
+    const { email, password, username, displayName, phone, birthDate, agreeToTerms, marketingOptIn } = req.body;
+
+    // Validate required fields for members
+    if (!email || !password || !username || !birthDate || !agreeToTerms) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email, password, username, birth date, and terms agreement are required'
+      });
+    }
+
+    // Age verification - must be 18+
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    if (age < 18) {
+      return res.status(400).json({
+        success: false,
+        error: 'You must be at least 18 years old to join'
+      });
+    }
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -20,43 +46,50 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    // Create user
-    const user = await User.create({
-      email,
-      password,
-      role: role || 'member'
-    });
-
-    // Create profile based on role
-    if (role === 'creator') {
-      await Creator.create({
-        user: user._id,
-        displayName: displayName || username,
-        bio: '',
-        contentPrice: 2.99,
-        isVerified: false,
-        profileComplete: false,
-        idVerificationSubmitted: false
-      });
-    } else {
-      // Check if username is taken
-      const usernameExists = await Member.findOne({ username });
-      if (usernameExists) {
-        await User.findByIdAndDelete(user._id);
-        return res.status(400).json({
-          success: false,
-          error: 'Username already taken'
-        });
-      }
-
-      await Member.create({
-        user: user._id,
-        username,
-        credits: 10 // Welcome bonus
+    // Check if username is taken
+    const usernameExists = await Member.findOne({ username });
+    if (usernameExists) {
+      return res.status(400).json({
+        success: false,
+        error: 'Username already taken'
       });
     }
 
-    sendTokenResponse(user, 201, res);
+    // Create user (member role)
+    const user = await User.create({
+      email,
+      password,
+      role: 'member',
+      isEmailVerified: false
+    });
+
+    // Create member profile
+    await Member.create({
+      user: user._id,
+      username,
+      displayName: displayName || username,
+      birthDate: new Date(birthDate),
+      phone: phone || undefined,
+      agreeToTerms: true,
+      marketingOptIn: marketingOptIn || false,
+      credits: 10, // Welcome bonus
+      profileComplete: false // They need to complete profile setup
+    });
+
+    // Send welcome email with login link
+    try {
+      await sendVerificationEmail(email, null, username);
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError);
+      // Don't fail registration if email fails
+    }
+
+    // Return success - no token, they need to login
+    res.status(201).json({
+      success: true,
+      message: 'Registration successful! Please check your email and then login to complete your profile.',
+      redirectTo: '/member/login'
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -109,8 +142,9 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Update last login
+    // Update last login and mark email as verified
     user.lastLogin = Date.now();
+    user.isEmailVerified = true;
     await user.save();
 
     // For creators, check profile completion and verification status
@@ -157,7 +191,25 @@ exports.login = async (req, res, next) => {
         additionalData.redirectTo = '/creator/verify-id';
       }
     } else if (user.role === 'member') {
-      additionalData.redirectTo = '/member/discover';
+      const member = await Member.findOne({ user: user._id });
+      if (member) {
+        if (!member.profileComplete) {
+          // First-time login - redirect to filters/preferences setup
+          additionalData.redirectTo = '/member/filters';
+          additionalData.profileComplete = false;
+          additionalData.isFirstTimeSetup = true;
+        } else {
+          // Profile is complete - go to browse creators
+          additionalData.redirectTo = '/member/browse-creators';
+          additionalData.profileComplete = true;
+        }
+        additionalData.credits = member.credits;
+        additionalData.username = member.username;
+      } else {
+        // No member profile found - shouldn't happen but handle gracefully
+        additionalData.redirectTo = '/member/profile-setup';
+        additionalData.profileComplete = false;
+      }
     } else if (user.role === 'admin') {
       additionalData.redirectTo = '/admin';
     }

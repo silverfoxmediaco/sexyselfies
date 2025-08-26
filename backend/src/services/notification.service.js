@@ -499,6 +499,85 @@ exports.cleanupOldNotifications = async (daysToKeep = 30) => {
 };
 
 // ============================================
+// EMAIL VERIFICATION
+// ============================================
+
+/**
+ * Send welcome email with login link
+ */
+exports.sendVerificationEmail = async (email, verificationToken, username) => {
+  if (!emailTransporter) {
+    console.log('Email transporter not configured');
+    return;
+  }
+
+  const loginUrl = `${process.env.APP_URL || 'http://localhost:5173'}/member/login`;
+  
+  const mailOptions = {
+    from: `${process.env.APP_NAME || 'SexySelfies'} <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'Welcome to SexySelfies! Complete your setup',
+    html: this.generateWelcomeEmailTemplate(username, loginUrl)
+  };
+  
+  try {
+    await emailTransporter.sendMail(mailOptions);
+    return { success: true };
+  } catch (error) {
+    console.error('Welcome email failed:', error);
+    throw error;
+  }
+};
+
+/**
+ * Generate welcome email template
+ */
+exports.generateWelcomeEmailTemplate = (username, loginUrl) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #17D2C2 0%, #12B7AB 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: white; padding: 30px; border: 1px solid #e0e0e0; border-radius: 0 0 10px 10px; }
+        .button { display: inline-block; padding: 15px 40px; background: #17D2C2; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        .welcome { font-size: 18px; margin-bottom: 20px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Welcome to ${process.env.APP_NAME || 'SexySelfies'}!</h1>
+        </div>
+        <div class="content">
+          <p class="welcome">Hi ${username},</p>
+          <p>🎉 Congratulations! Your account has been created successfully.</p>
+          <p>To start discovering amazing creators and complete your profile setup, please click the button below to login:</p>
+          <div style="text-align: center;">
+            <a href="${loginUrl}" class="button">Verify & Login</a>
+          </div>
+          <p>Once you login, you'll be guided through:</p>
+          <ul>
+            <li>✨ Profile setup</li>
+            <li>🔍 Browse preferences</li>
+            <li>💫 Start discovering creators</li>
+          </ul>
+          <p>Welcome to the community! 🚀</p>
+        </div>
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} ${process.env.APP_NAME || 'SexySelfies'}. All rights reserved.</p>
+          <p>If you didn't create this account, please ignore this email.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+// ============================================
 // EMAIL TEMPLATES
 // ============================================
 

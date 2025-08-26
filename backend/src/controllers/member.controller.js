@@ -461,4 +461,37 @@ exports.getConnections = async (req, res, next) => {
   }
 };
 
+// @desc    Mark member profile as complete
+// @route   POST /api/members/complete-profile
+// @access  Private (Member only)
+exports.completeProfile = async (req, res, next) => {
+  try {
+    const member = await Member.findOneAndUpdate(
+      { user: req.user.id },
+      { profileComplete: true },
+      { new: true }
+    );
+
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        error: 'Member profile not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        profileComplete: true,
+        message: 'Profile setup completed successfully!'
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
 module.exports = exports;

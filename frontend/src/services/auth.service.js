@@ -14,24 +14,20 @@ class AuthService {
    */
   async memberRegister(data) {
     try {
-      const response = await api.post('/auth/member/register', {
+      const response = await api.post('/auth/register', {
         email: data.email,
         password: data.password,
-        confirmPassword: data.confirmPassword,
+        role: 'member',
         username: data.username,
-        birthDate: data.birthDate,
+        displayName: data.displayName || data.username,
+        phone: data.phone || undefined,
+        birthDate: data.birthDate, // ESSENTIAL: Age verification
         agreeToTerms: data.agreeToTerms,
-        marketingOptIn: data.marketingOptIn || false,
-        referralCode: data.referralCode || null,
-        deviceInfo: {
-          platform: navigator.platform,
-          userAgent: navigator.userAgent,
-          screenResolution: `${window.screen.width}x${window.screen.height}`,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-        }
+        marketingOptIn: data.marketingOptIn || false
       });
 
-      // Store tokens and user info
+      // For new registration flow, no token is returned
+      // User must verify email and login separately
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('memberToken', response.data.token);
@@ -52,7 +48,7 @@ class AuthService {
    */
   async memberLogin(email, password, rememberMe = false) {
     try {
-      const response = await api.post('/auth/member/login', {
+      const response = await api.post('/auth/login', {
         email,
         password,
         rememberMe,
