@@ -6,12 +6,15 @@ import {
   ChevronLeft, ChevronRight, BarChart3, PieChart, Activity,
   Target, Award, Zap, ArrowUp, ArrowDown, Minus
 } from 'lucide-react';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './CreatorAnalytics.css';
 
 const CreatorAnalytics = () => {
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [selectedPeriod, setSelectedPeriod] = useState('7d');
   const [loading, setLoading] = useState(true);
@@ -166,6 +169,8 @@ const CreatorAnalytics = () => {
 
   return (
     <div className="creator-analytics">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       {/* Header */}
       <div className="analytics-header">
         <div className="analytics-header-content">
@@ -486,6 +491,9 @@ const CreatorAnalytics = () => {
           </motion.button>
         </div>
       </div>
+
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

@@ -6,13 +6,16 @@ import {
   Mail, Lock, Eye, EyeOff, LogIn, 
   ArrowRight, Sparkles, Heart, DollarSign 
 } from 'lucide-react';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './CreatorLogin.css';
 
 const CreatorLogin = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [formData, setFormData] = useState({
     email: '',
@@ -98,6 +101,8 @@ const CreatorLogin = () => {
 
   return (
     <div className="creator-login-page">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       {/* Background Animation */}
       <div className="login-bg">
         <div className="bg-gradient-1"></div>
@@ -277,6 +282,9 @@ const CreatorLogin = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

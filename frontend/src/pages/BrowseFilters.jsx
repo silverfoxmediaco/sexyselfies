@@ -6,14 +6,17 @@ import {
   Sliders, X, Plus, Minus, Sparkles
 } from 'lucide-react';
 import axios from 'axios';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './BrowseFilters.css';
 
 const BrowseFilters = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   
   // Check if this is first-time setup from login
@@ -276,16 +279,22 @@ const BrowseFilters = () => {
   if (isLoading) {
     return (
       <div className="bf-container">
+        {/* Desktop Header */}
+        {isDesktop && <MainHeader />}
         <div className="bf-loading">
           <div className="bf-loading-spinner"></div>
           <p>Loading preferences...</p>
         </div>
+        {/* Desktop Footer */}
+        {isDesktop && <MainFooter />}
       </div>
     );
   }
 
   return (
     <div className="bf-container">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       {/* Header */}
       <header className="bf-header">
         <button 
@@ -608,6 +617,9 @@ const BrowseFilters = () => {
           )}
         </button>
       </div>
+      
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

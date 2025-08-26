@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './AdminLogin.css';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [formData, setFormData] = useState({
     email: '',
@@ -60,6 +63,8 @@ const AdminLogin = () => {
 
   return (
     <div className="admin-login-container">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       <div className="admin-login-wrapper">
         <div className="admin-login-card">
           {/* Logo and Title */}
@@ -155,6 +160,9 @@ const AdminLogin = () => {
           <div className="bg-gradient-2"></div>
         </div>
       </div>
+      
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

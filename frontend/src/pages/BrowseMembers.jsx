@@ -9,12 +9,15 @@ import {
   Flame, Diamond, Trophy, Target, BarChart3
 } from 'lucide-react';
 import axios from 'axios';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './BrowseMembers.css';
 
 const BrowseMembers = () => {
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   // Core states for member discovery
   const [members, setMembers] = useState([]);
@@ -650,6 +653,8 @@ const BrowseMembers = () => {
 
   return (
     <div className="browse-members-page">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       <div className="discovery-container">
         {/* Analytics Cards */}
         <div className="analytics-cards">
@@ -1138,6 +1143,9 @@ const BrowseMembers = () => {
           )}
         </AnimatePresence>
       </div>
+      
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

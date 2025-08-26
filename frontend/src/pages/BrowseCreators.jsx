@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Heart, X, Star, RotateCcw, Info, Filter, Loader } from 'lucide-react';
 import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import memberService from '../services/member.service.js';
 import api from '../services/api.config.js';
 import './BrowseCreators.css';
@@ -12,6 +14,7 @@ import './BrowseCreators.css';
 const BrowseCreators = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [creators, setCreators] = useState([]);
   const [filteredCreators, setFilteredCreators] = useState([]);
@@ -504,6 +507,8 @@ const BrowseCreators = () => {
   if (!currentCreator && filteredCreators.length === 0 && hasActiveFilters) {
     return (
       <div className="browse-creators-page">
+        {/* Desktop Header */}
+        {isDesktop && <MainHeader />}
         <div className="browse-creators-no-results">
           <Filter size={60} />
           <h2>No creators match your preferences</h2>
@@ -512,6 +517,8 @@ const BrowseCreators = () => {
             Reset Filters
           </button>
         </div>
+        {/* Desktop Footer */}
+        {isDesktop && <MainFooter />}
       </div>
     );
   }
@@ -520,6 +527,8 @@ const BrowseCreators = () => {
   if (!currentCreator) {
     return (
       <div className="browse-creators-page">
+        {/* Desktop Header */}
+        {isDesktop && <MainHeader />}
         <div className="browse-creators-no-more-cards">
           <Star size={60} />
           <h2>No more profiles</h2>
@@ -528,12 +537,16 @@ const BrowseCreators = () => {
             Refresh
           </button>
         </div>
+        {/* Desktop Footer */}
+        {isDesktop && <MainFooter />}
       </div>
     );
   }
 
   return (
     <div className="browse-creators-page">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       {/* Card Stack using SwipeCard component */}
       <div className="browse-creators-card-stack">
         {filteredCreators.slice(currentIndex, currentIndex + 3).map((creator, index) => (
@@ -630,6 +643,9 @@ const BrowseCreators = () => {
         />
       )}
 
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
+      
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>

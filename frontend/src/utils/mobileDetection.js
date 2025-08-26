@@ -16,6 +16,22 @@ export const useIsMobile = () => {
   return isMobile;
 };
 
+// Hook to detect desktop devices
+export const useIsDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+
+  useEffect(() => {
+    const checkViewport = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    window.addEventListener('resize', checkViewport);
+    return () => window.removeEventListener('resize', checkViewport);
+  }, []);
+
+  return isDesktop;
+};
+
 // Get user role from localStorage
 export const getUserRole = () => {
   return localStorage.getItem('userRole');

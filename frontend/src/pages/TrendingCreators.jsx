@@ -7,13 +7,16 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './TrendingCreators.css';
 
 const TrendingCreators = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   
   // State management
@@ -258,6 +261,8 @@ const TrendingCreators = () => {
 
   return (
     <div className="trending-creators-page">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       {/* Header */}
       <div className="trending-header">
         <button 
@@ -438,6 +443,9 @@ const TrendingCreators = () => {
           <p>Check back later for trending creators</p>
         </div>
       )}
+
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

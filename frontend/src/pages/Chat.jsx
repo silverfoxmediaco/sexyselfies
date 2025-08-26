@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import ChatInput from '../components/ChatInput';
 import MessageBubble from '../components/MessageBubble';
 import socketService from '../services/socket.service';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './Chat.css';
 
 const Chat = () => {
@@ -11,6 +13,7 @@ const Chat = () => {
   const connectionId = window.location.pathname.split('/').pop();
   const navigate = (path) => window.location.href = path;
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   
   const [messages, setMessages] = useState([]);
@@ -625,6 +628,8 @@ const Chat = () => {
   
   return (
     <div className="chat-container">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       {/* Header */}
       <div className="chat-header">
         <button 
@@ -748,6 +753,9 @@ const Chat = () => {
         onStopTyping={handleStopTyping}
         disabled={isLoading}
       />
+      
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

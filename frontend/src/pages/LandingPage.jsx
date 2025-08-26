@@ -13,14 +13,17 @@ import HowItWorks from "../components/HowItWorks.jsx";
 import SafetyAndStandards from "../components/SafetyAndStandards.jsx";
 import CreatorsKeepControl from "../components/CreatorsKeepControl.jsx";
 import FAQ from "../components/FAQ.jsx";
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 
 import "./LandingPage.css";
 
 
 export default function LandingPage({ logoSrc, onJoinWaitlist }) {
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [spotsLeft, setSpotsLeft] = React.useState(1200);
   const [liveOnline, setLiveOnline] = React.useState(387);
@@ -76,6 +79,8 @@ export default function LandingPage({ logoSrc, onJoinWaitlist }) {
 
   return (
       <div className="page hero-gradient-bg">
+        {/* Desktop Header */}
+        {isDesktop && <MainHeader />}
         <div className="container">
           <div className="glass-bar">
             <div className="bar-left">
@@ -172,6 +177,9 @@ export default function LandingPage({ logoSrc, onJoinWaitlist }) {
             {snack.msg}
           </Alert>
         </Snackbar>
+        
+        {/* Desktop Footer */}
+        {isDesktop && <MainFooter />}
         
         {/* Bottom Navigation - Mobile Only */}
         {isMobile && <BottomNavigation userRole={userRole} />}

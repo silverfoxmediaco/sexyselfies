@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import AdminHeader from '../components/AdminHeader';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -48,6 +51,8 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       {/* Admin Header Navigation */}
       <AdminHeader />
 
@@ -161,6 +166,9 @@ const AdminDashboard = () => {
         {/* Outlet for nested routes */}
         {location.pathname !== '/admin' && <Outlet />}
       </main>
+      
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

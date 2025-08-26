@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdminHeader from '../components/AdminHeader';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './AdminVerifications.css';
 
 const AdminVerifications = () => {
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [verifications, setVerifications] = useState([]);
   const [selectedCreator, setSelectedCreator] = useState(null);
@@ -194,6 +197,8 @@ const AdminVerifications = () => {
 
   return (
     <>
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       {/* Admin Navigation Header */}
       <AdminHeader />
       
@@ -452,6 +457,9 @@ const AdminVerifications = () => {
           </div>
         )}
       </div>
+      
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

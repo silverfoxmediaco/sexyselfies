@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdminHeader from '../components/AdminHeader';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './AdminContent.css';
 
 const AdminContent = () => {
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [content, setContent] = useState([]);
   const [selectedContent, setSelectedContent] = useState(null);
@@ -234,6 +237,8 @@ const AdminContent = () => {
 
   return (
     <div className="admin-content-page">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       <AdminHeader />
       
       {/* Header */}
@@ -741,6 +746,9 @@ const AdminContent = () => {
           </div>
         </div>
       )}
+      
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

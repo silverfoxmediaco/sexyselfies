@@ -1,6 +1,7 @@
 import React from 'react';
 import './LandingPageV2.css';
 import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import SwipeConnectMonetize from '../components/SwipeConnectMonetize';
 import PhoneSampleImage from '../components/PhoneSampleImage';
 import WhyCreatorsLoveUs from '../components/WhyCreatorsLoveUs';
@@ -9,16 +10,17 @@ import CreatorSuccessStories from '../components/CreatorSuccessStories';
 import MainFAQ from '../components/MainFAQ';
 import ReadyToStartEarning from '../components/ReadyToStartEarning';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 
 const LandingPageV2 = () => {
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   
   return (
     <div className="landing-page-v2">
-      {/* Main Navigation Header */}
-      <MainHeader />
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       
       {/* Animated Background */}
       <div className="animated-bg">
@@ -48,6 +50,9 @@ const LandingPageV2 = () => {
 
       {/* Final CTA Component */}
       <ReadyToStartEarning />
+      
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

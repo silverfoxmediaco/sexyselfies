@@ -6,13 +6,16 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './Favorites.css';
 
 const Favorites = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   
   // State management
@@ -338,6 +341,8 @@ const Favorites = () => {
 
   return (
     <div className="favorites-page">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
       {/* Header */}
       <div className="favorites-header">
         <button 
@@ -603,6 +608,9 @@ const Favorites = () => {
           </div>
         )}
       </div>
+
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
