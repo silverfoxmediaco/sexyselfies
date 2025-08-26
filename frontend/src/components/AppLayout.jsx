@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import BottomNavigation from './BottomNavigation';
 import MainHeader from './MainHeader';
 import MainFooter from './MainFooter';
-import { DevModeIndicator, DEV_MODE } from './DevHelpers';
 import './AppLayout.css';
 
 const AppLayout = ({ children }) => {
@@ -78,32 +77,8 @@ const AppLayout = ({ children }) => {
 
   // Update on location change
   useEffect(() => {
-    // In DEV_MODE, auto-set role based on current path
-    if (DEV_MODE) {
-      const path = location.pathname;
-      let newRole = localStorage.getItem('userRole');
-      
-      // Auto-detect role from URL
-      if (path.startsWith('/admin')) {
-        newRole = 'admin';
-      } else if (path.startsWith('/creator')) {
-        newRole = 'creator';
-      } else if (path.startsWith('/member')) {
-        newRole = 'member';
-      }
-      
-      // Update role if it changed
-      const currentRole = localStorage.getItem('userRole');
-      if (newRole && newRole !== currentRole) {
-        localStorage.setItem('userRole', newRole);
-        console.log(`🔧 DEV MODE: Auto-switched to ${newRole} role based on URL`);
-      }
-      
-      setUserRole(newRole);
-    } else {
-      // Production mode - just get the stored role
-      setUserRole(localStorage.getItem('userRole'));
-    }
+    // Production mode - get the stored role
+    setUserRole(localStorage.getItem('userRole'));
   }, [location]);
 
   // Determine what to show
@@ -134,7 +109,6 @@ const AppLayout = ({ children }) => {
   if (isMobile) {
     return (
       <div className="app-layout mobile-layout">
-        <DevModeIndicator />
         
         {/* Mobile Header - Show when needed */}
         {showHeader && <MainHeader />}
@@ -160,7 +134,6 @@ const AppLayout = ({ children }) => {
   // DESKTOP LAYOUT
   return (
     <div className="app-layout desktop-layout">
-      <DevModeIndicator />
       
       {/* Desktop Header - Not on admin pages */}
       {showHeader && <MainHeader />}

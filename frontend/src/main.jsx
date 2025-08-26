@@ -25,11 +25,9 @@ import AppLayout from './components/AppLayout';
 
 // Import Dev Helpers
 import { 
-  DEV_MODE, 
   ProtectedCreatorRoute, 
   ProtectedMemberRoute, 
-  ComingSoon, 
-  DevModeIndicator 
+  ComingSoon
 } from './components/DevHelpers';
 
 // Import Admin pages (all exist)
@@ -80,29 +78,6 @@ import Library from './components/Library';
 import LandingPage from './pages/LandingPage';
 import LandingPageV2 from './pages/LandingPageV2';
 
-// Set fake dev credentials if in dev mode
-if (DEV_MODE) {
-  // Only set token if not already set
-  if (!localStorage.getItem('token')) {
-    localStorage.setItem('token', 'dev-token-12345');
-    localStorage.setItem('userId', 'dev-user-123');
-    
-    // Detect initial role from URL
-    const path = window.location.pathname;
-    let initialRole = 'member'; // default
-    
-    if (path.startsWith('/admin')) {
-      initialRole = 'admin';
-    } else if (path.startsWith('/creator')) {
-      initialRole = 'creator';
-    } else if (path.startsWith('/member')) {
-      initialRole = 'member';
-    }
-    
-    localStorage.setItem('userRole', initialRole);
-    console.log('🔧 DEV MODE: Auto-login enabled as', initialRole, 'based on URL');
-  }
-}
 
 console.log('🎯 Mounting React App to root element...');
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -470,7 +445,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           </Route>
         </Routes>
       </AppLayout>
-      {/* Removed duplicate DevModeIndicator - it's already in AppLayout */}
     </BrowserRouter>
   </React.StrictMode>
 );
