@@ -486,12 +486,15 @@
 /* Desktop Support */
 @media (min-width: 1025px) {
   .my-connections-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
+    padding: 0 2rem;
   }
 
   .connections-header {
     padding: 24px;
+    /* Account for MainHeader on desktop */
+    top: 64px;
   }
 
   .connections-list {
