@@ -255,11 +255,11 @@ class CreatorService {
   // ==========================================
   
   /**
-   * Discover high-value members to target
+   * Browse high-value members to target
    */
-  async discoverMembers(filters = {}) {
+  async browseMembers(filters = {}) {
     try {
-      const response = await api.get('/api/creator/members/discover', {
+      const response = await api.get('/api/creator/members/browse', {
         params: {
           spending_tier: filters.spending_tier, // 'whale', 'vip', 'regular', 'new'
           activity_level: filters.activity_level, // 'very_active', 'active', 'moderate', 'inactive'
@@ -612,16 +612,56 @@ class CreatorService {
     }
   }
 
+  /**
+   * Get dashboard overview data
+   */
+  async getDashboardData(period = '7d') {
+    try {
+      const response = await api.get('/api/creator/analytics', {
+        params: { period, compare: false }
+      });
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Get real-time dashboard metrics
+   */
+  async getRealTimeMetrics() {
+    try {
+      const response = await api.get('/api/creator/analytics/realtime');
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Get recent dashboard activity
+   */
+  async getRecentActivity(limit = 10) {
+    try {
+      const response = await api.get('/api/creator/messages/analytics', {
+        params: { limit, recent: true }
+      });
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   // ==========================================
-  // MATCHES & DISCOVERY
+  // CONNECTIONS & BROWSE
   // ==========================================
   
   /**
-   * Get matches (mutual likes with members)
+   * Get connections (mutual likes with members)
    */
-  async getMatches(params = {}) {
+  async getConnections(params = {}) {
     try {
-      const response = await api.get('/api/creator/matches', {
+      const response = await api.get('/api/creator/connections', {
         params: {
           filter: params.filter || 'all', // 'all', 'new', 'subscribed', 'high_value'
           sort: params.sort || 'recent',
@@ -636,11 +676,11 @@ class CreatorService {
   }
 
   /**
-   * Get match suggestions
+   * Get browse suggestions
    */
-  async getMatchSuggestions() {
+  async getBrowseSuggestions() {
     try {
-      const response = await api.get('/api/creator/matches/suggestions');
+      const response = await api.get('/api/creator/connections/suggestions');
       return response;
     } catch (error) {
       throw this.handleError(error);

@@ -88,14 +88,14 @@ class MemberService {
    */
   async getSwipeStack(params = {}) {
     try {
-      const response = await api.get('/connections/stack', {
+      const response = await api.get('/api/v1/connections/stack', {
         params
       });
       return response;
     } catch (error) {
       // If the first endpoint fails, try the alternative
       try {
-        const fallbackResponse = await api.get('/api/member/discover', {
+        const fallbackResponse = await api.get('/api/v1/member/discover', {
           params
         });
         return fallbackResponse;
@@ -110,7 +110,7 @@ class MemberService {
    */
   async swipeAction(creatorId, action) {
     try {
-      const response = await api.post('/connections/swipe', {
+      const response = await api.post('/api/v1/connections/swipe', {
         creatorId,
         action // 'like', 'pass', 'superlike'
       });
