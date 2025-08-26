@@ -1,25 +1,32 @@
 /* CreatorDashboard.css - Premium Dashboard Styling */
 
-/* Hide Main Header only on creator dashboard page */
-.creator-dashboard .mainheader-navbar,
-.creator-dashboard-container .mainheader-navbar {
-  display: none !important;
+/* Hide Main Header only on mobile creator dashboard */
+@media (max-width: 1023px) {
+  .creator-dashboard .mainheader-navbar,
+  .creator-dashboard-container .mainheader-navbar,
+  .creator-dashboard .main-header,
+  .creator-dashboard .mainheader,
+  .creator-dashboard .header-navbar,
+  .creator-dashboard .navbar-header,
+  .creator-dashboard .top-header,
+  .creator-dashboard .site-header,
+  .creator-dashboard-container .main-header,
+  .creator-dashboard-container .mainheader,
+  .creator-dashboard-container .header-navbar,
+  .creator-dashboard-container .navbar-header,
+  .creator-dashboard-container .top-header,
+  .creator-dashboard-container .site-header {
+    display: none !important;
+  }
 }
 
-/* Also hide any other potential header classes - only on creator dashboard */
-.creator-dashboard .main-header,
-.creator-dashboard .mainheader,
-.creator-dashboard .header-navbar,
-.creator-dashboard .navbar-header,
-.creator-dashboard .top-header,
-.creator-dashboard .site-header,
-.creator-dashboard-container .main-header,
-.creator-dashboard-container .mainheader,
-.creator-dashboard-container .header-navbar,
-.creator-dashboard-container .navbar-header,
-.creator-dashboard-container .top-header,
-.creator-dashboard-container .site-header {
-  display: none !important;
+/* Allow MainHeader and MainFooter on desktop */
+@media (min-width: 1024px) {
+  .creator-dashboard .mainheader-navbar,
+  .creator-dashboard .main-header,
+  .creator-dashboard .mainheader {
+    display: block !important;
+  }
 }
 
 /* Base Dashboard Container */

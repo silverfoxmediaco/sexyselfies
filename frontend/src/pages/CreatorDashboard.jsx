@@ -8,12 +8,15 @@ import {
   Upload, ArrowUp, ArrowDown, 
   Camera, Video, Star, ShoppingBag
 } from 'lucide-react';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 
 const CreatorDashboard = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [timeRange, setTimeRange] = useState('7d');
   const [isLoading, setIsLoading] = useState(true);
@@ -390,7 +393,9 @@ const CreatorDashboard = () => {
   }
 
   return (
-    <div className="creator-dashboard">
+    <>
+      {isDesktop && <MainHeader />}
+      <div className="creator-dashboard">
       {/* Dashboard Header - SIMPLIFIED WITHOUT ACTION BUTTONS */}
       <div className="dashboard-header">
         <div className="dashboard-header-content">
@@ -505,6 +510,8 @@ const CreatorDashboard = () => {
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
+    {isDesktop && <MainFooter />}
+    </>
   );
 };
 
