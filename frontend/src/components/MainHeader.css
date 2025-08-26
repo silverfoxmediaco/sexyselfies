@@ -236,6 +236,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* High contrast styling for visibility on dark backgrounds */
+  background: #FF3B30 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #0A0A0A;
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.4);
+  font-weight: 700;
 }
 
 /* Mobile Menu Divider */
