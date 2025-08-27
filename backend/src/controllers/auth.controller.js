@@ -10,7 +10,7 @@ const { sendVerificationEmail } = require('../services/notification.service');
 // @access  Public
 exports.register = async (req, res, next) => {
   try {
-    const { email, password, username, displayName, phone, birthDate, agreeToTerms, marketingOptIn } = req.body;
+    const { email, password, username, displayName, phone, birthDate, agreeToTerms } = req.body;
 
     // Validate required fields for members
     if (!email || !password || !username || !birthDate || !agreeToTerms) {
@@ -71,8 +71,6 @@ exports.register = async (req, res, next) => {
       birthDate: new Date(birthDate),
       phone: phone || undefined,
       agreeToTerms: true,
-      marketingOptIn: marketingOptIn || false,
-      credits: 10, // Welcome bonus
       profileComplete: false // They need to complete profile setup
     });
 

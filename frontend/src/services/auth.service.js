@@ -22,8 +22,7 @@ class AuthService {
         displayName: data.displayName || data.username,
         phone: data.phone || undefined,
         birthDate: data.birthDate, // ESSENTIAL: Age verification
-        agreeToTerms: data.agreeToTerms,
-        marketingOptIn: data.marketingOptIn || false
+        agreeToTerms: data.agreeToTerms
       });
 
       // For new registration flow, no token is returned

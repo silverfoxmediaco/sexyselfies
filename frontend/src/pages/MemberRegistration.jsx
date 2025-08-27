@@ -276,10 +276,10 @@ const MemberRegistration = () => {
         email: formData.email,
         username: formData.username,
         password: formData.password,
-        confirmPassword: formData.confirmPassword,
+        displayName: formData.username,
+        phone: formData.phone || undefined,
         birthDate: formData.dateOfBirth,
-        agreeToTerms: formData.agreedToTerms,
-        marketingOptIn: formData.subscribeNewsletter
+        agreeToTerms: formData.agreedToTerms
       };
       
       // API call to register using auth service
