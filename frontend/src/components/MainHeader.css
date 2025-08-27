@@ -469,7 +469,7 @@
     background: transparent;
     border: 1px solid var(--mainheader-border-color);
     border-radius: var(--mainheader-radius);
-    color: var(--mainheader-text-secondary);
+    color: var(--mainheader-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
   }
