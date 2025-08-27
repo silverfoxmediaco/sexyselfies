@@ -73,8 +73,7 @@ const MemberRegistration = () => {
   const memberBenefits = [
     { icon: <Heart size={20} />, title: 'Unlimited Matches', description: 'Connect with creators you love' },
     { icon: <Shield size={20} />, title: 'Verified Profiles', description: 'All creators are ID verified' },
-    { icon: <CreditCard size={20} />, title: 'Secure Payments', description: 'Safe & encrypted transactions' },
-    { icon: <Gift size={20} />, title: 'Welcome Bonus', description: '10 free credits to start' }
+    { icon: <CreditCard size={20} />, title: 'Secure Payments', description: 'Safe & encrypted transactions' }
   ];
   
   // Validate email
