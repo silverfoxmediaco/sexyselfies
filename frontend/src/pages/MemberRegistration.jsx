@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Mail, Lock, Eye, EyeOff, Phone, Calendar,
   ChevronRight, ChevronLeft, Check, X, AlertCircle,
-  Heart, Shield, CreditCard, Users, Sparkles, Gift,
+  Heart, Shield, CreditCard, Users, Sparkles,
   Camera, UserPlus, Star
 } from 'lucide-react';
 import authService from '../services/auth.service';
