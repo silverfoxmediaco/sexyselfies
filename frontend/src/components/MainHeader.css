@@ -473,6 +473,11 @@
     cursor: pointer;
     transition: all 0.2s ease;
   }
+
+  .mainheader-icon-btn svg {
+    color: var(--mainheader-text-primary) !important;
+    stroke: var(--mainheader-text-primary) !important;
+  }
   
   .mainheader-icon-btn:hover {
     background: var(--mainheader-bg-tertiary);
