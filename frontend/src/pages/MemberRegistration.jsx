@@ -45,8 +45,7 @@ const MemberRegistration = () => {
     // Step 4: Verification
     agreedToTerms: false,
     agreedToAge: false,
-    enableNotifications: true,
-    subscribeNewsletter: false
+    enableNotifications: true
   });
   
   // UI States
@@ -790,26 +789,8 @@ const MemberRegistration = () => {
                 <span>Enable push notifications for matches and messages</span>
               </label>
               
-              <label className="memberreg-checkbox-option large">
-                <input
-                  type="checkbox"
-                  name="subscribeNewsletter"
-                  checked={formData.subscribeNewsletter}
-                  onChange={handleInputChange}
-                />
-                <span className="checkbox-custom"></span>
-                <span>Subscribe to newsletter for exclusive offers</span>
-              </label>
             </div>
             
-            {/* Welcome Bonus Info */}
-            <div className="memberreg-bonus-info">
-              <Gift size={24} />
-              <div>
-                <h4>Welcome Bonus!</h4>
-                <p>You'll receive 10 free credits after registration to start exploring content</p>
-              </div>
-            </div>
             
             {/* Submit Error */}
             {errors.submit && (
