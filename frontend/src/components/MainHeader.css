@@ -51,7 +51,6 @@
 }
 
 .mainheader-container {
-  max-width: 1440px;
   margin: 0 auto;
   padding: 0 var(--mainheader-spacing-md);
   height: 100%;
@@ -134,7 +133,6 @@
 
 .mobile-menu-content {
   padding: var(--mainheader-spacing-lg);
-  max-width: 500px;
   margin: 0 auto;
 }
 
@@ -592,10 +590,6 @@
 
 /* Large Desktop - 1440px and up */
 @media (min-width: 1440px) {
-  .mainheader-container {
-    max-width: 1440px;
-  }
-  
   .mainheader-logo-img {
     height: 40px;
   }
