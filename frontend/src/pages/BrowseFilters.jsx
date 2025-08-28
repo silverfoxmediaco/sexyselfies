@@ -414,14 +414,16 @@ const BrowseFilters = () => {
                 <span className="bf-distance-value">{filters.distance}</span>
                 <span className="bf-distance-unit">miles</span>
               </div>
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={filters.distance}
-                onChange={(e) => handleDistanceChange(e.target.value)}
-                className="bf-slider bf-distance-slider"
-              />
+              <div className="bf-distance-container">
+                <input
+                  type="range"
+                  min="1"
+                  max="100"
+                  value={filters.distance}
+                  onChange={(e) => handleDistanceChange(e.target.value)}
+                  className="bf-slider bf-distance-slider"
+                />
+              </div>
               <div className="bf-distance-labels">
                 <span>1 mi</span>
                 <span>100 mi</span>
