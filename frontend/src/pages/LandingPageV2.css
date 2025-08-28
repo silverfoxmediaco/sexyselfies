@@ -132,9 +132,9 @@
   margin: 0 !important;
 }
 
-/* Add top padding to landing page content to account for fixed header */
+/* Remove padding-top to prevent double spacing with component sections */
 .landing-page-v2 {
-  padding-top: 60px;
+  /* padding-top handled by individual components */
 }
 
 /* High Performance Optimizations */
