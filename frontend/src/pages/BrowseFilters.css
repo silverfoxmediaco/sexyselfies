@@ -508,13 +508,13 @@
 }
 
 .bf-apply-btn {
-  position: fixed;
-  bottom: 80px; /* Above the bottom navigation */
+  position: absolute;
+  bottom: 100px; /* Above the bottom navigation */
   left: 20px;
   right: 20px;
   width: calc(100% - 40px);
   padding: 16px;
-  background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  background: #17D2C2;
   color: #001310;
   border: none;
   border-radius: 16px;
@@ -526,7 +526,6 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
   transition: transform 0.2s ease;
 }
 
@@ -540,8 +539,8 @@
 }
 
 .bf-apply-count {
-  background: rgba(0, 19, 16, 0.2);
-  color: #001310;
+  background: #001310;
+  color: #17D2C2;
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 14px;
@@ -613,9 +612,8 @@
   }
 
   .bf-apply-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #0F9A8D 0%, #14B5A8 50%, #3EC4BC 100%);
+    background: #14B5A8;
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(23, 210, 194, 0.3);
   }
 }
 
