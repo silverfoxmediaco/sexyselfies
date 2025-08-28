@@ -14,6 +14,12 @@ exports.register = async (req, res, next) => {
   session.startTransaction();
   
   try {
+    console.log('Registration request received:', {
+      body: req.body,
+      headers: req.headers,
+      path: req.path
+    });
+    
     const { email, password, username, displayName, phone, birthDate, agreeToTerms } = req.body;
 
     // Validate required fields for members

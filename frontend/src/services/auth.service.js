@@ -599,10 +599,12 @@ class AuthService {
       
       switch (status) {
         case 400:
+          console.error('Backend 400 error details:', data);
           return { 
             error: true, 
             message: data.message || data.error || 'Invalid request',
-            errors: data.errors || {}
+            errors: data.errors || {},
+            details: data
           };
         case 401:
           return { 

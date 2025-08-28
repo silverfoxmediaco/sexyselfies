@@ -302,6 +302,12 @@ const MemberRegistration = () => {
       }
     } catch (error) {
       console.error('Registration error:', error);
+      console.error('Full error details:', {
+        message: error.message,
+        errors: error.errors,
+        details: error.details,
+        response: error
+      });
       
       // Handle specific error types from backend
       if (error.error && error.message) {
