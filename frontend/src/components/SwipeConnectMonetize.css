@@ -70,7 +70,10 @@
   padding-bottom: var(--space-3xl);
   display: flex;
   align-items: center;
+  justify-content: center;
   position: relative;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .hero-content {
