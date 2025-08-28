@@ -6,7 +6,7 @@
   min-height: 100vh;
   background: #0A0A0A;
   color: #FFFFFF;
-  padding-bottom: calc(160px + env(safe-area-inset-bottom, 0));
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0));
   overflow-x: hidden;
   box-sizing: border-box;
 }
@@ -508,11 +508,9 @@
 }
 
 .bf-apply-btn {
-  position: absolute;
-  bottom: 100px; /* Above the bottom navigation */
-  left: 20px;
-  right: 20px;
-  width: calc(100% - 40px);
+  position: static;
+  width: 100%;
+  margin: 32px 0 20px 0;
   padding: 16px;
   background: #17D2C2;
   color: #001310;
@@ -521,7 +519,6 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -534,7 +531,8 @@
 }
 
 .bf-apply-btn:disabled {
-  background: rgba(23, 210, 194, 0.3);
+  background: #17D2C2;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -545,14 +543,6 @@
   border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
-}
-
-/* Ensure button is visible on all screen sizes */
-@media (max-width: 768px) {
-  .bf-apply-btn {
-    display: flex !important;
-    visibility: visible !important;
-  }
 }
 
 /* Tablet Support */
