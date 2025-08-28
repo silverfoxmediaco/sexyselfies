@@ -1,8 +1,16 @@
 const { body, validationResult, param, query } = require('express-validator');
+const validator = require('validator');
 
 // ==========================================
 // VALIDATION MIDDLEWARE
 // ==========================================
+
+// XSS sanitization function
+const sanitizeInput = (value) => {
+  if (!value) return value;
+  // Remove any HTML tags and scripts
+  return validator.escape(value.trim());
+};
 
 // Handle validation errors
 const handleValidationErrors = (req, res, next) => {
@@ -20,6 +28,147 @@ const handleValidationErrors = (req, res, next) => {
 };
 
 // ==========================================
+// AUTHENTICATION VALIDATIONS
+// ==========================================
+
+// Member Registration - matches your actual fields
+exports.validateMemberRegistration = [
+  body('email')
+    .trim()
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Valid email required')
+    .isLength({ max: 255 })
+    .withMessage('Email too long'),
+  body('password')
+    .isLength({ min: 8, max: 128 })
+    .withMessage('Password must be 8-128 characters')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('Password must contain uppercase, lowercase, and number'),
+  body('username')
+    .trim()
+    .isLength({ min: 3, max: 30 })
+    .withMessage('Username must be 3-30 characters')
+    .matches(/^[a-zA-Z0-9_-]+$/)
+    .withMessage('Username can only contain letters, numbers, underscore, and hyphen')
+    .customSanitizer(sanitizeInput),
+  body('displayName')
+    .optional()
+    .trim()
+    .isLength({ max: 50 })
+    .withMessage('Display name must be under 50 characters')
+    .customSanitizer(sanitizeInput),
+  body('phone')
+    .optional()
+    .trim()
+    .isMobilePhone('any')
+    .withMessage('Invalid phone number'),
+  body('birthDate')
+    .isISO8601()
+    .withMessage('Valid date required')
+    .custom((value) => {
+      const birth = new Date(value);
+      const today = new Date();
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+      if (age < 18) throw new Error('Must be at least 18 years old');
+      if (age > 120) throw new Error('Invalid birth date');
+      return true;
+    }),
+  body('agreeToTerms')
+    .isBoolean()
+    .equals('true')
+    .withMessage('Must agree to terms and conditions'),
+  handleValidationErrors
+];
+
+// Creator Registration - matches your actual fields
+exports.validateCreatorRegistration = [
+  body('email')
+    .trim()
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Valid email required')
+    .isLength({ max: 255 })
+    .withMessage('Email too long'),
+  body('password')
+    .isLength({ min: 8, max: 128 })
+    .withMessage('Password must be 8-128 characters')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/)
+    .withMessage('Password must contain uppercase, lowercase, number, and special character'),
+  body('confirmPassword')
+    .custom((value, { req }) => value === req.body.password)
+    .withMessage('Passwords do not match'),
+  body('username')
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 30 })
+    .withMessage('Username must be 3-30 characters')
+    .matches(/^[a-zA-Z0-9_-]+$/)
+    .withMessage('Username can only contain letters, numbers, underscore, and hyphen')
+    .customSanitizer(sanitizeInput),
+  body('displayName')
+    .trim()
+    .isLength({ min: 3, max: 50 })
+    .withMessage('Display name must be 3-50 characters')
+    .customSanitizer(sanitizeInput),
+  body('birthDate')
+    .isISO8601()
+    .withMessage('Valid date required')
+    .custom((value) => {
+      const birth = new Date(value);
+      const today = new Date();
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+      if (age < 18) throw new Error('Must be at least 18 years old');
+      if (age > 120) throw new Error('Invalid birth date');
+      return true;
+    }),
+  body('country')
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .customSanitizer(sanitizeInput),
+  body('agreeToTerms')
+    .isBoolean()
+    .equals('true')
+    .withMessage('Must agree to terms and conditions'),
+  body('agreeToContentPolicy')
+    .isBoolean()
+    .equals('true')
+    .withMessage('Must agree to content policy'),
+  body('over18Confirmation')
+    .isBoolean()
+    .equals('true')
+    .withMessage('Must confirm age requirement'),
+  body('taxInfoConsent')
+    .optional()
+    .isBoolean(),
+  handleValidationErrors
+];
+
+// Login validation
+exports.validateLogin = [
+  body('email')
+    .trim()
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Valid email required'),
+  body('password')
+    .notEmpty()
+    .withMessage('Password required')
+    .isLength({ max: 128 })
+    .withMessage('Invalid password'),
+  handleValidationErrors
+];
+
+// ==========================================
 // PAYMENT VALIDATIONS
 // ==========================================
 
@@ -35,6 +184,7 @@ exports.validatePayment = [
   body('paymentMethodId')
     .optional()
     .isString()
+    .isLength({ max: 255 })
     .withMessage('Valid payment method ID required'),
   body('contentId')
     .optional()
@@ -60,9 +210,10 @@ exports.validateTip = [
     .withMessage('Valid creator ID required'),
   body('message')
     .optional()
-    .isString()
+    .trim()
     .isLength({ max: 200 })
-    .withMessage('Message must be under 200 characters'),
+    .withMessage('Message must be under 200 characters')
+    .customSanitizer(sanitizeInput),
   handleValidationErrors
 ];
 
@@ -79,82 +230,41 @@ exports.validateCredits = [
 ];
 
 // ==========================================
-// USER VALIDATIONS
-// ==========================================
-
-exports.validateRegistration = [
-  body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Valid email required'),
-  body('password')
-    .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage('Password must contain uppercase, lowercase, and number'),
-  body('username')
-    .optional()
-    .isAlphanumeric()
-    .isLength({ min: 3, max: 30 })
-    .withMessage('Username must be 3-30 alphanumeric characters'),
-  body('dateOfBirth')
-    .optional()
-    .isISO8601()
-    .withMessage('Valid date of birth required')
-    .custom((value) => {
-      const age = new Date().getFullYear() - new Date(value).getFullYear();
-      if (age < 18) throw new Error('Must be 18 or older');
-      return true;
-    }),
-  body('agreeToTerms')
-    .isBoolean()
-    .equals('true')
-    .withMessage('Must agree to terms and conditions'),
-  handleValidationErrors
-];
-
-exports.validateLogin = [
-  body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Valid email required'),
-  body('password')
-    .notEmpty()
-    .withMessage('Password required'),
-  handleValidationErrors
-];
-
-// ==========================================
 // PROFILE VALIDATIONS
 // ==========================================
 
 exports.validateProfileUpdate = [
   body('displayName')
     .optional()
-    .isString()
+    .trim()
     .isLength({ min: 2, max: 50 })
-    .withMessage('Display name must be 2-50 characters'),
+    .withMessage('Display name must be 2-50 characters')
+    .customSanitizer(sanitizeInput),
   body('bio')
     .optional()
-    .isString()
+    .trim()
     .isLength({ max: 500 })
-    .withMessage('Bio must be under 500 characters'),
+    .withMessage('Bio must be under 500 characters')
+    .customSanitizer(sanitizeInput),
   body('location')
     .optional()
     .isObject()
     .withMessage('Location must be an object'),
   body('location.city')
     .optional()
-    .isString()
-    .withMessage('City must be a string'),
+    .trim()
+    .isLength({ max: 100 })
+    .customSanitizer(sanitizeInput),
   body('location.state')
     .optional()
-    .isString()
-    .withMessage('State must be a string'),
+    .trim()
+    .isLength({ max: 100 })
+    .customSanitizer(sanitizeInput),
   body('location.country')
     .optional()
-    .isString()
-    .withMessage('Country must be a string'),
+    .trim()
+    .isLength({ max: 100 })
+    .customSanitizer(sanitizeInput),
   body('preferences')
     .optional()
     .isObject()
@@ -173,8 +283,8 @@ exports.validateCreator = [
     .withMessage('Message price must be between $0.99 and $99.99'),
   body('categories')
     .optional()
-    .isArray()
-    .withMessage('Categories must be an array'),
+    .isArray({ max: 10 })
+    .withMessage('Maximum 10 categories allowed'),
   body('categories.*')
     .optional()
     .isIn(['lingerie', 'bikini', 'artistic', 'fitness', 'cosplay', 'alternative', 'glamour'])
@@ -188,13 +298,17 @@ exports.validateCreator = [
 
 exports.validateContent = [
   body('title')
+    .trim()
     .notEmpty()
     .isLength({ min: 3, max: 100 })
-    .withMessage('Title must be 3-100 characters'),
+    .withMessage('Title must be 3-100 characters')
+    .customSanitizer(sanitizeInput),
   body('description')
     .optional()
+    .trim()
     .isLength({ max: 500 })
-    .withMessage('Description must be under 500 characters'),
+    .withMessage('Description must be under 500 characters')
+    .customSanitizer(sanitizeInput),
   body('price')
     .optional()
     .isFloat({ min: 0, max: 999.99 })
@@ -210,6 +324,11 @@ exports.validateContent = [
     .optional()
     .isArray({ max: 10 })
     .withMessage('Maximum 10 tags allowed'),
+  body('tags.*')
+    .optional()
+    .trim()
+    .isLength({ max: 30 })
+    .customSanitizer(sanitizeInput),
   handleValidationErrors
 ];
 
@@ -219,9 +338,11 @@ exports.validateContent = [
 
 exports.validateMessage = [
   body('content')
+    .trim()
     .notEmpty()
     .isLength({ min: 1, max: 1000 })
-    .withMessage('Message must be 1-1000 characters'),
+    .withMessage('Message must be 1-1000 characters')
+    .customSanitizer(sanitizeInput),
   body('recipientId')
     .isMongoId()
     .withMessage('Valid recipient ID required'),
@@ -239,9 +360,10 @@ exports.validateMessage = [
 exports.validateSearch = [
   query('q')
     .optional()
-    .isString()
+    .trim()
     .isLength({ min: 2, max: 100 })
-    .withMessage('Search query must be 2-100 characters'),
+    .withMessage('Search query must be 2-100 characters')
+    .customSanitizer(sanitizeInput),
   query('page')
     .optional()
     .isInt({ min: 1 })
@@ -303,9 +425,11 @@ exports.validateFilters = [
 
 exports.validateAdminAction = [
   body('reason')
+    .trim()
     .notEmpty()
     .isLength({ min: 10, max: 500 })
-    .withMessage('Reason must be 10-500 characters'),
+    .withMessage('Reason must be 10-500 characters')
+    .customSanitizer(sanitizeInput),
   body('duration')
     .optional()
     .isIn(['1h', '24h', '3d', '7d', '30d', 'permanent'])
@@ -329,8 +453,10 @@ exports.validateReport = [
     .withMessage('Invalid report reason'),
   body('description')
     .optional()
+    .trim()
     .isLength({ min: 10, max: 500 })
-    .withMessage('Description must be 10-500 characters'),
+    .withMessage('Description must be 10-500 characters')
+    .customSanitizer(sanitizeInput),
   handleValidationErrors
 ];
 
@@ -362,6 +488,7 @@ exports.validateMultipleIds = (fieldName) => [
 exports.validatePhoneNumber = [
   body('phoneNumber')
     .optional()
+    .trim()
     .isMobilePhone('any')
     .withMessage('Invalid phone number'),
   handleValidationErrors

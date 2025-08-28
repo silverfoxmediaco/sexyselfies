@@ -1,103 +1,137 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { 
+  Mail, Lock, Eye, EyeOff, User, Calendar, Globe, 
+  FileText, Camera, ArrowRight, ArrowLeft, Check, X,
+  AlertCircle, Shield, DollarSign, Users, Sparkles
+} from 'lucide-react';
+import authService from '../services/auth.service';  // ADD THIS IMPORT
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './CreatorRegistration.css';
 
 const CreatorRegistration = () => {
-  const [step, setStep] = useState(1);
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
+  
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    // Account info
+    // Step 1: Account Info
     email: '',
     password: '',
     confirmPassword: '',
     
-    // Creator profile
+    // Step 2: Profile Info
     displayName: '',
-    bio: '',
+    username: '',
     dateOfBirth: '',
+    country: '',
     
-    // Preferences
+    // Step 3: Content Types
     contentTypes: [],
-    priceRange: { min: 0.99, max: 9.99 },
     
-    // Legal
-    agreedToTerms: false,
-    confirmedAge: false,
-    confirmedRights: false
+    // Step 4: Agreement
+    agreeToTerms: false,
+    agreeToContentPolicy: false,
+    over18Confirmation: false,
+    taxInfoConsent: false
   });
   
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  const countries = [
+    'United States', 'Canada', 'United Kingdom', 'Australia', 
+    'Germany', 'France', 'Spain', 'Italy', 'Netherlands', 'Other'
+  ];
+  
+  const contentTypeOptions = [
+    { id: 'photos', label: 'Photos', icon: '📸' },
+    { id: 'videos', label: 'Videos', icon: '🎥' },
+    { id: 'messages', label: 'Messages', icon: '💬' },
+    { id: 'live', label: 'Live Streams', icon: '🔴' }
+  ];
+  
   const validateStep = (stepNumber) => {
     const newErrors = {};
     
     switch(stepNumber) {
       case 1:
-        // Email validation
         if (!formData.email) {
           newErrors.email = 'Email is required';
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-          newErrors.email = 'Please enter a valid email';
+          newErrors.email = 'Email is invalid';
         }
         
-        // Password validation
         if (!formData.password) {
           newErrors.password = 'Password is required';
         } else if (formData.password.length < 8) {
           newErrors.password = 'Password must be at least 8 characters';
+        } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+          newErrors.password = 'Password must contain uppercase, lowercase, and number';
         }
         
-        // Confirm password
-        if (formData.password !== formData.confirmPassword) {
+        if (!formData.confirmPassword) {
+          newErrors.confirmPassword = 'Please confirm your password';
+        } else if (formData.password !== formData.confirmPassword) {
           newErrors.confirmPassword = 'Passwords do not match';
         }
         break;
         
       case 2:
-        // Display name validation
         if (!formData.displayName) {
           newErrors.displayName = 'Display name is required';
-        } else if (formData.displayName.length > 50) {
-          newErrors.displayName = 'Display name must be less than 50 characters';
+        } else if (formData.displayName.length < 3) {
+          newErrors.displayName = 'Display name must be at least 3 characters';
         }
         
-        // Bio validation
-        if (formData.bio && formData.bio.length > 500) {
-          newErrors.bio = 'Bio must be less than 500 characters';
+        if (!formData.username) {
+          newErrors.username = 'Username is required';
+        } else if (formData.username.length < 3) {
+          newErrors.username = 'Username must be at least 3 characters';
+        } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
+          newErrors.username = 'Username can only contain letters, numbers, and underscores';
         }
         
-        // Age verification
         if (!formData.dateOfBirth) {
           newErrors.dateOfBirth = 'Date of birth is required';
         } else {
-          const age = calculateAge(formData.dateOfBirth);
+          const age = new Date().getFullYear() - new Date(formData.dateOfBirth).getFullYear();
           if (age < 18) {
-            newErrors.dateOfBirth = 'You must be 18 or older to join';
+            newErrors.dateOfBirth = 'You must be at least 18 years old';
           }
+        }
+        
+        if (!formData.country) {
+          newErrors.country = 'Please select your country';
         }
         break;
         
       case 3:
-        // Content types
         if (formData.contentTypes.length === 0) {
           newErrors.contentTypes = 'Please select at least one content type';
         }
         break;
         
       case 4:
-        // Legal agreements
-        if (!formData.agreedToTerms) {
-          newErrors.agreedToTerms = 'You must agree to the terms of service';
+        if (!formData.agreeToTerms) {
+          newErrors.agreeToTerms = 'You must agree to the terms of service';
         }
-        if (!formData.confirmedAge) {
-          newErrors.confirmedAge = 'You must confirm you are 18 or older';
+        if (!formData.agreeToContentPolicy) {
+          newErrors.agreeToContentPolicy = 'You must agree to the content policy';
         }
-        if (!formData.confirmedRights) {
-          newErrors.confirmedRights = 'You must confirm content rights';
+        if (!formData.over18Confirmation) {
+          newErrors.over18Confirmation = 'You must confirm you are over 18';
+        }
+        if (!formData.taxInfoConsent) {
+          newErrors.taxInfoConsent = 'You must consent to provide tax information';
         }
         break;
     }
@@ -105,30 +139,17 @@ const CreatorRegistration = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  const calculateAge = (birthDate) => {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    
-    return age;
-  };
-
+  
   const handleNext = () => {
     if (validateStep(step)) {
       setStep(step + 1);
     }
   };
-
+  
   const handleBack = () => {
     setStep(step - 1);
   };
-
+  
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -159,37 +180,64 @@ const CreatorRegistration = () => {
     setLoading(true);
     
     try {
-      // First, register the user account
-      const response = await fetch('http://localhost:5002/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          displayName: formData.displayName,
-          role: 'creator'
-        })
+      // Use the auth service for creator registration
+      const response = await authService.creatorRegister({
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        username: formData.username,
+        displayName: formData.displayName,
+        birthDate: formData.dateOfBirth,
+        country: formData.country,
+        agreeToTerms: formData.agreeToTerms,
+        agreeToContentPolicy: formData.agreeToContentPolicy,
+        over18Confirmation: formData.over18Confirmation,
+        taxInfoConsent: formData.taxInfoConsent
       });
       
-      const data = await response.json();
-      
-      if (response.ok && data.token) {
-        // Store token and user info
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userId', data.user.id);
-        localStorage.setItem('userEmail', formData.email);
-        localStorage.setItem('needsVerification', 'true');
+      // Check if we got a successful response
+      if (response && response.data) {
+        const data = response.data;
         
-        // Redirect to ID verification page instead of dashboard
-        window.location.href = '/creator/verify-id';
+        if (data.success && data.token) {
+          // Store token and user info
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('creatorToken', data.token);
+          localStorage.setItem('userRole', 'creator');
+          localStorage.setItem('userId', data.user.id);
+          localStorage.setItem('userEmail', formData.email);
+          localStorage.setItem('needsVerification', 'true');
+          
+          // Show success message
+          alert('Registration successful! You will now be redirected to complete ID verification.');
+          
+          // Redirect to ID verification page
+          navigate('/creator/verify-id');
+        } else {
+          // Handle API error response
+          setErrors({ submit: data.error || data.message || 'Registration failed' });
+        }
       } else {
-        setErrors({ submit: data.error || 'Registration failed' });
+        // Handle unexpected response format
+        setErrors({ submit: 'Unexpected response from server. Please try again.' });
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setErrors({ submit: 'Network error. Please check your connection and try again.' });
+      
+      // Handle different error types
+      if (error.response && error.response.data) {
+        // Server responded with error
+        const errorMessage = error.response.data.error || 
+                           error.response.data.message || 
+                           'Registration failed';
+        setErrors({ submit: errorMessage });
+      } else if (error.message) {
+        // Auth service error
+        setErrors({ submit: error.message });
+      } else {
+        // Network or other error
+        setErrors({ submit: 'Network error. Please check your connection and try again.' });
+      }
     } finally {
       setLoading(false);
     }
@@ -226,15 +274,15 @@ const CreatorRegistration = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="At least 8 characters"
+                  placeholder="Create a strong password"
                   className={errors.password ? 'creator-registration-input-error' : ''}
                 />
                 <button
                   type="button"
-                  className="creator-registration-toggle-password"
+                  className="creator-registration-password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
               {errors.password && <span className="creator-registration-error-message">{errors.password}</span>}
@@ -242,30 +290,25 @@ const CreatorRegistration = () => {
             
             <div className="creator-registration-form-group">
               <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                placeholder="Re-enter your password"
-                className={errors.confirmPassword ? 'creator-registration-input-error' : ''}
-              />
-              {errors.confirmPassword && <span className="creator-registration-error-message">{errors.confirmPassword}</span>}
-            </div>
-            
-            <div className="creator-registration-password-strength">
-              <div className="creator-registration-strength-meter">
-                <div className={`creator-registration-strength-fill creator-registration-strength-${
-                  formData.password.length >= 12 ? 'strong' :
-                  formData.password.length >= 8 ? 'medium' : 'weak'
-                }`}></div>
+              <div className="creator-registration-password-input-wrapper">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="Re-enter your password"
+                  className={errors.confirmPassword ? 'creator-registration-input-error' : ''}
+                />
+                <button
+                  type="button"
+                  className="creator-registration-password-toggle"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
-              <span className="creator-registration-strength-text">
-                {formData.password.length >= 12 ? 'Strong' :
-                 formData.password.length >= 8 ? 'Medium' : 
-                 formData.password.length > 0 ? 'Weak' : ''}
-              </span>
+              {errors.confirmPassword && <span className="creator-registration-error-message">{errors.confirmPassword}</span>}
             </div>
           </div>
         );
@@ -273,8 +316,8 @@ const CreatorRegistration = () => {
       case 2:
         return (
           <div className="creator-registration-step">
-            <h2>Set Up Your Profile</h2>
-            <p className="creator-registration-step-subtitle">This is how fans will discover you</p>
+            <h2>Profile Information</h2>
+            <p className="creator-registration-step-subtitle">Tell us about yourself</p>
             
             <div className="creator-registration-form-group">
               <label htmlFor="displayName">Display Name</label>
@@ -284,28 +327,24 @@ const CreatorRegistration = () => {
                 name="displayName"
                 value={formData.displayName}
                 onChange={handleInputChange}
-                placeholder="Choose your creator name"
+                placeholder="How you'll appear to members"
                 className={errors.displayName ? 'creator-registration-input-error' : ''}
-                maxLength="50"
               />
-              <span className="creator-registration-character-count">{formData.displayName.length}/50</span>
               {errors.displayName && <span className="creator-registration-error-message">{errors.displayName}</span>}
             </div>
             
             <div className="creator-registration-form-group">
-              <label htmlFor="bio">Bio (Optional)</label>
-              <textarea
-                id="bio"
-                name="bio"
-                value={formData.bio}
+              <label htmlFor="username">Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleInputChange}
-                placeholder="Tell fans what makes you unique..."
-                rows="4"
-                maxLength="500"
-                className={errors.bio ? 'creator-registration-input-error' : ''}
+                placeholder="Choose a unique username"
+                className={errors.username ? 'creator-registration-input-error' : ''}
               />
-              <span className="creator-registration-character-count">{formData.bio.length}/500</span>
-              {errors.bio && <span className="creator-registration-error-message">{errors.bio}</span>}
+              {errors.username && <span className="creator-registration-error-message">{errors.username}</span>}
             </div>
             
             <div className="creator-registration-form-group">
@@ -316,11 +355,27 @@ const CreatorRegistration = () => {
                 name="dateOfBirth"
                 value={formData.dateOfBirth}
                 onChange={handleInputChange}
-                className={errors.dateOfBirth ? 'creator-registration-input-error' : ''}
                 max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+                className={errors.dateOfBirth ? 'creator-registration-input-error' : ''}
               />
               {errors.dateOfBirth && <span className="creator-registration-error-message">{errors.dateOfBirth}</span>}
-              <p className="creator-registration-field-hint">You must be 18 or older to create content</p>
+            </div>
+            
+            <div className="creator-registration-form-group">
+              <label htmlFor="country">Country</label>
+              <select
+                id="country"
+                name="country"
+                value={formData.country}
+                onChange={handleInputChange}
+                className={errors.country ? 'creator-registration-input-error' : ''}
+              >
+                <option value="">Select your country</option>
+                {countries.map(country => (
+                  <option key={country} value={country}>{country}</option>
+                ))}
+              </select>
+              {errors.country && <span className="creator-registration-error-message">{errors.country}</span>}
             </div>
           </div>
         );
@@ -328,193 +383,88 @@ const CreatorRegistration = () => {
       case 3:
         return (
           <div className="creator-registration-step">
-            <h2>Content Preferences</h2>
-            <p className="creator-registration-step-subtitle">Choose what type of content you'll share</p>
+            <h2>Content Types</h2>
+            <p className="creator-registration-step-subtitle">What type of content will you create?</p>
             
-            <div className="creator-registration-form-group">
-              <label>Content Types</label>
-              <div className="creator-registration-content-type-grid">
-                {['Photos', 'Videos', 'Live Streams', 'Messages', 'Stories'].map(type => (
-                  <button
-                    key={type}
-                    type="button"
-                    className={`creator-registration-content-type-card ${formData.contentTypes.includes(type) ? 'creator-registration-selected' : ''}`}
-                    onClick={() => handleContentTypeToggle(type)}
-                  >
-                    <span className="creator-registration-content-icon">
-                      {type === 'Photos' && '📸'}
-                      {type === 'Videos' && '🎥'}
-                      {type === 'Live Streams' && '🔴'}
-                      {type === 'Messages' && '💬'}
-                      {type === 'Stories' && '⭐'}
-                    </span>
-                    <span>{type}</span>
-                  </button>
-                ))}
-              </div>
-              {errors.contentTypes && <span className="creator-registration-error-message">{errors.contentTypes}</span>}
-            </div>
-            
-            <div className="creator-registration-form-group">
-              <label>Default Content Price Range</label>
-              <div className="creator-registration-price-range-inputs">
-                <div className="creator-registration-price-input">
-                  <span className="creator-registration-currency">$</span>
-                  <input
-                    type="number"
-                    min="0.99"
-                    max="99.99"
-                    step="0.01"
-                    value={formData.priceRange.min}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      priceRange: { ...prev.priceRange, min: parseFloat(e.target.value) }
-                    }))}
-                  />
+            <div className="creator-registration-content-types">
+              {contentTypeOptions.map(option => (
+                <div
+                  key={option.id}
+                  className={`creator-registration-content-type-card ${
+                    formData.contentTypes.includes(option.id) ? 'selected' : ''
+                  }`}
+                  onClick={() => handleContentTypeToggle(option.id)}
+                >
+                  <span className="creator-registration-content-type-icon">{option.icon}</span>
+                  <span className="creator-registration-content-type-label">{option.label}</span>
+                  {formData.contentTypes.includes(option.id) && (
+                    <Check className="creator-registration-check-icon" size={20} />
+                  )}
                 </div>
-                <span className="creator-registration-range-separator">to</span>
-                <div className="creator-registration-price-input">
-                  <span className="creator-registration-currency">$</span>
-                  <input
-                    type="number"
-                    min="0.99"
-                    max="99.99"
-                    step="0.01"
-                    value={formData.priceRange.max}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      priceRange: { ...prev.priceRange, max: parseFloat(e.target.value) }
-                    }))}
-                  />
-                </div>
-              </div>
-              <p className="creator-registration-field-hint">You can set individual prices for each piece of content</p>
+              ))}
             </div>
-            
-            <div className="creator-registration-earning-estimate">
-              <h3>Potential Earnings</h3>
-              <p>With just 100 fans purchasing content at ${formData.priceRange.min.toFixed(2)}, you could earn:</p>
-              <div className="creator-registration-earnings-display">
-                <span className="creator-registration-earnings-amount">${(100 * formData.priceRange.min * 0.8).toFixed(2)}</span>
-                <span className="creator-registration-earnings-period">per day</span>
-              </div>
-              <p className="creator-registration-earnings-note">You keep 80% of all earnings</p>
-            </div>
+            {errors.contentTypes && (
+              <span className="creator-registration-error-message">{errors.contentTypes}</span>
+            )}
           </div>
         );
         
       case 4:
         return (
           <div className="creator-registration-step">
-            <h2>Verify Your Identity</h2>
-            <p className="creator-registration-step-subtitle">For everyone's safety, we need to verify you're a real person</p>
+            <h2>Terms & Agreements</h2>
+            <p className="creator-registration-step-subtitle">Please review and accept our policies</p>
             
-            <div className="creator-registration-verification-section">
-              <div className="creator-registration-verification-card">
-                <div className="creator-registration-verification-icon">🪪</div>
-                <h3>Government-Issued ID Required</h3>
-                <p>We need a valid photo ID to verify your age and identity. This helps keep our platform safe.</p>
-                
-                <div className="creator-registration-accepted-ids">
-                  <h4>Accepted Documents:</h4>
-                  <ul>
-                    <li>✔ Driver's License</li>
-                    <li>✔ Passport</li>
-                    <li>✔ National ID Card</li>
-                    <li>✔ State-Issued ID</li>
-                  </ul>
-                </div>
-              </div>
+            <div className="creator-registration-agreements">
+              <label className="creator-registration-checkbox-label">
+                <input
+                  type="checkbox"
+                  name="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onChange={handleInputChange}
+                />
+                <span>I agree to the <Link to="/terms">Terms of Service</Link> and <Link to="/privacy">Privacy Policy</Link></span>
+              </label>
+              {errors.agreeToTerms && <span className="creator-registration-error-message">{errors.agreeToTerms}</span>}
               
-              <div className="creator-registration-privacy-notice">
-                <div className="creator-registration-notice-icon">🔐</div>
-                <h4>Your Privacy Matters</h4>
-                <p>Your ID is encrypted and securely stored. We only use it for verification and never share it with anyone.</p>
-              </div>
+              <label className="creator-registration-checkbox-label">
+                <input
+                  type="checkbox"
+                  name="agreeToContentPolicy"
+                  checked={formData.agreeToContentPolicy}
+                  onChange={handleInputChange}
+                />
+                <span>I agree to the <Link to="/content-policy">Content Policy</Link> and community guidelines</span>
+              </label>
+              {errors.agreeToContentPolicy && <span className="creator-registration-error-message">{errors.agreeToContentPolicy}</span>}
               
-              <div className="creator-registration-checkbox-group">
-                <label className="creator-registration-checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="confirmedAge"
-                    checked={formData.confirmedAge}
-                    onChange={handleInputChange}
-                  />
-                  <span className="creator-registration-checkbox-text">
-                    I confirm that I am 18 years of age or older
-                  </span>
-                </label>
-                {errors.confirmedAge && <span className="creator-registration-error-message">{errors.confirmedAge}</span>}
-              </div>
+              <label className="creator-registration-checkbox-label">
+                <input
+                  type="checkbox"
+                  name="over18Confirmation"
+                  checked={formData.over18Confirmation}
+                  onChange={handleInputChange}
+                />
+                <span>I confirm that I am 18 years of age or older</span>
+              </label>
+              {errors.over18Confirmation && <span className="creator-registration-error-message">{errors.over18Confirmation}</span>}
               
-              <div className="creator-registration-checkbox-group">
-                <label className="creator-registration-checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="confirmedRights"
-                    checked={formData.confirmedRights}
-                    onChange={handleInputChange}
-                  />
-                  <span className="creator-registration-checkbox-text">
-                    I confirm that I own all rights to the content I will upload
-                  </span>
-                </label>
-                {errors.confirmedRights && <span className="creator-registration-error-message">{errors.confirmedRights}</span>}
-              </div>
-              
-              <div className="creator-registration-checkbox-group">
-                <label className="creator-registration-checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="agreedToTerms"
-                    checked={formData.agreedToTerms}
-                    onChange={handleInputChange}
-                  />
-                  <span className="creator-registration-checkbox-text">
-                    I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>
-                  </span>
-                </label>
-                {errors.agreedToTerms && <span className="creator-registration-error-message">{errors.agreedToTerms}</span>}
-              </div>
-            </div>
-            
-            <div className="creator-registration-verification-timeline">
-              <h4>What Happens Next?</h4>
-              <div className="creator-registration-timeline-steps">
-                <div className="creator-registration-timeline-step">
-                  <span className="creator-registration-step-icon">1</span>
-                  <div>
-                    <strong>Submit Application</strong>
-                    <p>Complete this form to create your account</p>
-                  </div>
-                </div>
-                <div className="creator-registration-timeline-step">
-                  <span className="creator-registration-step-icon">2</span>
-                  <div>
-                    <strong>Verify Your ID</strong>
-                    <p>You'll be redirected to securely upload your ID</p>
-                  </div>
-                </div>
-                <div className="creator-registration-timeline-step">
-                  <span className="creator-registration-step-icon">3</span>
-                  <div>
-                    <strong>Quick Review</strong>
-                    <p>Usually approved within 5-10 minutes</p>
-                  </div>
-                </div>
-                <div className="creator-registration-timeline-step">
-                  <span className="creator-registration-step-icon">4</span>
-                  <div>
-                    <strong>Start Earning!</strong>
-                    <p>Once approved, access your creator dashboard</p>
-                  </div>
-                </div>
-              </div>
+              <label className="creator-registration-checkbox-label">
+                <input
+                  type="checkbox"
+                  name="taxInfoConsent"
+                  checked={formData.taxInfoConsent}
+                  onChange={handleInputChange}
+                />
+                <span>I consent to provide tax information for earnings</span>
+              </label>
+              {errors.taxInfoConsent && <span className="creator-registration-error-message">{errors.taxInfoConsent}</span>}
             </div>
             
             {errors.submit && (
-              <div className="creator-registration-submit-error">
-                {errors.submit}
+              <div className="creator-registration-error-alert">
+                <AlertCircle size={20} />
+                <span>{errors.submit}</span>
               </div>
             )}
           </div>
@@ -524,72 +474,77 @@ const CreatorRegistration = () => {
         return null;
     }
   };
-
+  
   return (
-    <div className="creator-registration">
+    <div className="creator-registration-page">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
+      
       <div className="creator-registration-container">
-        <div className="creator-registration-title">
-          <h1>Become a Creator</h1>
-        </div>
-        
-        <div className="creator-registration-progress-bar">
-          <div className="creator-registration-progress-steps">
-            {[1, 2, 3, 4].map(num => (
-              <div
-                key={num}
-                className={`creator-registration-progress-step ${step >= num ? 'creator-registration-active' : ''} ${step > num ? 'creator-registration-completed' : ''}`}
-              >
-                <div className="creator-registration-step-number">{step > num ? '✔' : num}</div>
-                <span className="creator-registration-step-label">
-                  {num === 1 && 'Account'}
-                  {num === 2 && 'Profile'}
-                  {num === 3 && 'Content'}
-                  {num === 4 && 'Legal'}
-                </span>
-              </div>
-            ))}
+        <div className="creator-registration-content">
+          <div className="creator-registration-header">
+            <h1>Become a Creator</h1>
+            <p>Start earning from your content today</p>
           </div>
-          <div className="creator-registration-progress-fill" style={{ width: `${(step / 4) * 100}%` }}></div>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="creator-registration-form">
-          {renderStep()}
           
-          <div className="creator-registration-form-actions">
-            {step > 1 && (
-              <button
-                type="button"
-                onClick={handleBack}
-                className="creator-registration-btn-secondary"
-              >
-                Back
-              </button>
-            )}
-            
-            {step < 4 ? (
-              <button
-                type="button"
-                onClick={handleNext}
-                className="creator-registration-btn-primary"
-              >
-                Next Step
-              </button>
-            ) : (
-              <button
-                type="submit"
-                className="creator-registration-btn-primary creator-registration-btn-submit"
-                disabled={loading}
-              >
-                {loading ? 'Creating Account...' : 'Continue to ID Verification'}
-              </button>
-            )}
+          <div className="creator-registration-progress">
+            <div className="creator-registration-progress-bar">
+              <div 
+                className="creator-registration-progress-fill"
+                style={{ width: `${(step / 4) * 100}%` }}
+              />
+            </div>
+            <div className="creator-registration-step-indicator">
+              Step {step} of 4
+            </div>
           </div>
-        </form>
-        
-        <div className="creator-registration-footer">
-          <p>Already have an account? <a href="/creator/login">Sign In</a></p>
+          
+          <form onSubmit={handleSubmit} className="creator-registration-form">
+            {renderStep()}
+            
+            <div className="creator-registration-actions">
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="creator-registration-btn creator-registration-btn-secondary"
+                  disabled={loading}
+                >
+                  <ArrowLeft size={20} />
+                  Back
+                </button>
+              )}
+              
+              {step < 4 ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="creator-registration-btn creator-registration-btn-primary"
+                >
+                  Next
+                  <ArrowRight size={20} />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="creator-registration-btn creator-registration-btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? 'Creating Account...' : 'Complete Registration'}
+                  {!loading && <Check size={20} />}
+                </button>
+              )}
+            </div>
+          </form>
+          
+          <div className="creator-registration-footer">
+            <p>Already have an account? <Link to="/creator/login">Sign In</Link></p>
+          </div>
         </div>
       </div>
+      
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

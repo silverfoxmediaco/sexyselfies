@@ -14,7 +14,7 @@ class AuthService {
    */
   async memberRegister(data) {
     try {
-      const response = await api.post('/auth/register', {
+      const response = await api.post('/v1/auth/register', {
         email: data.email,
         password: data.password,
         role: 'member',
@@ -47,7 +47,7 @@ class AuthService {
    */
   async memberLogin(email, password, rememberMe = false) {
     try {
-      const response = await api.post('/auth/login', {
+      const response = await api.post('/v1/auth/login', {  // FIXED: Added /v1
         email,
         password,
         rememberMe,
@@ -96,7 +96,7 @@ class AuthService {
    */
   async creatorRegister(data) {
     try {
-      const response = await api.post('/auth/creator/register', {
+      const response = await api.post('/v1/auth/creator/register', {  // FIXED: Added /v1
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
@@ -138,7 +138,7 @@ class AuthService {
    */
   async creatorLogin(email, password, rememberMe = false) {
     try {
-      const response = await api.post('/auth/creator/login', {
+      const response = await api.post('/v1/auth/creator/login', {  // FIXED: Added /v1
         email,
         password,
         rememberMe,
@@ -188,7 +188,7 @@ class AuthService {
    */
   async adminLogin(email, password, twoFactorCode = null) {
     try {
-      const response = await api.post('/auth/admin/login', {
+      const response = await api.post('/v1/auth/admin/login', {  // FIXED: Added /v1
         email,
         password,
         twoFactorCode,
@@ -237,7 +237,7 @@ class AuthService {
       
       // Call logout endpoint
       if (token) {
-        await api.post('/auth/logout', {}, {
+        await api.post('/v1/auth/logout', {}, {  // FIXED: Added /v1
           queueIfOffline: false // Don't queue logout requests
         });
       }
@@ -296,8 +296,8 @@ class AuthService {
       }
 
       const endpoint = userRole === 'admin' 
-        ? '/auth/admin/me'
-        : `/auth/${userRole}/me`;
+        ? '/v1/auth/admin/me'  // FIXED: Added /v1
+        : `/v1/auth/${userRole}/me`;  // FIXED: Added /v1
 
       const response = await api.get(endpoint);
       
@@ -326,7 +326,7 @@ class AuthService {
         throw new Error('No refresh token available');
       }
 
-      const response = await api.post('/auth/refresh', {
+      const response = await api.post('/v1/auth/refresh', {  // FIXED: Added /v1
         refreshToken
       });
 
@@ -361,7 +361,7 @@ class AuthService {
    */
   async requestPasswordReset(email, userType = 'member') {
     try {
-      const response = await api.post('/auth/password/reset-request', {
+      const response = await api.post('/v1/auth/password/reset-request', {  // FIXED: Added /v1
         email,
         userType
       });
@@ -376,7 +376,7 @@ class AuthService {
    */
   async resetPassword(token, newPassword, confirmPassword) {
     try {
-      const response = await api.post('/auth/password/reset', {
+      const response = await api.post('/v1/auth/password/reset', {  // FIXED: Added /v1
         token,
         newPassword,
         confirmPassword
@@ -392,7 +392,7 @@ class AuthService {
    */
   async changePassword(currentPassword, newPassword, confirmPassword) {
     try {
-      const response = await api.post('/auth/password/change', {
+      const response = await api.post('/v1/auth/password/change', {  // FIXED: Added /v1
         currentPassword,
         newPassword,
         confirmPassword
@@ -408,7 +408,7 @@ class AuthService {
    */
   async verifyEmail(token) {
     try {
-      const response = await api.post('/auth/email/verify', {
+      const response = await api.post('/v1/auth/email/verify', {  // FIXED: Added /v1
         token
       });
       return response;
@@ -422,7 +422,7 @@ class AuthService {
    */
   async resendVerificationEmail() {
     try {
-      const response = await api.post('/auth/email/resend-verification');
+      const response = await api.post('/v1/auth/email/resend-verification');  // FIXED: Added /v1
       return response;
     } catch (error) {
       throw this.handleAuthError(error);
@@ -439,7 +439,7 @@ class AuthService {
   async socialAuth(provider, userType = 'member') {
     try {
       // Redirect to social auth endpoint
-      const redirectUrl = `${import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onrender.com/api/v1'}/auth/${userType}/social/${provider}`;
+      const redirectUrl = `${import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onrender.com/api'}/v1/auth/${userType}/social/${provider}`;  // FIXED: Added /v1
       window.location.href = redirectUrl;
     } catch (error) {
       throw this.handleAuthError(error);
@@ -451,7 +451,7 @@ class AuthService {
    */
   async handleSocialCallback(provider, code, userType = 'member') {
     try {
-      const response = await api.post(`/auth/${userType}/social/${provider}/callback`, {
+      const response = await api.post(`/v1/auth/${userType}/social/${provider}/callback`, {  // FIXED: Added /v1
         code
       });
 
@@ -496,7 +496,7 @@ class AuthService {
    */
   async enableBiometric() {
     try {
-      const response = await api.post('/auth/biometric/enable');
+      const response = await api.post('/v1/auth/biometric/enable');  // FIXED: Added /v1
       
       if (response.data.challenge) {
         // Create credentials for biometric
@@ -505,7 +505,7 @@ class AuthService {
         });
         
         // Send credential to server
-        const verifyResponse = await api.post('/auth/biometric/verify', {
+        const verifyResponse = await api.post('/v1/auth/biometric/verify', {  // FIXED: Added /v1
           credentialId: credential.id,
           clientData: credential.response.clientDataJSON,
           attestation: credential.response.attestationObject
@@ -538,7 +538,7 @@ class AuthService {
       
       if (!subscription) {
         // Get public key from server
-        const response = await api.get('/auth/push/public-key');
+        const response = await api.get('/v1/auth/push/public-key');  // FIXED: Added /v1
         const publicKey = response.data.publicKey;
         
         // Subscribe to push notifications
@@ -549,7 +549,7 @@ class AuthService {
       }
 
       // Send subscription to server
-      await api.post('/auth/push/subscribe', {
+      await api.post('/v1/auth/push/subscribe', {  // FIXED: Added /v1
         subscription: subscription.toJSON(),
         deviceInfo: {
           platform: navigator.platform,
@@ -601,13 +601,13 @@ class AuthService {
         case 400:
           return { 
             error: true, 
-            message: data.message || 'Invalid request',
+            message: data.message || data.error || 'Invalid request',
             errors: data.errors || {}
           };
         case 401:
           return { 
             error: true, 
-            message: 'Invalid credentials',
+            message: data.error || 'Invalid credentials',
             code: 'INVALID_CREDENTIALS'
           };
         case 403:
@@ -631,7 +631,7 @@ class AuthService {
         default:
           return { 
             error: true, 
-            message: data.message || 'An error occurred'
+            message: data.error || data.message || 'An error occurred'
           };
       }
     }

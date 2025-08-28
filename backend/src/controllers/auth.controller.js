@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Creator = require('../models/Creator');
 const Member = require('../models/Member');
@@ -9,11 +10,16 @@ const { sendVerificationEmail } = require('../services/notification.service');
 // @route   POST /api/auth/register
 // @access  Public
 exports.register = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
   try {
     const { email, password, username, displayName, phone, birthDate, agreeToTerms } = req.body;
 
     // Validate required fields for members
     if (!email || !password || !username || !birthDate || !agreeToTerms) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(400).json({
         success: false,
         error: 'Email, password, username, birth date, and terms agreement are required'
@@ -31,6 +37,8 @@ exports.register = async (req, res, next) => {
     }
 
     if (age < 18) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(400).json({
         success: false,
         error: 'You must be at least 18 years old to join'
@@ -40,6 +48,8 @@ exports.register = async (req, res, next) => {
     // Check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(400).json({
         success: false,
         error: 'Email already registered'
@@ -49,37 +59,42 @@ exports.register = async (req, res, next) => {
     // Check if username is taken
     const usernameExists = await Member.findOne({ username });
     if (usernameExists) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(400).json({
         success: false,
         error: 'Username already taken'
       });
     }
 
-    // Create user (member role)
-    const user = await User.create({
+    // Create user (member role) with transaction
+    const user = await User.create([{
       email,
       password,
       role: 'member',
       isEmailVerified: false
-    });
+    }], { session });
 
-    // Create member profile
-    await Member.create({
-      user: user._id,
+    // Create member profile with transaction
+    await Member.create([{
+      user: user[0]._id,
       username,
       displayName: displayName || username,
       birthDate: new Date(birthDate),
       phone: phone || undefined,
       agreeToTerms: true,
-      profileComplete: false // They need to complete profile setup
-    });
+      profileComplete: false
+    }], { session });
 
-    // Send welcome email with login link
+    // Commit transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    // Send welcome email with login link (outside transaction)
     try {
       await sendVerificationEmail(email, null, username);
     } catch (emailError) {
       console.error('Failed to send welcome email:', emailError);
-      // Don't fail registration if email fails
     }
 
     // Return success - no token, they need to login
@@ -89,10 +104,172 @@ exports.register = async (req, res, next) => {
       redirectTo: '/member/login'
     });
   } catch (error) {
-    console.error(error);
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message || 'Registration failed. Please try again.'
+    });
+  }
+};
+
+// @desc    Register creator
+// @route   POST /api/auth/creator/register
+// @access  Public
+exports.creatorRegister = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
+  try {
+    const { 
+      email, 
+      password, 
+      username, 
+      displayName, 
+      birthDate, 
+      country,
+      agreeToTerms,
+      agreeToContentPolicy,
+      over18Confirmation,
+      taxInfoConsent 
+    } = req.body;
+
+    // Validate required fields for creators
+    if (!email || !password || !displayName || !birthDate || 
+        !agreeToTerms || !agreeToContentPolicy || !over18Confirmation) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({
+        success: false,
+        error: 'All required fields must be provided'
+      });
+    }
+
+    // Age verification - must be 18+
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    if (age < 18) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({
+        success: false,
+        error: 'You must be at least 18 years old to become a creator'
+      });
+    }
+
+    // Check if user exists with this email
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({
+        success: false,
+        error: 'Email already registered. Please login or use a different email.'
+      });
+    }
+
+    // Check if displayName is taken by another creator
+    const creatorExists = await Creator.findOne({ displayName });
+    if (creatorExists) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({
+        success: false,
+        error: 'Display name already taken. Please choose a different name.'
+      });
+    }
+
+    // Create user with creator role (with transaction)
+    const user = await User.create([{
+      email,
+      password,
+      role: 'creator',
+      isEmailVerified: false
+    }], { session });
+
+    // Create creator profile (with transaction)
+    const creator = await Creator.create([{
+      user: user[0]._id,
+      displayName,
+      bio: '',
+      profileImage: 'default-avatar.jpg',
+      coverImage: '',
+      contentPrice: 2.99,
+      isVerified: false,
+      verificationStatus: 'pending',
+      verificationDocuments: [],
+      stats: {
+        totalEarnings: 0,
+        monthlyEarnings: 0,
+        totalMatches: 0,
+        totalLikes: 0,
+        rating: 0,
+        ratingCount: 0
+      },
+      preferences: {
+        minAge: 18,
+        maxAge: 99,
+        interestedIn: ['everyone']
+      },
+      location: {
+        country: country || 'United States'
+      },
+      isPaused: false
+    }], { session });
+
+    // Commit transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    // Send verification email (outside transaction)
+    try {
+      await sendVerificationEmail(email, null, displayName);
+    } catch (emailError) {
+      console.error('Failed to send welcome email to creator:', emailError);
+    }
+
+    // Create response data
+    const additionalData = {
+      message: 'Creator registration successful! Please complete ID verification to start earning.',
+      redirectTo: '/creator/verify-id',
+      profileComplete: false,
+      isVerified: false,
+      needsIdVerification: true,
+      creatorId: creator[0]._id
+    };
+
+    // Send token response (logs them in immediately)
+    sendTokenResponse(user[0], 201, res, additionalData);
+    
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Creator registration error:', error);
+    
+    // Send appropriate error message
+    let errorMessage = 'Registration failed. Please try again.';
+    
+    if (error.message && error.message.includes('duplicate key')) {
+      if (error.message.includes('email')) {
+        errorMessage = 'This email is already registered';
+      } else if (error.message.includes('displayName')) {
+        errorMessage = 'This display name is already taken';
+      }
+    } else if (error.message && error.message.includes('validation failed')) {
+      errorMessage = 'Please check all required fields and try again';
+    }
+    
+    res.status(500).json({
+      success: false,
+      error: errorMessage
     });
   }
 };
@@ -192,19 +369,16 @@ exports.login = async (req, res, next) => {
       const member = await Member.findOne({ user: user._id });
       if (member) {
         if (!member.profileComplete) {
-          // First-time login - redirect to filters/preferences setup
           additionalData.redirectTo = '/member/filters';
           additionalData.profileComplete = false;
           additionalData.isFirstTimeSetup = true;
         } else {
-          // Profile is complete - go to browse creators
           additionalData.redirectTo = '/member/browse-creators';
           additionalData.profileComplete = true;
         }
         additionalData.credits = member.credits;
         additionalData.username = member.username;
       } else {
-        // No member profile found - shouldn't happen but handle gracefully
         additionalData.redirectTo = '/member/profile-setup';
         additionalData.profileComplete = false;
       }
