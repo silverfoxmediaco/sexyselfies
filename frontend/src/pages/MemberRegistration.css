@@ -793,6 +793,7 @@
 
   .memberreg-content {
     flex-direction: row;
+    margin-bottom: 40px;
   }
 
   .memberreg-benefits-section {
