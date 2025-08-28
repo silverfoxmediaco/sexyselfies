@@ -274,12 +274,12 @@ const MemberRegistration = () => {
     try {
       // Prepare registration data - match backend expectations
       const registrationData = {
-        email: formData.email,
-        username: formData.username,
+        email: formData.email.trim(),
+        username: formData.username.trim(),
         password: formData.password,
-        displayName: formData.username,
-        phone: formData.phone || undefined,
-        birthDate: formData.dateOfBirth,
+        displayName: formData.username.trim(),
+        phone: formData.phone?.trim() || undefined,
+        birthDate: formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString() : null,
         agreeToTerms: formData.agreedToTerms
       };
       
@@ -288,23 +288,59 @@ const MemberRegistration = () => {
       const response = await authService.memberRegister(registrationData);
       console.log('📥 Registration response:', response);
       
-      if (response && response.data && response.data.success) {
+      if (response && response.success) {
         console.log('✅ Registration successful!');
         // Show success message - let them know to check email
-        alert(response.data.message || 'Registration successful! Please check your email to verify your account, then login.');
+        alert(response.message || 'Registration successful! Please check your email to verify your account, then login.');
         
         // Redirect to login page as per new flow
-        const redirectPath = response.data.redirectTo || '/member/login';
+        const redirectPath = response.redirectTo || '/member/login';
         navigate(redirectPath);
       } else {
         console.log('❌ Registration failed:', response);
-        throw new Error(response.message || response.data?.error || 'Registration failed');
+        throw new Error(response.message || response.error || 'Registration failed');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setErrors({
-        submit: error.message || 'Registration failed. Please try again.'
-      });
+      
+      // Handle specific error types from backend
+      if (error.error && error.message) {
+        // Backend validation error with specific message
+        setErrors({
+          submit: error.message
+        });
+      } else if (error.errors && typeof error.errors === 'object') {
+        // Field-specific validation errors
+        const fieldErrors = {};
+        Object.keys(error.errors).forEach(field => {
+          fieldErrors[field] = error.errors[field];
+        });
+        setErrors({
+          ...fieldErrors,
+          submit: error.message || 'Please fix the errors above'
+        });
+      } else {
+        // Generic error handling
+        let errorMessage = 'Registration failed. Please try again.';
+        
+        if (error.message) {
+          if (error.message.includes('Network error')) {
+            errorMessage = 'Network error. Please check your internet connection and try again.';
+          } else if (error.message.includes('Email already registered')) {
+            errorMessage = 'This email is already registered. Please use a different email or try logging in.';
+          } else if (error.message.includes('Username already taken')) {
+            errorMessage = 'This username is already taken. Please choose a different username.';
+          } else if (error.message.includes('18 years old')) {
+            errorMessage = 'You must be at least 18 years old to join.';
+          } else {
+            errorMessage = error.message;
+          }
+        }
+        
+        setErrors({
+          submit: errorMessage
+        });
+      }
     } finally {
       setLoading(false);
     }
