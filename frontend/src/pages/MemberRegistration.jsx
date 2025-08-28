@@ -856,6 +856,14 @@ const MemberRegistration = () => {
               <p>"Best platform for discovering authentic creators!"</p>
               <span>- Sarah M., Member since 2024</span>
             </div>
+            
+            {/* Login Link */}
+            <div className="memberreg-login-link">
+              Already have an account?
+              <Link to="/member/login" className="memberreg-link">
+                Sign In
+              </Link>
+            </div>
           </div>
           
           {/* Right Side - Registration Form */}
@@ -931,14 +939,6 @@ const MemberRegistration = () => {
                 )}
               </div>
             </form>
-            
-            {/* Login Link */}
-            <div className="memberreg-login-link">
-              Already have an account?
-              <Link to="/member/login" className="memberreg-link">
-                Sign In
-              </Link>
-            </div>
           </div>
         </div>
       </div>
