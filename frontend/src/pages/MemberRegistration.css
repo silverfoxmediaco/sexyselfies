@@ -207,15 +207,7 @@
 
 .memberreg-form {
   width: 100%;
-  max-width: var(--content-width-narrow);
   margin: 0 auto;
-}
-
-/* Allow wider width on desktop */
-@media (min-width: 1024px) {
-  .memberreg-form {
-    max-width: var(--content-width-medium);
-  }
 }
 
 /* ========================
@@ -797,7 +789,6 @@
   }
 
   .memberreg-content {
-    max-width: 900px;
     flex-direction: row;
   }
 
@@ -843,9 +834,6 @@
     padding-right: max(var(--memberreg-space-xl), env(safe-area-inset-right, 32px));
   }
 
-  .memberreg-content {
-    max-width: 1200px;
-  }
 
   .memberreg-benefits-section {
     padding: var(--memberreg-space-2xl);

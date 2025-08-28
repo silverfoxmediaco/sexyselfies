@@ -8,13 +8,16 @@ import {
   Camera, UserPlus, Star
 } from 'lucide-react';
 import authService from '../services/auth.service';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './MemberRegistration.css';
 
 const MemberRegistration = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   
   // Multi-step form state
@@ -808,6 +811,9 @@ const MemberRegistration = () => {
   
   return (
     <div className="memberreg-page">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
+      
       <div className="memberreg-container">
         <div className="memberreg-content">
           {/* Left Side - Benefits */}
@@ -936,6 +942,9 @@ const MemberRegistration = () => {
           </div>
         </div>
       </div>
+      
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
