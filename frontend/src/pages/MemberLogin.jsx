@@ -183,187 +183,42 @@ const MemberLogin = () => {
   ];
 
   return (
-    <div className="memberlogin-container">
-      <div className="memberlogin-content">
-        {/* Login Form Section - Full width on mobile */}
-        <div className="memberlogin-form-section">
-          <div className="memberlogin-form-wrapper">
-            {/* Welcome Header */}
-            <div className="memberlogin-header">
-              <div className="memberlogin-logo">
-                <Sparkles />
-                <h1>Welcome Back</h1>
+    <div className="memberlogin-page">
+      {/* Main Header - Desktop and Tablet Only */}
+      {!isMobile && <MainHeader />}
+      
+      <div className="memberlogin-container">
+        <div className="memberlogin-content">
+          {/* Login Form Section - Full width on mobile */}
+          <div className="memberlogin-form-section">
+            <div className="memberlogin-form-wrapper">
+              {/* Welcome Header */}
+              <div className="memberlogin-header">
+                <div className="memberlogin-logo">
+                  <Sparkles />
+                  <h1>Welcome Back</h1>
+                </div>
+                <p className="memberlogin-subtitle">Sign in to discover amazing creators</p>
               </div>
-              <p className="memberlogin-subtitle">Sign in to discover amazing creators</p>
-            </div>
 
-            {/* Main Form or Forgot Password */}
-            <AnimatePresence mode="wait">
-              {!showForgotPassword ? (
-                <motion.div
-                  key="login"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {/* Login Form */}
-                  <form onSubmit={handleSubmit} className="memberlogin-form">
-                    {loginError && (
-                      <div className="memberlogin-error-box">
-                        <AlertCircle size={18} />
-                        <span>{loginError}</span>
-                      </div>
-                    )}
-                    
-                    <div className="memberlogin-form-group">
-                      <label className="memberlogin-label">
-                        <Mail size={18} />
-                        <span>Email Address</span>
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="Enter your email"
-                        className={`memberlogin-input ${errors.email ? 'error' : ''}`}
-                        disabled={isLoading}
-                      />
-                      {errors.email && (
-                        <span className="memberlogin-error-text">{errors.email}</span>
+              {/* Main Form or Forgot Password */}
+              <AnimatePresence mode="wait">
+                {!showForgotPassword ? (
+                  <motion.div
+                    key="login"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {/* Login Form */}
+                    <form onSubmit={handleSubmit} className="memberlogin-form">
+                      {loginError && (
+                        <div className="memberlogin-error-box">
+                          <AlertCircle size={18} />
+                          <span>{loginError}</span>
+                        </div>
                       )}
-                    </div>
-                    
-                    <div className="memberlogin-form-group">
-                      <label className="memberlogin-label">
-                        <Lock size={18} />
-                        <span>Password</span>
-                      </label>
-                      <div className="memberlogin-input-wrapper">
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          name="password"
-                          value={formData.password}
-                          onChange={handleChange}
-                          placeholder="Enter your password"
-                          className={`memberlogin-input ${errors.password ? 'error' : ''}`}
-                          disabled={isLoading}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="memberlogin-input-toggle"
-                          tabIndex={-1}
-                        >
-                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
-                      </div>
-                      {errors.password && (
-                        <span className="memberlogin-error-text">{errors.password}</span>
-                      )}
-                    </div>
-                    
-                    <div className="memberlogin-form-options">
-                      <label className="memberlogin-checkbox">
-                        <input
-                          type="checkbox"
-                          name="rememberMe"
-                          checked={formData.rememberMe}
-                          onChange={handleChange}
-                        />
-                        <div className="checkbox-custom"></div>
-                        <span>Remember me</span>
-                      </label>
-                      
-                      <button
-                        type="button"
-                        onClick={() => setShowForgotPassword(true)}
-                        className="memberlogin-forgot-link"
-                      >
-                        Forgot password?
-                      </button>
-                    </div>
-                    
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className="memberlogin-btn-primary"
-                    >
-                      {isLoading ? (
-                        <div className="memberlogin-spinner"></div>
-                      ) : (
-                        <>
-                          <LogIn size={18} />
-                          <span>Sign In</span>
-                        </>
-                      )}
-                    </button>
-                    
-                    <button
-                      type="button"
-                      onClick={handleDemoLogin}
-                      className="memberlogin-demo-btn"
-                    >
-                      <Sparkles size={18} />
-                      <span>Use Demo Account</span>
-                    </button>
-                  </form>
-                  
-                  {/* Social Login */}
-                  <div className="memberlogin-divider">
-                    <span>OR CONTINUE WITH</span>
-                  </div>
-                  
-                  <div className="memberlogin-social-options">
-                    <button className="memberlogin-social-btn facebook">
-                      <Facebook size={20} />
-                      <span>Facebook</span>
-                    </button>
-                    <button className="memberlogin-social-btn twitter">
-                      <Twitter size={20} />
-                      <span>Twitter</span>
-                    </button>
-                    <button className="memberlogin-social-btn instagram">
-                      <Instagram size={20} />
-                      <span>Instagram</span>
-                    </button>
-                  </div>
-                  
-                  {/* Sign Up Link */}
-                  <div className="memberlogin-signup-link">
-                    <p>
-                      Don't have an account?{' '}
-                      <Link to="/member/register" className="memberlogin-link">
-                        Join Free <ChevronRight size={16} />
-                      </Link>
-                    </p>
-                  </div>
-                </motion.div>
-              ) : (
-                /* Forgot Password Form */
-                <motion.div
-                  key="forgot"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {!resetSent ? (
-                    <form onSubmit={handleForgotPassword} className="memberlogin-form">
-                      <button
-                        type="button"
-                        onClick={() => setShowForgotPassword(false)}
-                        className="memberlogin-btn-secondary"
-                      >
-                        <ArrowLeft size={18} />
-                        <span>Back to login</span>
-                      </button>
-                      
-                      <div>
-                        <h2 className="memberlogin-reset-title">Reset Password</h2>
-                        <p className="memberlogin-reset-text">Enter your email and we'll send you a reset link</p>
-                      </div>
                       
                       <div className="memberlogin-form-group">
                         <label className="memberlogin-label">
@@ -372,15 +227,66 @@ const MemberLogin = () => {
                         </label>
                         <input
                           type="email"
-                          value={resetEmail}
-                          onChange={(e) => setResetEmail(e.target.value)}
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
                           placeholder="Enter your email"
-                          className={`memberlogin-input ${errors.resetEmail ? 'error' : ''}`}
+                          className={`memberlogin-input ${errors.email ? 'error' : ''}`}
                           disabled={isLoading}
                         />
-                        {errors.resetEmail && (
-                          <span className="memberlogin-error-text">{errors.resetEmail}</span>
+                        {errors.email && (
+                          <span className="memberlogin-error-text">{errors.email}</span>
                         )}
+                      </div>
+                      
+                      <div className="memberlogin-form-group">
+                        <label className="memberlogin-label">
+                          <Lock size={18} />
+                          <span>Password</span>
+                        </label>
+                        <div className="memberlogin-input-wrapper">
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Enter your password"
+                            className={`memberlogin-input ${errors.password ? 'error' : ''}`}
+                            disabled={isLoading}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="memberlogin-input-toggle"
+                            tabIndex={-1}
+                          >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
+                        </div>
+                        {errors.password && (
+                          <span className="memberlogin-error-text">{errors.password}</span>
+                        )}
+                      </div>
+                      
+                      <div className="memberlogin-form-options">
+                        <label className="memberlogin-checkbox">
+                          <input
+                            type="checkbox"
+                            name="rememberMe"
+                            checked={formData.rememberMe}
+                            onChange={handleChange}
+                          />
+                          <div className="checkbox-custom"></div>
+                          <span>Remember me</span>
+                        </label>
+                        
+                        <button
+                          type="button"
+                          onClick={() => setShowForgotPassword(true)}
+                          className="memberlogin-forgot-link"
+                        >
+                          Forgot password?
+                        </button>
                       </div>
                       
                       <button
@@ -392,50 +298,152 @@ const MemberLogin = () => {
                           <div className="memberlogin-spinner"></div>
                         ) : (
                           <>
-                            <Mail size={18} />
-                            <span>Send Reset Link</span>
+                            <LogIn size={18} />
+                            <span>Sign In</span>
                           </>
                         )}
                       </button>
-                    </form>
-                  ) : (
-                    <div className="memberlogin-reset-success">
-                      <Check size={32} />
-                      <h3>Check Your Email</h3>
-                      <p>We've sent a password reset link to:</p>
-                      <p>{resetEmail}</p>
+                      
                       <button
-                        onClick={() => {
-                          setShowForgotPassword(false);
-                          setResetSent(false);
-                          setResetEmail('');
-                        }}
-                        className="memberlogin-btn-primary"
+                        type="button"
+                        onClick={handleDemoLogin}
+                        className="memberlogin-demo-btn"
                       >
-                        Back to Login
+                        <Sparkles size={18} />
+                        <span>Use Demo Account</span>
+                      </button>
+                    </form>
+                    
+                    {/* Social Login */}
+                    <div className="memberlogin-divider">
+                      <span>OR CONTINUE WITH</span>
+                    </div>
+                    
+                    <div className="memberlogin-social-options">
+                      <button className="memberlogin-social-btn facebook">
+                        <Facebook size={20} />
+                        <span>Facebook</span>
+                      </button>
+                      <button className="memberlogin-social-btn twitter">
+                        <Twitter size={20} />
+                        <span>Twitter</span>
+                      </button>
+                      <button className="memberlogin-social-btn instagram">
+                        <Instagram size={20} />
+                        <span>Instagram</span>
                       </button>
                     </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    
+                    {/* Sign Up Link */}
+                    <div className="memberlogin-signup-link">
+                      <p>
+                        Don't have an account?{' '}
+                        <Link to="/member/register" className="memberlogin-link">
+                          Join Free <ChevronRight size={16} />
+                        </Link>
+                      </p>
+                    </div>
+                  </motion.div>
+                ) : (
+                  /* Forgot Password Form */
+                  <motion.div
+                    key="forgot"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {!resetSent ? (
+                      <form onSubmit={handleForgotPassword} className="memberlogin-form">
+                        <button
+                          type="button"
+                          onClick={() => setShowForgotPassword(false)}
+                          className="memberlogin-btn-secondary"
+                        >
+                          <ArrowLeft size={18} />
+                          <span>Back to login</span>
+                        </button>
+                        
+                        <div>
+                          <h2 className="memberlogin-reset-title">Reset Password</h2>
+                          <p className="memberlogin-reset-text">Enter your email and we'll send you a reset link</p>
+                        </div>
+                        
+                        <div className="memberlogin-form-group">
+                          <label className="memberlogin-label">
+                            <Mail size={18} />
+                            <span>Email Address</span>
+                          </label>
+                          <input
+                            type="email"
+                            value={resetEmail}
+                            onChange={(e) => setResetEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            className={`memberlogin-input ${errors.resetEmail ? 'error' : ''}`}
+                            disabled={isLoading}
+                          />
+                          {errors.resetEmail && (
+                            <span className="memberlogin-error-text">{errors.resetEmail}</span>
+                          )}
+                        </div>
+                        
+                        <button
+                          type="submit"
+                          disabled={isLoading}
+                          className="memberlogin-btn-primary"
+                        >
+                          {isLoading ? (
+                            <div className="memberlogin-spinner"></div>
+                          ) : (
+                            <>
+                              <Mail size={18} />
+                              <span>Send Reset Link</span>
+                            </>
+                          )}
+                        </button>
+                      </form>
+                    ) : (
+                      <div className="memberlogin-reset-success">
+                        <Check size={32} />
+                        <h3>Check Your Email</h3>
+                        <p>We've sent a password reset link to:</p>
+                        <p>{resetEmail}</p>
+                        <button
+                          onClick={() => {
+                            setShowForgotPassword(false);
+                            setResetSent(false);
+                            setResetEmail('');
+                          }}
+                          className="memberlogin-btn-primary"
+                        >
+                          Back to Login
+                        </button>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
 
-        {/* Features Section - Hidden on mobile, visible on tablet/desktop */}
-        <div className="memberlogin-features-section">
-          <div className="memberlogin-features-container">
-            <h2 className="memberlogin-features-title">Discover Your Perfect Match</h2>
-            <p className="memberlogin-features-subtitle">
-              Join thousands of members connecting with amazing creators every day
-            </p>
+          {/* Features Section - Hidden on mobile, visible on tablet/desktop */}
+          <div className="memberlogin-features-section">
+            <div className="memberlogin-hero">
+              <h2 className="memberlogin-hero-title">Discover Your Perfect Match</h2>
+              <p className="memberlogin-hero-subtitle">
+                Join thousands of members connecting with amazing creators every day
+              </p>
+            </div>
             
             {/* Stats Grid */}
-            <div className="memberlogin-stats-grid">
+            <div className="memberlogin-stats">
               {stats.map((stat, index) => (
                 <div key={index} className="memberlogin-stat-card">
-                  <div className="memberlogin-stat-value">{stat.value}</div>
-                  <div className="memberlogin-stat-label">{stat.label}</div>
+                  <div className="stat-icon">
+                    <Star size={20} />
+                  </div>
+                  <div className="stat-value">{stat.value}</div>
+                  <div className="stat-label">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -452,10 +460,10 @@ const MemberLogin = () => {
                     transition={{ delay: index * 0.1 }}
                     className="memberlogin-feature-item"
                   >
-                    <div className="memberlogin-feature-icon">
+                    <div className="feature-icon-wrapper">
                       <Icon size={24} />
                     </div>
-                    <div className="memberlogin-feature-content">
+                    <div className="feature-content">
                       <h3>{feature.text}</h3>
                       <p>{feature.subtext}</p>
                     </div>
@@ -464,27 +472,28 @@ const MemberLogin = () => {
               })}
             </div>
             
-            {/* Trust Badges */}
-            <div className="memberlogin-trust-badges">
-              <div className="memberlogin-badge">
-                <Shield size={16} />
-                <span>SSL Secured</span>
+            {/* App Download */}
+            <div className="memberlogin-app-download">
+              <div>
+                <h4>Get the App</h4>
+                <p>Available on iOS and Android</p>
               </div>
-              <div className="memberlogin-badge">
-                <Lock size={16} />
-                <span>Privacy Protected</span>
-              </div>
-              <div className="memberlogin-badge">
-                <Star size={16} />
-                <span>Trusted Platform</span>
-              </div>
+              <button className="download-btn">
+                Download <ChevronRight size={16} />
+              </button>
+            </div>
+            
+            {/* Trust Badge */}
+            <div className="memberlogin-trust-badge">
+              <Shield size={16} />
+              <span>256-bit SSL Secured • Privacy Protected</span>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Desktop Footer */}
-      {isDesktop && <MainFooter />}
+      
+      {/* Main Footer - Desktop and Tablet Only */}
+      {!isMobile && <MainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

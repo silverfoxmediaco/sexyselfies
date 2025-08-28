@@ -395,8 +395,8 @@
   }
 }
 
-/* Logo Styling */
-.mainheader-logo {
+/* Hero Logo Styling */
+.swipe-hero-logo {
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -404,14 +404,14 @@
   margin-bottom: var(--space-md);
 }
 
-.mainheader-logo-img {
+.swipe-hero-logo-img {
   height: 100px;
   width: auto;
   object-fit: contain;
   transition: transform 0.2s ease;
 }
 
-.mainheader-logo:hover .mainheader-logo-img {
+.swipe-hero-logo:hover .swipe-hero-logo-img {
   transform: scale(1.05);
 }
 
@@ -477,8 +477,8 @@
     padding: 12px 16px;
   }
   
-  .mainheader-logo-img {
-    height: 32px;
+  .swipe-hero-logo-img {
+    height: 80px;
   }
 }
 

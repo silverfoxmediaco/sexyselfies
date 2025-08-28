@@ -45,11 +45,11 @@ const SwipeConnectMonetize = () => {
         <div className="container">
           <div className="hero-content">
             {/* Logo */}
-            <Link to="/" className="mainheader-logo">
+            <Link to="/" className="swipe-hero-logo">
               <img 
                 src={logo} 
                 alt="SexySelfies" 
-                className="mainheader-logo-img"
+                className="swipe-hero-logo-img"
               />
             </Link>
             
