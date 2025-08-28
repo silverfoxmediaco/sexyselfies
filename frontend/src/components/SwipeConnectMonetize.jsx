@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { LogIn, UserPlus } from 'lucide-react';
 import './SwipeConnectMonetize.css';
+import logo from '../assets/sexysselfies_logo.png';
 
 const SwipeConnectMonetize = () => {
   const navigate = useNavigate();
@@ -42,6 +44,25 @@ const SwipeConnectMonetize = () => {
       <section className="hero-section">
         <div className="container">
           <div className="hero-content">
+            {/* Logo */}
+            <Link to="/" className="mainheader-logo">
+              <img 
+                src={logo} 
+                alt="SexySelfies" 
+                className="mainheader-logo-img"
+              />
+            </Link>
+            
+            <div className="header-buttons">
+              <Link to="/member/login" className="mainheader-btn-secondary">
+                <LogIn size={18} />
+                <span>Member Login</span>
+              </Link>
+              <Link to="/member/register" className="mainheader-btn-primary">
+                <UserPlus size={18} />
+                <span>Join Free</span>
+              </Link>
+            </div>
             <div className="launch-chip pulse-animation">
               <span className="chip-icon">🚀</span>
               <span>Launching January 2026</span>
