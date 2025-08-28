@@ -6,7 +6,7 @@
   min-height: 100vh;
   background: #0A0A0A;
   color: #FFFFFF;
-  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0));
+  padding-bottom: calc(160px + env(safe-area-inset-bottom, 0));
   overflow-x: hidden;
   box-sizing: border-box;
 }
@@ -508,21 +508,26 @@
 }
 
 .bf-apply-btn {
-  width: 100%;
+  position: fixed;
+  bottom: 80px; /* Above the bottom navigation */
+  left: 20px;
+  right: 20px;
+  width: calc(100% - 40px);
   padding: 16px;
-  background: #17D2C2;
-  border: none;
-  border-radius: 12px;
+  background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
   color: #001310;
+  border: none;
+  border-radius: 16px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  transition: transform 0.2s ease;
 }
 
 .bf-apply-btn:active {
@@ -535,12 +540,20 @@
 }
 
 .bf-apply-count {
-  background: #001310;
-  color: #17D2C2;
+  background: rgba(0, 19, 16, 0.2);
+  color: #001310;
   padding: 2px 8px;
   border-radius: 12px;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Ensure button is visible on all screen sizes */
+@media (max-width: 768px) {
+  .bf-apply-btn {
+    display: flex !important;
+    visibility: visible !important;
+  }
 }
 
 /* Tablet Support */
@@ -600,7 +613,7 @@
   }
 
   .bf-apply-btn:hover:not(:disabled) {
-    background: #14B5A8;
+    background: linear-gradient(135deg, #0F9A8D 0%, #14B5A8 50%, #3EC4BC 100%);
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(23, 210, 194, 0.3);
   }
