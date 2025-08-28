@@ -67,7 +67,7 @@
 
 /* Hero Section */
 .hero-section {
-  padding-top: 10px;
+  padding-top: 40px;
   padding-bottom: var(--space-3xl);
   display: flex;
   align-items: center;
@@ -372,7 +372,7 @@
   
   .hero-section {
     padding-top: 10px;
-    padding-bottom: var(--space-lg);
+    padding-bottom: 20px
   }
   
   .social-proof {
