@@ -167,7 +167,7 @@ const MemberLogin = () => {
   };
 
   const features = [
-    { icon: Heart, text: 'Unlimited Matches', subtext: 'Connect with creators you love' },
+    { icon: Heart, text: 'Unlimited Connections', subtext: 'Connect with creators you love' },
     { icon: Shield, text: 'Verified Profiles', subtext: 'All creators are ID verified' },
     { icon: Lock, text: 'Exclusive Content', subtext: 'Access members-only content' },
     { icon: Sparkles, text: 'Direct Messaging', subtext: 'Chat directly with creators' }
@@ -175,7 +175,7 @@ const MemberLogin = () => {
 
   const stats = [
     { label: 'Active Creators', value: '10K+' },
-    { label: 'Daily Matches', value: '50K+' },
+    { label: 'Daily Connections', value: '50K+' },
     { label: 'Content Created', value: '1M+' },
     { label: 'Member Rating', value: '4.9★' }
   ];
@@ -407,7 +407,7 @@ const MemberLogin = () => {
           {/* Features Section - Hidden on mobile, visible on tablet/desktop */}
           <div className="memberlogin-features-section">
             <div className="memberlogin-hero">
-              <h2 className="memberlogin-hero-title">Discover Your Perfect Match</h2>
+              <h2 className="memberlogin-hero-title">Discover Sexy Creators World Wide</h2>
               <p className="memberlogin-hero-subtitle">
                 Join thousands of members connecting with amazing creators every day
               </p>
@@ -453,8 +453,8 @@ const MemberLogin = () => {
             {/* App Download */}
             <div className="memberlogin-app-download">
               <div>
-                <h4>Get the App</h4>
-                <p>Available on iOS and Android</p>
+                <h4>Download Our App </h4>
+                <p>Available as a Progressive Web App Free</p>
               </div>
               <button className="download-btn">
                 Download <ChevronRight size={16} />
