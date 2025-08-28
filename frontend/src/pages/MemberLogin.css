@@ -15,8 +15,12 @@
   --memberlogin-accent-tertiary: #47E0D2;   /* primary-300 */
   --memberlogin-gradient: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
   --memberlogin-error: #EF4444;
+  --memberlogin-warning: #F59E0B;
   --memberlogin-success: #22C55E;
   --memberlogin-info: #38BDF8;
+  --memberlogin-facebook: #1877F2;
+  --memberlogin-twitter: #1DA1F2;
+  --memberlogin-instagram: #E4405F;
   
   /* PWA-optimized spacing scale (8-point grid system) */
   --memberlogin-space-xs: 4px;   /* space-xs */
@@ -92,6 +96,7 @@
 /* Content Wrapper - Mobile First */
 .memberlogin-content {
   width: 100%;
+  max-width: 100%;
   background: var(--memberlogin-bg-secondary);
   border-radius: var(--memberlogin-radius-2xl);
   overflow: hidden;
@@ -109,6 +114,7 @@
 
 .memberlogin-form-wrapper {
   width: 100%;
+  max-width: 400px;
   margin: 0 auto;
 }
 
@@ -493,6 +499,101 @@
   line-height: 1.5;
 }
 
+/* Divider */
+.memberlogin-divider {
+  position: relative;
+  text-align: center;
+  margin: var(--memberlogin-space-2xl) 0 var(--memberlogin-space-xl);
+}
+
+.memberlogin-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--memberlogin-border-color), transparent);
+}
+
+.memberlogin-divider span {
+  position: relative;
+  padding: 0 var(--memberlogin-space-lg);
+  background: var(--memberlogin-bg-secondary);
+  color: var(--memberlogin-text-tertiary);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+}
+
+/* Social Options */
+.memberlogin-social-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--memberlogin-space-md);
+  margin-bottom: var(--memberlogin-space-xl);
+}
+
+.memberlogin-social-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--memberlogin-space-sm);
+  padding: 12px 20px;
+  border: 1.5px solid var(--memberlogin-border-color);
+  border-radius: var(--memberlogin-radius-md);
+  background: var(--memberlogin-bg-tertiary);
+  color: var(--memberlogin-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: var(--memberlogin-touch-target-min);
+  position: relative;
+  overflow: hidden;
+}
+
+.memberlogin-social-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  transition: left 0.3s ease;
+}
+
+.memberlogin-social-btn.facebook::before {
+  background: var(--memberlogin-facebook);
+}
+
+.memberlogin-social-btn.twitter::before {
+  background: var(--memberlogin-twitter);
+}
+
+.memberlogin-social-btn.instagram::before {
+  background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF);
+}
+
+.memberlogin-social-btn:hover::before {
+  left: 0;
+}
+
+.memberlogin-social-btn:hover {
+  color: white;
+  border-color: transparent;
+}
+
+.memberlogin-social-btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.memberlogin-social-btn:active {
+  transform: scale(0.98);
+}
 
 /* Sign Up Link */
 .memberlogin-signup-link {
@@ -535,6 +636,7 @@
   }
   
   .memberlogin-content {
+    max-width: 900px;
     flex-direction: row;
     box-shadow: var(--memberlogin-shadow-elev), var(--memberlogin-glow);
   }
@@ -553,11 +655,12 @@
     flex-direction: column;
     flex: 1;
     padding: var(--memberlogin-space-2xl);
-    background: var(--memberlogin-gradient);
-    color: #000;
+    background: linear-gradient(135deg, #0F0F0F 0%, #1A1A1A 100%);
+    color: var(--memberlogin-text-primary);
     justify-content: center;
     position: relative;
     overflow: hidden;
+    border-left: 1px solid rgba(23, 210, 194, 0.1);
   }
   
   .memberlogin-features-section::before {
@@ -567,7 +670,7 @@
     right: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(23, 210, 194, 0.03) 0%, transparent 70%);
     animation: float 20s infinite linear;
   }
   
@@ -586,13 +689,16 @@
     font-size: 32px;
     font-weight: 700;
     margin: 0 0 var(--memberlogin-space-md) 0;
-    color: #000;
+    background: var(--memberlogin-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     line-height: 1.2;
   }
   
   .memberlogin-hero-subtitle {
     font-size: 16px;
-    opacity: 0.85;
+    color: var(--memberlogin-text-secondary);
     margin: 0;
     line-height: 1.5;
   }
@@ -609,36 +715,38 @@
   
   .memberlogin-stat-card {
     padding: var(--memberlogin-space-md);
-    background: rgba(0, 0, 0, 0.08);
+    background: rgba(23, 210, 194, 0.08);
     backdrop-filter: blur(10px);
     border-radius: var(--memberlogin-radius-md);
     text-align: center;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(23, 210, 194, 0.15);
     transition: all 0.2s ease;
   }
   
   .memberlogin-stat-card:hover {
-    background: rgba(0, 0, 0, 0.12);
+    background: rgba(23, 210, 194, 0.12);
     transform: translateY(-2px);
+    border-color: rgba(23, 210, 194, 0.25);
   }
   
   .stat-icon {
     display: flex;
     justify-content: center;
     margin-bottom: var(--memberlogin-space-sm);
-    opacity: 0.7;
+    color: var(--memberlogin-accent-primary);
+    opacity: 0.8;
   }
   
   .stat-value {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: var(--memberlogin-space-xs);
-    color: #000;
+    color: var(--memberlogin-accent-primary);
   }
   
   .stat-label {
     font-size: 11px;
-    opacity: 0.7;
+    color: var(--memberlogin-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.8px;
     font-weight: 500;
@@ -668,26 +776,27 @@
   .feature-icon-wrapper {
     width: 44px;
     height: 44px;
-    background: rgba(0, 0, 0, 0.08);
+    background: rgba(23, 210, 194, 0.1);
     backdrop-filter: blur(10px);
     border-radius: var(--memberlogin-radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(23, 210, 194, 0.15);
+    color: var(--memberlogin-accent-primary);
   }
   
   .feature-content h3 {
     font-size: 16px;
     font-weight: 600;
     margin: 0 0 var(--memberlogin-space-xs) 0;
-    color: #000;
+    color: var(--memberlogin-text-primary);
   }
   
   .feature-content p {
     font-size: 13px;
-    opacity: 0.75;
+    color: var(--memberlogin-text-secondary);
     margin: 0;
     line-height: 1.4;
   }
@@ -698,38 +807,39 @@
     align-items: center;
     gap: var(--memberlogin-space-md);
     padding: var(--memberlogin-space-md);
-    background: rgba(0, 0, 0, 0.08);
+    background: rgba(23, 210, 194, 0.05);
     backdrop-filter: blur(10px);
     border-radius: var(--memberlogin-radius-md);
     margin-bottom: var(--memberlogin-space-lg);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(23, 210, 194, 0.1);
     position: relative;
     z-index: 1;
     transition: all 0.2s ease;
   }
   
   .memberlogin-app-download:hover {
-    background: rgba(0, 0, 0, 0.12);
+    background: rgba(23, 210, 194, 0.08);
+    border-color: rgba(23, 210, 194, 0.2);
   }
   
   .memberlogin-app-download h4 {
     font-size: 16px;
     font-weight: 600;
     margin: 0 0 var(--memberlogin-space-xs) 0;
-    color: #000;
+    color: var(--memberlogin-text-primary);
   }
   
   .memberlogin-app-download p {
     font-size: 12px;
-    opacity: 0.75;
+    color: var(--memberlogin-text-secondary);
     margin: 0;
   }
   
   .download-btn {
     margin-left: auto;
     padding: 10px 18px;
-    background: #000;
-    color: var(--memberlogin-accent-primary);
+    background: var(--memberlogin-gradient);
+    color: #001310;
     border: none;
     border-radius: var(--memberlogin-radius-md);
     font-size: 13px;
@@ -744,7 +854,7 @@
   
   .download-btn:hover {
     transform: translateX(2px);
-    background: rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 20px rgba(23, 210, 194, 0.3);
   }
   
   /* Trust Badge */
@@ -754,17 +864,25 @@
     justify-content: center;
     gap: var(--memberlogin-space-sm);
     padding: var(--memberlogin-space-md);
-    background: rgba(0, 0, 0, 0.08);
+    background: rgba(23, 210, 194, 0.03);
     backdrop-filter: blur(10px);
     border-radius: var(--memberlogin-radius-md);
     font-size: 12px;
     font-weight: 500;
     text-align: center;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(23, 210, 194, 0.08);
     position: relative;
     z-index: 1;
+    color: var(--memberlogin-text-secondary);
   }
   
+  .memberlogin-social-options {
+    flex-direction: row;
+  }
+  
+  .memberlogin-social-btn span {
+    display: none;
+  }
 }
 
 /* Desktop Styles - 1024px and up */
@@ -777,6 +895,9 @@
     padding-right: max(var(--memberlogin-space-xl), env(safe-area-inset-right, 32px));
   }
   
+  .memberlogin-content {
+    max-width: 1100px;
+  }
   
   .memberlogin-form-section {
     padding: var(--memberlogin-space-3xl);
@@ -806,6 +927,9 @@
     grid-template-columns: repeat(4, 1fr);
   }
   
+  .memberlogin-social-btn span {
+    display: inline;
+  }
   
   /* Enhanced hover effects for desktop */
   .memberlogin-input:hover {
@@ -822,10 +946,16 @@
     transform: translateY(-1px);
   }
   
+  .memberlogin-social-btn:hover {
+    transform: translateY(-2px);
+  }
 }
 
 /* Large Desktop - 1440px and up */
 @media (min-width: 1440px) {
+  .memberlogin-content {
+    max-width: 1200px;
+  }
 }
 
 /* Accessibility - Focus States */
@@ -833,6 +963,7 @@
 .memberlogin-btn-primary:focus-visible,
 .memberlogin-btn-secondary:focus-visible,
 .memberlogin-demo-btn:focus-visible,
+.memberlogin-social-btn:focus-visible,
 .memberlogin-forgot-link:focus-visible {
   outline: 2px solid var(--memberlogin-accent-primary);
   outline-offset: 3px;
@@ -859,4 +990,7 @@
     border-width: 2px;
   }
   
+  .memberlogin-social-btn {
+    border-width: 2px;
+  }
 }
