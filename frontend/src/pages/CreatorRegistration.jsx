@@ -480,7 +480,9 @@ const CreatorRegistration = () => {
       {/* Desktop Header */}
       {isDesktop && <MainHeader />}
       
-      <div className="creator-registration-container">
+      <div className="creator-registration">
+        <div className="creator-registration-wrapper">
+          <div className="creator-registration-container">
         <div className="creator-registration-content">
           <div className="creator-registration-header">
             <h1>Become a Creator</h1>
@@ -539,6 +541,8 @@ const CreatorRegistration = () => {
           
           <div className="creator-registration-footer">
             <p>Already have an account? <Link to="/creator/login">Sign In</Link></p>
+          </div>
+        </div>
           </div>
         </div>
       </div>
