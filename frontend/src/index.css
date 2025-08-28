@@ -27,11 +27,15 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
   font-size: clamp(14px, 2vw, 16px); /* Base font size responsive */
+}
+
+/* Make sure the root app container takes full width */
+#root {
+  width: 100%;
+  min-height: 100vh;
 }
 
 h1 {
