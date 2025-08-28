@@ -80,7 +80,7 @@ exports.validateMemberRegistration = [
     }),
   body('agreeToTerms')
     .isBoolean()
-    .equals('true')
+    .custom(value => value === true)
     .withMessage('Must agree to terms and conditions'),
   handleValidationErrors
 ];
@@ -137,15 +137,15 @@ exports.validateCreatorRegistration = [
     .customSanitizer(sanitizeInput),
   body('agreeToTerms')
     .isBoolean()
-    .equals('true')
+    .custom(value => value === true)
     .withMessage('Must agree to terms and conditions'),
   body('agreeToContentPolicy')
     .isBoolean()
-    .equals('true')
+    .custom(value => value === true)
     .withMessage('Must agree to content policy'),
   body('over18Confirmation')
     .isBoolean()
-    .equals('true')
+    .custom(value => value === true)
     .withMessage('Must confirm age requirement'),
   body('taxInfoConsent')
     .optional()
