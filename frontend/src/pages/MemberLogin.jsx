@@ -96,8 +96,10 @@ const MemberLogin = () => {
         formData.rememberMe
       );
 
-      if (response.data.success) {
-        console.log('Login successful:', response.data);
+      console.log('Login response structure:', response);
+      
+      if (response && response.success) {
+        console.log('Login successful:', response);
         
         // Handle remember me (authService already handles token storage)
         if (formData.rememberMe) {
@@ -107,16 +109,19 @@ const MemberLogin = () => {
         }
         
         // Use backend's redirect logic
-        const redirectPath = response.data.redirectTo || '/member/browse-creators';
+        const redirectPath = response.redirectTo || '/member/browse-creators';
         console.log('Redirecting to:', redirectPath);
         
         // Pass first-time setup flag if going to filters
         const navigationOptions = { replace: true };
-        if (response.data.isFirstTimeSetup && redirectPath === '/member/filters') {
+        if (response.isFirstTimeSetup && redirectPath === '/member/filters') {
           navigationOptions.state = { isFirstTime: true };
         }
         
         navigate(redirectPath, navigationOptions);
+      } else {
+        console.error('Login failed - no success in response:', response);
+        setLoginError('Login failed. Please try again.');
       }
     } catch (error) {
       console.error('Login error:', error);

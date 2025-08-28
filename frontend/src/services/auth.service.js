@@ -60,20 +60,22 @@ class AuthService {
         }
       });
 
-      // Store tokens
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('memberToken', response.data.token);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
+      console.log('Raw login response:', response);
+
+      // Store tokens - response is already unwrapped by api interceptor
+      if (response && response.token) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('memberToken', response.token);
+        localStorage.setItem('refreshToken', response.refreshToken);
         localStorage.setItem('userRole', 'member');
-        localStorage.setItem('userId', response.data.user.id);
+        localStorage.setItem('userId', response.user?.id || '');
         
         if (rememberMe) {
           localStorage.setItem('rememberMe', 'true');
           localStorage.setItem('savedEmail', email);
         }
         
-        apiHelpers.setAuthToken(response.data.token);
+        apiHelpers.setAuthToken(response.token);
 
         // Register for push notifications if PWA
         if ('serviceWorker' in navigator && 'PushManager' in window) {
