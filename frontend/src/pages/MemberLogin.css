@@ -18,9 +18,6 @@
   --memberlogin-warning: #F59E0B;
   --memberlogin-success: #22C55E;
   --memberlogin-info: #38BDF8;
-  --memberlogin-facebook: #1877F2;
-  --memberlogin-twitter: #1DA1F2;
-  --memberlogin-instagram: #E4405F;
   
   /* PWA-optimized spacing scale (8-point grid system) */
   --memberlogin-space-xs: 4px;   /* space-xs */
@@ -96,7 +93,6 @@
 /* Content Wrapper - Mobile First */
 .memberlogin-content {
   width: 100%;
-  max-width: 100%;
   background: var(--memberlogin-bg-secondary);
   border-radius: var(--memberlogin-radius-2xl);
   overflow: hidden;
@@ -114,7 +110,6 @@
 
 .memberlogin-form-wrapper {
   width: 100%;
-  max-width: 400px;
   margin: 0 auto;
 }
 
@@ -499,101 +494,6 @@
   line-height: 1.5;
 }
 
-/* Divider */
-.memberlogin-divider {
-  position: relative;
-  text-align: center;
-  margin: var(--memberlogin-space-2xl) 0 var(--memberlogin-space-xl);
-}
-
-.memberlogin-divider::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--memberlogin-border-color), transparent);
-}
-
-.memberlogin-divider span {
-  position: relative;
-  padding: 0 var(--memberlogin-space-lg);
-  background: var(--memberlogin-bg-secondary);
-  color: var(--memberlogin-text-tertiary);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-weight: 500;
-}
-
-/* Social Options */
-.memberlogin-social-options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--memberlogin-space-md);
-  margin-bottom: var(--memberlogin-space-xl);
-}
-
-.memberlogin-social-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--memberlogin-space-sm);
-  padding: 12px 20px;
-  border: 1.5px solid var(--memberlogin-border-color);
-  border-radius: var(--memberlogin-radius-md);
-  background: var(--memberlogin-bg-tertiary);
-  color: var(--memberlogin-text-primary);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: var(--memberlogin-touch-target-min);
-  position: relative;
-  overflow: hidden;
-}
-
-.memberlogin-social-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  transition: left 0.3s ease;
-}
-
-.memberlogin-social-btn.facebook::before {
-  background: var(--memberlogin-facebook);
-}
-
-.memberlogin-social-btn.twitter::before {
-  background: var(--memberlogin-twitter);
-}
-
-.memberlogin-social-btn.instagram::before {
-  background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF);
-}
-
-.memberlogin-social-btn:hover::before {
-  left: 0;
-}
-
-.memberlogin-social-btn:hover {
-  color: white;
-  border-color: transparent;
-}
-
-.memberlogin-social-btn > * {
-  position: relative;
-  z-index: 1;
-}
-
-.memberlogin-social-btn:active {
-  transform: scale(0.98);
-}
 
 /* Sign Up Link */
 .memberlogin-signup-link {
@@ -636,7 +536,6 @@
   }
   
   .memberlogin-content {
-    max-width: 900px;
     flex-direction: row;
     box-shadow: var(--memberlogin-shadow-elev), var(--memberlogin-glow);
   }
@@ -867,13 +766,6 @@
     z-index: 1;
   }
   
-  .memberlogin-social-options {
-    flex-direction: row;
-  }
-  
-  .memberlogin-social-btn span {
-    display: none;
-  }
 }
 
 /* Desktop Styles - 1024px and up */
@@ -886,9 +778,6 @@
     padding-right: max(var(--memberlogin-space-xl), env(safe-area-inset-right, 32px));
   }
   
-  .memberlogin-content {
-    max-width: 1100px;
-  }
   
   .memberlogin-form-section {
     padding: var(--memberlogin-space-3xl);
@@ -918,9 +807,6 @@
     grid-template-columns: repeat(4, 1fr);
   }
   
-  .memberlogin-social-btn span {
-    display: inline;
-  }
   
   /* Enhanced hover effects for desktop */
   .memberlogin-input:hover {
@@ -937,16 +823,10 @@
     transform: translateY(-1px);
   }
   
-  .memberlogin-social-btn:hover {
-    transform: translateY(-2px);
-  }
 }
 
 /* Large Desktop - 1440px and up */
 @media (min-width: 1440px) {
-  .memberlogin-content {
-    max-width: 1200px;
-  }
 }
 
 /* Accessibility - Focus States */
@@ -954,7 +834,6 @@
 .memberlogin-btn-primary:focus-visible,
 .memberlogin-btn-secondary:focus-visible,
 .memberlogin-demo-btn:focus-visible,
-.memberlogin-social-btn:focus-visible,
 .memberlogin-forgot-link:focus-visible {
   outline: 2px solid var(--memberlogin-accent-primary);
   outline-offset: 3px;
@@ -981,7 +860,4 @@
     border-width: 2px;
   }
   
-  .memberlogin-social-btn {
-    border-width: 2px;
-  }
 }

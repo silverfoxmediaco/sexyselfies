@@ -4,21 +4,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mail, Lock, Eye, EyeOff, LogIn, AlertCircle,
   Heart, Shield, Star, Users, Sparkles, 
-  Facebook, Twitter, Instagram, ChevronRight,
-  Check, Gift, ArrowLeft
+  ChevronRight, Check, ArrowLeft
 } from 'lucide-react';
 import authService from '../services/auth.service';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './MemberLogin.css';
 
 const MemberLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
-  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [formData, setFormData] = useState({
     email: '',
@@ -313,26 +311,6 @@ const MemberLogin = () => {
                         <span>Use Demo Account</span>
                       </button>
                     </form>
-                    
-                    {/* Social Login */}
-                    <div className="memberlogin-divider">
-                      <span>OR CONTINUE WITH</span>
-                    </div>
-                    
-                    <div className="memberlogin-social-options">
-                      <button className="memberlogin-social-btn facebook">
-                        <Facebook size={20} />
-                        <span>Facebook</span>
-                      </button>
-                      <button className="memberlogin-social-btn twitter">
-                        <Twitter size={20} />
-                        <span>Twitter</span>
-                      </button>
-                      <button className="memberlogin-social-btn instagram">
-                        <Instagram size={20} />
-                        <span>Instagram</span>
-                      </button>
-                    </div>
                     
                     {/* Sign Up Link */}
                     <div className="memberlogin-signup-link">
