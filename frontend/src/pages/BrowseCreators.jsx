@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, X, Star, RotateCcw, Info, Filter, Loader } from 'lucide-react';
-import SwipeCard from '../components/SwipeCard';
+// import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';

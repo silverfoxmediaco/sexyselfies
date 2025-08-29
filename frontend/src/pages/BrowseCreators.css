@@ -70,19 +70,8 @@
   align-items: center;
 }
 
-/* Override SwipeCard styles for full screen on mobile - High specificity */
+/* Mobile Card Stack */
 @media (max-width: 768px) {
-  .browse-creators-page .browse-creators-card-stack .swipecard-container {
-    max-width: 100vw !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-  }
-  
-  .browse-creators-page .browse-creators-card-stack .swipecard-photo-container {
-    border-radius: 0 !important;
-  }
-  
   .browse-creators-card-stack {
     height: calc(100vh - 130px);
     height: calc(100dvh - 130px);
