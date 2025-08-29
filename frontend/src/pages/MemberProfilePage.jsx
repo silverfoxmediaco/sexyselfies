@@ -57,7 +57,7 @@ const MemberProfilePage = () => {
 
       const memberData = {
         id: userData._id || userData.id,
-        username: userData.username || userData.displayName || 'User',
+        username: userData.username || userData.displayName || userData.data?.user?.username || userData.data?.user?.displayName || 'User',
         email: userData.email || 'email@example.com',
         joinDate: userData.createdAt || new Date().toISOString(),
         isVerified: userData.isVerified || false,
