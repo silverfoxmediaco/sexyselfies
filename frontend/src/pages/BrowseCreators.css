@@ -35,7 +35,8 @@
 @media (min-width: 1024px) {
   .browse-creators-page {
     position: relative;
-    min-height: 100vh; /* Let it be as tall as needed */
+    min-height: 100vh;
+    padding-top: var(--mainheader-height, 64px); /* Match MainHeader height exactly */
   }
 }
 

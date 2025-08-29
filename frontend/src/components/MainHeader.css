@@ -35,6 +35,7 @@
 .mainheader-navbar {
   position: sticky;
   top: 0;
+  width: 100%; /* Ensure full width */
   z-index: 1000;
   background: rgba(10, 10, 10, 0.8);
   backdrop-filter: blur(20px);
