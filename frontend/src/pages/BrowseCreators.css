@@ -35,7 +35,7 @@
 @media (min-width: 1024px) {
   .browse-creators-page {
     position: relative;
-    min-height: calc(100vh - 140px); /* Account for header + footer */
+    min-height: 100vh; /* Let it be as tall as needed */
   }
 }
 
@@ -52,11 +52,12 @@
   align-items: center;
 }
 
-/* Desktop Card Stack Adjustments */
+/* Desktop Card Stack - Remove height restrictions */
 @media (min-width: 1024px) {
   .browse-creators-card-stack {
-    height: calc(100vh - 380px); /* Account for header + footer + padding + action buttons */
-    max-height: 600px;
+    height: auto; /* Let it size naturally */
+    min-height: 600px; /* Minimum size for cards */
+    max-height: none; /* Remove height restriction */
     max-width: 450px;
   }
 }
