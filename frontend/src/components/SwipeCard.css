@@ -359,6 +359,7 @@
   .swipecard-container {
     max-width: 450px;
     height: 700px;
+    margin-top: 70px; /* Push SwipeCard below MainHeader */
   }
   
   .swipecard-photo-container {

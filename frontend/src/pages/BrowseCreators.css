@@ -36,7 +36,6 @@
   .browse-creators-page {
     position: relative;
     min-height: 100vh;
-    padding-top: var(--mainheader-height, 64px); /* Match MainHeader height exactly */
   }
 }
 
@@ -249,8 +248,12 @@
 /* Desktop with MainFooter adjustments */
 @media (min-width: 1024px) {
   .browse-creators-action-buttons {
+    position: fixed; /* Ensure fixed positioning on desktop */
     bottom: 120px; /* Account for MainFooter */
-    gap: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 20px;
+    z-index: 1000;
   }
   
   .browse-creators-action-btn.browse-creators-rewind,

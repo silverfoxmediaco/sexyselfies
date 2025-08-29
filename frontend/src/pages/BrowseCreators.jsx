@@ -588,6 +588,49 @@ const BrowseCreators = () => {
         ))}
       </div>
 
+      {/* Action Buttons */}
+      <div className="browse-creators-action-buttons">
+        <button 
+          className="browse-creators-action-btn browse-creators-rewind"
+          onClick={handleRewind}
+          disabled={swipeHistory.length === 0}
+          aria-label="Rewind"
+        >
+          <RotateCcw size={24} />
+        </button>
+        
+        <button 
+          className="browse-creators-action-btn browse-creators-pass"
+          onClick={() => handleButtonSwipe('left')}
+          aria-label="Pass"
+        >
+          <X size={30} />
+        </button>
+        
+        <button 
+          className="browse-creators-action-btn browse-creators-super"
+          onClick={() => handleButtonSwipe('up')}
+          aria-label="Super Like"
+        >
+          <Star size={26} />
+        </button>
+        
+        <button 
+          className="browse-creators-action-btn browse-creators-like"
+          onClick={() => handleButtonSwipe('right')}
+          aria-label="Like"
+        >
+          <Heart size={28} />
+        </button>
+        
+        <button 
+          className="browse-creators-action-btn browse-creators-info"
+          onClick={() => handleViewProfile(currentCreator._id)}
+          aria-label="View Profile"
+        >
+          <Info size={24} />
+        </button>
+      </div>
 
       {/* Connection Modal */}
       {showConnectionModal && (
