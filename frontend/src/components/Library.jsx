@@ -7,12 +7,15 @@ import {
 } from 'lucide-react';
 import MainHeader from './MainHeader';
 import MainFooter from './MainFooter';
-import { useIsDesktop } from '../utils/mobileDetection';
+import BottomNavigation from './BottomNavigation';
+import { useIsDesktop, useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './Library.css';
 
 const Library = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid'); // grid or list
@@ -304,6 +307,9 @@ const Library = () => {
       </div>
       </div>
       {isDesktop && <MainFooter />}
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </>
   );
 };
