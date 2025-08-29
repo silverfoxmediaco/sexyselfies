@@ -198,13 +198,6 @@ const MemberProfilePage = () => {
                   onChange={(e) => setEditedProfile({...editedProfile, username: e.target.value})}
                   placeholder="Username"
                 />
-                <textarea
-                  className="mpp-edit-textarea"
-                  value={editedProfile.bio}
-                  onChange={(e) => setEditedProfile({...editedProfile, bio: e.target.value})}
-                  placeholder="Bio"
-                  rows={3}
-                />
                 <div className="mpp-edit-actions">
                   <button className="mpp-save-btn" onClick={handleSaveProfile}>
                     <Save size={16} />
@@ -226,7 +219,6 @@ const MemberProfilePage = () => {
                     </span>
                   )}
                 </h2>
-                <p className="mpp-bio">{member.bio}</p>
                 <div className="mpp-meta">
                   <span className="mpp-join-date">
                     <Calendar size={14} />

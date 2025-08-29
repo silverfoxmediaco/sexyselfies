@@ -522,8 +522,11 @@ exports.getMe = async (req, res, next) => {
       profile = await Member.findOne({ user: user._id });
       if (profile) {
         additionalData = {
+          username: profile.username,
+          displayName: profile.displayName,
           credits: profile.credits,
-          subscription: profile.subscriptionStatus
+          subscription: profile.subscriptionStatus,
+          profileComplete: profile.profileComplete
         };
       }
     }
