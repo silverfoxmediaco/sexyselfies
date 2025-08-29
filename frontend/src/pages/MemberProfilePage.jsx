@@ -41,8 +41,10 @@ const MemberProfilePage = () => {
   const fetchMemberData = async () => {
     setLoading(true);
     try {
-      // Fetch real user data from API
       const userData = await api.get('/v1/auth/me');
+      console.log('Full user data from /v1/auth/me:', userData);
+      console.log('Username specifically:', userData.username);
+      console.log('DisplayName specifically:', userData.displayName);
       
       // Calculate stats from real data
       const stats = {
@@ -53,12 +55,10 @@ const MemberProfilePage = () => {
         totalMessages: userData.messageCount || 0
       };
 
-      // Transform user data to match component structure
       const memberData = {
         id: userData._id || userData.id,
         username: userData.username || userData.displayName || 'User',
         email: userData.email || 'email@example.com',
-        bio: userData.bio || 'No bio yet',
         joinDate: userData.createdAt || new Date().toISOString(),
         isVerified: userData.isVerified || false,
         stats: stats,
@@ -84,8 +84,7 @@ const MemberProfilePage = () => {
       setMember(memberData);
       setEditedProfile({
         username: memberData.username,
-        email: memberData.email,
-        bio: memberData.bio
+        email: memberData.email
       });
       
       // Optionally update URL to include username (better UX)
@@ -101,7 +100,6 @@ const MemberProfilePage = () => {
         id: 'unknown',
         username: 'User',
         email: 'user@example.com',
-        bio: 'No bio available',
         joinDate: new Date().toISOString(),
         isVerified: false,
         stats: {
@@ -117,8 +115,7 @@ const MemberProfilePage = () => {
       setMember(fallbackData);
       setEditedProfile({
         username: fallbackData.username,
-        email: fallbackData.email,
-        bio: fallbackData.bio
+        email: fallbackData.email
       });
       setLoading(false);
     }
@@ -126,10 +123,8 @@ const MemberProfilePage = () => {
 
   const handleSaveProfile = async () => {
     try {
-      // API call to save profile
-      await api.put('/v1/members/profile', {
+      await api.put('/v1/auth/profile', {
         username: editedProfile.username,
-        bio: editedProfile.bio,
         email: editedProfile.email
       });
       

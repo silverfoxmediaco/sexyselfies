@@ -27,7 +27,6 @@ const MemberSettingsPage = () => {
     
     // Profile
     displayName: '',
-    bio: '',
     theme: 'dark',
     
     // Privacy & Safety
@@ -70,9 +69,9 @@ const MemberSettingsPage = () => {
       id: 'profile',
       title: 'Profile',
       icon: Settings,
-      description: 'Display name, bio, preferences',
+      description: 'Display name, preferences',
       priority: 'medium',
-      items: 3
+      items: 2
     },
     {
       id: 'privacy',
@@ -117,7 +116,6 @@ const MemberSettingsPage = () => {
         email: userData.email || 'user@example.com',
         username: userData.username || userData.displayName || 'User',
         displayName: userData.displayName || userData.username || 'User',
-        bio: userData.bio || '',
         
         // Profile preferences
         theme: preferences.theme || userData.theme || prev.theme,
@@ -185,10 +183,9 @@ const MemberSettingsPage = () => {
   const saveSettings = async () => {
     setSaveStatus('saving');
     try {
-      await api.put('/v1/members/profile', {
+      await api.put('/v1/auth/profile', {
         username: settings.username,
-        displayName: settings.displayName,
-        bio: settings.bio
+        displayName: settings.displayName
       });
       
       await api.put('/v1/members/preferences', {

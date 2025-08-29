@@ -14,7 +14,7 @@ class MemberService {
    */
   async getProfile() {
     try {
-      const response = await api.get('/api/member/profile');
+      const response = await api.get('/v1/auth/me');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -26,18 +26,9 @@ class MemberService {
    */
   async updateProfile(data) {
     try {
-      const response = await api.put('/api/member/profile', {
+      const response = await api.put('/v1/auth/profile', {
         username: data.username,
-        display_name: data.display_name,
-        bio: data.bio,
-        interests: data.interests,
-        location: data.location,
-        gender: data.gender,
-        orientation: data.orientation,
-        relationship_status: data.relationship_status,
-        looking_for: data.looking_for,
-        languages: data.languages,
-        privacy_level: data.privacy_level
+        displayName: data.displayName
       });
       return response;
     } catch (error) {
@@ -45,25 +36,6 @@ class MemberService {
     }
   }
 
-  /**
-   * Update profile photo
-   */
-  async updateProfilePhoto(file) {
-    try {
-      const formData = new FormData();
-      formData.append('profilePhoto', file);
-      
-      const response = await uploadApi.post('/api/member/profile/photo', formData, {
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          console.log(`Upload Progress: ${percentCompleted}%`);
-        }
-      });
-      return response;
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
 
   /**
    * Delete account
