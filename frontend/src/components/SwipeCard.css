@@ -363,6 +363,7 @@
   
   .swipecard-photo-container {
     transition: transform 0.2s ease, box-shadow 0.3s ease;
+    padding-top: 150px;
   }
   
   .swipecard-top .swipecard-photo-container:hover {
