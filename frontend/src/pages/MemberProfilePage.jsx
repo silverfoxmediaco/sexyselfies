@@ -10,12 +10,15 @@ import {
 import authService from '../services/auth.service';
 import api from '../services/api.config';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './MemberProfilePage.css';
 
 const MemberProfilePage = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   // State management
   const [member, setMember] = useState(null);
@@ -170,15 +173,14 @@ const MemberProfilePage = () => {
   }
 
   return (
-    <div className="mpp-container">
+    <>
+      {isDesktop && <MainHeader />}
+      <div className="mpp-container">
       <div className="mpp-content-wrapper">
         {/* Header */}
         <header className="mpp-header">
           <div className="mpp-header-content">
             <h1>My Profile</h1>
-            <button className="mpp-settings-btn" aria-label="Settings">
-              <Settings size={20} />
-            </button>
           </div>
         </header>
 
@@ -551,7 +553,9 @@ const MemberProfilePage = () => {
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
-    </div>
+      </div>
+      {isDesktop && <MainFooter />}
+    </>
   );
 };
 

@@ -64,6 +64,7 @@ import MemberLogin from './pages/MemberLogin';
 import BrowseCreators from './pages/BrowseCreators';
 import CreatorProfile from './pages/CreatorProfile';
 import MemberProfilePage from './pages/MemberProfilePage';
+import MemberSettingsPage from './pages/MemberSettingsPage';
 import MyConnections from './pages/MyConnections';
 import Messages from './pages/Messages';
 import Chat from './pages/Chat';
@@ -352,7 +353,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               path="settings" 
               element={
                 <ProtectedMemberRoute>
-                  <ComingSoon title="Settings" />
+                  <MemberSettingsPage />
                 </ProtectedMemberRoute>
               } 
             />
