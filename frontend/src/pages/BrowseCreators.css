@@ -118,13 +118,20 @@
   cursor: not-allowed;
 }
 
-/* Button Styles - Solid Colors */
-.browse-creators-action-btn.browse-creators-rewind,
+/* Button Styles - Brand Colors */
+.browse-creators-action-btn.browse-creators-rewind {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--favorites-purple); /* Purple */
+  border: none;
+}
+
 .browse-creators-action-btn.browse-creators-info {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #666666; /* Solid gray */
+  background: var(--primary); /* Teal */
   border: none;
 }
 
@@ -132,7 +139,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #ff6b6b; /* Solid red */
+  background: var(--error); /* Red */
   border: none;
 }
 
@@ -140,7 +147,7 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #00d4ff; /* Solid blue */
+  background: var(--info); /* Blue */
   border: none;
 }
 
@@ -148,7 +155,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #44d362; /* Solid green */
+  background: var(--success); /* Green */
   border: none;
 }
 
