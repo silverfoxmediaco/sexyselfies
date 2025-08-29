@@ -95,22 +95,6 @@
   max-width: 400px;
 }
 
-/* Gradient behind buttons for visibility */
-.browse-creators-action-buttons::before {
-  content: '';
-  position: absolute;
-  bottom: -20px;
-  left: -100vw;
-  right: -100vw;
-  height: 150px;
-  background: linear-gradient(to top, 
-    rgba(0,0,0,0.5) 0%, 
-    rgba(0,0,0,0.2) 30%, 
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: -1;
-}
 
 .browse-creators-action-btn {
   display: flex;
@@ -134,38 +118,38 @@
   cursor: not-allowed;
 }
 
-/* Button Styles */
+/* Button Styles - Solid Colors */
 .browse-creators-action-btn.browse-creators-rewind,
 .browse-creators-action-btn.browse-creators-info {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: #666666; /* Solid gray */
+  border: none;
 }
 
 .browse-creators-action-btn.browse-creators-pass {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(255, 107, 107, 0.85);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: #ff6b6b; /* Solid red */
+  border: none;
 }
 
 .browse-creators-action-btn.browse-creators-super {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: rgba(0, 212, 255, 0.85);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: #00d4ff; /* Solid blue */
+  border: none;
 }
 
 .browse-creators-action-btn.browse-creators-like {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(68, 211, 98, 0.85);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: #44d362; /* Solid green */
+  border: none;
 }
 
 /* No More Cards */
@@ -248,12 +232,14 @@
 /* Desktop with MainFooter adjustments */
 @media (min-width: 1024px) {
   .browse-creators-action-buttons {
-    position: fixed; /* Ensure fixed positioning on desktop */
-    bottom: 120px; /* Account for MainFooter */
-    left: 50%;
-    transform: translateX(-50%);
+    position: fixed !important; /* Force fixed positioning */
+    bottom: 120px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     gap: 20px;
     z-index: 1000;
+    width: 100%;
+    max-width: 400px;
   }
   
   .browse-creators-action-btn.browse-creators-rewind,
