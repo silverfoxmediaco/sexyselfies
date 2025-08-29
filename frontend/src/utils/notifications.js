@@ -3,6 +3,8 @@
  * Handles push notifications, in-app notifications, and notification management
  */
 
+import api from '../services/api.config';
+
 class NotificationManager {
   constructor() {
     this.permission = Notification.permission || 'default';
@@ -100,7 +102,6 @@ class NotificationManager {
       
       if (!subscription) {
         // Subscribe to push notifications
-        subscription = await registration.pushManager
         subscription = await registration.pushManager.subscribe({
          userVisibleOnly: true,
          applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
@@ -128,27 +129,14 @@ class NotificationManager {
   */
  async sendSubscriptionToServer(subscription) {
    try {
-     const response = await fetch('/api/notifications/subscribe', {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/json',
-         'Authorization': `Bearer ${localStorage.getItem('token')}`
-       },
-       body: JSON.stringify({
-         subscription: subscription.toJSON(),
-         device: {
-           type: this.getDeviceType(),
-           platform: navigator.platform,
-           userAgent: navigator.userAgent
-         }
-       })
+     return await api.post('/notifications/subscribe', {
+       subscription: subscription.toJSON(),
+       device: {
+         type: this.getDeviceType(),
+         platform: navigator.userAgentData?.platform || navigator.platform || 'unknown',
+         userAgent: navigator.userAgent
+       }
      });
-
-     if (!response.ok) {
-       throw new Error('Failed to save subscription');
-     }
-
-     return await response.json();
    } catch (error) {
      console.error('Subscription save error:', error);
      throw error;
@@ -164,13 +152,7 @@ class NotificationManager {
        await this.subscription.unsubscribe();
        
        // Notify server
-       await fetch('/api/notifications/unsubscribe', {
-         method: 'POST',
-         headers: {
-           'Content-Type': 'application/json',
-           'Authorization': `Bearer ${localStorage.getItem('token')}`
-         }
-       });
+       await api.post('/notifications/unsubscribe');
        
        this.subscription = null;
        console.log('Unsubscribed from push notifications');
@@ -632,18 +614,11 @@ class NotificationManager {
   */
  async trackNotificationInteraction(action, data) {
    try {
-     await fetch('/api/notifications/track', {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/json',
-         'Authorization': `Bearer ${localStorage.getItem('token')}`
-       },
-       body: JSON.stringify({
-         action,
-         notificationType: data.type,
-         notificationData: data,
-         timestamp: Date.now()
-       })
+     await api.post('/notifications/track', {
+       action,
+       notificationType: data.type,
+       notificationData: data,
+       timestamp: Date.now()
      });
    } catch (error) {
      console.error('Track notification error:', error);

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import api from '../services/api.config';
 import './CreatorConnections.css';
 
 const CreatorConnections = () => {
@@ -146,14 +147,9 @@ const CreatorConnections = () => {
           console.log('DEV MODE: Using mock connections data');
         }, 800);
       } else {
-        const response = await fetch('/api/creator/connections', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        const data = await response.json();
-        setStats(data.stats);
-        setConnections(data.connections);
+        const response = await api.get('/creator/connections');
+        setStats(response.stats);
+        setConnections(response.connections);
         setLoading(false);
       }
     } catch (error) {

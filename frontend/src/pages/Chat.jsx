@@ -174,16 +174,8 @@ const Chat = () => {
   const fetchMessages = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/connections/${connectionId}/messages`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setMessages(data.data.map(msg => ({
+      const data = await api.get(`/v1/connections/${connectionId}/messages`);
+      setMessages(data.data.map(msg => ({
           id: msg._id,
           text: msg.content?.text,
           type: msg.content?.media ? (msg.content.media.type || 'image') : 'text',
@@ -198,10 +190,6 @@ const Chat = () => {
           replyTo: msg.replyTo,
           canDelete: msg.senderModel === 'Member'
         })));
-      } else {
-        // Use mock data
-        setMessages(getMockMessages());
-      }
     } catch (error) {
       console.error('Error fetching messages:', error);
       setMessages(getMockMessages());
@@ -269,14 +257,7 @@ const Chat = () => {
   
   const markMessagesAsRead = async () => {
     try {
-      const token = localStorage.getItem('token');
-      await fetch(`/api/v1/connections/${connectionId}/messages/read`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      await api.put(`/v1/connections/${connectionId}/messages/read`);
     } catch (error) {
       console.error('Error marking messages as read:', error);
     }
@@ -394,18 +375,7 @@ const Chat = () => {
       replyTo: replyTo
     };
     
-    const token = localStorage.getItem('token');
-    const response = await fetch(`/api/v1/connections/${connectionId}/messages`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(messageToSend)
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
+    const data = await api.post(`/v1/connections/${connectionId}/messages`, messageToSend);
       
       const newMsg = {
         id: data.data._id || Date.now().toString(),
@@ -426,7 +396,6 @@ const Chat = () => {
           msg.id === newMsg.id ? { ...msg, status: 'delivered' } : msg
         ));
       }, 1000);
-    }
   };
   
   const handleAttachFile = async (file) => {
@@ -438,19 +407,10 @@ const Chat = () => {
     formData.append('connectionId', connectionId);
     
     try {
-      const token = localStorage.getItem('token');
-      
-      // First upload the file
-      const uploadResponse = await fetch('/api/v1/upload', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
+      // First upload the file using uploadApi from api.config
+      const uploadData = await api.post('/v1/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      
-      if (uploadResponse.ok) {
-        const uploadData = await uploadResponse.json();
         
         // Then send message with media
         const messageToSend = {
@@ -464,17 +424,7 @@ const Chat = () => {
           }
         };
         
-        const response = await fetch(`/api/v1/connections/${connectionId}/messages`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(messageToSend)
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
+        const data = await api.post(`/v1/connections/${connectionId}/messages`, messageToSend);
           
           // Add message to local state
           const newMsg = {
@@ -490,8 +440,6 @@ const Chat = () => {
           };
           
           setMessages(prev => [...prev, newMsg]);
-        }
-      }
     } catch (error) {
       console.error('Error uploading file:', error);
     }
@@ -501,27 +449,16 @@ const Chat = () => {
     console.log(`Unlocking content for $${message.price}`);
     
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/connections/messages/${message.id}/unlock`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          amount: message.price
-        })
+      await api.post(`/v1/connections/messages/${message.id}/unlock`, {
+        amount: message.price
       });
-      
-      if (response.ok) {
         // Update the message to show it's unlocked
-        setMessages(prev => prev.map(msg => 
-          msg.id === message.id 
-            ? { ...msg, isLocked: false }
-            : msg
-        ));
-        return true;
-      }
+      setMessages(prev => prev.map(msg => 
+        msg.id === message.id 
+          ? { ...msg, isLocked: false }
+          : msg
+      ));
+      return true;
     } catch (error) {
       console.error('Error unlocking content:', error);
     }
@@ -530,13 +467,7 @@ const Chat = () => {
   
   const handleDelete = async (message) => {
     try {
-      const token = localStorage.getItem('token');
-      await fetch(`/api/v1/connections/messages/${message.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      await api.delete(`/v1/connections/messages/${message.id}`);
       
       // Remove from local state
       setMessages(prev => prev.filter(msg => msg.id !== message.id));

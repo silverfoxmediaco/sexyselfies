@@ -9,6 +9,7 @@ import {
 // import CreatorProfilePreview from './CreatorProfilePreview';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import api from '../services/api.config';
 import './CreatorProfilePage.css';
 
 const CreatorProfilePage = () => {
@@ -71,14 +72,9 @@ const CreatorProfilePage = () => {
         console.log('DEV MODE: Using mock profile data', mockProfile);
       } else {
         // TODO: Replace with actual API call
-        const response = await fetch('/api/creator/profile', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        const data = await response.json();
-        setProfileData(data.profile);
-        setStats(data.stats);
+        const response = await api.get('/creator/profile');
+        setProfileData(response.profile);
+        setStats(response.stats);
       }
     } catch (error) {
       console.error('Error loading profile:', error);

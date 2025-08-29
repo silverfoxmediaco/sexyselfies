@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import api from '../services/api.config';
 import './CreatorManageMembers.css';
 
 const CreatorManageMembers = () => {
@@ -180,14 +181,9 @@ const CreatorManageMembers = () => {
           console.log('DEV MODE: Using mock members data');
         }, 800);
       } else {
-        const response = await fetch('/api/creator/members', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        const data = await response.json();
-        setStats(data.stats);
-        setMembers(data.members);
+        const response = await api.get('/creator/members');
+        setStats(response.stats);
+        setMembers(response.members);
         setLoading(false);
       }
     } catch (error) {
