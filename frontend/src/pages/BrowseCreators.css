@@ -6,20 +6,38 @@
   box-sizing: border-box;
 }
 
-/* Main Container - Full Screen */
+/* Main Container - Responsive Layout */
 .browse-creators-page {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: #000000;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+/* Mobile: Full Screen Layout */
+@media (max-width: 1023px) {
+  .browse-creators-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+/* Desktop: Content Area Layout (with header/footer) */
+@media (min-width: 1024px) {
+  .browse-creators-page {
+    position: relative;
+    min-height: calc(100vh - 140px); /* Account for header + footer */
+    padding: 20px 0;
+  }
 }
 
 /* Card Stack Container */
@@ -33,6 +51,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* Desktop Card Stack Adjustments */
+@media (min-width: 1024px) {
+  .browse-creators-card-stack {
+    height: calc(100vh - 280px); /* Account for header + footer + padding */
+    max-height: 600px;
+    max-width: 450px;
+  }
 }
 
 /* Card Wrapper */
@@ -222,12 +249,40 @@
 }
 
 /* Desktop adjustments */
-@media (min-width: 769px) {
+@media (min-width: 769px) and (max-width: 1023px) {
   .browse-creators-action-buttons {
     bottom: 80px;
     gap: 15px;
   }
+}
+
+/* Desktop with MainFooter adjustments */
+@media (min-width: 1024px) {
+  .browse-creators-action-buttons {
+    bottom: 120px; /* Account for MainFooter */
+    gap: 15px;
+  }
   
+  .browse-creators-action-btn.browse-creators-rewind,
+  .browse-creators-action-btn.browse-creators-info {
+    width: 48px;
+    height: 48px;
+  }
+
+  .browse-creators-action-btn.browse-creators-pass,
+  .browse-creators-action-btn.browse-creators-like {
+    width: 60px;
+    height: 60px;
+  }
+
+  .browse-creators-action-btn.browse-creators-super {
+    width: 55px;
+    height: 55px;
+  }
+}
+
+/* Tablet desktop adjustments */
+@media (min-width: 769px) and (max-width: 1023px) {
   .browse-creators-action-btn.browse-creators-rewind,
   .browse-creators-action-btn.browse-creators-info {
     width: 48px;
