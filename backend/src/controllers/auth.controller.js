@@ -569,6 +569,133 @@ exports.logout = async (req, res, next) => {
   });
 };
 
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+exports.updateProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+
+    if (user.role === 'member') {
+      const { username, displayName } = req.body;
+      
+      // Validate required fields
+      if (!username) {
+        return res.status(400).json({
+          success: false,
+          error: 'Username is required'
+        });
+      }
+
+      // Check if username is taken by another member
+      const existingMember = await Member.findOne({ 
+        username, 
+        user: { $ne: user._id } 
+      });
+      
+      if (existingMember) {
+        return res.status(400).json({
+          success: false,
+          error: 'Username already taken'
+        });
+      }
+
+      // Update member profile
+      const updatedMember = await Member.findOneAndUpdate(
+        { user: user._id },
+        {
+          username,
+          displayName: displayName || username
+        },
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedMember) {
+        return res.status(404).json({
+          success: false,
+          error: 'Member profile not found'
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: {
+          username: updatedMember.username,
+          displayName: updatedMember.displayName,
+          credits: updatedMember.credits,
+          profileComplete: updatedMember.profileComplete
+        }
+      });
+
+    } else if (user.role === 'creator') {
+      const { displayName } = req.body;
+      
+      if (!displayName) {
+        return res.status(400).json({
+          success: false,
+          error: 'Display name is required'
+        });
+      }
+
+      // Check if displayName is taken by another creator
+      const existingCreator = await Creator.findOne({ 
+        displayName, 
+        user: { $ne: user._id } 
+      });
+      
+      if (existingCreator) {
+        return res.status(400).json({
+          success: false,
+          error: 'Display name already taken'
+        });
+      }
+
+      // Update creator profile
+      const updatedCreator = await Creator.findOneAndUpdate(
+        { user: user._id },
+        { displayName },
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedCreator) {
+        return res.status(404).json({
+          success: false,
+          error: 'Creator profile not found'
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: {
+          displayName: updatedCreator.displayName,
+          isVerified: updatedCreator.isVerified,
+          profileComplete: updatedCreator.profileComplete
+        }
+      });
+
+    } else {
+      return res.status(400).json({
+        success: false,
+        error: 'Profile updates not supported for this user type'
+      });
+    }
+
+  } catch (error) {
+    console.error('Profile update error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Profile update failed'
+    });
+  }
+};
+
 // @desc    Update password
 // @route   PUT /api/auth/updatepassword
 // @access  Private

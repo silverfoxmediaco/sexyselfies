@@ -4,6 +4,7 @@ const {
   login, 
   logout, 
   getMe, 
+  updateProfile,
   updatePassword,
   creatorLogin,
   creatorRegister 
@@ -25,6 +26,7 @@ router.post('/creator/login', validateLogin, creatorLogin);
 
 // Protected routes
 router.get('/me', protect, getMe);
+router.put('/profile', protect, updateProfile);
 router.post('/logout', protect, logout);
 router.put('/updatepassword', protect, updatePassword);
 
