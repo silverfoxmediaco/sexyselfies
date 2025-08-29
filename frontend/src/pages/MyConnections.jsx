@@ -3,6 +3,7 @@ import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import api from '../services/api.config';
 import './MyConnections.css';
 
 const MyConnections = () => {
@@ -35,22 +36,14 @@ const MyConnections = () => {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/v1/connections/stats', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const data = await api.get('/v1/connections/stats');
       
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data.data || {
-          total: 0,
-          active: 0,
-          pending: 0,
-          expired: 0
-        });
-      }
+      setStats(data.data || {
+        total: 0,
+        active: 0,
+        pending: 0,
+        expired: 0
+      });
     } catch (error) {
       console.error('Error fetching stats:', error);
       // Use mock data as fallback
@@ -81,41 +74,30 @@ const MyConnections = () => {
       }
       params.append('sort', sortBy);
       
-      const response = await fetch(`/api/v1/connections?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const data = await api.get(`/v1/connections?${params}`);
+        
+      // Transform API response to match component structure
+      const transformedConnections = data.data.map(conn => ({
+        id: conn.id,
+        creatorName: conn.connectionData.creatorName,
+        creatorUsername: conn.connectionData.creatorUsername,
+        avatar: conn.connectionData.avatar || '/placeholders/beautifulbrunette2.png',
+        connectionType: conn.connectionType,
+        status: conn.status,
+        lastMessage: conn.lastMessage,
+        lastMessageTime: conn.lastMessageTime,
+        unreadCount: conn.unreadCount,
+        isOnline: conn.connectionData.isOnline,
+        isPinned: conn.isPinned,
+        subscriptionAmount: conn.subscriptionAmount,
+        totalSpent: conn.totalSpent,
+        connectedSince: conn.connectedSince,
+        messageCount: conn.messageCount,
+        contentUnlocked: conn.contentUnlocked,
+        specialOffers: conn.specialOffers
+      }));
       
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Transform API response to match component structure
-        const transformedConnections = data.data.map(conn => ({
-          id: conn.id,
-          creatorName: conn.connectionData.creatorName,
-          creatorUsername: conn.connectionData.creatorUsername,
-          avatar: conn.connectionData.avatar || '/placeholders/beautifulbrunette2.png',
-          connectionType: conn.connectionType,
-          status: conn.status,
-          lastMessage: conn.lastMessage,
-          lastMessageTime: conn.lastMessageTime,
-          unreadCount: conn.unreadCount,
-          isOnline: conn.connectionData.isOnline,
-          isPinned: conn.isPinned,
-          subscriptionAmount: conn.subscriptionAmount,
-          totalSpent: conn.totalSpent,
-          connectedSince: conn.connectedSince,
-          messageCount: conn.messageCount,
-          contentUnlocked: conn.contentUnlocked,
-          specialOffers: conn.specialOffers
-        }));
-        
-        setConnections(transformedConnections);
-      } else {
-        // Fallback to mock data if API fails
-        setConnections(getMockConnections(activeTab));
-      }
+      setConnections(transformedConnections);
     } catch (error) {
       console.error('Error fetching connections:', error);
       // Fallback to mock data
@@ -230,20 +212,11 @@ const MyConnections = () => {
   const handleAcceptConnection = async (connectionId, event) => {
     event.stopPropagation();
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/connections/${connectionId}/accept`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      await api.post(`/v1/connections/${connectionId}/accept`);
       
-      if (response.ok) {
-        // Refresh connections list
-        fetchConnections();
-        fetchStats();
-      }
+      // Refresh connections list
+      fetchConnections();
+      fetchStats();
     } catch (error) {
       console.error('Error accepting connection:', error);
     }
@@ -252,20 +225,11 @@ const MyConnections = () => {
   const handleDeclineConnection = async (connectionId, event) => {
     event.stopPropagation();
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/connections/${connectionId}/decline`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      await api.post(`/v1/connections/${connectionId}/decline`);
       
-      if (response.ok) {
-        // Refresh connections list
-        fetchConnections();
-        fetchStats();
-      }
+      // Refresh connections list
+      fetchConnections();
+      fetchStats();
     } catch (error) {
       console.error('Error declining connection:', error);
     }
@@ -274,19 +238,10 @@ const MyConnections = () => {
   const handlePinConnection = async (connectionId, event) => {
     event.stopPropagation();
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/connections/${connectionId}/pin`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      await api.put(`/v1/connections/${connectionId}/pin`);
       
-      if (response.ok) {
-        // Refresh connections list
-        fetchConnections();
-      }
+      // Refresh connections list
+      fetchConnections();
     } catch (error) {
       console.error('Error pinning connection:', error);
     }
@@ -310,24 +265,14 @@ const MyConnections = () => {
 
   const handleBulkAction = async (action) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/v1/connections/bulk', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          connectionIds: selectedConnections,
-          action
-        })
+      await api.post('/v1/connections/bulk', {
+        connectionIds: selectedConnections,
+        action
       });
       
-      if (response.ok) {
-        // Refresh connections list
-        fetchConnections();
-        setSelectedConnections([]);
-      }
+      // Refresh connections list
+      fetchConnections();
+      setSelectedConnections([]);
     } catch (error) {
       console.error(`Error performing bulk ${action}:`, error);
     }

@@ -6,6 +6,7 @@ import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import api from '../services/api.config';
 import './Chat.css';
 
 const Chat = () => {
@@ -142,29 +143,18 @@ const Chat = () => {
   
   const fetchCreatorInfo = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/connections/${connectionId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const data = await api.get(`/v1/connections/${connectionId}`);
       
-      if (response.ok) {
-        const data = await response.json();
-        // Extract creator info from connection
-        setCreator({
-          id: data.data.creator._id,
-          name: data.data.creator.displayName,
-          username: `@${data.data.creator.username}`,
-          avatar: data.data.creator.profileImage || '/placeholders/beautifulbrunette2.png',
-          isOnline: data.data.creator.isOnline,
-          lastSeen: data.data.creator.lastActive,
-          connectionType: data.data.connectionType
-        });
-      } else {
-        // Use mock data
-        setCreator(getMockCreator());
-      }
+      // Extract creator info from connection
+      setCreator({
+        id: data.data.creator._id,
+        name: data.data.creator.displayName,
+        username: `@${data.data.creator.username}`,
+        avatar: data.data.creator.profileImage || '/placeholders/beautifulbrunette2.png',
+        isOnline: data.data.creator.isOnline,
+        lastSeen: data.data.creator.lastActive,
+        connectionType: data.data.connectionType
+      });
     } catch (error) {
       console.error('Error fetching creator info:', error);
       setCreator(getMockCreator());
