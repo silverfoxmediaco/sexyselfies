@@ -575,7 +575,7 @@ const BrowseCreators = () => {
               </div>
             )}
             
-            <SwipeCard
+            {/* <SwipeCard
               creator={creator}
               onSwipe={handleSwipe}
               onViewProfile={handleViewProfile}
@@ -583,7 +583,19 @@ const BrowseCreators = () => {
               dragEnabled={index === 0}
               showActions={false}
               minimalView={true}
-            />
+            /> */}
+            <div style={{
+              width: '100%', 
+              height: '600px', 
+              background: '#333', 
+              borderRadius: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white'
+            }}>
+              SwipeCard Placeholder - {creator.displayName}
+            </div>
           </div>
         ))}
       </div>
