@@ -51,6 +51,7 @@
 }
 
 .mainheader-container {
+  width: 100%;
   margin: 0 auto;
   padding: 0 var(--mainheader-spacing-md);
   height: 100%;
