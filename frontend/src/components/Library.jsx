@@ -5,10 +5,14 @@ import {
   Image, Video, FileText, Calendar, User, Eye,
   X, Check, Clock, TrendingUp
 } from 'lucide-react';
+import MainHeader from './MainHeader';
+import MainFooter from './MainFooter';
+import { useIsDesktop } from '../utils/mobileDetection';
 import './Library.css';
 
 const Library = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid'); // grid or list
@@ -23,118 +27,22 @@ const Library = () => {
   const fetchPurchases = async () => {
     setLoading(true);
     try {
-      // Mock data - replace with actual API call
-      const mockPurchases = [
-        {
-          id: 'p1',
-          type: 'photo_set',
-          title: 'Exclusive Summer Collection',
-          creatorName: 'AlexisStyles',
-          creatorId: 'creator1',
-          price: 49.99,
-          purchaseDate: '2024-11-28',
-          fileCount: 25,
-          fileSize: '125 MB',
-          thumbnail: '/src/assets/IMG_5017.jpg',
-          downloadUrl: '/download/p1'
-        },
-        {
-          id: 'p2',
-          type: 'video',
-          title: 'Full Body Workout',
-          creatorName: 'FitnessQueen',
-          creatorId: 'creator2',
-          price: 29.99,
-          purchaseDate: '2024-11-25',
-          duration: '45:00',
-          fileSize: '850 MB',
-          thumbnail: '/src/assets/IMG_5019.jpg',
-          downloadUrl: '/download/p2'
-        },
-        {
-          id: 'p3',
-          type: 'message',
-          title: 'Private Message Bundle',
-          creatorName: 'TravelDreams',
-          creatorId: 'creator3',
-          price: 9.99,
-          purchaseDate: '2024-11-24',
-          fileCount: 5,
-          fileSize: '15 MB',
-          thumbnail: '/src/assets/IMG_5020.jpg',
-          downloadUrl: '/download/p3'
-        },
-        {
-          id: 'p4',
-          type: 'photo_set',
-          title: 'Autumn Vibes Collection',
-          creatorName: 'NatureLover',
-          creatorId: 'creator4',
-          price: 34.99,
-          purchaseDate: '2024-11-20',
-          fileCount: 30,
-          fileSize: '180 MB',
-          thumbnail: '/src/assets/IMG_5021.jpg',
-          downloadUrl: '/download/p4'
-        },
-        {
-          id: 'p5',
-          type: 'video',
-          title: 'Cooking Masterclass',
-          creatorName: 'ChefExtraordinaire',
-          creatorId: 'creator5',
-          price: 39.99,
-          purchaseDate: '2024-11-18',
-          duration: '60:00',
-          fileSize: '1.2 GB',
-          thumbnail: '/src/assets/IMG_5023.jpg',
-          downloadUrl: '/download/p5'
-        },
-        {
-          id: 'p6',
-          type: 'photo_set',
-          title: 'Winter Fashion Series',
-          creatorName: 'StyleIcon',
-          creatorId: 'creator6',
-          price: 44.99,
-          purchaseDate: '2024-11-15',
-          fileCount: 35,
-          fileSize: '210 MB',
-          thumbnail: '/src/assets/IMG_5027.jpg',
-          downloadUrl: '/download/p6'
-        },
-        {
-          id: 'p7',
-          type: 'photo_set',
-          title: 'Beach Paradise Collection',
-          creatorName: 'BeachBabe',
-          creatorId: 'creator7',
-          price: 39.99,
-          purchaseDate: '2024-11-12',
-          fileCount: 28,
-          fileSize: '165 MB',
-          thumbnail: '/src/assets/IMG_5028.jpg',
-          downloadUrl: '/download/p7'
-        },
-        {
-          id: 'p8',
-          type: 'video',
-          title: 'Dance Tutorial Series',
-          creatorName: 'DanceQueen',
-          creatorId: 'creator8',
-          price: 34.99,
-          purchaseDate: '2024-11-10',
-          duration: '55:00',
-          fileSize: '950 MB',
-          thumbnail: '/src/assets/IMG_5029.jpg',
-          downloadUrl: '/download/p8'
+      const response = await fetch('/api/v1/member/library', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-      ];
-
-      setPurchases(mockPurchases);
-      setLoading(false);
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPurchases(data.purchases || []);
+      } else {
+        setPurchases([]);
+      }
     } catch (err) {
       console.error('Failed to fetch purchases:', err);
+      setPurchases([]);
+    } finally {
       setLoading(false);
     }
   };
@@ -210,7 +118,9 @@ const Library = () => {
   }
 
   return (
-    <div className="lib-container">
+    <>
+      {isDesktop && <MainHeader />}
+      <div className="lib-container">
       {/* Header */}
       <header className="lib-header">
         <div className="lib-header-content">
@@ -325,9 +235,9 @@ const Library = () => {
       <div className={`lib-content ${viewMode}`}>
         {filteredPurchases.length === 0 ? (
           <div className="lib-empty-state">
-            <Package size={48} />
-            <h3>No items found</h3>
-            <p>Try adjusting your filters or search term</p>
+            <Image size={48} />
+            <h3>{purchases.length === 0 ? 'No purchases yet' : 'No items found'}</h3>
+            <p>{purchases.length === 0 ? 'Your library will appear here after you make your first purchase' : 'Try adjusting your filters or search term'}</p>
           </div>
         ) : (
           <div className={`lib-items-${viewMode}`}>
@@ -392,7 +302,9 @@ const Library = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
+      {isDesktop && <MainFooter />}
+    </>
   );
 };
 
