@@ -36,7 +36,6 @@
   .browse-creators-page {
     position: relative;
     min-height: calc(100vh - 140px); /* Account for header + footer */
-    padding: 70px 20px 120px 20px; /* Top for header, bottom for footer + action buttons */
   }
 }
 
