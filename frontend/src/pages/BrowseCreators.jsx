@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, X, Star, RotateCcw, Info, Filter, Loader } from 'lucide-react';
-// import SwipeCard from '../components/SwipeCard';
+import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
@@ -575,74 +575,19 @@ const BrowseCreators = () => {
               </div>
             )}
             
-            {/* <SwipeCard
+            <SwipeCard
               creator={creator}
               onSwipe={handleSwipe}
               onViewProfile={handleViewProfile}
               isTop={index === 0}
               dragEnabled={index === 0}
-              showActions={false}
+              showActions={true}
               minimalView={true}
-            /> */}
-            <div style={{
-              width: '100%', 
-              height: '600px', 
-              background: '#333', 
-              borderRadius: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white'
-            }}>
-              SwipeCard Placeholder - {creator.displayName}
-            </div>
+            />
           </div>
         ))}
       </div>
 
-      {/* Action Buttons */}
-      <div className="browse-creators-action-buttons">
-        <button 
-          className="browse-creators-action-btn browse-creators-rewind"
-          onClick={handleRewind}
-          disabled={swipeHistory.length === 0}
-          aria-label="Rewind"
-        >
-          <RotateCcw size={24} />
-        </button>
-        
-        <button 
-          className="browse-creators-action-btn browse-creators-pass"
-          onClick={() => handleButtonSwipe('left')}
-          aria-label="Pass"
-        >
-          <X size={30} />
-        </button>
-        
-        <button 
-          className="browse-creators-action-btn browse-creators-super"
-          onClick={() => handleButtonSwipe('up')}
-          aria-label="Super Like"
-        >
-          <Star size={26} />
-        </button>
-        
-        <button 
-          className="browse-creators-action-btn browse-creators-like"
-          onClick={() => handleButtonSwipe('right')}
-          aria-label="Like"
-        >
-          <Heart size={28} />
-        </button>
-        
-        <button 
-          className="browse-creators-action-btn browse-creators-info"
-          onClick={() => handleViewProfile(currentCreator._id)}
-          aria-label="View Profile"
-        >
-          <Info size={24} />
-        </button>
-      </div>
 
       {/* Connection Modal */}
       {showConnectionModal && (
