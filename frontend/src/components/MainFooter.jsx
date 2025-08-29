@@ -72,22 +72,22 @@ const MainFooter = () => {
   ];
 
   return (
-    <footer className="main-footer">
-      <div className="container">
-        <div className="footer-content">
-          <div className="footer-brand">
-            <div className="footer-logo">
-              <img src={logo} alt="SexySelfies" className="footer-logo-img" />
+    <footer className="mainfooter-container">
+      <div className="mainfooter-wrapper">
+        <div className="mainfooter-content">
+          <div className="mainfooter-brand">
+            <div className="mainfooter-logo">
+              <img src={logo} alt="SexySelfies" className="mainfooter-logo-img" />
             </div>
-            <p className="footer-tagline">
+            <p className="mainfooter-tagline">
               The content platform that combines Tinder's discovery with OnlyFans' economy.
             </p>
-            <div className="social-links">
+            <div className="mainfooter-social-links">
               {socialLinks.map((social) => (
                 <a
                   key={social.name}
                   href={social.href}
-                  className="social-link"
+                  className="mainfooter-social-link"
                   aria-label={social.name}
                 >
                   {social.icon}
@@ -96,8 +96,8 @@ const MainFooter = () => {
             </div>
           </div>
 
-          <div className="footer-links">
-            <div className="footer-column">
+          <div className="mainfooter-links">
+            <div className="mainfooter-column">
               <h3>Company</h3>
               <ul>
                 {footerLinks.company.map((link) => (
@@ -108,7 +108,7 @@ const MainFooter = () => {
               </ul>
             </div>
 
-            <div className="footer-column">
+            <div className="mainfooter-column">
               <h3>Creators</h3>
               <ul>
                 {footerLinks.creators.map((link) => (
@@ -119,7 +119,7 @@ const MainFooter = () => {
               </ul>
             </div>
 
-            <div className="footer-column">
+            <div className="mainfooter-column">
               <h3>Legal</h3>
               <ul>
                 {footerLinks.legal.map((link) => (
@@ -130,7 +130,7 @@ const MainFooter = () => {
               </ul>
             </div>
 
-            <div className="footer-column">
+            <div className="mainfooter-column">
               <h3>Support</h3>
               <ul>
                 {footerLinks.support.map((link) => (
@@ -143,15 +143,15 @@ const MainFooter = () => {
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <div className="footer-bottom-content">
-            <p className="copyright">
+        <div className="mainfooter-bottom">
+          <div className="mainfooter-bottom-content">
+            <p className="mainfooter-copyright">
               © {currentYear} SexySelfies. All rights reserved.
             </p>
-            <div className="footer-badges">
-              <span className="badge">18+</span>
-              <span className="badge">ID Verified</span>
-              <span className="badge">Secure Payments</span>
+            <div className="mainfooter-badges">
+              <span className="mainfooter-badge">18+</span>
+              <span className="mainfooter-badge">ID Verified</span>
+              <span className="mainfooter-badge">Secure Payments</span>
             </div>
           </div>
         </div>

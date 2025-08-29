@@ -36,7 +36,7 @@
   50% { transform: scale(1.1) rotate(5deg); }
 }
 
-.login-container {
+.creator-login-container {
   width: 100%;
   max-width: 1200px;
   display: grid;
@@ -47,7 +47,7 @@
   position: relative;
 }
 
-.login-form-section {
+.creator-login-form-section {
   background: rgba(18, 18, 18, 0.95);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -88,11 +88,11 @@
   margin: 0;
 }
 
-.login-form {
+.creator-login-form {
   margin-bottom: 32px;
 }
 
-.form-group {
+.creator-login-form-group {
   margin-bottom: 24px;
 }
 
@@ -116,7 +116,7 @@
   position: relative;
 }
 
-.form-input {
+.creator-login-form-input {
   width: 100%;
   padding: 14px 44px 14px 16px;
   background: rgba(255, 255, 255, 0.05);
@@ -192,7 +192,7 @@
   opacity: 0.8;
 }
 
-.login-btn {
+.creator-login-btn {
   width: 100%;
   padding: 16px;
   background: linear-gradient(135deg, #17D2C2, #12B7AB);
@@ -443,7 +443,7 @@
 }
 
 @media (max-width: 968px) {
-  .login-container {
+  .creator-login-container {
     grid-template-columns: 1fr;
     max-width: var(--content-width-narrow);
   }
@@ -455,7 +455,7 @@
 
 /* Desktop expansion for better UX */
 @media (min-width: 1024px) {
-  .login-container {
+  .creator-login-container {
     max-width: var(--content-width-medium);
   }
 }
@@ -468,7 +468,7 @@
 }
 
 @media (max-width: 480px) {
-  .login-form-section {
+  .creator-login-form-section {
     padding: 32px 24px;
   }
 

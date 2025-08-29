@@ -165,7 +165,7 @@ const CreatorDashboard = () => {
 
   // Stats Component
   const StatsGrid = () => (
-    <div className="stats-grid">
+    <div className="creator-dashboard-stats-grid">
       {[
         { 
           label: 'Total Views', 
@@ -198,19 +198,19 @@ const CreatorDashboard = () => {
       ].map((stat, index) => (
         <motion.div 
           key={stat.label}
-          className={`stat-card ${stat.color}`}
+          className={`creator-dashboard-stat-card creator-dashboard-${stat.color}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
           onClick={() => navigate('/creator/analytics')}
           style={{ cursor: 'pointer' }}
         >
-          <div className="stat-header">
+          <div className="creator-dashboard-stat-header">
             <stat.icon size={20} />
-            <span className="stat-label">{stat.label}</span>
+            <span className="creator-dashboard-stat-label">{stat.label}</span>
           </div>
-          <div className="stat-value">{stat.value}</div>
-          <div className={`stat-change ${stat.change >= 0 ? 'positive' : 'negative'}`}>
+          <div className="creator-dashboard-stat-value">{stat.value}</div>
+          <div className={`creator-dashboard-stat-change ${stat.change >= 0 ? 'creator-dashboard-positive' : 'creator-dashboard-negative'}`}>
             {stat.change >= 0 ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
             <span>{Math.abs(stat.change)}%</span>
           </div>
@@ -222,39 +222,39 @@ const CreatorDashboard = () => {
   // Recent Activity Component
   const RecentActivity = () => (
     <motion.div 
-      className="recent-activity"
+      className="creator-dashboard-recent-activity"
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.4 }}
     >
-      <h3 className="section-title">Recent Activity</h3>
-      <div className="activity-list">
+      <h3 className="creator-dashboard-section-title">Recent Activity</h3>
+      <div className="creator-dashboard-activity-list">
         {dashboardData.recentActivity.length === 0 ? (
-          <div className="no-activity">
+          <div className="creator-dashboard-no-activity">
             <p>No recent activity</p>
           </div>
         ) : (
           dashboardData.recentActivity.map((activity, index) => (
             <motion.div 
               key={activity.id || index}
-              className="activity-item"
+              className="creator-dashboard-activity-item"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 + index * 0.05 }}
             >
-              <div className={`activity-icon ${activity.type}`}>
+              <div className={`creator-dashboard-activity-icon creator-dashboard-${activity.type}`}>
                 {activity.type === 'purchase' && <ShoppingBag size={16} />}
                 {activity.type === 'tip' && <DollarSign size={16} />}
                 {activity.type === 'connection' && <Heart size={16} />}
                 {activity.type === 'message' && <MessageCircle size={16} />}
                 {activity.type === 'view' && <Eye size={16} />}
               </div>
-              <div className="activity-content">
+              <div className="creator-dashboard-activity-content">
                 <p>
-                  <span className="activity-user">{activity.user || activity.memberName}</span> {activity.action || activity.description}
-                  {activity.amount && <span className="activity-amount"> ${activity.amount}</span>}
+                  <span className="creator-dashboard-activity-user">{activity.user || activity.memberName}</span> {activity.action || activity.description}
+                  {activity.amount && <span className="creator-dashboard-activity-amount"> ${activity.amount}</span>}
                 </p>
-                <span className="activity-time">{activity.time || activity.timeAgo}</span>
+                <span className="creator-dashboard-activity-time">{activity.time || activity.timeAgo}</span>
               </div>
             </motion.div>
           ))
@@ -278,47 +278,47 @@ const CreatorDashboard = () => {
   // Top Content Component with real data
   const TopContent = () => (
     <motion.div 
-      className="top-content"
+      className="creator-dashboard-top-content"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.5 }}
     >
-      <h3 className="section-title">Top Performing Content</h3>
-      <div className="content-grid">
+      <h3 className="creator-dashboard-section-title">Top Performing Content</h3>
+      <div className="creator-dashboard-content-grid">
         {dashboardData.topContent.length === 0 ? (
-          <div className="no-content">
+          <div className="creator-dashboard-no-content">
             <p>No content data available</p>
           </div>
         ) : (
           dashboardData.topContent.slice(0, 4).map((content, index) => (
             <motion.div 
               key={content.id || index}
-              className="content-item"
+              className="creator-dashboard-content-item"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="content-preview">
+              <div className="creator-dashboard-content-preview">
                 <img 
                   src={content.thumbnailUrl || content.mediaUrl || contentImages[index] || contentImages[0]} 
                   alt={content.title || `Content ${index + 1}`}
-                  className="content-image"
+                  className="creator-dashboard-content-image"
                   onError={(e) => {
                     e.target.style.display = 'none';
                     e.target.nextSibling.style.display = 'flex';
                   }}
                 />
-                <div className="content-placeholder" style={{ display: 'none' }}>
+                <div className="creator-dashboard-content-placeholder" style={{ display: 'none' }}>
                   {content.contentType === 'video' ? <Video size={24} /> : <Camera size={24} />}
                 </div>
-                <div className="content-type-badge">
+                <div className="creator-dashboard-content-type-badge">
                   {content.contentType === 'video' ? <Video size={14} /> : <Camera size={14} />}
                 </div>
-                <div className="content-stats">
-                  <span className="stat">
+                <div className="creator-dashboard-content-stats">
+                  <span className="creator-dashboard-content-stat">
                     <Eye size={12} />
                     {formatNumber(content.views || content.totalViews || 0)}
                   </span>
-                  <span className="stat">
+                  <span className="creator-dashboard-content-stat">
                     <DollarSign size={12} />
                     {formatCurrency(content.earnings || content.revenue || 0)}
                   </span>
@@ -334,13 +334,13 @@ const CreatorDashboard = () => {
   // Quick Actions Component
   const QuickActions = () => (
     <motion.div 
-      className="quick-actions"
+      className="creator-dashboard-quick-actions"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6 }}
     >
-      <h3 className="section-title">Quick Actions</h3>
-      <div className="actions-grid">
+      <h3 className="creator-dashboard-section-title">Quick Actions</h3>
+      <div className="creator-dashboard-actions-grid">
         {[
           { icon: TrendingUp, label: 'View Analytics', path: '/creator/analytics', color: 'orange' },
           { icon: DollarSign, label: 'View Earnings', path: '/creator/earnings', color: 'green' },
@@ -354,11 +354,11 @@ const CreatorDashboard = () => {
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
           >
-            <div className="action-icon">
+            <div className="creator-dashboard-action-icon">
               <action.icon size={24} />
-              {action.badge && <span className="action-badge">{action.badge}</span>}
+              {action.badge && <span className="creator-dashboard-action-badge">{action.badge}</span>}
             </div>
-            <span className="action-label">{action.label}</span>
+            <span className="creator-dashboard-action-label">{action.label}</span>
           </motion.button>
         ))}
       </div>
@@ -369,8 +369,8 @@ const CreatorDashboard = () => {
   if (isLoading) {
     return (
       <div className="creator-dashboard">
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
+        <div className="creator-dashboard-loading">
+          <div className="creator-dashboard-loading-spinner"></div>
           <p>Loading dashboard...</p>
         </div>
       </div>
@@ -381,10 +381,10 @@ const CreatorDashboard = () => {
   if (error) {
     return (
       <div className="creator-dashboard">
-        <div className="dashboard-error">
+        <div className="creator-dashboard-error">
           <h3>Unable to load dashboard</h3>
           <p>{error}</p>
-          <button onClick={loadDashboardData} className="retry-btn">
+          <button onClick={loadDashboardData} className="creator-dashboard-retry-btn">
             Try Again
           </button>
         </div>
@@ -397,19 +397,19 @@ const CreatorDashboard = () => {
       {isDesktop && <MainHeader />}
       <div className="creator-dashboard">
       {/* Dashboard Header - SIMPLIFIED WITHOUT ACTION BUTTONS */}
-      <div className="dashboard-header">
-        <div className="dashboard-header-content">
-          <div className="dashboard-title-section">
+      <div className="creator-dashboard-header">
+        <div className="creator-dashboard-header-content">
+          <div className="creator-dashboard-title-section">
             <motion.h1 
-              className="dashboard-title"
+              className="creator-dashboard-title"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               Welcome back, Creator
-              <span className="wave">👋</span>
+              <span className="creator-dashboard-wave">👋</span>
             </motion.h1>
             <button 
-              className="refresh-btn"
+              className="creator-dashboard-refresh-btn"
               onClick={loadDashboardData}
               disabled={isLoading}
               title="Refresh dashboard"
@@ -418,14 +418,14 @@ const CreatorDashboard = () => {
               Refresh
             </button>
           </div>
-          <p className="dashboard-subtitle">
+          <p className="creator-dashboard-subtitle">
             Here's how your content is performing today
           </p>
         </div>
       </div>
       
       {/* Time range selector */}
-      <div className="time-range-selector">
+      <div className="creator-dashboard-time-range-selector">
         {[
           { value: '7d', label: 'Week' },
           { value: '30d', label: 'Month' }, 
@@ -433,7 +433,7 @@ const CreatorDashboard = () => {
         ].map(period => (
           <button
             key={period.value}
-            className={`range-btn ${timeRange === period.value ? 'active' : ''}`}
+            className={`creator-dashboard-range-btn ${timeRange === period.value ? 'creator-dashboard-active' : ''}`}
             onClick={() => setTimeRange(period.value)}
           >
             {period.label}
@@ -446,7 +446,7 @@ const CreatorDashboard = () => {
 
       {/* Analytics Preview */}
       <motion.div 
-        className="analytics-preview"
+        className="creator-dashboard-analytics-preview"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}

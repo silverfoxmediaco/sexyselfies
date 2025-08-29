@@ -104,34 +104,34 @@ const CreatorLogin = () => {
       {/* Desktop Header */}
       {isDesktop && <MainHeader />}
       {/* Background Animation */}
-      <div className="login-bg">
-        <div className="bg-gradient-1"></div>
-        <div className="bg-gradient-2"></div>
-        <div className="bg-gradient-3"></div>
+      <div className="creator-login-bg">
+        <div className="creator-login-bg-gradient-1"></div>
+        <div className="creator-login-bg-gradient-2"></div>
+        <div className="creator-login-bg-gradient-3"></div>
       </div>
 
       {/* Main Container */}
-      <div className="login-container">
+      <div className="creator-login-container">
         {/* Left Side - Login Form */}
         <motion.div 
-          className="login-form-section"
+          className="creator-login-form-section"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="login-header">
-            <h1 className="login-title">
+          <div className="creator-login-header">
+            <h1 className="creator-login-title">
               Welcome Back Creator! 
-              <Sparkles className="sparkle-icon" size={24} />
+              <Sparkles className="creator-login-sparkle-icon" size={24} />
             </h1>
-            <p className="login-subtitle">
+            <p className="creator-login-subtitle">
               Login to access your dashboard and manage your content
             </p>
           </div>
 
           {errors.general && (
             <motion.div 
-              className="error-alert"
+              className="creator-login-error-alert"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -139,9 +139,9 @@ const CreatorLogin = () => {
             </motion.div>
           )}
 
-          <form onSubmit={handleSubmit} className="login-form">
-            <div className="form-group">
-              <label className="form-label">
+          <form onSubmit={handleSubmit} className="creator-login-form">
+            <div className="creator-login-form-group">
+              <label className="creator-login-form-label">
                 <Mail size={16} />
                 Email Address
               </label>
@@ -150,62 +150,62 @@ const CreatorLogin = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`form-input ${errors.email ? 'error' : ''}`}
+                className={`creator-login-form-input ${errors.email ? 'creator-login-error' : ''}`}
                 placeholder="Enter your email"
                 autoComplete="email"
               />
               {errors.email && (
-                <span className="error-message">{errors.email}</span>
+                <span className="creator-login-error-message">{errors.email}</span>
               )}
             </div>
 
-            <div className="form-group">
-              <label className="form-label">
+            <div className="creator-login-form-group">
+              <label className="creator-login-form-label">
                 <Lock size={16} />
                 Password
               </label>
-              <div className="password-input-wrapper">
+              <div className="creator-login-password-input-wrapper">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`form-input ${errors.password ? 'error' : ''}`}
+                  className={`creator-login-form-input ${errors.password ? 'creator-login-error' : ''}`}
                   placeholder="Enter your password"
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
-                  className="password-toggle"
+                  className="creator-login-password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
               {errors.password && (
-                <span className="error-message">{errors.password}</span>
+                <span className="creator-login-error-message">{errors.password}</span>
               )}
             </div>
 
-            <div className="form-options">
-              <label className="remember-me">
+            <div className="creator-login-form-options">
+              <label className="creator-login-remember-me">
                 <input type="checkbox" />
                 <span>Remember me</span>
               </label>
-              <Link to="/creator/forgot-password" className="forgot-link">
+              <Link to="/creator/forgot-password" className="creator-login-forgot-link">
                 Forgot password?
               </Link>
             </div>
 
             <motion.button
               type="submit"
-              className="login-btn"
+              className="creator-login-btn"
               disabled={isLoading}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               {isLoading ? (
-                <span className="loading-spinner"></span>
+                <span className="creator-login-loading-spinner"></span>
               ) : (
                 <>
                   <LogIn size={18} />
@@ -215,10 +215,10 @@ const CreatorLogin = () => {
             </motion.button>
           </form>
 
-          <div className="login-footer">
+          <div className="creator-login-footer">
             <p>
               Don't have an account?{' '}
-              <Link to="/creator/register" className="register-link">
+              <Link to="/creator/register" className="creator-login-register-link">
                 Sign up as Creator
                 <ArrowRight size={14} />
               </Link>
@@ -228,12 +228,12 @@ const CreatorLogin = () => {
 
         {/* Right Side - Features */}
         <motion.div 
-          className="login-features-section"
+          className="creator-login-features-section"
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <div className="features-content">
+          <div className="creator-login-features-content">
             <h2>Start Earning Today!</h2>
             <p>Join thousands of creators making money with their content</p>
             

@@ -219,8 +219,8 @@ const MemberProfile = ({ memberId, onBack }) => {
   if (loading) {
     return (
       <div className="member-profile-page">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
+        <div className="member-profile-loading-container">
+          <div className="member-profile-loading-spinner"></div>
           <p>Loading member profile...</p>
         </div>
       </div>
@@ -230,9 +230,9 @@ const MemberProfile = ({ memberId, onBack }) => {
   if (error || !member) {
     return (
       <div className="member-profile-page">
-        <div className="error-container">
+        <div className="member-profile-error-container">
           <p>{error || 'Member not found'}</p>
-          <button onClick={() => onBack?.()} className="back-button">
+          <button onClick={() => onBack?.()} className="member-profile-back-button">
             Go Back
           </button>
         </div>
@@ -247,21 +247,21 @@ const MemberProfile = ({ memberId, onBack }) => {
     <div className="member-profile-page">
       <div className="member-profile-container">
         {/* Header */}
-        <header className="profile-header">
-          <button onClick={() => onBack?.()} className="back-nav-btn">
+        <header className="member-profile-header">
+          <button onClick={() => onBack?.()} className="member-profile-back-nav-btn">
             <ArrowLeft size={20} />
             <span>Back</span>
           </button>
           <h1>Member Profile</h1>
-          <div className="header-spacer"></div>
+          <div className="member-profile-header-spacer"></div>
         </header>
 
         {/* Profile Content Grid */}
-        <div className="profile-content-grid">
+        <div className="member-profile-content-grid">
           {/* Member Identity Card */}
-          <div className="profile-card member-identity-card">
+          <div className="member-profile-card member-profile-identity-card">
             <div className="member-avatar-section">
-              <div className="avatar-wrapper">
+              <div className="member-profile-avatar-wrapper">
                 <img 
                   src={member.avatar} 
                   alt={member.username}
@@ -294,8 +294,8 @@ const MemberProfile = ({ memberId, onBack }) => {
           </div>
 
           {/* Spending Stats Card */}
-          <div className="profile-card spending-stats-card">
-            <div className="card-header">
+          <div className="member-profile-card member-profile-spending-stats-card">
+            <div className="member-profile-card-header">
               <h3>
                 <DollarSign size={18} />
                 Spending Activity
@@ -340,8 +340,8 @@ const MemberProfile = ({ memberId, onBack }) => {
           </div>
 
           {/* Activity & Preferences Card */}
-          <div className="profile-card activity-card">
-            <div className="card-header">
+          <div className="member-profile-card member-profile-activity-card">
+            <div className="member-profile-card-header">
               <h3>
                 <Activity size={18} />
                 Activity & Preferences
@@ -386,8 +386,8 @@ const MemberProfile = ({ memberId, onBack }) => {
           </div>
 
           {/* Interaction History Card */}
-          <div className="profile-card interaction-card">
-            <div className="card-header">
+          <div className="member-profile-card member-profile-interaction-card">
+            <div className="member-profile-card-header">
               <h3>
                 <Heart size={18} />
                 Your Interactions
@@ -417,8 +417,8 @@ const MemberProfile = ({ memberId, onBack }) => {
           </div>
 
           {/* Action Buttons Card */}
-          <div className="profile-card actions-card">
-            <div className="card-header">
+          <div className="member-profile-card member-profile-actions-card">
+            <div className="member-profile-card-header">
               <h3>
                 <Sparkles size={18} />
                 Quick Actions
@@ -427,7 +427,7 @@ const MemberProfile = ({ memberId, onBack }) => {
             
             <div className="action-buttons-grid">
               <button 
-                className={`action-btn poke-btn ${hasPoked ? 'completed' : ''}`}
+                className={`member-profile-action-btn member-profile-poke-btn ${hasPoked ? 'member-profile-completed' : ''}`}
                 onClick={handlePoke}
                 disabled={hasPoked || actionLoading}
               >
@@ -436,7 +436,7 @@ const MemberProfile = ({ memberId, onBack }) => {
               </button>
               
               <button 
-                className={`action-btn like-btn ${hasLiked ? 'completed' : ''}`}
+                className={`member-profile-action-btn member-profile-like-btn ${hasLiked ? 'member-profile-completed' : ''}`}
                 onClick={handleLike}
                 disabled={hasLiked || actionLoading}
               >
@@ -445,7 +445,7 @@ const MemberProfile = ({ memberId, onBack }) => {
               </button>
               
               <button 
-                className={`action-btn message-btn ${hasSentMessage ? 'completed' : ''}`}
+                className={`member-profile-action-btn member-profile-message-btn ${hasSentMessage ? 'member-profile-completed' : ''}`}
                 onClick={handleSayHi}
                 disabled={actionLoading}
               >
@@ -454,7 +454,7 @@ const MemberProfile = ({ memberId, onBack }) => {
               </button>
               
               <button 
-                className="action-btn special-offer-btn"
+                className="member-profile-action-btn member-profile-special-offer-btn"
                 onClick={() => navigate(`/creator/special-offer/${memberId}`)}
               >
                 <Send size={20} />
@@ -471,46 +471,46 @@ const MemberProfile = ({ memberId, onBack }) => {
 
         {/* Message Modal */}
         {showMessageModal && (
-          <div className="modal-overlay" onClick={() => setShowMessageModal(false)}>
-            <div className="message-modal" onClick={e => e.stopPropagation()}>
-              <div className="modal-header">
+          <div className="member-profile-modal-overlay" onClick={() => setShowMessageModal(false)}>
+            <div className="member-profile-message-modal" onClick={e => e.stopPropagation()}>
+              <div className="member-profile-modal-header">
                 <h3>Send a Personal Message</h3>
                 <button 
-                  className="close-modal-btn"
+                  className="member-profile-close-modal-btn"
                   onClick={() => setShowMessageModal(false)}
                 >
                   ×
                 </button>
               </div>
               
-              <div className="modal-content">
-                <p className="modal-description">
+              <div className="member-profile-modal-content">
+                <p className="member-profile-modal-description">
                   Send a personalized message to {member.username}. 
                   High-spenders appreciate personal attention!
                 </p>
                 
                 <textarea
-                  className="message-textarea"
+                  className="member-profile-message-textarea"
                   placeholder="Hi! I noticed you've been enjoying my content. I'd love to create something special just for you..."
                   value={specialOffer}
                   onChange={(e) => setSpecialOffer(e.target.value)}
                   maxLength={500}
                 />
                 
-                <div className="character-count">
+                <div className="member-profile-character-count">
                   {specialOffer.length}/500
                 </div>
               </div>
               
-              <div className="modal-actions">
+              <div className="member-profile-modal-actions">
                 <button 
-                  className="cancel-btn"
+                  className="member-profile-cancel-btn"
                   onClick={() => setShowMessageModal(false)}
                 >
                   Cancel
                 </button>
                 <button 
-                  className="send-btn"
+                  className="member-profile-send-btn"
                   onClick={sendMessage}
                   disabled={!specialOffer.trim() || actionLoading}
                 >
