@@ -8,6 +8,7 @@ import {
   AlertCircle, X, Save, Sliders
 } from 'lucide-react';
 import authService from '../services/auth.service';
+import api from '../services/api.config';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './MemberProfilePage.css';
@@ -36,67 +37,79 @@ const MemberProfilePage = () => {
   const fetchMemberData = async () => {
     setLoading(true);
     try {
-      // Mock data - replace with actual API call
-      const mockData = {
-        id: 'member123',
-        username: 'LuxuryLover88',
-        email: 'member@example.com',
-        bio: 'Living my best life | Content enthusiast | Supporting amazing creators',
-        joinDate: '2024-01-15',
-        isVerified: true,
-        stats: {
-          totalSpent: 1847.50,
-          totalPurchases: 47,
-          favoriteCategory: 'Lifestyle',
-          favoriteCreators: 5,
-          totalMessages: 132
-        },
-        recentPurchases: [
-          {
-            id: 'p1',
-            type: 'photo_set',
-            creatorName: 'AlexisStyles',
-            title: 'Exclusive Summer Collection',
-            price: 49.99,
-            date: '2024-11-28'
-          },
-          {
-            id: 'p2',
-            type: 'video',
-            creatorName: 'FitnessQueen',
-            title: 'Full Body Workout',
-            price: 29.99,
-            date: '2024-11-25'
-          },
-          {
-            id: 'p3',
-            type: 'message',
-            creatorName: 'TravelDreams',
-            title: 'Private Message',
-            price: 9.99,
-            date: '2024-11-24'
-          }
-        ],
-        paymentMethods: [
+      // Fetch real user data from API
+      const userData = await api.get('/v1/auth/me');
+      
+      // Calculate stats from real data
+      const stats = {
+        totalSpent: userData.purchasedContent?.reduce((total, item) => total + (item.price || 0), 0) || 0,
+        totalPurchases: userData.purchasedContent?.length || 0,
+        favoriteCategory: userData.preferences?.favoriteCategory || 'Lifestyle',
+        favoriteCreators: userData.likes?.length || 0,
+        totalMessages: userData.messageCount || 0
+      };
+
+      // Transform user data to match component structure
+      const memberData = {
+        id: userData._id || userData.id,
+        username: userData.username || userData.displayName || 'User',
+        email: userData.email || 'email@example.com',
+        bio: userData.bio || 'No bio yet',
+        joinDate: userData.createdAt || new Date().toISOString(),
+        isVerified: userData.isVerified || false,
+        stats: stats,
+        recentPurchases: userData.purchasedContent?.slice(0, 3).map(item => ({
+          id: item._id || item.id,
+          type: item.type || 'content',
+          creatorName: item.creatorName || 'Creator',
+          title: item.title || 'Content',
+          price: item.price || 0,
+          date: item.purchaseDate || item.createdAt || new Date().toISOString()
+        })) || [],
+        paymentMethods: userData.paymentMethods || [
           {
             id: 'pm1',
             type: 'card',
-            last4: '4242',
-            brand: 'Visa',
+            last4: '****',
+            brand: 'Card',
             isDefault: true
           }
         ]
       };
 
-      setMember(mockData);
+      setMember(memberData);
       setEditedProfile({
-        username: mockData.username,
-        email: mockData.email,
-        bio: mockData.bio
+        username: memberData.username,
+        email: memberData.email,
+        bio: memberData.bio
       });
       setLoading(false);
     } catch (err) {
       console.error('Failed to fetch member data:', err);
+      // Fallback to default user data on error
+      const fallbackData = {
+        id: 'unknown',
+        username: 'User',
+        email: 'user@example.com',
+        bio: 'No bio available',
+        joinDate: new Date().toISOString(),
+        isVerified: false,
+        stats: {
+          totalSpent: 0,
+          totalPurchases: 0,
+          favoriteCategory: 'Not set',
+          favoriteCreators: 0,
+          totalMessages: 0
+        },
+        recentPurchases: [],
+        paymentMethods: []
+      };
+      setMember(fallbackData);
+      setEditedProfile({
+        username: fallbackData.username,
+        email: fallbackData.email,
+        bio: fallbackData.bio
+      });
       setLoading(false);
     }
   };
@@ -104,21 +117,35 @@ const MemberProfilePage = () => {
   const handleSaveProfile = async () => {
     try {
       // API call to save profile
-      // await fetch('/api/member/profile', {
-      //   method: 'PUT',
-      //   body: JSON.stringify(editedProfile)
-      // });
+      await api.put('/v1/members/profile', {
+        username: editedProfile.username,
+        bio: editedProfile.bio,
+        email: editedProfile.email
+      });
       
       setMember({ ...member, ...editedProfile });
       setIsEditing(false);
     } catch (err) {
       console.error('Failed to save profile:', err);
+      // Show error to user if needed
+      alert('Failed to save profile. Please try again.');
     }
   };
 
-  const handleNotificationToggle = (key) => {
-    setNotifications({ ...notifications, [key]: !notifications[key] });
-    // Save notification preferences
+  const handleNotificationToggle = async (key) => {
+    const newNotifications = { ...notifications, [key]: !notifications[key] };
+    setNotifications(newNotifications);
+    
+    // Save notification preferences to API
+    try {
+      await api.put('/v1/members/preferences', {
+        notifications: newNotifications
+      });
+    } catch (err) {
+      console.error('Failed to save notification preferences:', err);
+      // Revert the change if API call failed
+      setNotifications(notifications);
+    }
   };
 
   const handleLogout = async () => {
