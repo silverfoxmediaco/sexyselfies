@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
   User, Settings, CreditCard, Heart, Package, Clock,
   Edit2, Shield, Bell, Eye, EyeOff, LogOut,
@@ -17,6 +17,7 @@ import './MemberProfilePage.css';
 
 const MemberProfilePage = () => {
   const navigate = useNavigate();
+  const { username } = useParams();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
@@ -86,6 +87,12 @@ const MemberProfilePage = () => {
         email: memberData.email,
         bio: memberData.bio
       });
+      
+      // Optionally update URL to include username (better UX)
+      if (memberData.username && !username) {
+        window.history.replaceState(null, '', `/member/profile/${memberData.username}`);
+      }
+      
       setLoading(false);
     } catch (err) {
       console.error('Failed to fetch member data:', err);

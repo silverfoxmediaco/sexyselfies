@@ -5,6 +5,7 @@ import {
   ArrowLeft, Shield, Send, HandHeart, Star,
   Package, Eye, ChevronRight, Zap
 } from 'lucide-react';
+import api from '../services/api.config';
 import './MemberProfile.css';
 
 const MemberProfile = ({ memberId, onBack }) => {
@@ -31,55 +32,102 @@ const MemberProfile = ({ memberId, onBack }) => {
   const fetchMemberProfile = async () => {
     setLoading(true);
     try {
-      // Mock data - replace with actual API call
-      const mockMember = {
-        id: memberId,
-        username: `LuxuryLover${Math.floor(Math.random() * 999)}`,
-        avatar: '/api/placeholder/150/150',
-        joinDate: '2024-08-15',
-        lastActive: new Date(Date.now() - Math.random() * 86400000).toISOString(),
-        isOnline: Math.random() > 0.5,
+      let memberData;
+      
+      if (memberId) {
+        // Fetch specific member data from API
+        memberData = await api.get(`/v1/members/${memberId}`);
+      } else {
+        // If no memberId provided, fetch current user data
+        memberData = await api.get('/v1/auth/me');
+      }
+      
+      // Transform API data to component structure
+      const transformedMember = {
+        id: memberData._id || memberData.id || 'user-1',
+        username: memberData.username || memberData.displayName || 'User',
+        avatar: memberData.profileImage || memberData.avatar || '/api/placeholder/150/150',
+        joinDate: memberData.createdAt || new Date().toISOString(),
+        lastActive: memberData.lastActive || memberData.updatedAt || new Date().toISOString(),
+        isOnline: memberData.isOnline || false,
         stats: {
-          last30DaySpend: (Math.random() * 500 + 50).toFixed(2),
-          totalSpend: (Math.random() * 2000 + 100).toFixed(2),
-          averagePurchase: (Math.random() * 50 + 10).toFixed(2),
-          contentPurchases: Math.floor(Math.random() * 50 + 5),
-          favoriteCategory: ['Lifestyle', 'Fashion', 'Fitness'][Math.floor(Math.random() * 3)],
-          activityLevel: ['Very Active', 'Active', 'Regular'][Math.floor(Math.random() * 3)],
-          responseRate: Math.floor(Math.random() * 40 + 60),
-          preferredContent: ['Photos', 'Videos', 'Live Shows'][Math.floor(Math.random() * 3)]
+          last30DaySpend: (memberData.purchasedContent?.reduce((total, item) => 
+            total + (item.price || 0), 0) || 0).toFixed(2),
+          totalSpend: (memberData.allTimePurchases?.reduce((total, item) => 
+            total + (item.price || 0), 0) || 0).toFixed(2),
+          averagePurchase: (memberData.purchasedContent?.length > 0 ? 
+            (memberData.purchasedContent.reduce((total, item) => total + (item.price || 0), 0) / 
+             memberData.purchasedContent.length) : 0).toFixed(2),
+          contentPurchases: memberData.purchasedContent?.length || 0,
+          favoriteCategory: memberData.preferences?.favoriteCategory || 'Not set',
+          activityLevel: memberData.activityLevel || 'Regular',
+          responseRate: memberData.responseRate || 85,
+          preferredContent: memberData.preferences?.preferredContent || 'Photos'
         },
         interactions: {
-          previousPurchases: Math.floor(Math.random() * 10),
-          lastPurchase: new Date(Date.now() - Math.random() * 604800000).toISOString(),
-          hasSubscribed: Math.random() > 0.7,
-          tipsGiven: Math.floor(Math.random() * 20)
+          previousPurchases: memberData.purchasedContent?.length || 0,
+          lastPurchase: memberData.purchasedContent?.length > 0 ? 
+            memberData.purchasedContent[memberData.purchasedContent.length - 1]?.createdAt : null,
+          hasSubscribed: memberData.subscriptions?.length > 0 || false,
+          tipsGiven: memberData.tipsGiven || 0
         },
         badges: []
       };
 
-      // Assign badges based on spending
-      if (parseFloat(mockMember.stats.last30DaySpend) > 300) {
-        mockMember.badges.push({ type: 'whale', label: 'Big Spender' });
-      } else if (parseFloat(mockMember.stats.last30DaySpend) > 100) {
-        mockMember.badges.push({ type: 'vip', label: 'VIP Member' });
+      // Assign badges based on real spending data
+      if (parseFloat(transformedMember.stats.last30DaySpend) > 300) {
+        transformedMember.badges.push({ type: 'whale', label: 'Big Spender' });
+      } else if (parseFloat(transformedMember.stats.last30DaySpend) > 100) {
+        transformedMember.badges.push({ type: 'vip', label: 'VIP Member' });
       }
       
-      if (mockMember.stats.activityLevel === 'Very Active') {
-        mockMember.badges.push({ type: 'active', label: 'Super Active' });
+      if (transformedMember.stats.activityLevel === 'Very Active') {
+        transformedMember.badges.push({ type: 'active', label: 'Super Active' });
+      }
+      
+      if (memberData.isVerified) {
+        transformedMember.badges.push({ type: 'verified', label: 'Verified' });
       }
 
-      // In production:
-      // const response = await fetch(`/api/creator/members/${memberId}`, {
-      //   headers: { 'Authorization': `Bearer ${token}` }
-      // });
-      // const data = await response.json();
-      // setMember(data);
-
-      setMember(mockMember);
+      setMember(transformedMember);
       setLoading(false);
     } catch (err) {
+      console.error('Error fetching member profile:', err);
       setError('Failed to load member profile');
+      
+      // Fallback to current user data if member fetch fails
+      try {
+        const userData = await api.get('/v1/auth/me');
+        const fallbackMember = {
+          id: userData._id || 'user-1',
+          username: userData.username || 'User',
+          avatar: userData.profileImage || '/api/placeholder/150/150',
+          joinDate: userData.createdAt || new Date().toISOString(),
+          lastActive: new Date().toISOString(),
+          isOnline: true,
+          stats: {
+            last30DaySpend: '0.00',
+            totalSpend: '0.00',
+            averagePurchase: '0.00',
+            contentPurchases: 0,
+            favoriteCategory: 'Not set',
+            activityLevel: 'Regular',
+            responseRate: 85,
+            preferredContent: 'Photos'
+          },
+          interactions: {
+            previousPurchases: 0,
+            lastPurchase: null,
+            hasSubscribed: false,
+            tipsGiven: 0
+          },
+          badges: []
+        };
+        setMember(fallbackMember);
+      } catch (fallbackErr) {
+        console.error('Fallback fetch also failed:', fallbackErr);
+      }
+      
       setLoading(false);
     }
   };

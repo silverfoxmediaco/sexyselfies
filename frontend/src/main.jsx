@@ -300,6 +300,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 </ProtectedMemberRoute>
               } 
             />
+            <Route 
+              path="profile/:username" 
+              element={
+                <ProtectedMemberRoute>
+                  <MemberProfilePage />
+                </ProtectedMemberRoute>
+              } 
+            />
             {/* LIBRARY ROUTE - Members view and download purchased content */}
             <Route 
               path="library" 

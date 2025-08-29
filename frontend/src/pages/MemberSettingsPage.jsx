@@ -18,20 +18,20 @@ const MemberSettingsPage = () => {
   const [activeSection, setActiveSection] = useState(null); // null = main menu on mobile
   const [settings, setSettings] = useState({
     // Account & Security
-    email: 'member@example.com',
-    username: 'member_username',
+    email: '',
+    username: '',
     twoFactorEnabled: false,
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
     
     // Profile
-    displayName: 'Member Name',
-    bio: 'Content enthusiast and supporter of amazing creators',
+    displayName: '',
+    bio: '',
     theme: 'dark',
     
     // Privacy & Safety
-    profileVisibility: 'private',
+    profileVisibility: 'visible',
     allowMessages: 'creators',
     showOnlineStatus: true,
     contentFiltering: true,
@@ -55,6 +55,7 @@ const MemberSettingsPage = () => {
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [loadingSettings, setLoadingSettings] = useState(true);
 
   const settingSections = [
     {
@@ -77,7 +78,7 @@ const MemberSettingsPage = () => {
       id: 'privacy',
       title: 'Privacy & Safety',
       icon: Shield,
-      description: 'Who can contact you',
+      description: 'Creator interaction settings',
       priority: 'high',
       items: 4
     },
@@ -96,20 +97,70 @@ const MemberSettingsPage = () => {
   }, []);
 
   const loadSettings = async () => {
+    setLoadingSettings(true);
     try {
+      console.log('Loading user settings...');
       const userData = await api.get('/v1/auth/me');
-      const preferences = await api.get('/v1/members/preferences');
+      console.log('Loaded user data for settings:', userData);
+      
+      // Try to load preferences, but don't fail if it doesn't exist
+      let preferences = {};
+      try {
+        preferences = await api.get('/v1/members/preferences');
+      } catch (prefError) {
+        console.log('No preferences found, using defaults:', prefError.message);
+      }
       
       setSettings(prev => ({
         ...prev,
-        email: userData.email || prev.email,
-        username: userData.username || prev.username,
-        displayName: userData.displayName || prev.displayName,
-        bio: userData.bio || prev.bio,
-        ...preferences
+        // Account & Security - use real data or reasonable defaults
+        email: userData.email || 'user@example.com',
+        username: userData.username || userData.displayName || 'User',
+        displayName: userData.displayName || userData.username || 'User',
+        bio: userData.bio || '',
+        
+        // Profile preferences
+        theme: preferences.theme || userData.theme || prev.theme,
+        
+        // Privacy settings - simplified for creator-only interactions
+        profileVisibility: (preferences.profileVisibility === 'private' || preferences.profileVisibility === 'hidden') ? 'hidden' : 'visible',
+        allowMessages: (preferences.allowMessages === 'none') ? 'none' : 'creators',
+        showOnlineStatus: preferences.showOnlineStatus !== undefined ? preferences.showOnlineStatus : 
+                          (userData.showOnlineStatus !== undefined ? userData.showOnlineStatus : prev.showOnlineStatus),
+        contentFiltering: preferences.contentFiltering !== undefined ? preferences.contentFiltering :
+                         (userData.contentFiltering !== undefined ? userData.contentFiltering : prev.contentFiltering),
+        
+        // Notification preferences
+        emailNotifications: {
+          ...prev.emailNotifications,
+          ...(preferences.emailNotifications || userData.emailNotifications || {})
+        },
+        pushNotifications: {
+          ...prev.pushNotifications,
+          ...(preferences.pushNotifications || userData.pushNotifications || {})
+        }
       }));
+      
+      console.log('Settings updated successfully');
+      setLoadingSettings(false);
     } catch (error) {
       console.error('Failed to load settings:', error);
+      
+      // If API fails completely, at least try to get basic user data
+      try {
+        const basicUserData = await api.get('/v1/auth/me');
+        setSettings(prev => ({
+          ...prev,
+          email: basicUserData.email || prev.email,
+          username: basicUserData.username || basicUserData.displayName || prev.username,
+          displayName: basicUserData.displayName || basicUserData.username || prev.displayName,
+          bio: basicUserData.bio || ''
+        }));
+      } catch (basicError) {
+        console.error('Failed to load even basic user data:', basicError);
+      }
+      
+      setLoadingSettings(false);
     }
   };
 
@@ -231,6 +282,8 @@ const MemberSettingsPage = () => {
               value={settings.email}
               onChange={(e) => updateSetting(null, 'email', e.target.value)}
               className="member-setting-input"
+              placeholder={loadingSettings ? "Loading..." : "Enter your email address"}
+              disabled={loadingSettings}
             />
           </div>
 
@@ -241,6 +294,8 @@ const MemberSettingsPage = () => {
               value={settings.username}
               onChange={(e) => updateSetting(null, 'username', e.target.value)}
               className="member-setting-input"
+              placeholder={loadingSettings ? "Loading..." : "Enter your username"}
+              disabled={loadingSettings}
             />
           </div>
         </div>
@@ -323,7 +378,8 @@ const MemberSettingsPage = () => {
               value={settings.displayName}
               onChange={(e) => updateSetting(null, 'displayName', e.target.value)}
               className="member-setting-input"
-              placeholder="How others see your name"
+              placeholder={loadingSettings ? "Loading..." : "How others see your name"}
+              disabled={loadingSettings}
             />
           </div>
 
@@ -369,31 +425,29 @@ const MemberSettingsPage = () => {
 
       <div className="member-settings-groups">
         <div className="member-settings-group">
-          <h3>Profile Visibility</h3>
+          <h3>Creator Interaction Settings</h3>
           
           <div className="member-setting-item">
-            <label>Who can see your profile</label>
+            <label>Profile visibility to creators</label>
             <select
               value={settings.profileVisibility}
               onChange={(e) => updateSetting(null, 'profileVisibility', e.target.value)}
               className="member-setting-select"
             >
-              <option value="public">Public</option>
-              <option value="creators">Creators Only</option>
-              <option value="private">Private</option>
+              <option value="visible">Visible to Creators</option>
+              <option value="hidden">Hidden from Creators</option>
             </select>
           </div>
 
           <div className="member-setting-item">
-            <label>Who can message you</label>
+            <label>Creator messages</label>
             <select
               value={settings.allowMessages}
               onChange={(e) => updateSetting(null, 'allowMessages', e.target.value)}
               className="member-setting-select"
             >
-              <option value="everyone">Everyone</option>
-              <option value="creators">Creators Only</option>
-              <option value="none">Nobody</option>
+              <option value="creators">Allow creators to message me</option>
+              <option value="none">Don't allow messages</option>
             </select>
           </div>
         </div>
