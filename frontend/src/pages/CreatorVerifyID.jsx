@@ -159,7 +159,18 @@ const CreatorVerifyID = () => {
       }
     } catch (error) {
       console.error('Verification submission error:', error);
-      setErrors({ submit: 'Network error. Please try again.' });
+      
+      // Handle different types of errors
+      let errorMessage = 'Network error. Please try again.';
+      if (error.response) {
+        // Backend returned an error response
+        errorMessage = error.response.data?.error || error.response.data?.message || 'Server error occurred.';
+      } else if (error.request) {
+        // Network error - no response received
+        errorMessage = 'Unable to connect to server. Please check your internet connection.';
+      }
+      
+      setErrors({ submit: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -217,12 +228,20 @@ const CreatorVerifyID = () => {
             <p>🔒 Your documents are encrypted and stored securely</p>
           </div>
           
-          <button 
-            className="btn-primary"
-            onClick={() => navigate('/')}
-          >
-            Return to Home
-          </button>
+          <div className="success-actions">
+            <button 
+              className="btn-primary"
+              onClick={() => navigate('/creator/dashboard')}
+            >
+              Go to Dashboard
+            </button>
+            <button 
+              className="btn-secondary"
+              onClick={() => navigate('/')}
+            >
+              Return to Home
+            </button>
+          </div>
         </div>
       {/* Desktop Footer */}
       {isDesktop && <MainFooter />}
