@@ -229,7 +229,11 @@
   position: relative;
 }
 
-.creator-registration-toggle-password {
+.creator-registration-password-input-wrapper input {
+  padding-right: 48px !important;
+}
+
+.creator-registration-password-toggle {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -240,9 +244,13 @@
   cursor: pointer;
   font-size: 20px;
   padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
 }
 
-.creator-registration-toggle-password:hover {
+.creator-registration-password-toggle:hover {
   color: #C7C7CC;
 }
 
@@ -679,6 +687,12 @@
 }
 
 /* Form Actions */
+.creator-registration-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
 .creator-registration-form-actions {
   display: flex;
   gap: 12px;
@@ -697,6 +711,11 @@
   transition: all 0.2s ease;
   border: none;
   letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
 }
 
 .creator-registration-btn-primary {
