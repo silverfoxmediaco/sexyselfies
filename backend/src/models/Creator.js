@@ -60,6 +60,22 @@ const creatorSchema = new mongoose.Schema({
     default: false
   },
   verificationDocuments: [String],
+  verification: {
+    idType: String,
+    idFrontUrl: String,
+    idBackUrl: String,
+    selfieUrl: String,
+    submittedAt: Date,
+    status: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending'
+    }
+  },
+  verificationSubmittedAt: Date,
+  verificationApprovedAt: Date,
+  verificationRejectedAt: Date,
+  verificationRejectionReason: String,
   stats: {
     totalEarnings: {
       type: Number,
