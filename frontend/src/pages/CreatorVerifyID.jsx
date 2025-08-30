@@ -1,14 +1,17 @@
 import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import api, { uploadApi } from '../services/api.config';
 import './CreatorVerifyID.css';
 
 const CreatorVerifyID = () => {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
+  const navigate = useNavigate();
   const [idFront, setIdFront] = useState(null);
   const [idBack, setIdBack] = useState(null);
   const [selfie, setSelfie] = useState(null);
@@ -112,7 +115,6 @@ const CreatorVerifyID = () => {
     
     try {
       const formData = new FormData();
-      const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
       const userEmail = localStorage.getItem('userEmail') || 'unknown@user.com';
       
@@ -130,39 +132,30 @@ const CreatorVerifyID = () => {
       formData.append('adminEmail', 'admin@sexyselfies.com');
       formData.append('timestamp', new Date().toISOString());
       
-      // Upload verification documents
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onrender.com/api/v1';
+      // Upload verification documents using uploadApi (which handles auth automatically)
+      // Don't set Content-Type header - let browser set it with boundary for multipart data
+      const response = await uploadApi.post('/upload/verification', formData);
       
-      const response = await fetch(`${API_BASE_URL}/upload/verification`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-      
-      if (response.ok) {
-        // Send email notification to admin
-        await fetch(`${API_BASE_URL}/notifications/admin-verification`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
+      // API interceptor already unwraps response.data, so response is the actual data
+      if (response && response.success) {
+        // Send email notification to admin using regular api
+        try {
+          await api.post('/notifications/admin-verification', {
             userId,
             userEmail,
             idType,
             adminEmail: 'admin@sexyselfies.com',
             message: 'New creator verification request pending review'
-          })
-        });
+          });
+        } catch (emailError) {
+          console.warn('Admin notification email failed:', emailError);
+          // Don't fail the whole process if email fails
+        }
         
         setSubmitted(true);
         localStorage.setItem('verificationSubmitted', 'true');
       } else {
-        const data = await response.json();
-        setErrors({ submit: data.error || 'Failed to upload verification documents' });
+        setErrors({ submit: response?.error || 'Failed to upload verification documents' });
       }
     } catch (error) {
       console.error('Verification submission error:', error);
@@ -226,7 +219,7 @@ const CreatorVerifyID = () => {
           
           <button 
             className="btn-primary"
-            onClick={() => window.location.href = '/'}
+            onClick={() => navigate('/')}
           >
             Return to Home
           </button>

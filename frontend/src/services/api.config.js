@@ -321,9 +321,7 @@ window.addEventListener('online', async () => {
 export const uploadApi = axios.create({
   baseURL: API_BASE_URL,
   timeout: 300000, // 5 minutes for uploads
-  headers: {
-    'Content-Type': 'multipart/form-data',
-  },
+  // Don't set Content-Type - let browser handle it for multipart forms
 });
 
 // Apply same interceptors to upload API
