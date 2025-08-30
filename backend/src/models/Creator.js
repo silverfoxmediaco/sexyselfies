@@ -46,6 +46,19 @@ const creatorSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  verificationStatus: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  },
+  profileComplete: {
+    type: Boolean,
+    default: false
+  },
+  idVerificationSubmitted: {
+    type: Boolean,
+    default: false
+  },
   verificationDocuments: [String],
   stats: {
     totalEarnings: {
@@ -98,10 +111,12 @@ const creatorSchema = new mongoose.Schema({
   location: {
     type: {
       type: String,
-      enum: ['Point']
+      enum: ['Point'],
+      required: false
     },
     coordinates: {
-      type: [Number]
+      type: [Number],
+      required: false
     },
     city: String,
     state: String,
@@ -119,8 +134,8 @@ const creatorSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for location-based queries
-creatorSchema.index({ location: '2dsphere' });
+// Index for location-based queries (will add back when coordinates are properly set)
+// creatorSchema.index({ location: '2dsphere' });
 // Index for search
 creatorSchema.index({ displayName: 'text', bio: 'text' });
 
