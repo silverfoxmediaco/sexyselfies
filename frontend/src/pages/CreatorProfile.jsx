@@ -11,6 +11,10 @@ import {
   CheckCircle, XCircle, AlertCircle, Zap, Crown, Diamond, X
 } from 'lucide-react';
 import axios from 'axios';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsDesktop, useIsMobile, getUserRole } from '../utils/mobileDetection';
 
 import './CreatorProfile.css';
 
@@ -18,6 +22,9 @@ import './CreatorProfile.css';
 const CreatorProfile = () => {
   const { creatorId } = useParams();
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
+  const isMobile = useIsMobile();
+  const userRole = getUserRole();
   
   // Profile states
   const [creator, setCreator] = useState(null);
@@ -314,37 +321,44 @@ const CreatorProfile = () => {
 
   if (loading) {
     return (
-      <div className="creator-profile-page">
-        {/* REMOVED: <MainHeader /> */}
-        <div className="profile-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading creator profile...</p>
+      <>
+        {isDesktop && <MainHeader />}
+        <div className="creator-profile-page">
+          <div className="profile-loading">
+            <div className="loading-spinner"></div>
+            <p>Loading creator profile...</p>
+          </div>
         </div>
-        {/* REMOVED: <MainFooter /> */}
-      </div>
+        {isDesktop && <MainFooter />}
+        {isMobile && <BottomNavigation userRole={userRole} />}
+      </>
     );
   }
 
   if (error || !creator) {
     return (
-      <div className="creator-profile-page">
-        {/* REMOVED: <MainHeader /> */}
-        <div className="profile-error">
-          <AlertCircle size={48} />
-          <h3>Unable to load profile</h3>
-          <p>{error || 'Creator not found'}</p>
-          <button onClick={() => navigate(-1)} className="back-btn">
-            Go Back
-          </button>
+      <>
+        {isDesktop && <MainHeader />}
+        <div className="creator-profile-page">
+          <div className="profile-error">
+            <AlertCircle size={48} />
+            <h3>Unable to load profile</h3>
+            <p>{error || 'Creator not found'}</p>
+            <button onClick={() => navigate(-1)} className="back-btn">
+              Go Back
+            </button>
+          </div>
         </div>
-        {/* REMOVED: <MainFooter /> */}
-      </div>
+        {isDesktop && <MainFooter />}
+        {isMobile && <BottomNavigation userRole={userRole} />}
+      </>
     );
   }
 
   return (
-    <div className="creator-profile-page">
-      {/* REMOVED: <MainHeader /> */}
+    <>
+      {isDesktop && <MainHeader />}
+      <div className="creator-profile-page">
       
       <div className="profile-container">
         {/* Profile Header */}
@@ -879,9 +893,11 @@ const CreatorProfile = () => {
           )}
         </AnimatePresence>
       </div>
+      </div>
       
-      {/* REMOVED: <MainFooter /> */}
-    </div>
+      {isDesktop && <MainFooter />}
+      {isMobile && <BottomNavigation userRole={userRole} />}
+    </>
   );
 };
 
