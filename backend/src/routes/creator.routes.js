@@ -63,18 +63,18 @@ router.use(authorize('creator'));
 
 // Get creator profile
 if (creatorProfileController.getProfile) {
-  router.get('/profile', protect, creatorProfileController.getProfile);
+  router.get('/profile', creatorProfileController.getProfile);
 } else {
-  router.get('/profile', protect, (req, res) => {
+  router.get('/profile', (req, res) => {
     res.status(501).json({ message: 'Profile routes coming soon' });
   });
 }
 
 // Update creator profile
 if (creatorProfileController.updateProfile) {
-  router.put('/profile', protect, creatorProfileController.updateProfile);
+  router.put('/profile', creatorProfileController.updateProfile);
 } else {
-  router.put('/profile', protect, (req, res) => {
+  router.put('/profile', (req, res) => {
     res.status(501).json({ message: 'Profile update coming soon' });
   });
 }

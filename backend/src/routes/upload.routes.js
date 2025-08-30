@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth.middleware');
-const { uploadVerification } = require('../config/cloudinary');
+const { uploadVerification, uploadProfileImage } = require('../config/cloudinary');
 const Creator = require('../models/Creator');
 const Member = require('../models/Member');
 
@@ -184,9 +184,9 @@ router.post('/profile-image',
       }
 
       // Update the Creator document with the new profile image
-      const updatedCreator = await Creator.findByIdAndUpdate(
-        req.user.id,
-        { profilePhoto: imageUrl },
+      const updatedCreator = await Creator.findOneAndUpdate(
+        { user: req.user.id },
+        { profileImage: imageUrl },
         { new: true, runValidators: true }
       );
 
@@ -207,7 +207,7 @@ router.post('/profile-image',
           imageUrl: imageUrl,
           creator: {
             id: updatedCreator._id,
-            profilePhoto: updatedCreator.profilePhoto
+            profileImage: updatedCreator.profileImage
           }
         }
       });
