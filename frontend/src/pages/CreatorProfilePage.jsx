@@ -1,24 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   User, Edit3, Eye, Settings, Camera, MapPin, 
   Heart, Users, DollarSign, TrendingUp, Share2,
-  Star, Calendar, Check, Clock, AlertCircle
+  Star, Calendar, Check, Clock, AlertCircle, Upload
 } from 'lucide-react';
 // import CreatorProfilePreview from './CreatorProfilePreview';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import CreatorMainHeader from '../components/CreatorMainHeader';
+import CreatorMainFooter from '../components/CreatorMainFooter';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import api from '../services/api.config';
 import './CreatorProfilePage.css';
 
 const CreatorProfilePage = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
+  const fileInputRef = useRef(null);
   const [profileData, setProfileData] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [stats, setStats] = useState({
     totalViews: 0,
     matches: 0,
@@ -34,9 +39,14 @@ const CreatorProfilePage = () => {
     console.log('CreatorProfilePage: loadProfileData called');
     try {
       // Check if in development mode - use multiple methods
-      const isDevelopment = import.meta.env.DEV || localStorage.getItem('token') === 'dev-token-12345';
+      const isDevelopment = import.meta.env.DEV || 
+                           import.meta.env.MODE === 'development' || 
+                           localStorage.getItem('token') === 'dev-token-12345' ||
+                           window.location.hostname === 'localhost';
       console.log('CreatorProfilePage: isDevelopment =', isDevelopment);
       console.log('CreatorProfilePage: import.meta.env.DEV =', import.meta.env.DEV);
+      console.log('CreatorProfilePage: import.meta.env.MODE =', import.meta.env.MODE);
+      console.log('CreatorProfilePage: hostname =', window.location.hostname);
       console.log('CreatorProfilePage: localStorage token =', localStorage.getItem('token'));
       
       if (isDevelopment) {
@@ -70,6 +80,7 @@ const CreatorProfilePage = () => {
         setProfileData(mockProfile);
         setStats(mockStats);
         console.log('DEV MODE: Using mock profile data', mockProfile);
+        return; // Exit early in development mode
       } else {
         // TODO: Replace with actual API call
         const response = await api.get('/creator/profile');
@@ -78,10 +89,17 @@ const CreatorProfilePage = () => {
       }
     } catch (error) {
       console.error('Error loading profile:', error);
-      // Set default values on error
+      
+      // Get creator info from localStorage as fallback
+      const storedDisplayName = localStorage.getItem('displayName') || 
+                               localStorage.getItem('creatorName') ||
+                               localStorage.getItem('username') ||
+                               localStorage.getItem('userEmail')?.split('@')[0];
+      
+      // Set default values on error with localStorage fallbacks
       setProfileData({
-        displayName: "Creator Name",
-        bio: "Bio will appear here",
+        displayName: storedDisplayName || "Creator Name",
+        bio: "Add your bio to attract more subscribers and connections!",
         isVerified: false,
         isOnline: false
       });
@@ -93,6 +111,60 @@ const CreatorProfilePage = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePhotoUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file.');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB.');
+      return;
+    }
+
+    setUploadingPhoto(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('profileImage', file);
+
+      // Use uploadApi for file uploads
+      const { uploadApi } = await import('../services/api.config');
+      const response = await uploadApi.post('/upload/profile-image', formData);
+
+      if (response && response.success) {
+        // Update profile data with new photo
+        setProfileData(prev => ({
+          ...prev,
+          profilePhoto: response.data.imageUrl
+        }));
+        
+        // Clear the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      } else {
+        alert('Failed to upload photo. Please try again.');
+      }
+    } catch (error) {
+      console.error('Photo upload error:', error);
+      alert('Error uploading photo. Please try again.');
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const handleAvatarClick = () => {
+    if (fileInputRef.current && !uploadingPhoto) {
+      fileInputRef.current.click();
     }
   };
 
@@ -110,6 +182,9 @@ const CreatorProfilePage = () => {
 
   return (
     <div className="creator-profile-page">
+      {/* Desktop Header */}
+      {isDesktop && <CreatorMainHeader />}
+      
       {/* Header */}
       <div className="profile-header">
         <div className="profile-page-header-content">
@@ -125,14 +200,50 @@ const CreatorProfilePage = () => {
         <div className="profile-card">
           <div className="profile-avatar">
             {profileData?.profilePhoto ? (
-              <img src={profileData.profilePhoto} alt={profileData.displayName} />
+              <div className="avatar-container" onClick={handleAvatarClick}>
+                <img src={profileData.profilePhoto} alt={profileData.displayName} />
+                <div className="avatar-overlay">
+                  {uploadingPhoto ? (
+                    <div className="upload-spinner">
+                      <div className="spinner"></div>
+                    </div>
+                  ) : (
+                    <>
+                      <Camera size={24} />
+                      <span>Change Photo</span>
+                    </>
+                  )}
+                </div>
+              </div>
             ) : (
-              <div className="avatar-placeholder">
-                <Camera size={32} />
-                <span>Add Photo</span>
+              <div 
+                className={`avatar-placeholder ${uploadingPhoto ? 'uploading' : ''}`}
+                onClick={handleAvatarClick}
+              >
+                {uploadingPhoto ? (
+                  <div className="upload-spinner">
+                    <div className="spinner"></div>
+                    <span>Uploading...</span>
+                  </div>
+                ) : (
+                  <>
+                    <Camera size={32} />
+                    <span>Add Photo</span>
+                  </>
+                )}
               </div>
             )}
             {profileData?.isOnline && <div className="online-indicator"></div>}
+            
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+              style={{ display: 'none' }}
+              disabled={uploadingPhoto}
+            />
           </div>
 
           <div className="profile-info">
@@ -339,6 +450,9 @@ const CreatorProfilePage = () => {
           <button onClick={() => setShowPreview(false)}>Close</button>
         </div>
       )}
+      
+      {/* Desktop Footer */}
+      {isDesktop && <CreatorMainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
