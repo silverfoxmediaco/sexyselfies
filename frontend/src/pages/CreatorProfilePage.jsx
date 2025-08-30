@@ -83,7 +83,7 @@ const CreatorProfilePage = () => {
         return; // Exit early in development mode
       } else {
         // TODO: Replace with actual API call
-        const response = await api.get('/creator/profile');
+        const response = await api.get('/creators/profile');
         setProfileData(response.profile);
         setStats(response.stats);
       }
