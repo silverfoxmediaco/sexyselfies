@@ -131,7 +131,13 @@ class AuthService {
 
       return response;
     } catch (error) {
-      throw this.handleAuthError(error);
+      console.error('Creator registration error details:', error);
+      console.error('Error response:', error.response);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error response status:', error.response?.status);
+      
+      // Re-throw the original error to preserve the response structure
+      throw error;
     }
   }
 

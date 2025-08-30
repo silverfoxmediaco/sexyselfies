@@ -128,6 +128,10 @@ exports.creatorRegister = async (req, res, next) => {
   session.startTransaction();
   
   try {
+    console.log('=== CREATOR REGISTRATION REQUEST ===');
+    console.log('Request body:', req.body);
+    console.log('Headers:', req.headers);
+    
     const { 
       email, 
       password, 
@@ -140,6 +144,19 @@ exports.creatorRegister = async (req, res, next) => {
       over18Confirmation,
       taxInfoConsent 
     } = req.body;
+    
+    console.log('Extracted fields:', {
+      email, 
+      username, 
+      displayName, 
+      birthDate, 
+      country,
+      agreeToTerms,
+      agreeToContentPolicy,
+      over18Confirmation,
+      taxInfoConsent,
+      passwordLength: password ? password.length : 'undefined'
+    });
 
     // Validate required fields for creators
     if (!email || !password || !displayName || !birthDate || 
@@ -258,24 +275,39 @@ exports.creatorRegister = async (req, res, next) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    console.error('Creator registration error:', error);
+    
+    console.error('=== CREATOR REGISTRATION ERROR ===');
+    console.error('Error type:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', error);
     
     // Send appropriate error message
     let errorMessage = 'Registration failed. Please try again.';
+    let statusCode = 500;
     
     if (error.message && error.message.includes('duplicate key')) {
+      statusCode = 400;
       if (error.message.includes('email')) {
         errorMessage = 'This email is already registered';
       } else if (error.message.includes('displayName')) {
         errorMessage = 'This display name is already taken';
       }
     } else if (error.message && error.message.includes('validation failed')) {
+      statusCode = 400;
       errorMessage = 'Please check all required fields and try again';
+    } else if (error.name === 'ValidationError') {
+      statusCode = 400;
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      errorMessage = `Validation failed: ${validationErrors.join(', ')}`;
     }
     
-    res.status(500).json({
+    console.error('Sending error response:', { statusCode, errorMessage });
+    
+    res.status(statusCode).json({
       success: false,
-      error: errorMessage
+      error: errorMessage,
+      ...(process.env.NODE_ENV === 'development' && { details: error.message })
     });
   }
 };
