@@ -131,7 +131,9 @@ const CreatorVerifyID = () => {
       formData.append('timestamp', new Date().toISOString());
       
       // Upload verification documents
-      const response = await fetch('http://localhost:5002/api/upload/verification', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onrender.com/api/v1';
+      
+      const response = await fetch(`${API_BASE_URL}/upload/verification`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -141,7 +143,7 @@ const CreatorVerifyID = () => {
       
       if (response.ok) {
         // Send email notification to admin
-        await fetch('http://localhost:5002/api/notifications/admin-verification', {
+        await fetch(`${API_BASE_URL}/notifications/admin-verification`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

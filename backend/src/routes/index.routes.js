@@ -9,7 +9,9 @@ const adminRoutes = require('./admin.routes');
 const publicRoutes = require('./public.routes');
 const uploadRoutes = require('./upload.routes');
 const paymentRoutes = require('./payment.routes');
-const connectionRoutes = require('./connections.routes'); // ADD THIS
+const connectionRoutes = require('./connections.routes');
+const verificationRoutes = require('./verification.routes');
+const notificationRoutes = require('./notification.routes');
 
 // Import middleware
 const { apiLimiter } = require('../middleware/rateLimit.middleware');
@@ -92,7 +94,9 @@ router.use('/admin', adminRoutes);
 router.use('/public', publicRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/payment', paymentRoutes);
-router.use('/connections', connectionRoutes); // ADD THIS
+router.use('/connections', connectionRoutes);
+router.use('/verification', verificationRoutes);
+router.use('/notifications', notificationRoutes);
 
 // API Documentation (would serve Swagger/OpenAPI docs)
 router.get('/docs', (req, res) => {
