@@ -200,31 +200,25 @@ const CreatorRegistration = () => {
       // Use the auth service for creator registration
       const response = await authService.creatorRegister(registrationData);
       
-      // Check if we got a successful response
-      if (response && response.data) {
-        const data = response.data;
+      console.log('Frontend received response:', response);
+      
+      // Check if we got a successful response (auth service already stores tokens)
+      if (response && response.success && response.token) {
+        // Tokens are already stored by auth service, just store additional info
+        localStorage.setItem('userEmail', formData.email);
+        localStorage.setItem('needsVerification', 'true');
         
-        if (data.success && data.token) {
-          // Store token and user info
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('creatorToken', data.token);
-          localStorage.setItem('userRole', 'creator');
-          localStorage.setItem('userId', data.user.id);
-          localStorage.setItem('userEmail', formData.email);
-          localStorage.setItem('needsVerification', 'true');
-          
-          // Show success message
-          alert('Registration successful! You will now be redirected to complete ID verification.');
-          
-          // Redirect to ID verification page
-          navigate('/creator/verify-id');
-        } else {
-          // Handle API error response
-          setErrors({ submit: data.error || data.message || 'Registration failed' });
-        }
+        // Show success message
+        alert('Registration successful! You will now be redirected to complete ID verification.');
+        
+        // Redirect to ID verification page
+        navigate('/creator/verify-id');
+      } else if (response && response.success) {
+        // Registration succeeded but no immediate token (maybe requires verification first)
+        setErrors({ submit: response.message || 'Registration successful but requires verification' });
       } else {
-        // Handle unexpected response format
-        setErrors({ submit: 'Unexpected response from server. Please try again.' });
+        // Handle API error response
+        setErrors({ submit: response?.error || response?.message || 'Registration failed' });
       }
     } catch (error) {
       console.error('Registration error:', error);

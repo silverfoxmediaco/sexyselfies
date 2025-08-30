@@ -118,15 +118,17 @@ class AuthService {
         }
       });
 
-      // Store tokens
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('creatorToken', response.data.token);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
+      console.log('Creator registration response:', response);
+      
+      // Store tokens - response is already unwrapped by api interceptor
+      if (response && response.token) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('creatorToken', response.token);
+        localStorage.setItem('refreshToken', response.refreshToken || '');
         localStorage.setItem('userRole', 'creator');
-        localStorage.setItem('userId', response.data.user.id);
-        localStorage.setItem('creatorVerificationStatus', response.data.user.verificationStatus || 'pending');
-        apiHelpers.setAuthToken(response.data.token);
+        localStorage.setItem('userId', response.user?.id || '');
+        localStorage.setItem('creatorVerificationStatus', response.verificationStatus || 'pending');
+        apiHelpers.setAuthToken(response.token);
       }
 
       return response;
