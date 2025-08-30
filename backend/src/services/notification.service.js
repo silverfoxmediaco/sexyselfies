@@ -76,16 +76,19 @@ if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
  * Send welcome email with login link
  * This is the main function called during registration
  */
-exports.sendVerificationEmail = async (email, verificationToken, username) => {
+exports.sendVerificationEmail = async (email, verificationToken, username, userRole = 'member') => {
   // For development, just log if email is not configured
   if (!emailTransporter) {
-    console.log(`📧 [DEV MODE] Would send welcome email to: ${email} for user: ${username}`);
+    console.log(`📧 [DEV MODE] Would send welcome email to: ${email} for user: ${username} (${userRole})`);
     return { success: true, dev: true };
   }
 
   const APP_URL = process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5174';
   const APP_NAME = process.env.APP_NAME || 'SexySelfies';
-  const loginUrl = `${APP_URL}/member/login`;
+  
+  // Determine correct login page based on user role
+  const loginPath = userRole === 'creator' ? '/creator/login' : '/member/login';
+  const loginUrl = `${APP_URL}${loginPath}`;
   
   const mailOptions = {
     from: `${APP_NAME} <${EMAIL_USER}>`,

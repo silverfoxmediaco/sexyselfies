@@ -254,7 +254,7 @@ exports.creatorRegister = async (req, res, next) => {
 
     // Send verification email (outside transaction)
     try {
-      await sendVerificationEmail(email, null, displayName);
+      await sendVerificationEmail(email, null, displayName, 'creator');
     } catch (emailError) {
       console.error('Failed to send welcome email to creator:', emailError);
     }
