@@ -74,8 +74,8 @@ const CreatorRegistration = () => {
           newErrors.password = 'Password is required';
         } else if (formData.password.length < 8) {
           newErrors.password = 'Password must be at least 8 characters';
-        } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-          newErrors.password = 'Password must contain uppercase, lowercase, and number';
+        } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(formData.password)) {
+          newErrors.password = 'Password must contain uppercase, lowercase, number, and special character (@$!%*?&)';
         }
         
         if (!formData.confirmPassword) {
@@ -180,8 +180,8 @@ const CreatorRegistration = () => {
     setLoading(true);
     
     try {
-      // Use the auth service for creator registration
-      const response = await authService.creatorRegister({
+      // Prepare registration data
+      const registrationData = {
         email: formData.email,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
@@ -193,7 +193,12 @@ const CreatorRegistration = () => {
         agreeToContentPolicy: formData.agreeToContentPolicy,
         over18Confirmation: formData.over18Confirmation,
         taxInfoConsent: formData.taxInfoConsent
-      });
+      };
+      
+      console.log('Sending registration data:', registrationData);
+      
+      // Use the auth service for creator registration
+      const response = await authService.creatorRegister(registrationData);
       
       // Check if we got a successful response
       if (response && response.data) {
@@ -223,20 +228,35 @@ const CreatorRegistration = () => {
       }
     } catch (error) {
       console.error('Registration error:', error);
+      console.error('Full error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Error headers:', error.response?.headers);
       
       // Handle different error types
       if (error.response && error.response.data) {
-        // Server responded with error
-        const errorMessage = error.response.data.error || 
-                           error.response.data.message || 
-                           'Registration failed';
-        setErrors({ submit: errorMessage });
+        // Server responded with error - show the actual backend error
+        const backendError = error.response.data;
+        
+        if (backendError.errors && Array.isArray(backendError.errors)) {
+          // Handle validation errors array
+          const errorMessages = backendError.errors.map(err => err.message).join(', ');
+          setErrors({ submit: errorMessages });
+        } else if (backendError.error) {
+          // Single error message
+          setErrors({ submit: backendError.error });
+        } else if (backendError.message) {
+          // Alternative error message field
+          setErrors({ submit: backendError.message });
+        } else {
+          // Unknown backend error format
+          setErrors({ submit: `Server error (${error.response.status}): ${JSON.stringify(backendError)}` });
+        }
       } else if (error.message) {
-        // Auth service error
+        // Auth service or network error
         setErrors({ submit: error.message });
       } else {
-        // Network or other error
-        setErrors({ submit: 'Network error. Please check your connection and try again.' });
+        // Fallback for unknown errors
+        setErrors({ submit: 'An unexpected error occurred. Please try again.' });
       }
     } finally {
       setLoading(false);
