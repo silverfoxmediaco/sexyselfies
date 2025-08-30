@@ -344,7 +344,10 @@ const MemberProfilePage = () => {
                   Account Security
                 </h3>
                 <div className="mpp-security-list">
-                  <button className="mpp-security-item">
+                  <button 
+                    className="mpp-security-item"
+                    onClick={() => navigate('/member/settings', { state: { activeSection: 'account' } })}
+                  >
                     <span>Change Password</span>
                     <ChevronRight size={18} />
                   </button>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Settings, User, Shield, Bell, ChevronRight, ChevronLeft, 
@@ -15,7 +16,8 @@ const MemberSettingsPage = () => {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
-  const [activeSection, setActiveSection] = useState(null); // null = main menu on mobile
+  const location = useLocation();
+  const [activeSection, setActiveSection] = useState(location.state?.activeSection || null); // null = main menu on mobile
   const [settings, setSettings] = useState({
     // Account & Security
     email: '',
