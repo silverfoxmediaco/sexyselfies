@@ -143,6 +143,89 @@ router.post('/verification',
     }
 });
 
+// Profile image upload endpoint
+const profileImageUpload = uploadProfileImage.single('profileImage');
+
+router.post('/profile-image', 
+  protect, 
+  (req, res, next) => {
+    console.log('=== PROFILE IMAGE UPLOAD ENDPOINT HIT ===');
+    console.log('Headers:', req.headers);
+    console.log('User from protect middleware:', req.user);
+    console.log('Body before multer:', req.body);
+    next();
+  },
+  profileImageUpload, 
+  async (req, res) => {
+    try {
+      console.log('=== AFTER MULTER PROCESSING ===');
+      console.log('User ID:', req.user?.id);
+      console.log('File received:', req.file ? 'YES' : 'NO');
+      console.log('File details:', req.file);
+
+      // Check if file was uploaded
+      if (!req.file) {
+        console.log('ERROR: No file uploaded');
+        return res.status(400).json({
+          success: false,
+          error: 'No image file uploaded'
+        });
+      }
+
+      const imageUrl = req.file.path || req.file.url || req.file.secure_url;
+      console.log('Image URL from Cloudinary:', imageUrl);
+
+      if (!imageUrl) {
+        console.log('ERROR: No image URL returned from Cloudinary');
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to get image URL from upload service'
+        });
+      }
+
+      // Update the Creator document with the new profile image
+      const updatedCreator = await Creator.findByIdAndUpdate(
+        req.user.id,
+        { profilePhoto: imageUrl },
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedCreator) {
+        console.log('ERROR: Creator not found for profile update');
+        return res.status(404).json({
+          success: false,
+          error: 'Creator not found'
+        });
+      }
+
+      console.log('SUCCESS: Profile image updated for creator:', updatedCreator._id);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Profile image updated successfully',
+        data: {
+          imageUrl: imageUrl,
+          creator: {
+            id: updatedCreator._id,
+            profilePhoto: updatedCreator.profilePhoto
+          }
+        }
+      });
+      
+    } catch (error) {
+      console.error('=== PROFILE IMAGE UPLOAD ERROR ===');
+      console.error('Error type:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to upload profile image',
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
+    }
+});
+
 // Simple error handler (since we can't import handleUploadError)
 router.use((error, req, res, next) => {
   console.error('=== MULTER/UPLOAD ERROR ===');

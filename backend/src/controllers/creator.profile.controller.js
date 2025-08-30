@@ -11,14 +11,42 @@ exports.getProfile = async (req, res) => {
     const creatorId = req.user.id;
     
     // Get enhanced profile with AI insights
-    const profile = await CreatorProfile.findOne({ creator: creatorId })
+    let profile = await CreatorProfile.findOne({ creator: creatorId })
       .populate('creator', 'username email profileImage isVerified');
     
     if (!profile) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Profile not found' 
+      // Create a basic profile if it doesn't exist
+      const creator = await Creator.findById(creatorId);
+      if (!creator) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Creator not found' 
+        });
+      }
+      
+      // Create basic profile
+      profile = await CreatorProfile.create({
+        creator: creatorId,
+        displayName: creator.displayName || creator.username || 'New Creator',
+        bio: '',
+        categories: [],
+        pricing: {
+          photoPrice: 4.99,
+          videoPrice: 9.99,
+          customContentPrice: 19.99
+        },
+        analytics: {
+          performance: {
+            views: 0,
+            likes: 0,
+            followers: 0,
+            earnings: 0
+          }
+        }
       });
+      
+      // Populate the creator reference
+      await profile.populate('creator', 'username email profileImage isVerified');
     }
     
     // Get real-time stats
