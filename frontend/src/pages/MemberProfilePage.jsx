@@ -352,10 +352,6 @@ const MemberProfilePage = () => {
                     <span>Two-Factor Authentication</span>
                     <ChevronRight size={18} />
                   </button>
-                  <button className="mpp-security-item">
-                    <span>Login History</span>
-                    <ChevronRight size={18} />
-                  </button>
                 </div>
               </div>
             </div>

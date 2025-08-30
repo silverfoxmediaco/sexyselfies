@@ -183,11 +183,13 @@ const MemberSettingsPage = () => {
   const saveSettings = async () => {
     setSaveStatus('saving');
     try {
+      // Save basic profile settings
       await api.put('/v1/auth/profile', {
         username: settings.username,
         displayName: settings.displayName
       });
       
+      // Save preferences
       await api.put('/v1/members/preferences', {
         profileVisibility: settings.profileVisibility,
         allowMessages: settings.allowMessages,
@@ -197,6 +199,30 @@ const MemberSettingsPage = () => {
         pushNotifications: settings.pushNotifications,
         theme: settings.theme
       });
+
+      // Handle password change if provided
+      if (settings.currentPassword && settings.newPassword && settings.confirmPassword) {
+        if (settings.newPassword !== settings.confirmPassword) {
+          throw new Error('New passwords do not match');
+        }
+        
+        if (settings.newPassword.length < 6) {
+          throw new Error('New password must be at least 6 characters');
+        }
+
+        await api.put('/v1/auth/updatepassword', {
+          currentPassword: settings.currentPassword,
+          newPassword: settings.newPassword
+        });
+
+        // Clear password fields after successful change
+        setSettings(prev => ({
+          ...prev,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }));
+      }
       
       setSaveStatus('saved');
       setUnsavedChanges(false);
