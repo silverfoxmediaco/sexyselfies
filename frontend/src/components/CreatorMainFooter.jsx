@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Camera, DollarSign, TrendingUp, MessageCircle,
-  Shield, Heart, HelpCircle, Mail, 
   Twitter, Instagram, Facebook, Youtube
 } from 'lucide-react';
 import './CreatorMainFooter.css';
@@ -13,21 +11,21 @@ const CreatorMainFooter = () => {
 
   const creatorFooterLinks = {
     dashboard: [
-      { label: 'Content Studio', href: '/creator/content', icon: Camera },
-      { label: 'Analytics', href: '/creator/analytics', icon: TrendingUp },
-      { label: 'Earnings', href: '/creator/earnings', icon: DollarSign },
-      { label: 'Messages', href: '/creator/messages', icon: MessageCircle }
+      { label: 'Content Studio', href: '/creator/content' },
+      { label: 'Analytics', href: '/creator/analytics' },
+      { label: 'Earnings', href: '/creator/earnings' },
+      { label: 'Messages', href: '/creator/messages' }
     ],
     resources: [
-      { label: 'Creator Guide', href: '/creator/guide', icon: HelpCircle },
+      { label: 'Creator Guide', href: '/creator/guide' },
       { label: 'Best Practices', href: '/creator/best-practices' },
       { label: 'Tax Resources', href: '/creator/tax-resources' },
-      { label: 'Creator Community', href: '/creator/community', icon: Heart }
+      { label: 'Creator Community', href: '/creator/community' }
     ],
     support: [
       { label: 'Help Center', href: '/creator/help' },
-      { label: 'Contact Support', href: '/creator/support', icon: Mail },
-      { label: 'Verification Help', href: '/creator/verification-help', icon: Shield },
+      { label: 'Contact Support', href: '/creator/support' },
+      { label: 'Verification Help', href: '/creator/verification-help' },
       { label: 'Report Issue', href: '/creator/report' }
     ],
     legal: [
@@ -92,51 +90,39 @@ const CreatorMainFooter = () => {
             <div className="footer-section">
               <h3>Creator Tools</h3>
               <ul>
-                {creatorFooterLinks.dashboard.map((link) => {
-                  const Icon = link.icon;
-                  return (
-                    <li key={link.href}>
-                      <Link to={link.href}>
-                        {Icon && <Icon size={16} />}
-                        {link.label}
-                      </Link>
-                    </li>
-                  );
-                })}
+                {creatorFooterLinks.dashboard.map((link) => (
+                  <li key={link.href}>
+                    <Link to={link.href}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div className="footer-section">
               <h3>Resources</h3>
               <ul>
-                {creatorFooterLinks.resources.map((link) => {
-                  const Icon = link.icon;
-                  return (
-                    <li key={link.href}>
-                      <Link to={link.href}>
-                        {Icon && <Icon size={16} />}
-                        {link.label}
-                      </Link>
-                    </li>
-                  );
-                })}
+                {creatorFooterLinks.resources.map((link) => (
+                  <li key={link.href}>
+                    <Link to={link.href}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div className="footer-section">
               <h3>Support</h3>
               <ul>
-                {creatorFooterLinks.support.map((link) => {
-                  const Icon = link.icon;
-                  return (
-                    <li key={link.href}>
-                      <Link to={link.href}>
-                        {Icon && <Icon size={16} />}
-                        {link.label}
-                      </Link>
-                    </li>
-                  );
-                })}
+                {creatorFooterLinks.support.map((link) => (
+                  <li key={link.href}>
+                    <Link to={link.href}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
