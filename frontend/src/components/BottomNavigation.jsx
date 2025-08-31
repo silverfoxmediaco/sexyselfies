@@ -270,7 +270,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
       </div>
 
       {/* Bottom Navigation Bar */}
-      <nav className="bottom-navigation">
+      <nav className="bottom-navigation" style={{backgroundColor: 'lime', zIndex: 9999}}>
         <div className="nav-container">
           {navItems.map((item, index) => {
             const Icon = item.icon;
