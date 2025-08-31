@@ -153,23 +153,6 @@ const CreatorMainFooter = () => {
           </div>
         </div>
 
-        {/* Creator CTA Section */}
-        <div className="creator-cta-section">
-          <div className="cta-content">
-            <h3>Ready to grow your creator business?</h3>
-            <p>Join thousands of creators earning with SexySelfies</p>
-            <div className="cta-buttons">
-              <Link to="/creator/content" className="cta-btn primary">
-                <Camera size={20} />
-                Upload Content
-              </Link>
-              <Link to="/creator/analytics" className="cta-btn secondary">
-                <TrendingUp size={20} />
-                View Analytics
-              </Link>
-            </div>
-          </div>
-        </div>
 
         {/* Footer Bottom */}
         <div className="footer-bottom">
