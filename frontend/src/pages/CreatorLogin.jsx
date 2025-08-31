@@ -67,7 +67,7 @@ const CreatorLogin = () => {
     setIsLoading(true);
     
     try {
-      const response = await axios.post('/api/auth/creator/login', formData);
+      const response = await axios.post('/api/v1/auth/creator/login', formData);
       
       if (response.data.success) {
         // Store token and user info
