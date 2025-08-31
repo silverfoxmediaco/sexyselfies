@@ -58,7 +58,7 @@ const CreatorMainFooter = () => {
             <p className="brand-description">
               Empowering creators to build their brand, connect with fans, and monetize their content.
             </p>
-            <div className="creator-stats">
+            <div className="creator-footer-stats">
               <div className="stat-item">
                 <strong>10,000+</strong>
                 <span>Active Creators</span>
