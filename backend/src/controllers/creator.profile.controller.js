@@ -8,82 +8,54 @@ const mongoose = require('mongoose');
 // Get creator's complete profile with all intelligence data
 exports.getProfile = async (req, res) => {
   try {
-    const creatorId = req.user.id;
+    // Find creator by user ID
+    const creator = await Creator.findOne({ user: req.user.id })
+      .populate('user', 'email username');
     
-    // Get enhanced profile with AI insights
-    let profile = await CreatorProfile.findOne({ creator: creatorId })
-      .populate('creator', 'username email profileImage isVerified');
-    
-    if (!profile) {
-      // Create a basic profile if it doesn't exist
-      const creator = await Creator.findById(creatorId);
-      if (!creator) {
-        return res.status(404).json({ 
-          success: false, 
-          message: 'Creator not found' 
-        });
-      }
-      
-      // Create basic profile
-      profile = await CreatorProfile.create({
-        creator: creatorId,
-        displayName: creator.displayName || creator.username || 'New Creator',
-        bio: '',
-        categories: [],
-        pricing: {
-          photoPrice: 4.99,
-          videoPrice: 9.99,
-          customContentPrice: 19.99
-        },
-        analytics: {
-          performance: {
-            views: 0,
-            likes: 0,
-            followers: 0,
-            earnings: 0
-          }
-        }
+    if (!creator) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Creator not found' 
       });
-      
-      // Populate the creator reference
-      await profile.populate('creator', 'username email profileImage isVerified');
     }
     
-    // Get real-time stats
-    const earnings = await CreatorEarnings.findOne({ creator: creatorId });
-    const todayEarnings = earnings ? earnings.dailyEarnings.today.total : 0;
-    const monthEarnings = earnings ? earnings.monthlyEarnings.total : 0;
-    
-    // Get active viewer count (from active sessions)
-    const activeViewers = await getActiveViewerCount(creatorId);
-    
-    // Calculate conversion rate
-    const conversionRate = calculateConversionRate(profile);
-    
-    // Get AI content suggestions
-    const aiSuggestions = await generateAIContentSuggestions(profile);
-    
-    // Update real-time stats
-    profile.analytics.realTime = {
-      activeViewers,
-      todayEarnings,
-      conversionRate,
-      trending: profile.analytics.performance.trending
+    // Format profile data
+    const profile = {
+      _id: creator._id,
+      user: creator.user,
+      username: creator.username,
+      displayName: creator.displayName,
+      age: creator.age,
+      birthDate: creator.birthDate,
+      bio: creator.bio,
+      profileImage: creator.profileImage,
+      coverImage: creator.coverImage,
+      location: creator.location,
+      isVerified: creator.isVerified,
+      verificationStatus: creator.verificationStatus,
+      profileComplete: creator.profileComplete,
+      stats: creator.stats || {
+        totalEarnings: 0,
+        monthlyEarnings: 0,
+        totalMatches: 0,
+        totalLikes: 0,
+        rating: 0,
+        ratingCount: 0
+      },
+      preferences: creator.preferences,
+      contentPrice: creator.contentPrice,
+      galleries: creator.galleries || [],
+      isPaused: creator.isPaused || false
     };
-    
-    profile.ai.contentSuggestions = aiSuggestions;
-    
-    await profile.save();
     
     res.json({
       success: true,
       profile,
       stats: {
-        level: profile.gamification.level,
-        xp: profile.gamification.xp,
-        rank: profile.gamification.monthlyRank,
-        achievements: profile.gamification.achievements.length,
-        streak: profile.gamification.streaks.dailyLogin
+        totalViews: profile.stats.totalMatches,
+        matches: profile.stats.totalMatches,
+        earnings: profile.stats.totalEarnings,
+        rating: profile.stats.rating
       }
     });
   } catch (error) {

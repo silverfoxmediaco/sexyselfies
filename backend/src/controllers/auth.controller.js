@@ -218,10 +218,23 @@ exports.creatorRegister = async (req, res, next) => {
       isEmailVerified: false
     }], { session });
 
+    // Calculate age from birthDate
+    const creatorToday = new Date();
+    const creatorBirth = new Date(birthDate);
+    let creatorAge = creatorToday.getFullYear() - creatorBirth.getFullYear();
+    const creatorMonthDiff = creatorToday.getMonth() - creatorBirth.getMonth();
+    
+    if (creatorMonthDiff < 0 || (creatorMonthDiff === 0 && creatorToday.getDate() < creatorBirth.getDate())) {
+      creatorAge--;
+    }
+
     // Create creator profile (with transaction)
     const creator = await Creator.create([{
       user: user[0]._id,
+      username: username,
       displayName,
+      birthDate: birthDate,
+      age: creatorAge,
       bio: '',
       profileImage: 'default-avatar.jpg',
       coverImage: '',

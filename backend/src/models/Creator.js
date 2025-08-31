@@ -7,10 +7,21 @@ const creatorSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  username: {
+    type: String,
+    maxlength: [30, 'Username cannot be more than 30 characters']
+  },
   displayName: {
     type: String,
     required: [true, 'Please provide a display name'],
     maxlength: [50, 'Display name cannot be more than 50 characters']
+  },
+  birthDate: {
+    type: Date
+  },
+  age: {
+    type: Number,
+    min: 18
   },
   bio: {
     type: String,
