@@ -42,9 +42,6 @@ const CreatorProfileSetup = () => {
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
 
-  console.log('CreatorProfileSetup: isMobile =', isMobile);
-  console.log('CreatorProfileSetup: isDesktop =', isDesktop);
-  console.log('CreatorProfileSetup: userRole =', userRole);
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [animationDirection, setAnimationDirection] = useState('forward');
@@ -454,6 +451,12 @@ const CreatorProfileSetup = () => {
           )}
         </div>
       </div>
+      
+      {/* Desktop Footer */}
+      {isDesktop && <CreatorMainFooter />}
+      
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
       
       {/* Profile Preview Modal */}
       <CreatorProfilePreview 
@@ -1206,11 +1209,6 @@ const StepFive = ({ formData, setFormData, errors, aiSuggestions, onPreview }) =
       {errors.terms && <span className="error-message">{errors.terms}</span>}
       {errors.age && <span className="error-message">{errors.age}</span>}
       
-      {/* Desktop Footer */}
-      {isDesktop && <CreatorMainFooter />}
-      
-      {/* Bottom Navigation */}
-      <BottomNavigation userRole={userRole} />
     </div>
   );
 };

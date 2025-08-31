@@ -13,7 +13,6 @@ import logo from '../assets/sexysselfies_logo.png';
 import './BottomNavigation.css';
 
 const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
-  console.log('🚀 BottomNavigation rendering with userRole:', userRole);
   
   const navigate = useNavigate();
   const location = useLocation();
