@@ -39,13 +39,14 @@
 }
 
 .creator-stats {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
 }
 
 .stat-item {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 0.25rem;
 }
 
