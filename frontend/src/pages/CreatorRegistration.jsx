@@ -206,6 +206,8 @@ const CreatorRegistration = () => {
       if (response && response.success && response.token) {
         // Tokens are already stored by auth service, just store additional info
         localStorage.setItem('userEmail', formData.email);
+        localStorage.setItem('displayName', formData.displayName);
+        localStorage.setItem('username', formData.username);
         localStorage.setItem('needsVerification', 'true');
         
         // Show success message
