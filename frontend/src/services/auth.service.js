@@ -127,6 +127,8 @@ class AuthService {
         localStorage.setItem('refreshToken', response.refreshToken || '');
         localStorage.setItem('userRole', 'creator');
         localStorage.setItem('userId', response.user?.id || '');
+        localStorage.setItem('displayName', data.displayName || '');
+        localStorage.setItem('username', data.username || '');
         localStorage.setItem('creatorVerificationStatus', response.verificationStatus || 'pending');
         apiHelpers.setAuthToken(response.token);
       }
@@ -168,6 +170,8 @@ class AuthService {
         localStorage.setItem('refreshToken', response.data.refreshToken);
         localStorage.setItem('userRole', 'creator');
         localStorage.setItem('userId', response.data.user.id);
+        localStorage.setItem('displayName', response.data.user.displayName || '');
+        localStorage.setItem('username', response.data.user.username || '');
         localStorage.setItem('creatorVerificationStatus', response.data.user.verificationStatus || 'pending');
         
         if (rememberMe) {
