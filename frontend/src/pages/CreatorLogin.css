@@ -1,45 +1,45 @@
 .creator-login-page {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: linear-gradient(135deg, #0A0A0A 0%, #121212 100%);
   position: relative;
-  overflow: hidden;
-  padding: 20px;
+  overflow-x: hidden;
+  padding: 0;
 }
 
 .creator-login-bg-gradient-1 {
   position: absolute;
-  top: -50%;
-  right: -30%;
-  width: 100%;
-  height: 200%;
-  background: radial-gradient(circle at center, rgba(23, 210, 194, 0.15) 0%, transparent 70%);
+  top: -20%;
+  right: -20%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle at center, rgba(23, 210, 194, 0.08) 0%, transparent 70%);
   animation: pulse 8s ease-in-out infinite;
   pointer-events: none;
+  z-index: 0;
 }
 
 .creator-login-bg-gradient-2 {
   position: absolute;
-  bottom: -50%;
-  left: -30%;
-  width: 100%;
-  height: 200%;
-  background: radial-gradient(circle at center, rgba(147, 51, 234, 0.1) 0%, transparent 70%);
+  bottom: -20%;
+  left: -20%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle at center, rgba(147, 51, 234, 0.05) 0%, transparent 70%);
   animation: pulse 10s ease-in-out infinite reverse;
   pointer-events: none;
+  z-index: 0;
 }
 
 .creator-login-bg-gradient-3 {
   position: absolute;
-  top: 20%;
-  left: 20%;
-  width: 60%;
-  height: 60%;
-  background: radial-gradient(circle at center, rgba(239, 68, 68, 0.05) 0%, transparent 70%);
+  top: 30%;
+  left: 50%;
+  width: 40%;
+  height: 40%;
+  background: radial-gradient(circle at center, rgba(239, 68, 68, 0.03) 0%, transparent 70%);
   animation: pulse 12s ease-in-out infinite;
   pointer-events: none;
+  z-index: 0;
 }
 
 @keyframes pulse {
@@ -50,12 +50,34 @@
 .creator-login-container {
   width: 100%;
   max-width: 1200px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 100vh;
+  display: flex;
   align-items: center;
   z-index: 1;
   position: relative;
+}
+
+/* Desktop Grid Layout */
+@media (min-width: 968px) {
+  .creator-login-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    padding: 60px 40px;
+  }
+}
+
+/* Mobile Single Column */
+@media (max-width: 967px) {
+  .creator-login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+  }
 }
 
 .creator-login-form-section {
@@ -65,6 +87,18 @@
   border-radius: 24px;
   padding: 48px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  z-index: 2;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .creator-login-form-section {
+    padding: 32px 24px;
+    max-width: 100%;
+  }
 }
 
 .creator-login-header {
@@ -469,12 +503,7 @@
   to { transform: rotate(360deg); }
 }
 
-@media (max-width: 968px) {
-  .creator-login-container {
-    grid-template-columns: 1fr;
-    max-width: var(--content-width-narrow);
-  }
-
+@media (max-width: 967px) {
   .creator-login-features-section {
     display: none;
   }
