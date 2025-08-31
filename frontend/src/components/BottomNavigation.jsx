@@ -13,6 +13,8 @@ import logo from '../assets/sexysselfies_logo.png';
 import './BottomNavigation.css';
 
 const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
+  console.log('🚀 BottomNavigation rendering with userRole:', userRole);
+  
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -270,7 +272,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
       </div>
 
       {/* Bottom Navigation Bar */}
-      <nav className="bottom-navigation" style={{backgroundColor: 'lime', zIndex: 9999}}>
+      <nav className="bottom-navigation">
         <div className="nav-container">
           {navItems.map((item, index) => {
             const Icon = item.icon;
