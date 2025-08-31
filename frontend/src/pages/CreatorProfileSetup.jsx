@@ -75,7 +75,6 @@ const CreatorProfileSetup = () => {
     displayName: '',
     username: '',
     bio: '',
-    categories: [],
     
     // Step 2: Browse Settings (CHANGED FROM: Discovery Settings)
     gender: '',
@@ -88,8 +87,7 @@ const CreatorProfileSetup = () => {
     browsePreferences: {  // CHANGED FROM: discoveryPreferences
       men: true,
       women: true,
-      couples: false,
-      nonBinary: true
+      couples: false
     },
     
     // Step 3: Content & Pricing
@@ -183,7 +181,6 @@ const CreatorProfileSetup = () => {
     if (formData.profilePhoto) completed++;
     if (formData.displayName) completed++;
     if (formData.bio && formData.bio.length > 50) completed++;
-    if (formData.categories.length > 0) completed++;
     if (formData.gender) completed++;
     if (formData.orientation) completed++;
     // ... add more field checks
@@ -202,9 +199,6 @@ const CreatorProfileSetup = () => {
         if (!formData.displayName) newErrors.displayName = 'Display name is required';
         if (!formData.bio || formData.bio.length < 50) {
           newErrors.bio = 'Bio must be at least 50 characters';
-        }
-        if (formData.categories.length === 0) {
-          newErrors.categories = 'Select at least one category';
         }
         break;
       
@@ -508,18 +502,6 @@ const StepOne = ({ formData, setFormData, errors }) => {
   const profileInputRef = useRef(null);
   const coverInputRef = useRef(null);
   
-  const categories = [
-    { id: 'lifestyle', label: 'Lifestyle', icon: '✨' },
-    { id: 'fitness', label: 'Fitness', icon: '💪' },
-    { id: 'fashion', label: 'Fashion', icon: '👗' },
-    { id: 'artistic', label: 'Artistic', icon: '🎨' },
-    { id: 'travel', label: 'Travel', icon: '✈️' },
-    { id: 'food', label: 'Food', icon: '🍕' },
-    { id: 'music', label: 'Music', icon: '🎵' },
-    { id: 'gaming', label: 'Gaming', icon: '🎮' },
-    { id: 'education', label: 'Education', icon: '📚' },
-    { id: 'comedy', label: 'Comedy', icon: '😂' }
-  ];
   
   const handlePhotoChange = (e, type) => {
     const file = e.target.files[0];
@@ -544,14 +526,6 @@ const StepOne = ({ formData, setFormData, errors }) => {
     reader.readAsDataURL(file);
   };
   
-  const toggleCategory = (categoryId) => {
-    setFormData(prev => ({
-      ...prev,
-      categories: prev.categories.includes(categoryId)
-        ? prev.categories.filter(c => c !== categoryId)
-        : [...prev.categories, categoryId].slice(0, 3) // Max 3 categories
-    }));
-  };
   
   return (
     <div className="step-one">
@@ -671,27 +645,6 @@ const StepOne = ({ formData, setFormData, errors }) => {
         </div>
         {errors.bio && <span className="error-message">{errors.bio}</span>}
       </div>
-      
-      {/* Categories */}
-      <div className="form-group">
-        <label className="form-label">
-          Categories (Select up to 3)
-          <span className="required">*</span>
-        </label>
-        <div className="categories-grid">
-          {categories.map(category => (
-            <div
-              key={category.id}
-              className={`category-card ${formData.categories.includes(category.id) ? 'selected' : ''}`}
-              onClick={() => toggleCategory(category.id)}
-            >
-              <span className="category-icon">{category.icon}</span>
-              <span className="category-label">{category.label}</span>
-            </div>
-          ))}
-        </div>
-        {errors.categories && <span className="error-message">{errors.categories}</span>}
-      </div>
     </div>
   );
 };
@@ -712,7 +665,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
           <span className="required">*</span>
         </label>
         <div className="radio-group">
-          {['Male', 'Female', 'Non-binary', 'Trans', 'Prefer not to say'].map(option => (
+          {['Male', 'Female', 'Prefer not to say'].map(option => (
             <label key={option} className="radio-label">
               <input
                 type="radio"
@@ -762,8 +715,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
           {Object.entries({
             men: 'Men',
             women: 'Women',
-            couples: 'Couples',
-            nonBinary: 'Non-binary'
+            couples: 'Couples'
           }).map(([key, label]) => (
             <label key={key} className="checkbox-label">
               <input
@@ -1173,9 +1125,6 @@ const StepFive = ({ formData, setFormData, errors, aiSuggestions, onPreview }) =
                     <Shield size={14} />
                     Verified
                   </span>
-                  {formData.categories.map(cat => (
-                    <span key={cat} className="badge category">{cat}</span>
-                  ))}
                 </div>
               </div>
             </div>

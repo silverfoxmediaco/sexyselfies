@@ -81,7 +81,6 @@ const BrowseMembers = () => {
         responseRate: 92
       },
       preferences: {
-        categories: ['Fitness', 'Lifestyle', 'Fashion'],
         priceRange: [5, 50],
         contentType: ['videos', 'photos', 'messages']
       },
@@ -114,7 +113,6 @@ const BrowseMembers = () => {
         responseRate: 85
       },
       preferences: {
-        categories: ['Art', 'Photography', 'Travel'],
         priceRange: [2, 30],
         contentType: ['photos', 'messages']
       },
@@ -147,7 +145,6 @@ const BrowseMembers = () => {
         responseRate: 78
       },
       preferences: {
-        categories: ['Gaming', 'Anime', 'Music'],
         priceRange: [1, 20],
         contentType: ['messages', 'photos']
       },
@@ -247,7 +244,6 @@ const BrowseMembers = () => {
         responseRate: 72
       },
       preferences: {
-        categories: ['Fitness', 'Lifestyle'],
         priceRange: [5, 25],
         contentType: ['photos', 'messages']
       },
@@ -346,7 +342,6 @@ const BrowseMembers = () => {
         responseRate: 81
       },
       preferences: {
-        categories: ['Tech', 'Gaming', 'Innovation'],
         priceRange: [5, 30],
         contentType: ['photos', 'messages', 'videos']
       },
@@ -1092,11 +1087,6 @@ const BrowseMembers = () => {
                   
                   <div className="profile-preferences">
                     <h4>Preferences</h4>
-                    <div className="preference-tags">
-                      {selectedMember.preferences.categories.map((cat, index) => (
-                        <span key={index} className="preference-tag">{cat}</span>
-                      ))}
-                    </div>
                   </div>
                   
                   <div className="profile-activity">

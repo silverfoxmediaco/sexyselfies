@@ -50,19 +50,14 @@ const CreatorContentUpload = () => {
   });
 
   // Categories
-  const categories = [
+  const contentTypes = [
     { id: 'photos', label: 'Photos', icon: Camera, color: 'blue' },
-    { id: 'videos', label: 'Videos', icon: Film, color: 'purple' },
-    { id: 'lifestyle', label: 'Lifestyle', icon: Star, color: 'pink' },
-    { id: 'fashion', label: 'Fashion', icon: Tag, color: 'green' },
-    { id: 'fitness', label: 'Fitness', icon: TrendingUp, color: 'orange' },
-    { id: 'artistic', label: 'Artistic', icon: Sparkles, color: 'teal' }
+    { id: 'videos', label: 'Videos', icon: Film, color: 'purple' }
   ];
 
   // Popular tags
   const popularTags = [
     'exclusive', 'behind-the-scenes', 'daily', 'premium',
-    'lifestyle', 'fashion', 'fitness', 'artistic',
     'natural', 'glamour', 'casual', 'professional'
   ];
 
@@ -471,7 +466,7 @@ const CreatorContentUpload = () => {
           <span className="required">*</span>
         </label>
         <div className="category-grid">
-          {categories.map(category => (
+          {contentTypes.map(category => (
             <motion.button
               key={category.id}
               className={`category-btn ${contentDetails.category === category.id ? 'selected' : ''} ${category.color}`}

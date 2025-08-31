@@ -61,7 +61,6 @@ const CreatorProfilePage = () => {
           orientation: "Straight",
           gender: "Female",
           bodyType: "Athletic",
-          categories: ["Lifestyle", "Fitness", "Fashion"],
           pricing: {
             photos: 2.99,
             videos: 5.99
@@ -272,13 +271,6 @@ const CreatorProfilePage = () => {
               {profileData?.bio || 'Add a bio to tell members about yourself...'}
             </p>
 
-            <div className="profile-categories">
-              {profileData?.categories?.map((category, index) => (
-                <span key={index} className="category-tag">{category}</span>
-              )) || (
-                <span className="no-categories">No categories selected</span>
-              )}
-            </div>
           </div>
         </div>
 

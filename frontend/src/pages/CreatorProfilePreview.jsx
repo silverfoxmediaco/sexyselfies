@@ -97,11 +97,6 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
         </div>
 
         <div className="card-tags">
-          {profileData?.categories?.map((cat, i) => (
-            <span key={i} className="tag">{cat}</span>
-          )) || ['Lifestyle', 'Fashion'].map((cat, i) => (
-            <span key={i} className="tag">{cat}</span>
-          ))}
         </div>
 
         <div className="card-stats">

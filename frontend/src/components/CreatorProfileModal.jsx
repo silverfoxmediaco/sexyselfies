@@ -217,12 +217,6 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
                       </span>
                     </div>
                     
-                    <div className="about-item">
-                      <span className="about-label">Category</span>
-                      <span className="about-value">
-                        {creator.category || 'Lifestyle'}
-                      </span>
-                    </div>
                     
                     <div className="about-item">
                       <span className="about-label">Starting Price</span>
