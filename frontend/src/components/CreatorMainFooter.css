@@ -29,7 +29,6 @@
 .footer-logo img {
   height: 48px;
   width: auto;
-  filter: brightness(0) invert(1);
 }
 
 .brand-description {
@@ -45,8 +44,8 @@
 }
 
 .stat-item {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.25rem;
 }
 
