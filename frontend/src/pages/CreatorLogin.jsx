@@ -61,13 +61,20 @@ const CreatorLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Form submitted with data:', formData);
     
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      console.log('Form validation failed:', errors);
+      return;
+    }
     
+    console.log('Form validation passed, making API call...');
     setIsLoading(true);
     
     try {
+      console.log('Making API request to /api/v1/auth/creator/login');
       const response = await axios.post('/api/v1/auth/creator/login', formData);
+      console.log('API response received:', response.data);
       
       if (response.data.success) {
         // Store token and user info
@@ -109,10 +116,13 @@ const CreatorLogin = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
+      console.error('Error response:', error.response);
+      console.error('Error message:', error.message);
       setErrors({
         general: error.response?.data?.message || 'Invalid email or password'
       });
     } finally {
+      console.log('Setting loading to false');
       setIsLoading(false);
     }
   };
@@ -215,12 +225,13 @@ const CreatorLogin = () => {
               </Link>
             </div>
 
-            <motion.button
+            <button
               type="submit"
               className="creator-login-btn"
               disabled={isLoading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              onClick={(e) => {
+                console.log('Button clicked!', e);
+              }}
             >
               {isLoading ? (
                 <span className="creator-login-loading-spinner"></span>
@@ -230,7 +241,7 @@ const CreatorLogin = () => {
                   <span>Login to Dashboard</span>
                 </>
               )}
-            </motion.button>
+            </button>
           </form>
 
           <div className="creator-login-footer">
