@@ -28,7 +28,7 @@ const AdminVerifications = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/verification/pending`,
+        `${import.meta.env.VITE_API_URL}/api/v1/verification/pending`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -53,7 +53,7 @@ const AdminVerifications = () => {
       
       // Call the notification endpoint for approval
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/notifications/approve-verification`,
+        `${import.meta.env.VITE_API_URL}/api/v1/notifications/approve-verification`,
         { userId: creator.user._id },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -86,7 +86,7 @@ const AdminVerifications = () => {
       
       // Call the notification endpoint for rejection
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/notifications/reject-verification`,
+        `${import.meta.env.VITE_API_URL}/api/v1/notifications/reject-verification`,
         { 
           userId: selectedCreator.user._id,
           reason: rejectionReason 

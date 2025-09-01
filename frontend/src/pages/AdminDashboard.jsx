@@ -78,17 +78,30 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="stat-card">
+              <div className={`stat-card ${stats?.moderation?.pendingVerifications > 0 ? 'alert-card' : ''}`}>
                 <div className="stat-icon verifications">
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
                   </svg>
+                  {stats?.moderation?.pendingVerifications > 0 && (
+                    <span className="alert-badge">{stats.moderation.pendingVerifications}</span>
+                  )}
                 </div>
                 <div className="stat-details">
                   <h3>Pending Verifications</h3>
                   <p className="stat-number">{stats?.moderation?.pendingVerifications || 0}</p>
-                  <span className="stat-meta">Awaiting review</span>
+                  <span className="stat-meta">
+                    {stats?.moderation?.pendingVerifications > 0 
+                      ? '🚨 Requires immediate attention' 
+                      : 'All caught up!'
+                    }
+                  </span>
                 </div>
+                {stats?.moderation?.pendingVerifications > 0 && (
+                  <Link to="/admin/verifications" className="stat-action-btn">
+                    Review Now →
+                  </Link>
+                )}
               </div>
 
               <div className="stat-card">

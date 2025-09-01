@@ -159,14 +159,21 @@ const CreatorVerifyID = () => {
       }
     } catch (error) {
       console.error('Verification submission error:', error);
+      console.error('Error response:', error.response);
+      console.error('Error request:', error.request);
+      console.error('Error config:', error.config);
       
       // Handle different types of errors
       let errorMessage = 'Network error. Please try again.';
       if (error.response) {
         // Backend returned an error response
-        errorMessage = error.response.data?.error || error.response.data?.message || 'Server error occurred.';
+        console.error('Backend error status:', error.response.status);
+        console.error('Backend error data:', error.response.data);
+        console.error('Backend error headers:', error.response.headers);
+        errorMessage = error.response.data?.error || error.response.data?.message || `Server error (${error.response.status}). Please try again.`;
       } else if (error.request) {
         // Network error - no response received
+        console.error('Network request failed:', error.request);
         errorMessage = 'Unable to connect to server. Please check your internet connection.';
       }
       

@@ -6,6 +6,7 @@ const Creator = require('../models/Creator');
 const Member = require('../models/Member');
 
 console.log('Upload routes loaded - uploadVerification is:', typeof uploadVerification);
+console.log('uploadVerification available methods:', uploadVerification ? Object.getOwnPropertyNames(uploadVerification) : 'undefined');
 
 // Test route to verify the endpoint is accessible
 router.get('/test', (req, res) => {
@@ -13,23 +14,44 @@ router.get('/test', (req, res) => {
 });
 
 // Use the dedicated uploadVerification for ID documents
-const verificationUpload = uploadVerification.fields([
-  { name: 'idFront', maxCount: 1 },
-  { name: 'idBack', maxCount: 1 },
-  { name: 'selfie', maxCount: 1 }
-]);
+let verificationUpload;
+try {
+  verificationUpload = uploadVerification.fields([
+    { name: 'idFront', maxCount: 1 },
+    { name: 'idBack', maxCount: 1 },
+    { name: 'selfie', maxCount: 1 }
+  ]);
+  console.log('Successfully configured verificationUpload fields');
+} catch (error) {
+  console.error('Error configuring verificationUpload fields:', error);
+  // Fallback to single file upload
+  verificationUpload = uploadVerification.single('file');
+}
 
 // Upload verification documents (ID verification)
 router.post('/verification', 
   protect, 
   (req, res, next) => {
     console.log('=== VERIFICATION ENDPOINT HIT ===');
+    console.log('Request method:', req.method);
+    console.log('Request URL:', req.originalUrl);
     console.log('Headers:', req.headers);
     console.log('User from protect middleware:', req.user);
     console.log('Body before multer:', req.body);
+    console.log('verificationUpload is:', typeof verificationUpload);
     next();
   },
-  verificationUpload, 
+  (req, res, next) => {
+    console.log('=== APPLYING MULTER MIDDLEWARE ===');
+    if (typeof verificationUpload !== 'function') {
+      console.error('ERROR: verificationUpload is not a function:', verificationUpload);
+      return res.status(500).json({
+        success: false,
+        error: 'File upload configuration error'
+      });
+    }
+    verificationUpload(req, res, next);
+  }, 
   async (req, res) => {
     try {
       console.log('=== AFTER MULTER PROCESSING ===');
@@ -241,6 +263,24 @@ router.use((error, req, res, next) => {
   return res.status(500).json({
     success: false,
     error: error.message || 'File upload failed'
+  });
+});
+
+// Catch-all route for debugging
+router.all('*', (req, res) => {
+  console.log('=== UPLOAD ROUTE CATCH-ALL ===');
+  console.log('Method:', req.method);
+  console.log('Path:', req.path);
+  console.log('Original URL:', req.originalUrl);
+  console.log('Available routes on this router:', router.stack.map(r => ({
+    path: r.route?.path,
+    methods: r.route?.methods
+  })));
+  
+  res.status(404).json({
+    success: false,
+    error: `Upload route not found: ${req.method} ${req.path}`,
+    availableRoutes: router.stack.map(r => r.route?.path).filter(Boolean)
   });
 });
 
