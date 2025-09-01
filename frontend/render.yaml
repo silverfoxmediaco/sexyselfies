@@ -1,0 +1,11 @@
+services:
+  - type: static_site
+    name: sexyselfies-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: VITE_API_URL
+        value: https://sexyselfies-api.onrender.com/api/v1
+      - key: VITE_SOCKET_URL
+        value: wss://sexyselfies-api.onrender.com

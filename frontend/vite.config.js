@@ -10,6 +10,8 @@ export default defineConfig({
     assetsDir: 'assets',
     sourcemap: false,
     chunkSizeWarningLimit: 1600,
+    // Ensure _redirects file is copied to dist
+    copyPublicDir: true,
     rollupOptions: {
       output: {
         manualChunks: {
