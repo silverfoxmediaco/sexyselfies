@@ -20,6 +20,11 @@ export default defineConfig({
       }
     }
   },
+  // Configure preview server for SPA routing (helps with deployment)
+  preview: {
+    port: 4173,
+    host: true
+  },
   server: {
     port: 5175,
     proxy: {
