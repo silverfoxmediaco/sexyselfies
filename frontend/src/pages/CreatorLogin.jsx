@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import axios from 'axios';
+import api from '../services/api.config';
 import { 
   Mail, Lock, Eye, EyeOff, LogIn, 
   ArrowRight, Sparkles, Heart, DollarSign 
@@ -72,41 +72,41 @@ const CreatorLogin = () => {
     setIsLoading(true);
     
     try {
-      console.log('Making API request to /api/v1/auth/creator/login');
-      const response = await axios.post('/api/v1/auth/creator/login', formData);
-      console.log('API response received:', response.data);
+      console.log('Making API request to /auth/creator/login');
+      const response = await api.post('/auth/creator/login', formData);
+      console.log('API response received:', response);
       
-      if (response.data.success) {
+      if (response && response.success) {
         // Store token and user info
-        localStorage.setItem('creatorToken', response.data.token);
-        localStorage.setItem('token', response.data.token); // Keep both for compatibility
+        localStorage.setItem('creatorToken', response.token);
+        localStorage.setItem('token', response.token); // Keep both for compatibility
         localStorage.setItem('userRole', 'creator');
-        localStorage.setItem('userId', response.data.user.id);
-        localStorage.setItem('userEmail', response.data.user.email);
-        localStorage.setItem('creatorId', response.data.creatorId);
+        localStorage.setItem('userId', response.user.id);
+        localStorage.setItem('userEmail', response.user.email);
+        localStorage.setItem('creatorId', response.creatorId);
         
         // Store creator data for header display
         const creatorData = {
-          id: response.data.creatorId,
-          email: response.data.user.email,
-          role: response.data.user.role,
-          isVerified: response.data.isVerified,
-          profileComplete: response.data.profileComplete
+          id: response.creatorId,
+          email: response.user.email,
+          role: response.user.role,
+          isVerified: response.isVerified,
+          profileComplete: response.profileComplete
         };
         localStorage.setItem('creatorData', JSON.stringify(creatorData));
         
         // Try to get displayName from various sources
-        const displayName = response.data.user.displayName || 
-                          response.data.displayName || 
-                          response.data.user.email.split('@')[0];
+        const displayName = response.user.displayName || 
+                          response.displayName || 
+                          response.user.email.split('@')[0];
         localStorage.setItem('creatorName', displayName);
         localStorage.setItem('userDisplayName', displayName);
         
         // Check verification and profile status
-        if (!response.data.isVerified) {
+        if (!response.isVerified) {
           // Creator needs to verify ID or wait for approval
           navigate('/creator/verify-id');
-        } else if (response.data.profileComplete === false) {
+        } else if (response.profileComplete === false) {
           // Creator needs to complete profile setup
           navigate('/creator/profile-setup');
         } else {
@@ -119,7 +119,7 @@ const CreatorLogin = () => {
       console.error('Error response:', error.response);
       console.error('Error message:', error.message);
       setErrors({
-        general: error.response?.data?.message || 'Invalid email or password'
+        general: error.message || 'Invalid email or password'
       });
     } finally {
       console.log('Setting loading to false');
