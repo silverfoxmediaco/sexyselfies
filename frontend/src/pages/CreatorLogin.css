@@ -1,9 +1,28 @@
+/* Smooth scrolling for the page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Remove default margins/padding */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .creator-login-page {
-  min-height: 100vh;
   background: linear-gradient(135deg, #0A0A0A 0%, #121212 100%);
   position: relative;
   overflow-x: hidden;
   padding: 0;
+  margin: 0;
+  min-height: 100vh;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .creator-login-bg-gradient-1 {
@@ -49,14 +68,13 @@
 
 .creator-login-container {
   width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px;
-  min-height: 100vh;
+  padding: 40px 20px 80px 20px;
   display: flex;
   align-items: center;
   z-index: 1;
   position: relative;
+  min-height: calc(100vh - 120px);
 }
 
 /* Desktop Grid Layout */
@@ -317,6 +335,7 @@
   font-weight: 700;
   margin: 0 0 16px 0;
   background: linear-gradient(135deg, #17D2C2, #47E0D2);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -512,7 +531,7 @@
 /* Desktop expansion for better UX */
 @media (min-width: 1024px) {
   .creator-login-container {
-    max-width: var(--content-width-medium);
+    padding: 60px 80px;
   }
 }
 

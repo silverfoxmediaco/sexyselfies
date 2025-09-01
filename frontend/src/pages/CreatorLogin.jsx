@@ -71,11 +71,29 @@ const CreatorLogin = () => {
       
       if (response.data.success) {
         // Store token and user info
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('creatorToken', response.data.token);
+        localStorage.setItem('token', response.data.token); // Keep both for compatibility
         localStorage.setItem('userRole', 'creator');
-        localStorage.setItem('userId', response.data.userId);
+        localStorage.setItem('userId', response.data.user.id);
         localStorage.setItem('userEmail', response.data.user.email);
-        localStorage.setItem('userDisplayName', response.data.user.displayName);
+        localStorage.setItem('creatorId', response.data.creatorId);
+        
+        // Store creator data for header display
+        const creatorData = {
+          id: response.data.creatorId,
+          email: response.data.user.email,
+          role: response.data.user.role,
+          isVerified: response.data.isVerified,
+          profileComplete: response.data.profileComplete
+        };
+        localStorage.setItem('creatorData', JSON.stringify(creatorData));
+        
+        // Try to get displayName from various sources
+        const displayName = response.data.user.displayName || 
+                          response.data.displayName || 
+                          response.data.user.email.split('@')[0];
+        localStorage.setItem('creatorName', displayName);
+        localStorage.setItem('userDisplayName', displayName);
         
         // Check verification and profile status
         if (!response.data.isVerified) {
@@ -253,7 +271,7 @@ const CreatorLogin = () => {
                   <Heart size={20} />
                 </div>
                 <div className="feature-text">
-                  <h3>Instant Matches</h3>
+                  <h3>Instant Connections</h3>
                   <p>Connect with eager fans instantly</p>
                 </div>
               </div>

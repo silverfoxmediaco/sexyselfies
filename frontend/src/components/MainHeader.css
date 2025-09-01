@@ -37,9 +37,7 @@
   top: 0;
   width: 100%; /* Ensure full width */
   z-index: 1000;
-  background: rgba(10, 10, 10, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(10, 10, 10, 0.95);
   border-bottom: 1px solid transparent;
   transition: all 0.3s ease;
   height: var(--mainheader-height);

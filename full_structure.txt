@@ -1,22 +1,12 @@
-.
-├── .DS_Store
-├── .gitignore
-├── .nvmrc
-├── backend
-│   ├── .DS_Store
-│   ├── .env
-│   ├── .gitignore
-│   ├── logs
-│   │   ├── access.log
-│   │   └── error.log
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── src
-│   │   ├── .DS_Store
-│   │   ├── config
+./
+├── .claude/
+│   └── settings.local.json
+├── backend/
+│   ├── src/
+│   │   ├── config/
 │   │   │   ├── cloudinary.js
 │   │   │   └── database.js
-│   │   ├── controllers
+│   │   ├── controllers/
 │   │   │   ├── admin.auth.controller.js
 │   │   │   ├── admin.moderation.controller.js
 │   │   │   ├── auth.controller.js
@@ -35,31 +25,34 @@
 │   │   │   ├── memberProfile.controller.js
 │   │   │   ├── notification.controller.js
 │   │   │   ├── payment.controller.js
+│   │   │   ├── payout.controller.js
 │   │   │   ├── transaction.controller.js
 │   │   │   ├── upload.controller.js
 │   │   │   ├── verification.controller.js
 │   │   │   └── webhook.controller.js
-│   │   ├── jobs
+│   │   ├── jobs/
 │   │   │   ├── cleanup.job.js
 │   │   │   ├── memberAnalytics.job.js
 │   │   │   └── salesDigest.job.js
-│   │   ├── middleware
+│   │   ├── middleware/
 │   │   │   ├── admin.auth.middleware.js
 │   │   │   ├── auth.middleware.js
 │   │   │   ├── cache.middleware.js
 │   │   │   ├── cors.middleware.js
+│   │   │   ├── database.middleware.js
 │   │   │   ├── error.middleware.js
 │   │   │   ├── logging.middleware.js
 │   │   │   ├── privacy.middleware.js
 │   │   │   ├── rateLimit.middleware.js
 │   │   │   ├── salesLimits.middleware.js
-│   │   │   ├── subscription.middleware.js
+│   │   │   ├── unlock.middleware.js
 │   │   │   ├── upload.middleware.js
 │   │   │   ├── validation.middleware.js
 │   │   │   └── verification.middleware.js
-│   │   ├── models
+│   │   ├── models/
 │   │   │   ├── Admin.js
 │   │   │   ├── AdminReport.js
+│   │   │   ├── AnalyticsEvent.js
 │   │   │   ├── Connections.js
 │   │   │   ├── Content.js
 │   │   │   ├── Creator.js
@@ -73,14 +66,16 @@
 │   │   │   ├── Member.js
 │   │   │   ├── MemberAnalytics.js
 │   │   │   ├── MemberInteraction.js
+│   │   │   ├── MemberProfile.js
 │   │   │   ├── Message.js
 │   │   │   ├── Notification.js
+│   │   │   ├── PayoutRequest.js
 │   │   │   ├── Report.js
 │   │   │   ├── SpecialOffer.js
 │   │   │   ├── Transaction.js
 │   │   │   ├── User.js
 │   │   │   └── UserViolation.js
-│   │   ├── routes
+│   │   ├── routes/
 │   │   │   ├── admin.routes.js
 │   │   │   ├── auth.routes.js
 │   │   │   ├── connections.routes.js
@@ -93,52 +88,60 @@
 │   │   │   ├── memberProfile.routes.js
 │   │   │   ├── notification.routes.js
 │   │   │   ├── payment.routes.js
+│   │   │   ├── payout.routes.js
 │   │   │   ├── public.routes.js
 │   │   │   ├── transaction.routes.js
 │   │   │   ├── upload.routes.js
 │   │   │   ├── verification.routes.js
 │   │   │   └── webhook.routes.js
-│   │   ├── scripts
+│   │   ├── scripts/
 │   │   │   ├── createSuperAdmin.js
 │   │   │   ├── fixAdminPassword.js
+│   │   │   ├── seedCreators.js
 │   │   │   └── testAdminPassword.js
-│   │   ├── server.js
-│   │   ├── services
+│   │   ├── services/
 │   │   │   ├── analytics.service.js
 │   │   │   ├── connections.service.js
 │   │   │   ├── memberScoring.service.js
 │   │   │   ├── notification.service.js
 │   │   │   └── payment.service.js
-│   │   ├── sockets
+│   │   ├── sockets/
 │   │   │   ├── creatorSales.socket.js
-│   │   │   └── memberActivity.socket.js
-│   │   └── utils
-│   │       ├── memberSegmentation.js
-│   │       ├── moderation.js
-│   │       ├── notifications.js
-│   │       ├── payment.js
-│   │       ├── privacyFilters.js
-│   │       └── salesMetrics.js
-│   └── testEmail.js
-├── eslint.config.js
-├── frontend
+│   │   │   ├── memberActivity.socket.js
+│   │   │   └── messaging.socket.js
+│   │   ├── utils/
+│   │   │   ├── memberSegmentation.js
+│   │   │   ├── moderation.js
+│   │   │   ├── notifications.js
+│   │   │   ├── payment.js
+│   │   │   ├── privacyFilters.js
+│   │   │   └── salesMetrics.js
+│   │   ├── .DS_Store
+│   │   └── server.js
 │   ├── .DS_Store
 │   ├── .env
-│   ├── favicon.ico
-│   ├── icon-192x192.png
-│   ├── icon-512x512.png
-│   ├── index.html
+│   ├── .env.ccbill.example
+│   ├── .gitignore
+│   ├── drop-location-index.js
 │   ├── package-lock.json
 │   ├── package.json
-│   ├── public
-│   │   ├── .DS_Store
-│   │   ├── icons
-│   │   │   ├── actions
+│   ├── test-ccbill-integration.js
+│   ├── test-payment-flow.js
+│   └── testEmail.js
+├── frontend/
+│   ├── public/
+│   │   ├── icons/
+│   │   │   ├── actions/
 │   │   │   │   ├── camera.svg
 │   │   │   │   ├── like.svg
 │   │   │   │   ├── message.svg
 │   │   │   │   ├── pass.svg
 │   │   │   │   └── super-like.svg
+│   │   │   ├── nav/
+│   │   │   │   ├── discover.svg
+│   │   │   │   ├── home.svg
+│   │   │   │   ├── matches.svg
+│   │   │   │   └── profile.svg
 │   │   │   ├── android-icon-144x144.png
 │   │   │   ├── android-icon-192x192.png
 │   │   │   ├── android-icon-36x36.png
@@ -180,27 +183,38 @@
 │   │   │   ├── ms-icon-150x150.png
 │   │   │   ├── ms-icon-310x310.png
 │   │   │   ├── ms-icon-70x70.png
-│   │   │   ├── nav
-│   │   │   │   ├── discover.svg
-│   │   │   │   ├── home.svg
-│   │   │   │   ├── matches.svg
-│   │   │   │   └── profile.svg
 │   │   │   ├── SS logo no background.png
 │   │   │   └── SS logo1200.png
-│   │   ├── manifest.json
-│   │   ├── offline.html
-│   │   ├── placeholders
+│   │   ├── placeholders/
 │   │   │   ├── beaufitulbrunette1.png
 │   │   │   ├── beautifulbrunette2.png
 │   │   │   ├── beautifulbrunette4.png
 │   │   │   ├── beautifulebrunette3.png
+│   │   │   ├── creator10.png
+│   │   │   ├── creator11.png
+│   │   │   ├── creator12.png
+│   │   │   ├── creator13.png
+│   │   │   ├── creator14.png
+│   │   │   ├── creator15.png
+│   │   │   ├── creator16.png
+│   │   │   ├── creator17.png
+│   │   │   ├── creator8.png
+│   │   │   ├── creator9.png
 │   │   │   ├── cuteblondeselfie1.png
 │   │   │   └── cuteblondeselfie2.png
+│   │   ├── _redirects
+│   │   ├── .DS_Store
+│   │   ├── 404.html
+│   │   ├── manifest.json
+│   │   ├── offline.html
+│   │   ├── render.yaml
 │   │   ├── service-worker.js
 │   │   └── vite.svg
-│   ├── src
-│   │   ├── .DS_Store
-│   │   ├── assets
+│   ├── src/
+│   │   ├── assets/
+│   │   │   ├── 60077AD4-38E9-4F3F-91C1-A6AD980A3EBC.jpeg
+│   │   │   ├── 94E25C53-3697-4090-B6BD-41C004BDF0E6.jpeg
+│   │   │   ├── backicon.svg
 │   │   │   ├── IMG_5017.jpg
 │   │   │   ├── IMG_5019.jpg
 │   │   │   ├── IMG_5020.jpg
@@ -212,20 +226,59 @@
 │   │   │   ├── jessatsexyselfies_57308_a_beautiful_brunette_girl_in_her_20s__fde0d022-97f5-4153-a96f-e43f6ca953b5_0.png
 │   │   │   ├── jessatsexyselfies_57308_a_beautiful_brunette_girl_in_her_20s__fde0d022-97f5-4153-a96f-e43f6ca953b5_1.png
 │   │   │   ├── jessatsexyselfies_57308_a_beautiful_brunette_girl_in_her_20s__fde0d022-97f5-4153-a96f-e43f6ca953b5_2.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__18ecb636-fa60-4c43-be07-7d941188b08c_0.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__18ecb636-fa60-4c43-be07-7d941188b08c_1.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__18ecb636-fa60-4c43-be07-7d941188b08c_2.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__18ecb636-fa60-4c43-be07-7d941188b08c_3.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__1e43cc60-a815-4e44-9830-4ec416e00a8d_1.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__1e43cc60-a815-4e44-9830-4ec416e00a8d_2.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__1e43cc60-a815-4e44-9830-4ec416e00a8d_3.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__6bbaa621-84e4-46c6-ad19-884d071f288f_0.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__6bbaa621-84e4-46c6-ad19-884d071f288f_1.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__ba0deae5-27ea-4f21-8d22-20e8da2fe6c5_0.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__ba0deae5-27ea-4f21-8d22-20e8da2fe6c5_1.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__ba0deae5-27ea-4f21-8d22-20e8da2fe6c5_2.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__ba0deae5-27ea-4f21-8d22-20e8da2fe6c5_3.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__c6d158ba-c995-4b27-bbb8-791af1beba99_0.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__c6d158ba-c995-4b27-bbb8-791af1beba99_2.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__c6d158ba-c995-4b27-bbb8-791af1beba99_3.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__dd8c08b5-53ab-41be-90a4-856851c02b78_1.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__dd8c08b5-53ab-41be-90a4-856851c02b78_3.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__e30a0fd2-8b19-4515-9316-a86e74683510_0.png
+│   │   │   ├── jessatsexyselfies_57308_create_an_ultra_realistic_image_of_a__e30a0fd2-8b19-4515-9316-a86e74683510_3.png
+│   │   │   ├── moreicon.svg
 │   │   │   ├── react.svg
 │   │   │   ├── sexysselfies_logo.png
+│   │   │   ├── shareicon.svg
 │   │   │   └── woman-in-black-tank-top-lying-on-bed-3859244.jpg
-│   │   ├── components
+│   │   ├── components/
+│   │   │   ├── UI/
+│   │   │   │   ├── Accordion.jsx
+│   │   │   │   ├── Button.jsx
+│   │   │   │   ├── Card.jsx
+│   │   │   │   ├── Chip.jsx
+│   │   │   │   ├── Dialog.jsx
+│   │   │   │   ├── Icons.jsx
+│   │   │   │   ├── LinearProgress.jsx
+│   │   │   │   ├── Snackbar.jsx
+│   │   │   │   ├── Typography.jsx
+│   │   │   │   └── ui.css
 │   │   │   ├── AdminHeader.css
 │   │   │   ├── AdminHeader.jsx
 │   │   │   ├── AppLayout.css
+│   │   │   ├── AppLayout.css.backup
 │   │   │   ├── AppLayout.jsx
+│   │   │   ├── AppLayout.jsx.backup
 │   │   │   ├── BottomNavigation.css
 │   │   │   ├── BottomNavigation.jsx
 │   │   │   ├── ChatInput.css
 │   │   │   ├── ChatInput.jsx
 │   │   │   ├── ConnectionModal.css
 │   │   │   ├── ConnectionModal.jsx
+│   │   │   ├── CreatorMainFooter.css
+│   │   │   ├── CreatorMainFooter.jsx
+│   │   │   ├── CreatorMainHeader.css
+│   │   │   ├── CreatorMainHeader.jsx
 │   │   │   ├── CreatorProfileModal.css
 │   │   │   ├── CreatorProfileModal.jsx
 │   │   │   ├── CreatorsKeepControl.css
@@ -255,6 +308,7 @@
 │   │   │   ├── ProtectedAdminRoute.jsx
 │   │   │   ├── ReadyToStartEarning.css
 │   │   │   ├── ReadyToStartEarning.jsx
+│   │   │   ├── RouteProtection.jsx
 │   │   │   ├── SafetyAndStandards.css
 │   │   │   ├── SafetyAndStandards.jsx
 │   │   │   ├── SexySafeControl.css
@@ -265,18 +319,18 @@
 │   │   │   ├── SwipeCard.jsx
 │   │   │   ├── SwipeChatUnlock.css
 │   │   │   ├── SwipeChatUnlock.jsx
+│   │   │   ├── SwipeConnectMonetize.css
+│   │   │   ├── SwipeConnectMonetize.jsx
 │   │   │   ├── SwipeMatchMonetize.css
 │   │   │   ├── SwipeMatchMonetize.jsx
 │   │   │   ├── WhyCreatorsLoveUs.css
 │   │   │   └── WhyCreatorsLoveUs.jsx
-│   │   ├── hooks
+│   │   ├── hooks/
 │   │   │   ├── useInfiniteScroll.js
 │   │   │   ├── useOfflineStatus.js
 │   │   │   ├── usePullToRefresh.js
 │   │   │   └── useSwipeGesture.js
-│   │   ├── index.css
-│   │   ├── main.jsx
-│   │   ├── pages
+│   │   ├── pages/
 │   │   │   ├── AdminContent.css
 │   │   │   ├── AdminContent.jsx
 │   │   │   ├── AdminDashboard.css
@@ -285,6 +339,8 @@
 │   │   │   ├── AdminLogin.jsx
 │   │   │   ├── AdminManagement.css
 │   │   │   ├── AdminManagement.jsx
+│   │   │   ├── AdminPayouts.css
+│   │   │   ├── AdminPayouts.jsx
 │   │   │   ├── AdminReports.css
 │   │   │   ├── AdminReports.jsx
 │   │   │   ├── AdminUsers.css
@@ -299,22 +355,36 @@
 │   │   │   ├── BrowseMembers.jsx
 │   │   │   ├── Chat.css
 │   │   │   ├── Chat.jsx
+│   │   │   ├── CreatorAnalytics.css
+│   │   │   ├── CreatorAnalytics.jsx
+│   │   │   ├── CreatorConnections.css
+│   │   │   ├── CreatorConnections.jsx
 │   │   │   ├── CreatorContentUpload.css
 │   │   │   ├── CreatorContentUpload.jsx
 │   │   │   ├── CreatorDashboard.css
 │   │   │   ├── CreatorDashboard.jsx
+│   │   │   ├── CreatorEarnings.css
+│   │   │   ├── CreatorEarnings.jsx
 │   │   │   ├── CreatorLogin.css
 │   │   │   ├── CreatorLogin.jsx
+│   │   │   ├── CreatorManageMembers.css
+│   │   │   ├── CreatorManageMembers.jsx
 │   │   │   ├── CreatorProfile.css
 │   │   │   ├── CreatorProfile.jsx
+│   │   │   ├── CreatorProfilePage.css
+│   │   │   ├── CreatorProfilePage.jsx
 │   │   │   ├── CreatorProfilePreview.css
 │   │   │   ├── CreatorProfilePreview.jsx
 │   │   │   ├── CreatorProfileSetup.css
 │   │   │   ├── CreatorProfileSetup.jsx
 │   │   │   ├── CreatorRegistration.css
 │   │   │   ├── CreatorRegistration.jsx
+│   │   │   ├── CreatorSettingsPage.css
+│   │   │   ├── CreatorSettingsPage.jsx
 │   │   │   ├── CreatorVerifyID.css
 │   │   │   ├── CreatorVerifyID.jsx
+│   │   │   ├── Favorites.css
+│   │   │   ├── Favorites.jsx
 │   │   │   ├── LandingPage.css
 │   │   │   ├── LandingPage.jsx
 │   │   │   ├── LandingPageV2.css
@@ -327,13 +397,19 @@
 │   │   │   ├── MemberProfilePage.jsx
 │   │   │   ├── MemberRegistration.css
 │   │   │   ├── MemberRegistration.jsx
+│   │   │   ├── MemberSettingsPage.css
+│   │   │   ├── MemberSettingsPage.jsx
 │   │   │   ├── Messages.css
 │   │   │   ├── Messages.jsx
 │   │   │   ├── MyConnections.css
-│   │   │   └── MyConnections.jsx
-│   │   ├── seeders
+│   │   │   ├── MyConnections.jsx
+│   │   │   ├── SearchCreators.css
+│   │   │   ├── SearchCreators.jsx
+│   │   │   ├── TrendingCreators.css
+│   │   │   └── TrendingCreators.jsx
+│   │   ├── seeders/
 │   │   │   └── createDemoAccounts.js
-│   │   ├── services
+│   │   ├── services/
 │   │   │   ├── api.config.js
 │   │   │   ├── auth.service.js
 │   │   │   ├── content.service.js
@@ -341,13 +417,39 @@
 │   │   │   ├── member.service.js
 │   │   │   ├── payment.service.js
 │   │   │   └── socket.service.js
-│   │   └── utils
-│   │       ├── cache.js
-│   │       ├── gestures.js
-│   │       ├── notifications.js
-│   │       └── storage.js
+│   │   ├── styles/
+│   │   │   └── responsive-widths.css
+│   │   ├── utils/
+│   │   │   ├── cache.js
+│   │   │   ├── gestures.js
+│   │   │   ├── mobileDetection.js
+│   │   │   ├── notifications.js
+│   │   │   └── storage.js
+│   │   ├── .DS_Store
+│   │   ├── index.css
+│   │   ├── main 2.jsx
+│   │   ├── main-simple-working.jsx
+│   │   └── main.jsx
+│   ├── .DS_Store
+│   ├── .env
+│   ├── favicon.ico
+│   ├── icon-192x192.png
+│   ├── icon-512x512.png
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
 │   └── vite.config.js
-├── project_tree.txt
-└── README.md
+├── .DS_Store
+├── .gitignore
+├── .nvmrc
+├── Brand basics.txt
+├── Core Spacing System (Mobile-First).txt
+├── eslint.config.js
+├── full_structure.txt
+├── package.json
+├── project_structure.txt
+├── README.md
+├── REALTIME_MESSAGING.md
+└── render.yaml
 
-28 directories, 323 files
+30 directories, 423 files

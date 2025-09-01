@@ -41,6 +41,8 @@
   background: var(--bg-800);
   border-top: 1px solid var(--border-600);
   padding-top: var(--space-3xl);
+  padding-bottom: 0;
+  margin-bottom: 0;
   position: relative;
   font-family: var(--font-sans);
 }
@@ -176,12 +178,12 @@
 }
 
 /* Footer Badges */
-.footer-badges {
+.mainfooter-badges {
   display: flex;
   gap: var(--space-md);
 }
 
-.badge {
+.mainfooter-badge {
   padding: 6px 12px;
   background: rgba(23, 210, 194, 0.1);
   border: 1px solid var(--brand-300);
@@ -222,7 +224,7 @@
     text-align: center;
   }
   
-  .footer-badges {
+  .mainfooter-badges {
     flex-wrap: wrap;
     justify-content: center;
   }
@@ -269,7 +271,7 @@
 /* Desktop Footer Spacing */
 @media (min-width: 1024px) {
   .mainfooter-container {
-    margin-top: 220px;
+    margin-top: 40px;
   }
 }
 
