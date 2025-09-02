@@ -3,6 +3,7 @@
 .admin-login-container {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: #0A0A0A;
@@ -104,6 +105,7 @@
   font-size: 16px;
   transition: all 0.2s ease;
   outline: none;
+  box-sizing: border-box;
 }
 
 .admin-input::placeholder {
@@ -267,9 +269,29 @@
 }
 
 /* Responsive */
+@media (max-width: 768px) {
+  .admin-login-container {
+    padding: 16px;
+  }
+  
+  .admin-login-wrapper {
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 480px) {
+  .admin-login-container {
+    padding: 12px;
+    min-height: 100vh;
+    justify-content: flex-start;
+    padding-top: 40px;
+  }
+  
   .admin-login-card {
     padding: 32px 24px;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .admin-login-header h1 {
@@ -278,5 +300,23 @@
   
   .logo-text {
     font-size: 24px;
+  }
+  
+  .admin-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-login-card {
+    padding: 24px 20px;
+  }
+  
+  .admin-login-header h1 {
+    font-size: 24px;
+  }
+  
+  .logo-text {
+    font-size: 20px;
   }
 }

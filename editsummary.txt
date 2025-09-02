@@ -287,6 +287,55 @@ api.post('/auth/creator/login')    // → /api/v1/auth/creator/login
 - Environment variable issues automatically handled
 - Comprehensive debug logging available for troubleshooting
 
-Last Updated: Current Session + API URL Resolution Fix
-Total Files Modified: 25
-Critical Issues Resolved: 13
+### 🚨 CRITICAL: DO NOT MODIFY CREATOR LOGIN FILES
+**Status**: ✅ CREATOR LOGIN NOW WORKING - DO NOT TOUCH THESE FILES
+
+**Protected Files** (do not modify without extreme caution):
+- `frontend/src/services/api.config.js` - API base URL configuration
+- `frontend/src/pages/CreatorLogin.jsx` - Creator login form and API calls
+- `frontend/src/services/auth.service.js` - Authentication service endpoints
+- `backend/src/controllers/auth.controller.js` - Authentication controllers
+- `backend/src/server.js` - Route mounting and CORS configuration
+
+**Reason**: These files contain the working Creator Login implementation. Any changes to API endpoints, base URLs, or authentication flow could break the login functionality.
+
+**If modifications are needed**: 
+1. Test thoroughly in development environment first
+2. Make incremental changes with version control
+3. Verify creator login still works after each change
+4. Keep backup of working versions
+
+### 15. Admin Login Page Fix - CSS and API Configuration
+**Files:** `frontend/src/pages/AdminLogin.jsx`, `frontend/src/pages/AdminLogin.css`
+
+**Issues Fixed:**
+- **API Configuration:** Changed from raw axios to configured api instance
+- **API Endpoint:** Fixed endpoint from `/api/admin/auth/login` to `/admin/auth/login`
+- **Response Handling:** Updated to work with api interceptor (removed `.data` wrapper)
+- **Token Storage:** Added proper token storage for admin authentication
+- **CSS Layout:** Fixed flex layout and responsive design issues
+- **Mobile Compatibility:** Enhanced responsive breakpoints and prevented iOS zoom
+
+**API Changes:**
+```javascript
+// BEFORE:
+import axios from 'axios';
+const response = await axios.post(`${apiUrl}/api/admin/auth/login`, formData);
+
+// AFTER:
+import api from '../services/api.config';
+const response = await api.post('/admin/auth/login', formData);
+```
+
+**CSS Improvements:**
+- Added `flex-direction: column` to main container
+- Enhanced mobile responsiveness (768px, 480px, 360px breakpoints)
+- Fixed input box sizing issues
+- Improved small screen layout
+- Prevented iOS input zoom with `font-size: 16px`
+
+**Expected Result:** Admin login page should now display properly with working authentication.
+
+Last Updated: Current Session + Admin Login Fix
+Total Files Modified: 27
+Critical Issues Resolved: 14

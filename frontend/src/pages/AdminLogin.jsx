@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api.config';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -33,19 +33,16 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
-      console.log('API URL:', apiUrl);
-      console.log('Full URL:', `${apiUrl}/api/admin/auth/login`);
+      console.log('Admin login - making API call to /admin/auth/login');
       
-      const response = await axios.post(
-        `${apiUrl}/api/admin/auth/login`,
-        formData
-      );
+      const response = await api.post('/admin/auth/login', formData);
 
-      if (response.data.success) {
+      if (response.success) {
         // Store admin token and data
-        localStorage.setItem('adminToken', response.data.token);
-        localStorage.setItem('adminData', JSON.stringify(response.data.admin));
+        localStorage.setItem('adminToken', response.token);
+        localStorage.setItem('adminData', JSON.stringify(response.admin));
+        localStorage.setItem('token', response.token); // For API requests
+        localStorage.setItem('userRole', 'admin');
         
         // Redirect to admin dashboard
         navigate('/admin');
@@ -53,7 +50,7 @@ const AdminLogin = () => {
     } catch (err) {
       console.error('Admin login error:', err);
       setError(
-        err.response?.data?.error || 
+        err.message || 
         'Login failed. Please check your credentials.'
       );
     } finally {
