@@ -200,7 +200,7 @@ const userViolationSchema = new mongoose.Schema({
 });
 
 // Indexes
-userViolationSchema.index({ user: 1 });
+// Note: 'user' field already has index via unique: true
 userViolationSchema.index({ currentStatus: 1 });
 userViolationSchema.index({ 'strikes.current': 1 });
 userViolationSchema.index({ suspendedUntil: 1 });

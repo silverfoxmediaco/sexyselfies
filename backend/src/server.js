@@ -45,8 +45,6 @@ const connectDB = async () => {
   const attemptConnection = async () => {
     try {
       const conn = await mongoose.connect(process.env.MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 45000,
       });
@@ -223,6 +221,18 @@ if (process.env.NODE_ENV === 'development') {
 // Custom request logger
 app.use(requestLogger);
 
+// Emergency debug middleware - log ALL requests
+app.use((req, res, next) => {
+  console.log('🚨 EMERGENCY DEBUG - Incoming request:');
+  console.log('Method:', req.method);
+  console.log('URL:', req.url);
+  console.log('Original URL:', req.originalUrl);
+  console.log('Body:', req.body);
+  console.log('Headers:', req.headers);
+  console.log('Timestamp:', new Date().toISOString());
+  next();
+});
+
 // ==========================================
 // API ROUTES
 // ==========================================
@@ -295,8 +305,14 @@ app.use(`${API_V1}/auth/login`, checkDatabaseConnection);
 app.use(`${API_V1}/auth/creator/register`, checkDatabaseConnection);
 
 // Mount routes with API versioning
+console.log('🚀 MOUNTING AUTH ROUTES at:', `${API_V1}/auth`);
 app.use(`${API_V1}/auth`, authRoutes);
+console.log('✅ Auth routes mounted successfully');
+
+console.log('🚀 MOUNTING CREATOR ROUTES at:', `${API_V1}/creators`);
 app.use(`${API_V1}/creators`, creatorRoutes);
+
+console.log('🚀 MOUNTING MEMBER ROUTES at:', `${API_V1}/members`);
 app.use(`${API_V1}/members`, memberRoutes);
 app.use(`${API_V1}/content`, contentRoutes);
 app.use(`${API_V1}/connections`, connectionRoutes);

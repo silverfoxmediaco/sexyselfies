@@ -588,8 +588,8 @@ const creatorProfileSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Indexes for performance
-creatorProfileSchema.index({ 'creator': 1 });
+// Indexes for performance  
+// Note: 'creator' field already has index via unique: true
 creatorProfileSchema.index({ 'analytics.realTime.todayEarnings': -1 });
 creatorProfileSchema.index({ 'gamification.monthlyRank': 1 });
 creatorProfileSchema.index({ 'gamification.creatorLevel': -1 });
