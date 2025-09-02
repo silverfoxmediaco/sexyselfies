@@ -27,6 +27,11 @@ const paymentRoutes = require('./routes/payment.routes');
 const publicRoutes = require('./routes/public.routes');
 const payoutRoutes = require('./routes/payout.routes');
 
+// Import new Creator Active Sales routes
+const creatorSalesRoutes = require('./routes/creatorSales.routes');
+const memberProfileRoutes = require('./routes/memberProfile.routes');
+const memberPrivacyRoutes = require('./routes/memberPrivacy.routes');
+
 // Import middleware
 const errorMiddleware = require('./middleware/error.middleware');
 const { requestLogger } = require('./middleware/logging.middleware');
@@ -49,33 +54,33 @@ const connectDB = async () => {
         socketTimeoutMS: 45000,
       });
       
-      console.log(`MongoDB Connected: ${conn.connection.host}`);
-      console.log(`Database Name: ${conn.connection.name}`);
+      console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+      console.log(`📦 Database Name: ${conn.connection.name}`);
       
       // Reset retry counter on successful connection
       connectionRetries = 0;
       
       // Set up connection event handlers
       mongoose.connection.on('error', (err) => {
-        console.error('MongoDB connection error:', err);
+        console.error('❌ MongoDB connection error:', err);
       });
       
       mongoose.connection.on('disconnected', () => {
-        console.log('MongoDB disconnected. Attempting to reconnect...');
+        console.log('⚠️ MongoDB disconnected. Attempting to reconnect...');
         setTimeout(attemptConnection, retryDelay);
       });
       
       return true;
     } catch (error) {
-      console.error(`MongoDB connection attempt ${connectionRetries + 1} failed:`, error.message);
+      console.error(`❌ MongoDB connection attempt ${connectionRetries + 1} failed:`, error.message);
       connectionRetries++;
       
       if (connectionRetries >= maxRetries) {
-        console.error('Max MongoDB connection retries reached. Server will continue but database operations will fail.');
+        console.error('❌ Max MongoDB connection retries reached. Server will continue but database operations will fail.');
         return false;
       }
       
-      console.log(`Retrying MongoDB connection in ${retryDelay / 1000} seconds...`);
+      console.log(`🔄 Retrying MongoDB connection in ${retryDelay / 1000} seconds...`);
       await new Promise(resolve => setTimeout(resolve, retryDelay));
       return attemptConnection();
     }
@@ -90,8 +95,6 @@ connectDB();
 // Database health check middleware
 const checkDatabaseConnection = (req, res, next) => {
   console.log('🔍 DATABASE CHECK for:', req.originalUrl);
-  console.log('🔍 MongoDB connection state:', mongoose.connection.readyState);
-  console.log('🔍 Connection states: 0=disconnected, 1=connected, 2=connecting, 3=disconnecting');
   
   if (mongoose.connection.readyState !== 1) {
     console.log('❌ DATABASE CHECK FAILED - Connection not ready');
@@ -102,7 +105,7 @@ const checkDatabaseConnection = (req, res, next) => {
     });
   }
   
-  console.log('✅ DATABASE CHECK PASSED - proceeding to next middleware');
+  console.log('✅ DATABASE CHECK PASSED');
   next();
 };
 
@@ -130,10 +133,6 @@ app.use(helmet({
 // CORS configuration with multiple origins
 const corsOptions = {
   origin: function (origin, callback) {
-    if (process.env.NODE_ENV === 'production' && !origin) {
-      return callback(null, true);
-    }
-    
     const allowedOrigins = [
       'http://localhost:5173',
       'http://localhost:5174',
@@ -144,11 +143,13 @@ const corsOptions = {
       process.env.MOBILE_URL
     ].filter(Boolean);
     
+    // Allow requests with no origin (mobile apps, Postman, etc)
     if (!origin) return callback(null, true);
     
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.warn(`⚠️ CORS blocked origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -170,7 +171,7 @@ const defaultLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 10, // Increased from 5 to 10 for testing
   message: 'Too many authentication attempts, please try again later.',
   skipSuccessfulRequests: true,
 });
@@ -180,13 +181,6 @@ const uploadLimiter = rateLimit({
   max: 10,
   message: 'Too many uploads, please try again later.',
 });
-
-// Apply rate limiting
-app.use('/api/', defaultLimiter);
-app.use('/api/v1/auth/register', authLimiter);
-app.use('/api/v1/auth/login', authLimiter);
-app.use('/api/v1/auth/creator/register', authLimiter);
-app.use('/api/v1/upload/', uploadLimiter);
 
 // ==========================================
 // BODY PARSING & DATA SANITIZATION
@@ -228,17 +222,18 @@ if (process.env.NODE_ENV === 'development') {
 // Custom request logger
 app.use(requestLogger);
 
-// Emergency debug middleware - log ALL requests
-app.use((req, res, next) => {
-  console.log('🚨 EMERGENCY DEBUG - Incoming request:');
-  console.log('Method:', req.method);
-  console.log('URL:', req.url);
-  console.log('Original URL:', req.originalUrl);
-  console.log('Body:', req.body);
-  console.log('Headers:', req.headers);
-  console.log('Timestamp:', new Date().toISOString());
-  next();
-});
+// Debug middleware for development
+if (process.env.NODE_ENV === 'development') {
+  app.use((req, res, next) => {
+    console.log('📨 Request:', {
+      method: req.method,
+      url: req.url,
+      body: req.body,
+      timestamp: new Date().toISOString()
+    });
+    next();
+  });
+}
 
 // ==========================================
 // API ROUTES
@@ -306,24 +301,45 @@ app.get(`${API_V1}/health`, async (req, res) => {
   }
 });
 
+// Apply rate limiting BEFORE routes
+app.use('/api/', defaultLimiter);
+app.use('/api/v1/auth/register', authLimiter);
+app.use('/api/v1/auth/login', authLimiter);
+app.use('/api/v1/auth/creator/register', authLimiter);
+app.use('/api/v1/auth/creator/login', authLimiter);
+app.use('/api/v1/upload/', uploadLimiter);
+
 // Apply database check to critical auth routes
-console.log('🔧 Adding database connection checks...');
+console.log('🔧 Configuring database checks for auth routes...');
 app.use(`${API_V1}/auth/register`, checkDatabaseConnection);
 app.use(`${API_V1}/auth/login`, checkDatabaseConnection);
 app.use(`${API_V1}/auth/creator/register`, checkDatabaseConnection);
 app.use(`${API_V1}/auth/creator/login`, checkDatabaseConnection);
-console.log('✅ Database connection checks added');
 
 // Mount routes with API versioning
-console.log('🚀 MOUNTING AUTH ROUTES at:', `${API_V1}/auth`);
+console.log('🚀 Mounting API routes...');
+
+// Core routes
 app.use(`${API_V1}/auth`, authRoutes);
-console.log('✅ Auth routes mounted successfully');
+console.log('✅ Auth routes mounted at:', `${API_V1}/auth`);
 
-console.log('🚀 MOUNTING CREATOR ROUTES at:', `${API_V1}/creators`);
 app.use(`${API_V1}/creators`, creatorRoutes);
+console.log('✅ Creator routes mounted at:', `${API_V1}/creators`);
 
-console.log('🚀 MOUNTING MEMBER ROUTES at:', `${API_V1}/members`);
 app.use(`${API_V1}/members`, memberRoutes);
+console.log('✅ Member routes mounted at:', `${API_V1}/members`);
+
+// Creator Active Sales System routes
+app.use(`${API_V1}/creator/sales`, creatorSalesRoutes);
+console.log('✅ Creator Sales routes mounted at:', `${API_V1}/creator/sales`);
+
+app.use(`${API_V1}/creator/members`, memberProfileRoutes);
+console.log('✅ Member Profile routes mounted at:', `${API_V1}/creator/members`);
+
+app.use(`${API_V1}/member/privacy`, memberPrivacyRoutes);
+console.log('✅ Member Privacy routes mounted at:', `${API_V1}/member/privacy`);
+
+// Additional routes
 app.use(`${API_V1}/content`, contentRoutes);
 app.use(`${API_V1}/connections`, connectionRoutes);
 app.use(`${API_V1}/transactions`, transactionRoutes);
@@ -335,11 +351,13 @@ app.use(`${API_V1}/payments`, paymentRoutes);
 app.use(`${API_V1}/public`, publicRoutes);
 app.use(`${API_V1}/payouts`, payoutRoutes);
 
+console.log('✅ All API routes mounted successfully');
+
 // Development-only seeding endpoint
 if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
   app.post(`${API_V1}/dev/seed-data`, async (req, res) => {
     try {
-      console.log('Seeding endpoint called...');
+      console.log('🌱 Seeding endpoint called...');
       const { seedCreators } = require('./scripts/seedCreators');
       const result = await seedCreators();
       
@@ -350,7 +368,7 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
         ...result
       });
     } catch (error) {
-      console.error('Seeding error:', error);
+      console.error('❌ Seeding error:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to seed database',
@@ -378,15 +396,30 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
 app.use('/webhooks', require('./routes/webhook.routes'));
 
 // ==========================================
+// ERROR HANDLING FOR API ROUTES
+// ==========================================
+
+// 404 handler for API routes ONLY
+app.use('/api', (req, res, next) => {
+  res.status(404).json({
+    success: false,
+    error: 'API endpoint not found',
+    path: req.originalUrl,
+    method: req.method
+  });
+});
+
+// ==========================================
 // SERVE FRONTEND IN PRODUCTION
 // ==========================================
 
-// Serve frontend static files in production
+// IMPORTANT: Frontend serving MUST come AFTER all API routes
 if (process.env.NODE_ENV === 'production') {
   const frontendBuildPath = path.join(__dirname, '..', '..', 'frontend', 'dist');
   
-  console.log('Serving frontend from:', frontendBuildPath);
+  console.log('📁 Serving frontend from:', frontendBuildPath);
   
+  // Serve static files
   app.use(express.static(frontendBuildPath, {
     maxAge: '1d',
     setHeaders: (res, filePath) => {
@@ -399,6 +432,7 @@ if (process.env.NODE_ENV === 'production') {
     }
   }));
   
+  // PWA specific files
   app.get('/manifest.json', (req, res) => {
     res.sendFile(path.join(frontendBuildPath, 'manifest.json'));
   });
@@ -407,38 +441,30 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(frontendBuildPath, 'service-worker.js'));
   });
   
-  // Catch-all for frontend routes (NOT API routes)
+  // Catch-all for frontend routes - MUST be last
   app.get('*', (req, res) => {
-    // Only handle non-API routes for SPA routing
-    if (!req.path.startsWith('/api/') && !req.path.startsWith('/webhooks/')) {
-      res.sendFile(path.join(frontendBuildPath, 'index.html'));
-    } else {
-      // This should never be reached if API routes are properly mounted
-      res.status(404).json({ 
+    // Double-check this isn't an API route
+    if (req.path.startsWith('/api/') || req.path.startsWith('/webhooks/')) {
+      return res.status(404).json({ 
         error: 'API endpoint not found',
-        path: req.path,
-        method: req.method 
+        path: req.path 
       });
     }
+    
+    // Serve the React app for all other routes
+    res.sendFile(path.join(frontendBuildPath, 'index.html'));
   });
 }
 
 // ==========================================
-// ERROR HANDLING
+// GLOBAL ERROR HANDLING
 // ==========================================
-
-// 404 handler
-app.use((req, res, next) => {
-  const error = new Error(`Not Found - ${req.originalUrl}`);
-  error.status = 404;
-  next(error);
-});
 
 // Global error handler (must be last)
 app.use(errorMiddleware);
 
 // ==========================================
-// START SERVER
+// START SERVER WITH WEBSOCKETS
 // ==========================================
 
 const PORT = process.env.PORT || 5002;
@@ -446,65 +472,71 @@ const PORT = process.env.PORT || 5002;
 // Create HTTP server and initialize Socket.io
 const server = createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: function (origin, callback) {
-      if (process.env.NODE_ENV === 'production' && !origin) {
-        return callback(null, true);
-      }
-      
-      const allowedOrigins = [
-        'http://localhost:5173',
-        'http://localhost:5174', 
-        'http://localhost:3000',
-        process.env.CLIENT_URL,
-        process.env.ADMIN_URL,
-        process.env.MOBILE_URL
-      ].filter(Boolean);
-      
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Authorization", "Content-Type"]
-  },
+  cors: corsOptions, // Use same CORS config
   transports: ['websocket', 'polling'],
   pingTimeout: 60000,
   pingInterval: 25000
 });
 
+// Make io globally available
+global.io = io;
+
 // Import and initialize socket handlers
-const { initializeCreatorSalesSockets } = require('./sockets/creatorSales.socket');
-const { initializeMemberActivitySockets } = require('./sockets/memberActivity.socket');
-const { initializeMessagingSockets } = require('./sockets/messaging.socket');
+try {
+  const { initializeCreatorSalesSockets } = require('./sockets/creatorSales.socket');
+  const { initializeMemberActivitySockets } = require('./sockets/memberActivity.socket');
+  const { initializeMessagingSockets } = require('./sockets/messaging.socket');
 
-// Initialize socket namespaces
-initializeCreatorSalesSockets(io);
-initializeMemberActivitySockets(io);
-initializeMessagingSockets(io);
+  // Initialize socket namespaces
+  initializeCreatorSalesSockets(io);
+  initializeMemberActivitySockets(io);
+  initializeMessagingSockets(io);
+  
+  console.log('✅ WebSocket handlers initialized');
+} catch (error) {
+  console.warn('⚠️ WebSocket initialization error:', error.message);
+  console.log('📝 WebSockets will be unavailable');
+}
 
+// Import and initialize scheduled jobs
+try {
+  const { initializeScheduledJobs } = require('./jobs');
+  initializeScheduledJobs();
+  console.log('✅ Scheduled jobs initialized');
+} catch (error) {
+  console.warn('⚠️ Scheduled jobs initialization error:', error.message);
+}
+
+// Start the server
 server.listen(PORT, () => {
   console.log('========================================');
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode`);
-  console.log(`Port: ${PORT}`);
-  console.log(`URL: ${process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : `http://localhost:${PORT}`}`);
-  console.log(`Health Check: /health`);
-  console.log(`API Base: /api/v1`);
-  console.log(`Socket.io: Enabled with real-time messaging`);
+  console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode`);
+  console.log(`📍 Port: ${PORT}`);
+  console.log(`🌐 URL: ${process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : `http://localhost:${PORT}`}`);
+  console.log(`💚 Health Check: /health`);
+  console.log(`📡 API Base: /api/v1`);
+  console.log(`🔌 Socket.io: Enabled with real-time messaging`);
   if (process.env.NODE_ENV === 'production') {
-    console.log(`Frontend: Serving from /frontend/dist`);
+    console.log(`📱 Frontend: Serving PWA from /frontend/dist`);
   }
+  console.log('========================================');
+  console.log('📋 Available endpoints:');
+  console.log('  Auth: /api/v1/auth');
+  console.log('  Creators: /api/v1/creators');
+  console.log('  Members: /api/v1/members');
+  console.log('  Creator Sales: /api/v1/creator/sales');
+  console.log('  Member Profiles: /api/v1/creator/members');
+  console.log('  Privacy: /api/v1/member/privacy');
   console.log('========================================');
 });
 
+// ==========================================
+// GRACEFUL SHUTDOWN HANDLERS
+// ==========================================
+
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
-  console.error('UNHANDLED REJECTION! Shutting down...');
+  console.error('❌ UNHANDLED REJECTION! Shutting down...');
   console.error(err.name, err.message);
   server.close(() => {
     process.exit(1);
@@ -513,14 +545,14 @@ process.on('unhandledRejection', (err) => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  console.error('UNCAUGHT EXCEPTION! Shutting down...');
+  console.error('❌ UNCAUGHT EXCEPTION! Shutting down...');
   console.error(err.name, err.message);
   process.exit(1);
 });
 
 // Graceful shutdown on SIGTERM
 process.on('SIGTERM', () => {
-  console.log('SIGTERM RECEIVED. Shutting down gracefully');
+  console.log('📴 SIGTERM RECEIVED. Shutting down gracefully');
   server.close(() => {
     mongoose.connection.close(false, () => {
       console.log('Process terminated');
@@ -530,7 +562,7 @@ process.on('SIGTERM', () => {
 
 // Graceful shutdown on SIGINT (Ctrl+C)
 process.on('SIGINT', () => {
-  console.log('SIGINT RECEIVED. Shutting down gracefully');
+  console.log('📴 SIGINT RECEIVED. Shutting down gracefully');
   server.close(() => {
     mongoose.connection.close(false, () => {
       console.log('Process terminated');
