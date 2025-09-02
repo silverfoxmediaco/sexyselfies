@@ -14,8 +14,12 @@ const sanitizeInput = (value) => {
 
 // Handle validation errors
 const handleValidationErrors = (req, res, next) => {
+  console.log('🔍 VALIDATION CHECK - URL:', req.originalUrl);
+  console.log('🔍 VALIDATION CHECK - Body:', req.body);
+  
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.log('❌ VALIDATION FAILED:', errors.array());
     return res.status(400).json({
       success: false,
       errors: errors.array().map(err => ({
@@ -24,6 +28,8 @@ const handleValidationErrors = (req, res, next) => {
       }))
     });
   }
+  
+  console.log('✅ VALIDATION PASSED - proceeding to controller');
   next();
 };
 
@@ -155,6 +161,11 @@ exports.validateCreatorRegistration = [
 
 // Login validation
 exports.validateLogin = [
+  (req, res, next) => {
+    console.log('🚀 LOGIN VALIDATION STARTED for:', req.originalUrl);
+    console.log('🚀 Request body:', req.body);
+    next();
+  },
   body('email')
     .trim()
     .isEmail()
