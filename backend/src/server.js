@@ -230,6 +230,22 @@ app.use(requestLogger);
 // API Version prefix
 const API_V1 = '/api/v1';
 
+// Root route for health checks and basic API info
+app.get('/', (req, res) => {
+  res.json({ 
+    name: 'SexySelfies API',
+    version: '1.0.0',
+    status: 'OK', 
+    message: 'API server is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    endpoints: {
+      health: '/health',
+      api: '/api/v1'
+    }
+  });
+});
+
 // Health checks (no rate limiting)
 app.get('/health', (req, res) => {
   res.json({ 
