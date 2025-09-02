@@ -405,11 +405,44 @@ exports.login = async (req, res, next) => {
         await Creator.create({
           user: user._id,
           displayName: user.email.split('@')[0],
+          birthDate: new Date('1995-01-01'),
+          age: 28,
           bio: '',
+          profileImage: 'default-avatar.jpg',
+          coverImage: '',
+          galleries: [],
           contentPrice: 2.99,
           isVerified: false,
+          verificationStatus: 'pending',
           profileComplete: false,
-          idVerificationSubmitted: false
+          idVerificationSubmitted: false,
+          verificationDocuments: [],
+          verification: {
+            status: 'pending'
+          },
+          stats: {
+            totalEarnings: 0,
+            monthlyEarnings: 0,
+            totalMatches: 0,
+            totalLikes: 0,
+            rating: 0,
+            ratingCount: 0
+          },
+          socialLinks: {},
+          preferences: {
+            minAge: 18,
+            maxAge: 99,
+            interestedIn: ['everyone']
+          },
+          location: {
+            type: 'Point',
+            coordinates: [],
+            city: '',
+            state: '',
+            country: 'United States'
+          },
+          lastActive: new Date(),
+          isPaused: false
         });
         additionalData.profileComplete = false;
         additionalData.isVerified = false;
@@ -515,17 +548,58 @@ exports.creatorLogin = async (req, res, next) => {
     
     if (!creator) {
       console.log('No creator profile found, creating one...');
+      const defaultDisplayName = user.email.split('@')[0];
+      console.log('Creating creator with displayName:', defaultDisplayName);
+      
       // Create creator profile if it doesn't exist
-      creator = await Creator.create({
-        user: user._id,
-        displayName: user.email.split('@')[0],
-        bio: '',
-        contentPrice: 2.99,
-        isVerified: false,
-        profileComplete: false,
-        verificationStatus: 'pending'
-      });
-      console.log('Created new creator profile:', creator._id);
+      try {
+        creator = await Creator.create({
+          user: user._id,
+          displayName: defaultDisplayName,
+          birthDate: new Date('1995-01-01'),
+          age: 28,
+          bio: '',
+          profileImage: 'default-avatar.jpg',
+          coverImage: '',
+          galleries: [],
+          contentPrice: 2.99,
+          isVerified: false,
+          verificationStatus: 'pending',
+          profileComplete: false,
+          idVerificationSubmitted: false,
+          verificationDocuments: [],
+          verification: {
+            status: 'pending'
+          },
+          stats: {
+            totalEarnings: 0,
+            monthlyEarnings: 0,
+            totalMatches: 0,
+            totalLikes: 0,
+            rating: 0,
+            ratingCount: 0
+          },
+          socialLinks: {},
+          preferences: {
+            minAge: 18,
+            maxAge: 99,
+            interestedIn: ['everyone']
+          },
+          location: {
+            type: 'Point',
+            coordinates: [],
+            city: '',
+            state: '',
+            country: 'United States'
+          },
+          lastActive: new Date(),
+          isPaused: false
+        });
+        console.log('Created new creator profile:', creator._id);
+      } catch (createError) {
+        console.error('Error creating creator profile:', createError);
+        throw createError;
+      }
     } else {
       console.log('Found existing creator profile:', creator._id);
       profileComplete = creator.profileComplete || false;
