@@ -6,7 +6,7 @@ import logo from '../assets/sexysselfies_logo.png';
 
 const SwipeConnectMonetize = () => {
   const navigate = useNavigate();
-  const [videoOpen, setVideoOpen] = useState(false);
+  // Removed videoOpen state - no longer needed
   const [counters, setCounters] = useState({ creators: 0, earned: 0, connections: 0 });
 
   useEffect(() => {
@@ -89,11 +89,14 @@ const SwipeConnectMonetize = () => {
                   <path d="M5 12h14m-7-7l7 7-7 7" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </button>
-              <button className="btn btn-secondary btn-large" onClick={() => setVideoOpen(true)}>
-                <svg className="btn-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 5v14l11-7z"/>
+              <button 
+                className="btn btn-secondary btn-large"
+                onClick={() => navigate('/creator/login')}
+              >
+                <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4m-5-4l5-5-5-5m5 5H3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span>Watch Demo</span>
+                <span>Already a Creator? Login Here</span>
               </button>
             </div>
 
@@ -124,25 +127,7 @@ const SwipeConnectMonetize = () => {
         </div>
       </section>
 
-      {/* Video Modal */}
-      {videoOpen && (
-        <div className="video-modal" onClick={() => setVideoOpen(false)}>
-          <div className="video-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setVideoOpen(false)}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M18 6L6 18M6 6l12 12" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-            <div className="video-placeholder">
-              <svg className="play-icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-              <h3>Demo Video Coming Soon</h3>
-              <p>See how SexySelfies works in action</p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Video Modal removed - replaced with creator login button */}
     </>
   );
 };

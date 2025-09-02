@@ -134,6 +134,14 @@ Fixed multiple critical issues with the ID verification system and creator login
 - **Cause:** Render static site not properly configured for SPA routing
 - **Solution:** Multiple redundant routing fixes to ensure compatibility
 
-Last Updated: Current Session + SPA Routing Fix
-Total Files Modified: 12
+### 11. Added Creator Login Button to Landing Page
+**File:** `frontend/src/components/SwipeConnectMonetize.jsx`
+- **Change:** Replaced "Watch Demo" button with "Already a Creator? Login Here" button
+- **Fix:** Changed onClick from opening video modal to navigating to `/creator/login`
+- **Fix:** Updated icon from play button to login icon
+- **Fix:** Removed unused video modal code and state
+- **Result:** Creators can now easily access login from the main landing page
+
+Last Updated: Current Session + Creator Login Button
+Total Files Modified: 13
 Critical Issues Resolved: 6
