@@ -14,7 +14,7 @@ class MemberService {
    */
   async getProfile() {
     try {
-      const response = await api.get('/v1/auth/me');
+      const response = await api.get('/auth/me');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -26,7 +26,7 @@ class MemberService {
    */
   async updateProfile(data) {
     try {
-      const response = await api.put('/v1/auth/profile', {
+      const response = await api.put('/auth/profile', {
         username: data.username,
         displayName: data.displayName
       });
@@ -60,14 +60,14 @@ class MemberService {
    */
   async getSwipeStack(params = {}) {
     try {
-      const response = await api.get('/v1/connections/stack', {
+      const response = await api.get('/connections/stack', {
         params
       });
       return response;
     } catch (error) {
       // If the first endpoint fails, try the alternative
       try {
-        const fallbackResponse = await api.get('/v1/member/discover', {
+        const fallbackResponse = await api.get('/member/discover', {
           params
         });
         return fallbackResponse;
@@ -82,7 +82,7 @@ class MemberService {
    */
   async swipeAction(creatorId, action) {
     try {
-      const response = await api.post('/v1/connections/swipe', {
+      const response = await api.post('/connections/swipe', {
         creatorId,
         action // 'like', 'pass', 'superlike'
       });

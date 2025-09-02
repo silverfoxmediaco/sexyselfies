@@ -41,8 +41,8 @@ const MemberProfilePage = () => {
   const fetchMemberData = async () => {
     setLoading(true);
     try {
-      const userData = await api.get('/v1/auth/me');
-      console.log('Full user data from /v1/auth/me:', userData);
+      const userData = await api.get('/auth/me');
+      console.log('Full user data from /auth/me:', userData);
       console.log('Username specifically:', userData.username);
       console.log('DisplayName specifically:', userData.displayName);
       
@@ -123,7 +123,7 @@ const MemberProfilePage = () => {
 
   const handleSaveProfile = async () => {
     try {
-      await api.put('/v1/auth/profile', {
+      await api.put('/auth/profile', {
         username: editedProfile.username,
         email: editedProfile.email
       });
@@ -143,7 +143,7 @@ const MemberProfilePage = () => {
     
     // Save notification preferences to API
     try {
-      await api.put('/v1/members/preferences', {
+      await api.put('/members/preferences', {
         notifications: newNotifications
       });
     } catch (err) {

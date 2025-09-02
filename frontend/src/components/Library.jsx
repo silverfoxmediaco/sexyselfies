@@ -9,6 +9,7 @@ import MainHeader from './MainHeader';
 import MainFooter from './MainFooter';
 import BottomNavigation from './BottomNavigation';
 import { useIsDesktop, useIsMobile, getUserRole } from '../utils/mobileDetection';
+import api from '../services/api.config';
 import './Library.css';
 
 const Library = () => {
@@ -30,18 +31,8 @@ const Library = () => {
   const fetchPurchases = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/v1/member/library', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setPurchases(data.purchases || []);
-      } else {
-        setPurchases([]);
-      }
+      const data = await api.get('/member/library');
+      setPurchases(data.purchases || []);
     } catch (err) {
       console.error('Failed to fetch purchases:', err);
       setPurchases([]);

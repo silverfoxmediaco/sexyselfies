@@ -36,10 +36,10 @@ const MemberProfile = ({ memberId, onBack }) => {
       
       if (memberId) {
         // Fetch specific member data from API
-        memberData = await api.get(`/v1/members/${memberId}`);
+        memberData = await api.get(`/members/${memberId}`);
       } else {
         // If no memberId provided, fetch current user data
-        memberData = await api.get('/v1/auth/me');
+        memberData = await api.get('/auth/me');
       }
       
       // Transform API data to component structure
@@ -97,7 +97,7 @@ const MemberProfile = ({ memberId, onBack }) => {
       
       // Fallback to current user data if member fetch fails
       try {
-        const userData = await api.get('/v1/auth/me');
+        const userData = await api.get('/auth/me');
         const fallbackMember = {
           id: userData._id || 'user-1',
           username: userData.username || 'User',

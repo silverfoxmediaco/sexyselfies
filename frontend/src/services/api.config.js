@@ -1,8 +1,26 @@
 import axios from 'axios';
 
 // Base API URL from environment or fallback to production
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onrender.com/api/v1';
+let API_BASE_URL = import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onrender.com/api/v1';
+
+// Ensure API_BASE_URL includes /v1 if it's missing
+if (!API_BASE_URL.includes('/v1')) {
+  if (API_BASE_URL.endsWith('/api')) {
+    API_BASE_URL += '/v1';
+  } else if (API_BASE_URL.endsWith('/')) {
+    API_BASE_URL += 'api/v1';
+  } else {
+    API_BASE_URL += '/api/v1';
+  }
+}
+
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'wss://sexyselfies-api.onrender.com';
+
+// Debug logging for API configuration
+console.log('🔧 API Configuration Debug:');
+console.log('VITE_API_URL env var:', import.meta.env.VITE_API_URL);
+console.log('Final API_BASE_URL (after v1 check):', API_BASE_URL);
+console.log('SOCKET_URL:', SOCKET_URL);
 
 // Create axios instance with default config
 const api = axios.create({

@@ -72,7 +72,10 @@ const CreatorLogin = () => {
     setIsLoading(true);
     
     try {
-      console.log('Making API request to /auth/creator/login');
+      console.log('=== API DEBUG INFO ===');
+      console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
+      console.log('Making API request to: /auth/creator/login');
+      console.log('======================');
       const response = await api.post('/auth/creator/login', formData);
       console.log('API response received:', response);
       

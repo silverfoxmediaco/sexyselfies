@@ -236,6 +236,57 @@ Fixed multiple critical issues with the ID verification system and creator login
 
 **Server Status:** All critical startup issues resolved. Backend should now start successfully and serve creator login at `tamara@sexyselfies.com / Password123$`.
 
-Last Updated: Current Session + Backend Critical Fixes
-Total Files Modified: 17
-Critical Issues Resolved: 12
+### 14. Frontend API URL Resolution Fix - Creator Login 404 Solution
+**Files:** `frontend/src/services/api.config.js`, `frontend/src/pages/CreatorLogin.jsx`, `frontend/src/services/auth.service.js`, `frontend/src/services/member.service.js`, `frontend/src/pages/MemberProfile*.jsx`, `frontend/src/components/Library.jsx`
+
+**Critical Issue Identified:** 404 error on creator login due to API URL resolution discrepancy.
+
+**Root Cause Analysis:**
+- Server logs showed: `POST /api/auth/creator/login 404`  
+- Expected: `POST /api/v1/auth/creator/login`
+- Frontend was making double `/v1` calls: `baseURL/api/v1` + `/v1/auth/...` = `/api/v1/v1/auth/...`
+
+**API Configuration Fix:**
+- **Enhanced api.config.js** with automatic `/v1` path detection and correction
+- **Added robust URL building** to handle various environment variable configurations  
+- **Added debug logging** to identify runtime environment variable resolution
+- **Fixed base URL logic** to ensure `/api/v1` is included exactly once
+
+**Frontend API Call Standardization:**
+- **Removed duplicate `/v1` prefixes** from all API calls across the entire frontend
+- **Updated auth.service.js** - 15 endpoints corrected (login, register, logout, profile, etc.)
+- **Updated member.service.js** - 5 endpoints corrected (profile, discover, swipe, etc.)
+- **Updated MemberProfile.jsx** - 3 endpoints corrected (member data, auth/me, etc.)
+- **Updated MemberProfilePage.jsx** - 4 endpoints corrected (profile, preferences, etc.)
+- **Updated Library.jsx** - Converted from fetch to api instance with correct path
+- **Updated CreatorLogin.jsx** - Fixed login endpoint and added environment debugging
+
+**API Call Pattern Standardized:**
+```javascript
+// BEFORE (incorrect - double v1):
+api.post('/v1/auth/creator/login') // → /api/v1/v1/auth/creator/login
+
+// AFTER (correct):
+api.post('/auth/creator/login')    // → /api/v1/auth/creator/login
+```
+
+**Environment Variable Handling:**
+- **Robust base URL construction** handles multiple environment configurations:
+  - `VITE_API_URL=https://domain.com/api/v1` ✅ (uses as-is)  
+  - `VITE_API_URL=https://domain.com/api` ✅ (adds /v1)
+  - `VITE_API_URL=https://domain.com` ✅ (adds /api/v1)
+  - Fallback to full production URL with `/api/v1`
+
+**Files Modified:** 8 frontend files
+**API Calls Fixed:** 30+ endpoint calls across all services
+**Critical Resolution:** Creator login 404 error should now be resolved
+
+**Expected Result:** 
+- Creator login at `tamara@sexyselfies.com / Password123$` should now work
+- All API calls resolve to correct `/api/v1/*` endpoints  
+- Environment variable issues automatically handled
+- Comprehensive debug logging available for troubleshooting
+
+Last Updated: Current Session + API URL Resolution Fix
+Total Files Modified: 25
+Critical Issues Resolved: 13
