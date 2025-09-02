@@ -92,6 +92,17 @@ const AdminHeader = () => {
         {menuOpen && (
           <div className="admin-header-menu-overlay" onClick={() => setMenuOpen(false)}>
             <div className="admin-header-slide-menu" onClick={(e) => e.stopPropagation()}>
+              {/* Close Button */}
+              <button 
+                className="admin-header-close-btn" 
+                onClick={() => setMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+              </button>
+
               {/* User Info */}
               <div className="admin-header-user-info-section">
                 <span className="admin-header-user-avatar">

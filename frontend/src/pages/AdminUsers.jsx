@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdminHeader from '../components/AdminHeader';
-import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
@@ -200,8 +199,6 @@ const AdminUsers = () => {
 
   return (
     <div className="admin-users-container">
-      {/* Desktop Header */}
-      {isDesktop && <MainHeader />}
       <AdminHeader />
       
       {/* Header */}

@@ -84,6 +84,35 @@
   flex-direction: column;
 }
 
+/* Close Button */
+.admin-header-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: #C7C7CC;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  z-index: 10;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-header-close-btn:hover {
+  background: #1C1C1E;
+  color: #17D2C2;
+}
+
+.admin-header-close-btn:active {
+  background: #2A2A2C;
+}
+
 @keyframes adminHeaderSlideInFromRight {
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
@@ -91,7 +120,7 @@
 
 /* User Info Section */
 .admin-header-user-info-section {
-  padding: 24px;
+  padding: 24px 64px 24px 24px; /* Extra right padding for close button */
   background: #1C1C1E;
   border-bottom: 1px solid #2A2A2C;
   display: flex;

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api.config';
-import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
@@ -60,8 +59,6 @@ const AdminLogin = () => {
 
   return (
     <div className="admin-login-container">
-      {/* Desktop Header */}
-      {isDesktop && <MainHeader />}
       <div className="admin-login-wrapper">
         <div className="admin-login-card">
           {/* Logo and Title */}
