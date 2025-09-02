@@ -142,6 +142,48 @@ Fixed multiple critical issues with the ID verification system and creator login
 - **Fix:** Removed unused video modal code and state
 - **Result:** Creators can now easily access login from the main landing page
 
-Last Updated: Current Session + Creator Login Button
-Total Files Modified: 13
-Critical Issues Resolved: 6
+### 12. Fixed Creator Login 500 Error and Flow Issues
+**Files:** `backend/src/controllers/auth.controller.js`, `backend/src/server.js`, `frontend/src/pages/CreatorLogin.css`
+
+**Backend Controller Fixes:**
+- **Enhanced creatorLogin function** with comprehensive debug logging
+- **Fixed response format** to match frontend expectations
+- **Added consistent data structure** with user, creator, and token data
+- **Improved error handling** with detailed logging for troubleshooting
+- **Fixed cookie settings** and manual response creation instead of helper function
+
+**CORS Configuration:**
+- **Added explicit frontend domain** `https://sexyselfies-frontend.onrender.com` to allowed origins
+- **Ensured credentials support** for cookie-based authentication
+
+**Frontend CSS Fix:**
+- **Increased max-width** from 480px to 600px for better desktop viewing
+- **Maintained mobile responsiveness** with existing breakpoints
+
+**Expected Response Format (Fixed):**
+```json
+{
+  "success": true,
+  "token": "jwt-token",
+  "user": {
+    "id": "user-id", 
+    "email": "email",
+    "role": "creator",
+    "displayName": "name"
+  },
+  "creator": {
+    "id": "creator-id",
+    "displayName": "name", 
+    "isVerified": false,
+    "profileComplete": false
+  },
+  "creatorId": "creator-id",
+  "displayName": "name",
+  "isVerified": false,
+  "profileComplete": false
+}
+```
+
+Last Updated: Current Session + Creator Login Fixes
+Total Files Modified: 16
+Critical Issues Resolved: 7

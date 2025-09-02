@@ -133,6 +133,7 @@ const corsOptions = {
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:3000',
+      'https://sexyselfies-frontend.onrender.com',
       process.env.CLIENT_URL,
       process.env.ADMIN_URL,
       process.env.MOBILE_URL

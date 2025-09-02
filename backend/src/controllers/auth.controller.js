@@ -452,43 +452,59 @@ exports.login = async (req, res, next) => {
 // @access  Public
 exports.creatorLogin = async (req, res, next) => {
   try {
+    console.log('=== CREATOR LOGIN REQUEST ===');
+    console.log('Request body:', req.body);
+    console.log('Headers:', req.headers);
+    
     const { email, password } = req.body;
 
     // Validate email & password
     if (!email || !password) {
+      console.log('ERROR: Missing email or password');
       return res.status(400).json({
         success: false,
         error: 'Please provide an email and password'
       });
     }
 
+    console.log('Looking for creator user with email:', email);
+    
     // Check for user with creator role
     const user = await User.findOne({ email, role: 'creator' }).select('+password');
     
     if (!user) {
+      console.log('ERROR: No creator user found with email:', email);
       return res.status(401).json({
         success: false,
         error: 'Invalid creator credentials'
       });
     }
 
+    console.log('Found creator user:', user.email, 'Role:', user.role);
+
     // Check if password matches
     const isMatch = await user.matchPassword(password);
     
     if (!isMatch) {
+      console.log('ERROR: Password does not match');
       return res.status(401).json({
         success: false,
         error: 'Invalid credentials'
       });
     }
 
+    console.log('Password matches, checking user status...');
+
     // Check if user is active
     if (user.isActive === false) {
+      console.log('ERROR: User account is deactivated');
       return res.status(401).json({
         success: false,
         error: 'Account is deactivated. Please contact support.'
       });
     }
+
+    console.log('User is active, looking for creator profile...');
 
     // Check creator profile
     let creator = await Creator.findOne({ user: user._id });
@@ -498,6 +514,7 @@ exports.creatorLogin = async (req, res, next) => {
     let needsIdVerification = true;
     
     if (!creator) {
+      console.log('No creator profile found, creating one...');
       // Create creator profile if it doesn't exist
       creator = await Creator.create({
         user: user._id,
@@ -506,39 +523,81 @@ exports.creatorLogin = async (req, res, next) => {
         contentPrice: 2.99,
         isVerified: false,
         profileComplete: false,
-        idVerificationSubmitted: false
+        verificationStatus: 'pending'
       });
+      console.log('Created new creator profile:', creator._id);
     } else {
+      console.log('Found existing creator profile:', creator._id);
       profileComplete = creator.profileComplete || false;
       isVerified = creator.isVerified || false;
-      needsIdVerification = !creator.idVerificationSubmitted;
+      needsIdVerification = !creator.verificationSubmittedAt;
       
-      // Check if CreatorProfile exists
-      if (isVerified && !profileComplete) {
-        const creatorProfile = await CreatorProfile.findOne({ creator: creator._id });
-        if (!creatorProfile) {
-          profileComplete = false;
-        }
-      }
+      console.log('Creator status:', { profileComplete, isVerified, needsIdVerification });
     }
 
-    // Update last login
+    // Update last login and email verification
     user.lastLogin = Date.now();
+    user.isEmailVerified = true;
     await user.save();
 
-    const additionalData = {
-      profileComplete,
+    console.log('Preparing response data...');
+
+    // Prepare response data with consistent format
+    const responseData = {
+      success: true,
+      token: user.getSignedJwtToken(),
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        displayName: creator.displayName || user.email.split('@')[0]
+      },
+      creator: {
+        id: creator._id,
+        displayName: creator.displayName,
+        profileImage: creator.profileImage,
+        isVerified,
+        profileComplete
+      },
+      creatorId: creator._id,
+      displayName: creator.displayName,
       isVerified,
-      needsIdVerification,
-      creatorId: creator._id
+      profileComplete,
+      needsIdVerification
     };
 
-    sendTokenResponse(user, 200, res, additionalData);
+    console.log('Sending successful response:', {
+      success: responseData.success,
+      userId: responseData.user.id,
+      creatorId: responseData.creatorId,
+      displayName: responseData.displayName
+    });
+
+    // Set cookie and send response
+    const options = {
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      httpOnly: true
+    };
+
+    if (process.env.NODE_ENV === 'production') {
+      options.secure = true;
+    }
+
+    res
+      .status(200)
+      .cookie('token', responseData.token, options)
+      .json(responseData);
+
   } catch (error) {
-    console.error('Creator login error:', error);
+    console.error('=== CREATOR LOGIN ERROR ===');
+    console.error('Error type:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message || 'Login failed. Please try again.',
+      ...(process.env.NODE_ENV === 'development' && { details: error.stack })
     });
   }
 };
