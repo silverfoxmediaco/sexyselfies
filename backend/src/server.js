@@ -407,12 +407,19 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(frontendBuildPath, 'service-worker.js'));
   });
   
+  // Catch-all for frontend routes (NOT API routes)
   app.get('*', (req, res) => {
-    if (req.path.startsWith('/api/') || req.path.startsWith('/webhooks/')) {
-      return res.status(404).json({ error: 'API endpoint not found' });
+    // Only handle non-API routes for SPA routing
+    if (!req.path.startsWith('/api/') && !req.path.startsWith('/webhooks/')) {
+      res.sendFile(path.join(frontendBuildPath, 'index.html'));
+    } else {
+      // This should never be reached if API routes are properly mounted
+      res.status(404).json({ 
+        error: 'API endpoint not found',
+        path: req.path,
+        method: req.method 
+      });
     }
-    
-    res.sendFile(path.join(frontendBuildPath, 'index.html'));
   });
 }
 
