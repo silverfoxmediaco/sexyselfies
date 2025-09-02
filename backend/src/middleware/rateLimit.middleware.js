@@ -1,3 +1,5 @@
+// backend/src/middleware/rateLimit.middleware.js
+
 const rateLimit = require('express-rate-limit');
 
 // Optional Redis support - only load if available
@@ -52,22 +54,24 @@ const createRateLimiter = (options = {}) => {
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    skipSuccessfulRequests: false,
-    keyGenerator: (req) => {
-      // Use user ID if authenticated, otherwise use IP
-      // Handle IPv6 addresses properly
-      if (req.user?.id) {
-        return req.user.id;
-      }
-      // For IPv6, use x-forwarded-for or fall back to a fixed string
-      return req.headers['x-forwarded-for']?.split(',')[0] || 
-             req.connection?.remoteAddress || 
-             req.ip || 
-             'anonymous';
-    }
+    skipSuccessfulRequests: false
   };
 
   const limiterOptions = { ...defaultOptions, ...options };
+
+  // Only add custom keyGenerator if we need user-based limiting
+  if (options.useUserId) {
+    limiterOptions.keyGenerator = (req) => {
+      // Use user ID if authenticated
+      if (req.user?.id) {
+        return `user_${req.user.id}`;
+      }
+      // Otherwise use default IP handling (which handles IPv6 properly)
+      return req.ip;
+    };
+  }
+  // If no custom key generator needed, express-rate-limit will use its default
+  // which properly handles both IPv4 and IPv6
 
   // Use Redis store if available, otherwise use memory store
   if (RedisStore && redisClient && redisClient.status === 'ready') {
@@ -131,7 +135,8 @@ exports.contentCreationLimiter = createRateLimiter({
 exports.messageLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   max: 30, // 30 messages per minute
-  message: 'Too many messages sent, please slow down.'
+  message: 'Too many messages sent, please slow down.',
+  useUserId: true // Rate limit by user ID if available
 });
 
 // Rate limiter for payments
@@ -152,7 +157,8 @@ exports.searchLimiter = createRateLimiter({
 exports.swipeLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 1000, // 1000 swipes per hour
-  message: 'Too many swipes, please take a break.'
+  message: 'Too many swipes, please take a break.',
+  useUserId: true // Rate limit by user ID
 });
 
 // Rate limiter for reports
@@ -166,11 +172,13 @@ exports.reportLimiter = createRateLimiter({
 exports.webhookLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   max: 100,
+  message: 'Too many webhook requests.',
+  // Webhooks should use IP-based limiting
   keyGenerator: (req) => {
-    // Use webhook signature or source IP
-    return req.headers['x-webhook-signature'] || req.ip;
-  },
-  message: 'Too many webhook requests.'
+    // Use webhook signature if available, otherwise IP
+    const signature = req.headers['x-webhook-signature'];
+    return signature ? `webhook_${signature}` : req.ip;
+  }
 });
 
 // ==========================================
@@ -190,31 +198,44 @@ exports.rateLimiter = (options = {}) => {
 // ==========================================
 
 /**
- * Rate limiter based on user tier/subscription
+ * Rate limiter based on user verification level (not subscription tier)
+ * SexySelfies doesn't use subscriptions - only micro-transactions
  */
 exports.tieredRateLimiter = (req, res, next) => {
-  let maxRequests = 100; // Default for free users
+  let maxRequests = 100; // Default for unverified users
   
   if (req.user) {
-    switch (req.user.subscriptionTier) {
-      case 'premium':
-        maxRequests = 1000;
-        break;
-      case 'pro':
-        maxRequests = 500;
-        break;
-      case 'basic':
-        maxRequests = 200;
-        break;
-      default:
-        maxRequests = 100;
+    // Check creator verification level
+    if (req.user.role === 'creator') {
+      switch (req.user.verificationLevel) {
+        case 'vip':
+          maxRequests = 1000;
+          break;
+        case 'premium':
+          maxRequests = 500;
+          break;
+        case 'verified':
+          maxRequests = 200;
+          break;
+        default:
+          maxRequests = 100;
+      }
+    }
+    // Members get standard limits
+    else if (req.user.role === 'member') {
+      maxRequests = 150;
+    }
+    // Admins get higher limits
+    else if (req.user.role === 'admin') {
+      maxRequests = 2000;
     }
   }
   
   const limiter = createRateLimiter({
     windowMs: 15 * 60 * 1000,
     max: maxRequests,
-    message: `Rate limit exceeded for your subscription tier. Upgrade for higher limits.`
+    message: `Rate limit exceeded for your account level. Contact support for higher limits.`,
+    useUserId: true
   });
   
   return limiter(req, res, next);
@@ -226,18 +247,13 @@ exports.tieredRateLimiter = (req, res, next) => {
 
 /**
  * Strict IP-based rate limiting (ignores user authentication)
+ * Uses express-rate-limit's default IP handling for IPv4/IPv6 support
  */
 exports.ipRateLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
   max: 50,
-  keyGenerator: (req) => {
-    // Handle IPv6 addresses properly
-    return req.headers['x-forwarded-for']?.split(',')[0] || 
-           req.connection?.remoteAddress || 
-           req.ip || 
-           'anonymous';
-  },
   message: 'Too many requests from this IP address.'
+  // No custom keyGenerator - use default IP handling
 });
 
 // ==========================================
