@@ -59,19 +59,8 @@ const createRateLimiter = (options = {}) => {
 
   const limiterOptions = { ...defaultOptions, ...options };
 
-  // Only add custom keyGenerator if we need user-based limiting
-  if (options.useUserId) {
-    limiterOptions.keyGenerator = (req) => {
-      // Use user ID if authenticated
-      if (req.user?.id) {
-        return `user_${req.user.id}`;
-      }
-      // Otherwise use default IP handling (which handles IPv6 properly)
-      return req.ip;
-    };
-  }
-  // If no custom key generator needed, express-rate-limit will use its default
-  // which properly handles both IPv4 and IPv6
+  // Remove custom keyGenerator to avoid IPv6 issues
+  // express-rate-limit handles IPv4/IPv6 properly by default
 
   // Use Redis store if available, otherwise use memory store
   if (RedisStore && redisClient && redisClient.status === 'ready') {
@@ -135,8 +124,7 @@ exports.contentCreationLimiter = createRateLimiter({
 exports.messageLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   max: 30, // 30 messages per minute
-  message: 'Too many messages sent, please slow down.',
-  useUserId: true // Rate limit by user ID if available
+  message: 'Too many messages sent, please slow down.'
 });
 
 // Rate limiter for payments
@@ -157,8 +145,7 @@ exports.searchLimiter = createRateLimiter({
 exports.swipeLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 1000, // 1000 swipes per hour
-  message: 'Too many swipes, please take a break.',
-  useUserId: true // Rate limit by user ID
+  message: 'Too many swipes, please take a break.'
 });
 
 // Rate limiter for reports
@@ -172,13 +159,7 @@ exports.reportLimiter = createRateLimiter({
 exports.webhookLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   max: 100,
-  message: 'Too many webhook requests.',
-  // Webhooks should use IP-based limiting
-  keyGenerator: (req) => {
-    // Use webhook signature if available, otherwise IP
-    const signature = req.headers['x-webhook-signature'];
-    return signature ? `webhook_${signature}` : req.ip;
-  }
+  message: 'Too many webhook requests.'
 });
 
 // ==========================================
@@ -234,8 +215,7 @@ exports.tieredRateLimiter = (req, res, next) => {
   const limiter = createRateLimiter({
     windowMs: 15 * 60 * 1000,
     max: maxRequests,
-    message: `Rate limit exceeded for your account level. Contact support for higher limits.`,
-    useUserId: true
+    message: `Rate limit exceeded for your account level. Contact support for higher limits.`
   });
   
   return limiter(req, res, next);

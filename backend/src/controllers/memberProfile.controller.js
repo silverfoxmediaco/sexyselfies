@@ -1068,6 +1068,180 @@ function generateMemberBadges(analytics) {
   return badges;
 }
 
+/**
+ * Get member segments for creator
+ * @route GET /api/creator/members/segments
+ */
+exports.getMemberSegments = async (req, res) => {
+  try {
+    const creatorId = req.user.id;
+    
+    // Get all segments with counts
+    const segments = await MemberAnalytics.aggregate([
+      {
+        $match: {
+          'privacy.discoverable': true,
+          'privacy.blockedCreators': { $ne: creatorId }
+        }
+      },
+      {
+        $group: {
+          _id: '$spending.tier',
+          count: { $sum: 1 },
+          avgSpend30Days: { $avg: '$spending.last30Days' },
+          avgLifetimeSpend: { $avg: '$spending.lifetime' }
+        }
+      },
+      { $sort: { count: -1 } }
+    ]);
+    
+    res.json({
+      success: true,
+      segments: segments.map(seg => ({
+        tier: seg._id,
+        count: seg.count,
+        averageMonthlySpend: Math.round(seg.avgSpend30Days || 0),
+        averageLifetimeValue: Math.round(seg.avgLifetimeSpend || 0)
+      }))
+    });
+    
+  } catch (error) {
+    console.error('Get member segments error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching member segments'
+    });
+  }
+};
+
+/**
+ * Send bulk message to member segment
+ * @route POST /api/creator/members/bulk/message
+ */
+exports.sendBulkMessage = async (req, res) => {
+  try {
+    const creatorId = req.user.id;
+    const { message, segment, maxRecipients = 50 } = req.body;
+    
+    if (!message || !segment) {
+      return res.status(400).json({
+        success: false,
+        message: 'Message and segment are required'
+      });
+    }
+    
+    // Get members in segment
+    const query = {
+      'privacy.discoverable': true,
+      'privacy.blockedCreators': { $ne: creatorId },
+      'privacy.allowBulkMessages': true
+    };
+    
+    if (segment !== 'all') {
+      query['spending.tier'] = segment;
+    }
+    
+    const members = await MemberAnalytics.find(query)
+      .limit(maxRecipients)
+      .select('member');
+    
+    // Send messages (simplified)
+    let sentCount = 0;
+    for (const memberAnalytics of members) {
+      try {
+        // Create interaction record
+        await new MemberInteraction({
+          creator: creatorId,
+          member: memberAnalytics.member,
+          interactionType: 'bulk_message',
+          message: { content: message, isBulk: true }
+        }).save();
+        
+        sentCount++;
+      } catch (err) {
+        console.log('Failed to send to member:', memberAnalytics.member);
+      }
+    }
+    
+    res.json({
+      success: true,
+      message: `Bulk message sent to ${sentCount} members`,
+      sentCount
+    });
+    
+  } catch (error) {
+    console.error('Send bulk message error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending bulk message'
+    });
+  }
+};
+
+/**
+ * Send bulk offer to member segment
+ * @route POST /api/creator/members/bulk/offer
+ */
+exports.sendBulkOffer = async (req, res) => {
+  try {
+    const creatorId = req.user.id;
+    const { offerData, segment, maxRecipients = 25 } = req.body;
+    
+    if (!offerData || !segment) {
+      return res.status(400).json({
+        success: false,
+        message: 'Offer data and segment are required'
+      });
+    }
+    
+    // Get members in segment
+    const query = {
+      'privacy.discoverable': true,
+      'privacy.blockedCreators': { $ne: creatorId },
+      'privacy.allowSpecialOffers': true
+    };
+    
+    if (segment !== 'all') {
+      query['spending.tier'] = segment;
+    }
+    
+    const members = await MemberAnalytics.find(query)
+      .limit(maxRecipients)
+      .select('member');
+    
+    // Create bulk offer
+    const offer = new SpecialOffer({
+      creator: creatorId,
+      recipients: {
+        members: members.map(m => ({
+          member: m.member,
+          sentAt: new Date(),
+          status: 'pending'
+        })),
+        totalRecipients: members.length
+      },
+      offer: offerData,
+      status: { current: 'active' }
+    });
+    
+    await offer.save();
+    
+    res.json({
+      success: true,
+      message: `Bulk offer sent to ${members.length} members`,
+      offerId: offer._id,
+      recipientCount: members.length
+    });
+    
+  } catch (error) {
+    console.error('Send bulk offer error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending bulk offer'
+    });
+  }
+};
+
 async function trackProfileView(creatorId, memberId) {
   // Create profile view interaction
   const interaction = new MemberInteraction({

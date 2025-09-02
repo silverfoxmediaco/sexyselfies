@@ -35,7 +35,7 @@ router.get(
   authorize('creator'),
   verifiedCreatorOnly,
   anonymizeMemberData,
-  memberProfileController.discoverMembers
+  memberProfileController.getHighValueMembers
 );
 
 /**
@@ -83,7 +83,7 @@ router.get(
   authorize('creator'),
   verifiedCreatorOnly,
   respectBlockList,
-  memberProfileController.getInteractionHistory
+  memberProfileController.getMemberInteractionHistory
 );
 
 // ====================================
@@ -120,7 +120,7 @@ router.post(
   verifiedCreatorOnly,
   checkMemberOptIn,
   respectBlockList,
-  memberProfileController.likeMemberProfile
+  memberProfileController.likeMember
 );
 
 /**
@@ -139,7 +139,7 @@ router.post(
   checkMessageQuota,
   checkDailyInteractionLimit('message', 100),
   preventSpam,
-  memberProfileController.sendMessage
+  memberProfileController.sendMessageToMember
 );
 
 /**
