@@ -1,5 +1,11 @@
-# SPA Routing - Redirect all non-file requests to index.html
-/creator/*    /index.html   200
-/member/*     /index.html   200
-/admin/*      /index.html   200
-/*            /index.html   200
+# SPA Routing - Handle client-side routes
+/creator/login          /index.html   200
+/creator/register       /index.html   200
+/creator/verify-id      /index.html   200
+/creator/dashboard      /index.html   200
+/creator/profile        /index.html   200
+/creator/*              /index.html   200
+/member/*               /index.html   200  
+/admin/*                /index.html   200
+# Fallback for any other client-side routes
+/*                      /index.html   200
