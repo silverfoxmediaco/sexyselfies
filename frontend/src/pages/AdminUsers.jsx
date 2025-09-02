@@ -29,7 +29,7 @@ const AdminUsers = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const endpoint = filter === 'suspended' || filter === 'banned' 
-        ? '/api/admin/moderation/users/search'
+        ? '/api/v1/admin/moderation/users/search'
         : '/api/users';
       
       const response = await axios.get(
@@ -111,20 +111,20 @@ const AdminUsers = () => {
 
       switch(actionType) {
         case 'ban':
-          endpoint = '/api/admin/moderation/users/ban';
+          endpoint = '/api/v1/admin/moderation/users/ban';
           break;
         case 'unban':
-          endpoint = '/api/admin/moderation/users/unban';
+          endpoint = '/api/v1/admin/moderation/users/unban';
           break;
         case 'suspend':
-          endpoint = '/api/admin/moderation/users/suspend';
+          endpoint = '/api/v1/admin/moderation/users/suspend';
           payload.duration = suspensionDays;
           break;
         case 'remove_suspension':
-          endpoint = '/api/admin/moderation/users/remove-suspension';
+          endpoint = '/api/v1/admin/moderation/users/remove-suspension';
           break;
         case 'freeze_payouts':
-          endpoint = '/api/admin/payouts/freeze';
+          endpoint = '/api/v1/admin/payouts/freeze';
           payload.duration = suspensionDays;
           break;
         default:

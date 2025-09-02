@@ -27,7 +27,7 @@ const AdminReports = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/admin/moderation/reports`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/moderation/reports`,
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { status: filter === 'all' ? undefined : filter }
@@ -52,7 +52,7 @@ const AdminReports = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const response = await axios.put(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/admin/moderation/reports/${selectedReport._id}/resolve`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/moderation/reports/${selectedReport._id}/resolve`,
         {
           action: action,
           reason: actionNotes || `Report ${action} by admin`

@@ -111,7 +111,7 @@ const AdminManagement = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/admin/auth/list`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/auth/list`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -176,7 +176,7 @@ const AdminManagement = () => {
     try {
       const token = localStorage.getItem('adminToken');
       await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/admin/auth/create`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/auth/create`,
         {
           email: formData.email,
           password: formData.password,
@@ -215,7 +215,7 @@ const AdminManagement = () => {
     try {
       const token = localStorage.getItem('adminToken');
       await axios.put(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/admin/auth/${selectedAdmin._id}/status`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/auth/${selectedAdmin._id}/status`,
         { isActive: editData.isActive },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -238,7 +238,7 @@ const AdminManagement = () => {
     try {
       const token = localStorage.getItem('adminToken');
       await axios.delete(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/admin/auth/${adminId}`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/auth/${adminId}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
