@@ -70,6 +70,13 @@ exports.uploadVerification = async (req, res) => {
     creator.verificationStatus = 'pending';
     creator.verificationSubmittedAt = new Date();
     
+    // Also populate the verificationDocuments array for compatibility
+    creator.verificationDocuments = [
+      uploadResults[0].secure_url, // ID front
+      uploadResults[1].secure_url, // ID back
+      uploadResults[2].secure_url  // Selfie
+    ];
+    
     await creator.save();
     console.log('Creator verification data saved');
 

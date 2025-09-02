@@ -29,7 +29,7 @@ const AdminHeader = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/admin/dashboard/stats`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/dashboard/stats`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -190,6 +190,7 @@ const AdminHeader = () => {
                   </Link>
                 )}
 
+{/* Temporarily commented out - page showing blank content
                 {adminData?.role === 'superAdmin' && (
                   <Link 
                     to="/admin/admins" 
@@ -202,6 +203,7 @@ const AdminHeader = () => {
                     <span>Admin Management</span>
                   </Link>
                 )}
+                */}
               </div>
 
                 {/* Logout Button */}

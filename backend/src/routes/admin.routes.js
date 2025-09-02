@@ -689,7 +689,7 @@ router.get(
         Member.countDocuments(),
         Content.countDocuments({ isActive: true }),
         AdminReport.countDocuments({ status: 'pending' }),
-        Creator.countDocuments({ isVerified: false, verificationDocuments: { $ne: [] } }),
+        Creator.countDocuments({ verificationStatus: 'pending' }),
         Transaction.aggregate([
           {
             $match: {
