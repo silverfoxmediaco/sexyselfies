@@ -485,9 +485,11 @@ exports.login = async (req, res, next) => {
 // @access  Public
 exports.creatorLogin = async (req, res, next) => {
   try {
-    console.log('=== CREATOR LOGIN REQUEST ===');
+    console.log('=== CREATOR LOGIN REQUEST START ===');
     console.log('Request body:', req.body);
-    console.log('Headers:', req.headers);
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
     
     const { email, password } = req.body;
 
@@ -614,7 +616,11 @@ exports.creatorLogin = async (req, res, next) => {
     user.isEmailVerified = true;
     await user.save();
 
-    console.log('Using sendTokenResponse helper for consistent response format');
+    console.log('✅ CREATOR LOGIN SUCCESS - About to send response');
+    console.log('User ID:', user._id);
+    console.log('Creator ID:', creator._id);
+    console.log('Display Name:', creator.displayName);
+    console.log('About to call sendTokenResponse...');
     
     // Use the existing sendTokenResponse helper to avoid JWT/cookie issues
     const additionalData = {
@@ -633,13 +639,19 @@ exports.creatorLogin = async (req, res, next) => {
       redirectTo: needsIdVerification ? '/creator/verify-id' : '/creator/dashboard'
     };
     
-    console.log('Creator login successful for:', {
-      userId: user._id,
-      creatorId: creator._id,
-      displayName: creator.displayName
-    });
+    console.log('Calling sendTokenResponse with additionalData:', Object.keys(additionalData));
+    console.log('sendTokenResponse function exists:', typeof sendTokenResponse);
+    
+    if (typeof sendTokenResponse !== 'function') {
+      console.error('❌ sendTokenResponse is not a function!');
+      return res.status(500).json({
+        success: false,
+        error: 'Internal server error - sendTokenResponse not found'
+      });
+    }
     
     sendTokenResponse(user, 200, res, additionalData);
+    console.log('✅ sendTokenResponse call completed');
 
   } catch (error) {
     console.error('=== CREATOR LOGIN ERROR ===');
