@@ -89,13 +89,20 @@ connectDB();
 
 // Database health check middleware
 const checkDatabaseConnection = (req, res, next) => {
+  console.log('🔍 DATABASE CHECK for:', req.originalUrl);
+  console.log('🔍 MongoDB connection state:', mongoose.connection.readyState);
+  console.log('🔍 Connection states: 0=disconnected, 1=connected, 2=connecting, 3=disconnecting');
+  
   if (mongoose.connection.readyState !== 1) {
+    console.log('❌ DATABASE CHECK FAILED - Connection not ready');
     return res.status(503).json({
       success: false,
       error: 'Database service temporarily unavailable. Please try again later.',
       code: 'DB_UNAVAILABLE'
     });
   }
+  
+  console.log('✅ DATABASE CHECK PASSED - proceeding to next middleware');
   next();
 };
 
@@ -300,9 +307,12 @@ app.get(`${API_V1}/health`, async (req, res) => {
 });
 
 // Apply database check to critical auth routes
+console.log('🔧 Adding database connection checks...');
 app.use(`${API_V1}/auth/register`, checkDatabaseConnection);
 app.use(`${API_V1}/auth/login`, checkDatabaseConnection);
 app.use(`${API_V1}/auth/creator/register`, checkDatabaseConnection);
+app.use(`${API_V1}/auth/creator/login`, checkDatabaseConnection);
+console.log('✅ Database connection checks added');
 
 // Mount routes with API versioning
 console.log('🚀 MOUNTING AUTH ROUTES at:', `${API_V1}/auth`);
