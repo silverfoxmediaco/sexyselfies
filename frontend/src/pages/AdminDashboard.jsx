@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import AdminHeader from '../components/AdminHeader';
-import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
@@ -33,7 +32,7 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/admin/dashboard/stats`,
+        `${import.meta.env.VITE_API_URL}/api/v1/admin/dashboard/stats`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -51,8 +50,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
-      {/* Desktop Header */}
-      {isDesktop && <MainHeader />}
       {/* Admin Header Navigation */}
       <AdminHeader />
 
@@ -92,7 +89,7 @@ const AdminDashboard = () => {
                   <p className="stat-number">{stats?.moderation?.pendingVerifications || 0}</p>
                   <span className="stat-meta">
                     {stats?.moderation?.pendingVerifications > 0 
-                      ? '🚨 Requires immediate attention' 
+                      ? 'Requires immediate attention' 
                       : 'All caught up!'
                     }
                   </span>
@@ -135,19 +132,19 @@ const AdminDashboard = () => {
             <div className="quick-actions">
               <h2>Quick Actions</h2>
               <div className="action-buttons">
-                <Link to="/admin/verifications" className="action-btn primary">
+                <Link to="/admin/verifications" className="admin-dashboard-action-btn primary">
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
                   </svg>
                   Review Verifications
                 </Link>
-                <Link to="/admin/reports" className="action-btn warning">
+                <Link to="/admin/reports" className="admin-dashboard-action-btn warning">
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
                   </svg>
                   Handle Reports
                 </Link>
-                <Link to="/admin/users" className="action-btn info">
+                <Link to="/admin/users" className="admin-dashboard-action-btn info">
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
                   </svg>
