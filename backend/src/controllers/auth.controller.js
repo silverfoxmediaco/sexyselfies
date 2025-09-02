@@ -614,18 +614,10 @@ exports.creatorLogin = async (req, res, next) => {
     user.isEmailVerified = true;
     await user.save();
 
-    console.log('Preparing response data...');
-
-    // Prepare response data with consistent format
-    const responseData = {
-      success: true,
-      token: user.getSignedJwtToken(),
-      user: {
-        id: user._id,
-        email: user.email,
-        role: user.role,
-        displayName: creator.displayName || user.email.split('@')[0]
-      },
+    console.log('Using sendTokenResponse helper for consistent response format');
+    
+    // Use the existing sendTokenResponse helper to avoid JWT/cookie issues
+    const additionalData = {
       creator: {
         id: creator._id,
         displayName: creator.displayName,
@@ -637,30 +629,17 @@ exports.creatorLogin = async (req, res, next) => {
       displayName: creator.displayName,
       isVerified,
       profileComplete,
-      needsIdVerification
+      needsIdVerification,
+      redirectTo: needsIdVerification ? '/creator/verify-id' : '/creator/dashboard'
     };
-
-    console.log('Sending successful response:', {
-      success: responseData.success,
-      userId: responseData.user.id,
-      creatorId: responseData.creatorId,
-      displayName: responseData.displayName
+    
+    console.log('Creator login successful for:', {
+      userId: user._id,
+      creatorId: creator._id,
+      displayName: creator.displayName
     });
-
-    // Set cookie and send response
-    const options = {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      httpOnly: true
-    };
-
-    if (process.env.NODE_ENV === 'production') {
-      options.secure = true;
-    }
-
-    res
-      .status(200)
-      .cookie('token', responseData.token, options)
-      .json(responseData);
+    
+    sendTokenResponse(user, 200, res, additionalData);
 
   } catch (error) {
     console.error('=== CREATOR LOGIN ERROR ===');
