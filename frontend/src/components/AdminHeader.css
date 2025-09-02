@@ -20,47 +20,14 @@
   padding: 0 16px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
-/* Logo */
-.admin-header-navbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: #FFFFFF;
-}
+/* Logo removed - using hamburger menu only */
 
-.admin-header-logo-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #001310;
-  font-size: 14px;
-}
-
-.admin-header-logo-text {
-  font-size: 18px;
-  font-weight: 600;
-  display: none; /* Hidden on mobile */
-}
-
-/* Desktop Navigation - Hidden on Mobile */
-.admin-header-desktop-only {
-  display: none;
-}
+/* Desktop styles removed - using hamburger menu for all screen sizes */
 
 /* Mobile Hamburger Menu */
-.admin-header-mobile-only {
-  display: flex;
-}
-
 .admin-header-hamburger-menu {
   background: transparent;
   border: none;
@@ -73,22 +40,27 @@
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+.admin-header-hamburger-menu:hover {
+  background: #1C1C1E;
+  color: #17D2C2;
 }
 
 .admin-header-hamburger-menu:active {
   background: #1C1C1E;
 }
 
-/* Mobile Menu Overlay */
-.admin-header-mobile-menu-overlay {
+/* Right Slide-Out Menu Overlay */
+.admin-header-menu-overlay {
   position: fixed;
-  top: var(--admin-header-navbar-height);
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.8);
-  z-index: 99;
+  z-index: 999;
   animation: adminHeaderFadeIn 0.2s ease;
 }
 
@@ -97,17 +69,19 @@
   to { opacity: 1; }
 }
 
-.admin-header-mobile-menu {
+.admin-header-slide-menu {
   background: #121212;
   border-left: 1px solid #2A2A2C;
-  height: 100%;
+  height: 100vh;
   width: 85%;
-  max-width: 320px;
+  max-width: 360px;
   overflow-y: auto;
   position: absolute;
   right: 0;
   top: 0;
   animation: adminHeaderSlideInFromRight 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes adminHeaderSlideInFromRight {
@@ -115,14 +89,15 @@
   to { transform: translateX(0); }
 }
 
-/* Mobile User Info */
-.admin-header-mobile-user-info {
+/* User Info Section */
+.admin-header-user-info-section {
   padding: 24px;
   background: #1C1C1E;
   border-bottom: 1px solid #2A2A2C;
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-shrink: 0;
 }
 
 .admin-header-user-avatar {
@@ -155,12 +130,14 @@
   text-transform: capitalize;
 }
 
-/* Mobile Navigation Links */
-.admin-header-mobile-nav-links {
+/* Navigation Links */
+.admin-header-nav-links {
   padding: 16px 0;
+  flex: 1;
+  overflow-y: auto;
 }
 
-.admin-header-mobile-nav-link {
+.admin-header-nav-link {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -169,16 +146,36 @@
   text-decoration: none;
   transition: all 0.2s ease;
   position: relative;
+  border: none;
+  background: transparent;
 }
 
-.admin-header-mobile-nav-link:active {
+.admin-header-nav-link:hover {
   background: #1C1C1E;
+  color: #17D2C2;
 }
 
-.admin-header-mobile-nav-link.active {
+.admin-header-nav-link:active {
+  background: #2A2A2C;
+}
+
+.admin-header-nav-link.active {
   background: linear-gradient(135deg, rgba(18, 183, 171, 0.1) 0%, rgba(23, 210, 194, 0.1) 100%);
   color: #17D2C2;
   border-right: 3px solid #17D2C2;
+}
+
+/* Logout Link Styling */
+.admin-header-logout-link {
+  margin-top: 16px;
+  border-top: 1px solid #2A2A2C;
+  padding-top: 24px !important;
+}
+
+.admin-header-logout-link:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #EF4444 !important;
+  border-right: 3px solid #EF4444 !important;
 }
 
 .admin-header-nav-icon {
@@ -200,17 +197,18 @@
   text-align: center;
 }
 
-/* Mobile Actions */
-.admin-header-mobile-actions {
+/* Menu Actions */
+.admin-header-menu-actions {
   padding: 16px;
   border-top: 1px solid #2A2A2C;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex-shrink: 0;
 }
 
-.admin-header-mobile-refresh-btn,
-.admin-header-mobile-logout-btn {
+.admin-header-refresh-btn,
+.admin-header-logout-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -225,15 +223,24 @@
   font-weight: 500;
 }
 
-.admin-header-mobile-refresh-btn:active {
+.admin-header-refresh-btn:hover {
   background: #1C1C1E;
   color: #17D2C2;
+  border-color: #17D2C2;
 }
 
-.admin-header-mobile-logout-btn:active {
+.admin-header-refresh-btn:active {
+  background: #2A2A2C;
+}
+
+.admin-header-logout-btn:hover {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.3);
   color: #EF4444;
+}
+
+.admin-header-logout-btn:active {
+  background: rgba(239, 68, 68, 0.2);
 }
 
 /* Page Header */
@@ -257,34 +264,25 @@
 }
 
 /* Tablet Styles - 768px and up */
+/* Tablet and larger - improved spacing */
 @media (min-width: 768px) {
   .admin-header-navbar-container {
     padding: 0 24px;
   }
   
-  .admin-header-logo-text {
-    display: inline;
-  }
-  
   .admin-header-page-header {
     padding: 32px 24px;
   }
+  
+  .admin-header-slide-menu {
+    max-width: 400px;
+  }
 }
 
-/* Desktop Styles - 1024px and up */
+/* Desktop Styles - 1024px and up - Hamburger Menu Only */
 @media (min-width: 1024px) {
   :root {
     --admin-header-navbar-height: 64px;
-  }
-  
-  /* Hide mobile elements */
-  .admin-header-mobile-only {
-    display: none;
-  }
-  
-  /* Show desktop elements */
-  .admin-header-desktop-only {
-    display: flex;
   }
   
   .admin-header-navbar-container {
@@ -294,139 +292,20 @@
     width: 100%;
   }
   
-  /* Desktop Navigation Menu */
-  .admin-header-navbar-menu {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-left: 32px;
+  .admin-header-slide-menu {
+    max-width: 450px;
   }
   
-  .admin-header-nav-link {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    color: #C7C7CC;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    position: relative;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  
-  .admin-header-nav-link:hover {
-    background: #1C1C1E;
-    color: #FFFFFF;
-  }
-  
-  .admin-header-nav-link.active {
-    background: linear-gradient(135deg, rgba(18, 183, 171, 0.1) 0%, rgba(23, 210, 194, 0.1) 100%);
-    color: #17D2C2;
-    border: 1px solid rgba(23, 210, 194, 0.2);
-  }
-  
-  .admin-header-nav-link .admin-header-nav-badge {
-    position: static;
-    margin-left: 8px;
-  }
-  
-  /* User Menu & Actions */
-  .admin-header-navbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-left: auto;
-  }
-  
-  .admin-header-refresh-btn {
-    padding: 8px;
-    background: #1C1C1E;
-    border: 1px solid #2A2A2C;
-    border-radius: 8px;
-    color: #C7C7CC;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .admin-header-refresh-btn:hover {
-    background: #2A2A2C;
-    color: #17D2C2;
-  }
-  
-  .admin-header-refresh-btn:hover svg {
-    transform: rotate(180deg);
-  }
-  
-  .admin-header-refresh-btn svg {
-    display: block;
-    transition: transform 0.3s ease;
-  }
-  
-  .admin-header-user-menu {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  
-  .admin-header-user-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 12px;
-    background: #1C1C1E;
-    border-radius: 8px;
-  }
-  
-  .admin-header-user-info .admin-header-user-avatar {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-  }
-  
-  .admin-header-logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: transparent;
-    border: 1px solid #2A2A2C;
-    border-radius: 8px;
-    color: #C7C7CC;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  
-  .admin-header-logout-btn:hover {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
-    color: #EF4444;
-  }
-  
-  /* Page Header Desktop */
   .admin-header-page-header {
-    padding: 32px;
-    background: transparent;
-    border-bottom: none;
-    max-width: 1920px;
-    margin: 0 auto;
-  }
-  
-  .admin-header-page-header h1 {
-    font-size: 32px;
+    padding: 40px 32px;
   }
 }
 
-/* Large Desktop - 1440px and up */
+/* Large Desktop - Enhanced spacing only */
 @media (min-width: 1440px) {
-  .admin-header-navbar-container {
-    max-width: 1920px;
-  }
-  
+  .admin-header-navbar-container,
   .admin-header-page-header {
     max-width: 1920px;
+    margin: 0 auto;
   }
 }
