@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import AdminHeader from '../components/AdminHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
@@ -109,6 +110,7 @@ const AdminPayouts = () => {
 
   return (
     <div className="admin-payouts">
+      <AdminHeader />
       <div className="payouts-header">
         <h1>Creator Payouts</h1>
         <div className="payout-stats">
