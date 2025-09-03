@@ -776,7 +776,7 @@ const StepThree = ({ formData, setFormData, errors, aiSuggestions }) => {
       {/* Content types */}
       <div className="form-group">
         <label className="form-label">
-          Content Types You'll Share
+          CONTENT TYPES YOU'LL SHARE
           <span className="required">*</span>
         </label>
         <div className="content-types-grid">
@@ -821,7 +821,7 @@ const StepThree = ({ formData, setFormData, errors, aiSuggestions }) => {
       
       {/* Pricing strategy */}
       <div className="form-group">
-        <label className="form-label">Pricing Strategy</label>
+        <label className="form-label">PRICING STRATEGY</label>
         <div className="strategy-cards">
           <div 
             className={`strategy-card ${formData.pricingStrategy === 'fixed' ? 'active' : ''}`}
@@ -856,24 +856,28 @@ const StepThree = ({ formData, setFormData, errors, aiSuggestions }) => {
       {formData.contentTypes.photos && (
         <div className="form-group">
           <label className="form-label">
-            Photo Price
-            <span className="ai-suggestion">AI suggests: ${aiSuggestions?.photoPricing || 3.99}</span>
+            PHOTO PRICE
+            <span className="ai-suggestion">AI SUGGESTS: ${aiSuggestions?.photoPricing || 3.99}</span>
           </label>
-          <input
-            type="number"
-            className="form-input"
-            min="0.99"
-            max="9.99"
-            step="0.01"
-            value={formData.pricing.photos.default}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              pricing: {
-                ...prev.pricing,
-                photos: { ...prev.pricing.photos, default: parseFloat(e.target.value) }
-              }
-            }))}
-          />
+          <div className="pricing-input-wrapper">
+            <span className="currency-symbol">$</span>
+            <input
+              type="number"
+              className="form-input pricing-input"
+              min="0.99"
+              max="9.99"
+              step="0.01"
+              placeholder="2.99"
+              value={formData.pricing.photos.default}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                pricing: {
+                  ...prev.pricing,
+                  photos: { ...prev.pricing.photos, default: parseFloat(e.target.value) }
+                }
+              }))}
+            />
+          </div>
         </div>
       )}
     </div>
