@@ -602,40 +602,35 @@ api.get('/creator/members')
 **Problem Analysis:**
 - Navigation buttons were set to `flex-direction: column` on mobile
 - Buttons took full width (`width: 100%`) creating oversized, awkward UI
-- No visual separation from content, poor accessibility
-- Inconsistent with modern mobile app patterns
+- Buttons were too large for mobile viewport
+- User requested smaller, better-fitting buttons, not removal
 
 **UX Improvements Applied:**
 
 **Mobile Navigation (≤768px):**
-- **Fixed positioning**: `position: fixed; bottom: 0; left: 0; right: 0;`
 - **Horizontal layout**: Changed from `flex-direction: column` to `flex-direction: row`
-- **Optimal button sizing**: `flex: 1` with `min-height: 48px` (WCAG AA touch target)
-- **Enhanced visual**: `background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);`
-- **Proper spacing**: `padding: 16px 20px; gap: 12px;`
-- **Layer management**: `z-index: 100` to stay above content
-- **Clear separation**: `border-top: 1px solid var(--border)`
+- **Compact sizing**: `flex: 1` with `max-width: 160px` to limit button size
+- **Touch-friendly**: `min-height: 44px` for accessibility
+- **Optimized spacing**: `padding: 12px 16px; gap: 12px;`
+- **Readable text**: `font-size: 14px; font-weight: 600;`
+- **Proper icons**: `width: 16px; height: 16px;`
 
-**Content Protection:**
-- **Added bottom padding**: `padding: 20px 20px 120px 20px;` to upload-container
-- **Prevents overlap**: Ensures content isn't hidden behind fixed navigation
-
-**Button Optimization:**
-- **Proper sizing**: `padding: 14px 16px; font-size: 15px; font-weight: 600;`
-- **Icon sizing**: `width: 16px; height: 16px;` for better mobile touch
-- **Flex distribution**: Buttons share space equally with `flex: 1`
+**Extra Small Mobile (≤480px):**
+- **Even more compact**: `max-width: 140px; padding: 10px 12px;`
+- **Smaller text**: `font-size: 13px`
+- **Smaller icons**: `width: 14px; height: 14px;`
 
 **Expected Mobile UX:**
-- ✅ Fixed bottom navigation bar (like native apps)
+- ✅ Inline navigation buttons (within content flow)
 - ✅ Side-by-side Previous/Continue buttons
-- ✅ Proper touch targets (48px minimum height)
-- ✅ Content properly spaced above navigation
-- ✅ Modern glassmorphism styling with backdrop blur
-- ✅ Consistent with mobile app design patterns
+- ✅ Appropriately sized for mobile viewport
+- ✅ Proper touch targets (44px minimum height)
+- ✅ Buttons don't overwhelm the interface
+- ✅ Maintains step navigation functionality
 
 **Desktop Experience:**
-- ✅ Unchanged - maintains inline positioning within content flow
-- ✅ Traditional horizontal layout preserved
+- ✅ Unchanged - maintains traditional horizontal layout
+- ✅ No impact on desktop functionality
 
 Last Updated: September 3, 2025 - Mobile UX + Header/Footer + SPA Routing + Build + API Fixes
 Total Files Modified: 44 (+11 new fixes)  
