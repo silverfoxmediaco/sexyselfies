@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api.config';
 import AdminHeader from '../components/AdminHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -27,21 +27,16 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
       const endpoint = filter === 'suspended' || filter === 'banned' 
-        ? '/api/v1/admin/moderation/users/search'
-        : '/api/users';
+        ? '/admin/moderation/users/search'
+        : '/users';
       
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}${endpoint}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: filter !== 'all' ? { role: filter } : {}
-        }
-      );
+      const response = await api.get(endpoint, {
+        params: filter !== 'all' ? { role: filter } : {}
+      });
       
       // Set dummy data if no users exist
-      if (!response.data.data || response.data.data.length === 0) {
+      if (!response.data || response.data.length === 0) {
         setUsers([
           {
             _id: '1',
@@ -65,7 +60,7 @@ const AdminUsers = () => {
           }
         ]);
       } else {
-        setUsers(response.data.data);
+        setUsers(response.data);
       }
     } catch (error) {
       console.error('Failed to fetch users:', error);
@@ -131,11 +126,7 @@ const AdminUsers = () => {
           return;
       }
 
-      await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}${endpoint}`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.post(endpoint, payload);
 
       // Refresh user list
       fetchUsers();

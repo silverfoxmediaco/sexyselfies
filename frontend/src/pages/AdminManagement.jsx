@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
+import api from '../services/api.config';
 import AdminHeader from '../components/AdminHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -109,16 +109,10 @@ const AdminManagement = () => {
 
   const fetchAdmins = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/auth/list`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.get('/admin/auth/list');
       
-      if (response.data.success) {
-        setAdmins(response.data.data);
+      if (response.success) {
+        setAdmins(response.data);
       }
     } catch (error) {
       console.error('Failed to fetch admins:', error);
@@ -174,19 +168,12 @@ const AdminManagement = () => {
 
     setProcessing(true);
     try {
-      const token = localStorage.getItem('adminToken');
-      await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/auth/create`,
-        {
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-          role: formData.role
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await api.post('/admin/auth/create', {
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        role: formData.role
+      });
 
       setShowCreateModal(false);
       setFormData({
@@ -213,14 +200,9 @@ const AdminManagement = () => {
 
     setProcessing(true);
     try {
-      const token = localStorage.getItem('adminToken');
-      await axios.put(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/auth/${selectedAdmin._id}/status`,
-        { isActive: editData.isActive },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await api.put(`/admin/auth/${selectedAdmin._id}/status`, {
+        isActive: editData.isActive
+      });
 
       setShowEditModal(false);
       fetchAdmins();
@@ -236,13 +218,7 @@ const AdminManagement = () => {
 
     setProcessing(true);
     try {
-      const token = localStorage.getItem('adminToken');
-      await axios.delete(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/auth/${adminId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await api.delete(`/admin/auth/${adminId}`);
 
       fetchAdmins();
     } catch (error) {

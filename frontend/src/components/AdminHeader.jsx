@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import api from '../services/api.config';
 import './AdminHeader.css';
 
 const AdminHeader = () => {
@@ -27,17 +28,10 @@ const AdminHeader = () => {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/dashboard/stats`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.get('/admin/dashboard/stats');
       
-      const data = await response.json();
-      if (data.success) {
-        setStats(data.data);
+      if (response.success) {
+        setStats(response.data);
       }
     } catch (error) {
       console.error('Failed to fetch stats:', error);

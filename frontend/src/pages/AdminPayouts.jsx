@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api.config';
 import AdminHeader from '../components/AdminHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -34,16 +34,10 @@ const AdminPayouts = () => {
 
   const fetchPayoutData = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/financials/payouts`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.get('/admin/financials/payouts');
       
-      if (response.data.success) {
-        setPayoutData(response.data.data);
+      if (response.success) {
+        setPayoutData(response.data);
       }
     } catch (error) {
       console.error('Failed to fetch payout data:', error);
@@ -68,19 +62,12 @@ const AdminPayouts = () => {
 
     setProcessingPayout(true);
     try {
-      const token = localStorage.getItem('adminToken');
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/financials/process-payouts`,
-        {
-          creatorIds: selectedCreators,
-          payoutMethod: 'paypal'
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.post('/admin/financials/process-payouts', {
+        creatorIds: selectedCreators,
+        payoutMethod: 'paypal'
+      });
 
-      if (response.data.success) {
+      if (response.success) {
         alert(`Successfully processed ${selectedCreators.length} payouts!`);
         setSelectedCreators([]);
         fetchPayoutData(); // Refresh data

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api.config';
 import AdminHeader from '../components/AdminHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -25,17 +25,12 @@ const AdminReports = () => {
 
   const fetchReports = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/moderation/reports`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { status: filter === 'all' ? undefined : filter }
-        }
-      );
+      const response = await api.get('/admin/moderation/reports', {
+        params: { status: filter === 'all' ? undefined : filter }
+      });
       
-      if (response.data.success) {
-        setReports(response.data.data || []);
+      if (response.success) {
+        setReports(response.data || []);
       }
     } catch (error) {
       console.error('Failed to fetch reports:', error);
@@ -50,19 +45,12 @@ const AdminReports = () => {
     
     setProcessing(true);
     try {
-      const token = localStorage.getItem('adminToken');
-      const response = await axios.put(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/v1/admin/moderation/reports/${selectedReport._id}/resolve`,
-        {
-          action: action,
-          reason: actionNotes || `Report ${action} by admin`
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.put(`/admin/moderation/reports/${selectedReport._id}/resolve`, {
+        action: action,
+        reason: actionNotes || `Report ${action} by admin`
+      });
       
-      if (response.data.success) {
+      if (response.success) {
         // Refresh reports list
         await fetchReports();
         setSelectedReport(null);

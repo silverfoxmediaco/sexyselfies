@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api.config';
 import AdminHeader from '../components/AdminHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -30,16 +30,10 @@ const AdminDashboard = () => {
 
   const fetchDashboardStats = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/dashboard/stats`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.get('/admin/dashboard/stats');
       
-      if (response.data.success) {
-        setStats(response.data.data);
+      if (response.success) {
+        setStats(response.data);
       }
     } catch (error) {
       console.error('Failed to fetch dashboard stats:', error);

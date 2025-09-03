@@ -6,10 +6,13 @@ let API_BASE_URL = import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onre
 // Ensure API_BASE_URL includes /v1 if it's missing
 if (!API_BASE_URL.includes('/v1')) {
   if (API_BASE_URL.endsWith('/api')) {
+    // If URL ends with /api, just add /v1
     API_BASE_URL += '/v1';
   } else if (API_BASE_URL.endsWith('/')) {
+    // If URL ends with /, add api/v1
     API_BASE_URL += 'api/v1';
   } else {
+    // If URL doesn't end with / or /api, add /api/v1
     API_BASE_URL += '/api/v1';
   }
 }
