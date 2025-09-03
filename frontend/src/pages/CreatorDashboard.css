@@ -260,7 +260,7 @@
 .time-range-selector {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  gap: 10px;
   background: var(--surface, #121212);
   padding: 4px;
   border-radius: 12px;
@@ -269,7 +269,6 @@
 
 .range-btn {
   padding: 10px 8px;
-  margin: 10px;
   background: transparent;
   border: none;
   border-radius: 8px;
