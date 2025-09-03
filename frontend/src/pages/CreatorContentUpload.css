@@ -1003,7 +1003,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .upload-container {
-    padding: 20px;
+    padding: 20px 20px 100px 20px; /* Extra bottom padding for mobile bottom nav */
   }
 
   .upload-header {
@@ -1069,6 +1069,7 @@
     flex-direction: row;
     gap: 12px;
     padding-top: 20px;
+    margin-bottom: 20px; /* Extra space above mobile bottom nav */
   }
 
   .nav-btn {
