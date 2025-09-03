@@ -43,7 +43,7 @@ const AdminVerifications = () => {
       });
       
       // Remove from list and close modal
-      setVerifications(prev => prev.filter(v => v.userId !== userId));
+      setVerifications(prev => prev.filter(v => v.user?._id !== userId));
       setShowModal(false);
       setSelectedVerification(null);
       
@@ -65,7 +65,7 @@ const AdminVerifications = () => {
       });
       
       // Remove from list and close modal
-      setVerifications(prev => prev.filter(v => v.userId !== userId));
+      setVerifications(prev => prev.filter(v => v.user?._id !== userId));
       setShowModal(false);
       setSelectedVerification(null);
       
