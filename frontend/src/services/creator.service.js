@@ -14,7 +14,7 @@ class CreatorService {
    */
   async getProfile() {
     try {
-      const response = await api.get('/api/creator/profile');
+      const response = await api.get('/creator/profile');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -26,7 +26,7 @@ class CreatorService {
    */
   async updateProfile(data) {
     try {
-      const response = await api.put('/api/creator/profile', {
+      const response = await api.put('/creator/profile', {
         displayName: data.displayName,
         bio: data.bio,
         categories: data.categories,
@@ -57,7 +57,7 @@ class CreatorService {
       const formData = new FormData();
       formData.append('profilePhoto', file);
       
-      const response = await uploadApi.post('/api/creator/profile/photo', formData, {
+      const response = await uploadApi.post('/creator/profile/photo', formData, {
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           console.log(`Upload Progress: ${percentCompleted}%`);
@@ -77,7 +77,7 @@ class CreatorService {
       const formData = new FormData();
       formData.append('coverPhoto', file);
       
-      const response = await uploadApi.post('/api/creator/profile/cover', formData, {
+      const response = await uploadApi.post('/creator/profile/cover', formData, {
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           console.log(`Upload Progress: ${percentCompleted}%`);
@@ -94,7 +94,7 @@ class CreatorService {
    */
   async getProfilePreview() {
     try {
-      const response = await api.get('/api/creator/profile/preview');
+      const response = await api.get('/creator/profile/preview');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -119,7 +119,7 @@ class CreatorService {
       formData.append('dateOfBirth', data.dateOfBirth);
       formData.append('address', data.address);
       
-      const response = await uploadApi.post('/api/creator/verification/id', formData);
+      const response = await uploadApi.post('/creator/verification/id', formData);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -131,7 +131,7 @@ class CreatorService {
    */
   async getVerificationStatus() {
     try {
-      const response = await api.get('/api/creator/verification/status');
+      const response = await api.get('/creator/verification/status');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -172,7 +172,7 @@ class CreatorService {
         formData.append('thumbnail', data.thumbnail);
       }
       
-      const response = await uploadApi.post('/api/creator/content/upload', formData, {
+      const response = await uploadApi.post('/creator/content/upload', formData, {
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           if (data.onProgress) {
@@ -191,7 +191,7 @@ class CreatorService {
    */
   async getContent(params = {}) {
     try {
-      const response = await api.get('/api/creator/content', {
+      const response = await api.get('/creator/content', {
         params: {
           page: params.page || 1,
           limit: params.limit || 20,
@@ -211,7 +211,7 @@ class CreatorService {
    */
   async updateContent(contentId, data) {
     try {
-      const response = await api.put(`/api/creator/content/${contentId}`, {
+      const response = await api.put(`/creator/content/${contentId}`, {
         title: data.title,
         description: data.description,
         visibility: data.visibility,
@@ -231,7 +231,7 @@ class CreatorService {
    */
   async deleteContent(contentId) {
     try {
-      const response = await api.delete(`/api/creator/content/${contentId}`);
+      const response = await api.delete(`/creator/content/${contentId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -243,7 +243,7 @@ class CreatorService {
    */
   async getContentAnalytics(contentId) {
     try {
-      const response = await api.get(`/api/creator/content/${contentId}/analytics`);
+      const response = await api.get(`/creator/content/${contentId}/analytics`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -259,7 +259,7 @@ class CreatorService {
    */
   async browseMembers(filters = {}) {
     try {
-      const response = await api.get('/api/creator/members/browse', {
+      const response = await api.get('/creator/members/browse', {
         params: {
           spending_tier: filters.spending_tier, // 'whale', 'vip', 'regular', 'new'
           activity_level: filters.activity_level, // 'very_active', 'active', 'moderate', 'inactive'
@@ -283,7 +283,7 @@ class CreatorService {
    */
   async getMemberProfile(memberId) {
     try {
-      const response = await api.get(`/api/creator/members/profile/${memberId}`);
+      const response = await api.get(`/creator/members/profile/${memberId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -295,7 +295,7 @@ class CreatorService {
    */
   async sendTargetedMessage(memberId, data) {
     try {
-      const response = await api.post(`/api/creator/members/profile/${memberId}/message`, {
+      const response = await api.post(`/creator/members/profile/${memberId}/message`, {
         message: data.message,
         media_type: data.media_type, // 'text', 'photo', 'video', 'voice'
         media_url: data.media_url,
@@ -314,7 +314,7 @@ class CreatorService {
    */
   async sendSpecialOffer(memberId, data) {
     try {
-      const response = await api.post(`/api/creator/members/profile/${memberId}/special-offer`, {
+      const response = await api.post(`/creator/members/profile/${memberId}/special-offer`, {
         offer_type: data.offer_type, // 'discount', 'bundle', 'exclusive', 'limited_time'
         title: data.title,
         description: data.description,
@@ -336,7 +336,7 @@ class CreatorService {
    */
   async pokeMember(memberId) {
     try {
-      const response = await api.post(`/api/creator/members/profile/${memberId}/poke`);
+      const response = await api.post(`/creator/members/profile/${memberId}/poke`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -348,7 +348,7 @@ class CreatorService {
    */
   async likeMember(memberId) {
     try {
-      const response = await api.post(`/api/creator/members/profile/${memberId}/like`);
+      const response = await api.post(`/creator/members/profile/${memberId}/like`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -360,7 +360,7 @@ class CreatorService {
    */
   async getSalesDashboard() {
     try {
-      const response = await api.get('/api/creator/sales/dashboard');
+      const response = await api.get('/creator/sales/dashboard');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -376,7 +376,7 @@ class CreatorService {
    */
   async getConversations(params = {}) {
     try {
-      const response = await api.get('/api/creator/messages/conversations', {
+      const response = await api.get('/creator/messages/conversations', {
         params: {
           filter: params.filter, // 'all', 'unread', 'paid', 'tipped'
           sort: params.sort || 'recent', // 'recent', 'unread_first', 'high_value'
@@ -395,7 +395,7 @@ class CreatorService {
    */
   async getMessages(memberId, params = {}) {
     try {
-      const response = await api.get(`/api/creator/messages/${memberId}`, {
+      const response = await api.get(`/creator/messages/${memberId}`, {
         params: {
           page: params.page || 1,
           limit: params.limit || 50
@@ -425,7 +425,7 @@ class CreatorService {
         formData.append('price', data.price);
       }
       
-      const response = await uploadApi.post(`/api/creator/messages/${memberId}/send`, formData);
+      const response = await uploadApi.post(`/creator/messages/${memberId}/send`, formData);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -437,7 +437,7 @@ class CreatorService {
    */
   async markMessagesAsRead(memberId) {
     try {
-      const response = await api.put(`/api/creator/messages/${memberId}/read`);
+      const response = await api.put(`/creator/messages/${memberId}/read`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -453,7 +453,7 @@ class CreatorService {
    */
   async getEarnings(period = '30d') {
     try {
-      const response = await api.get('/api/creator/earnings', {
+      const response = await api.get('/creator/earnings', {
         params: { period } // '24h', '7d', '30d', '90d', 'all'
       });
       return response;
@@ -467,7 +467,7 @@ class CreatorService {
    */
   async getEarningsBreakdown(params = {}) {
     try {
-      const response = await api.get('/api/creator/earnings/breakdown', {
+      const response = await api.get('/creator/earnings/breakdown', {
         params: {
           start_date: params.start_date,
           end_date: params.end_date,
@@ -486,7 +486,7 @@ class CreatorService {
    */
   async getPayoutHistory(params = {}) {
     try {
-      const response = await api.get('/api/creator/payouts', {
+      const response = await api.get('/creator/payouts', {
         params: {
           status: params.status, // 'pending', 'processing', 'completed', 'failed'
           page: params.page || 1,
@@ -504,7 +504,7 @@ class CreatorService {
    */
   async requestPayout(data) {
     try {
-      const response = await api.post('/api/creator/payouts/request', {
+      const response = await api.post('/creator/payouts/request', {
         amount: data.amount,
         payout_method: data.payout_method, // 'bank', 'paypal', 'crypto'
         account_details: data.account_details,
@@ -521,7 +521,7 @@ class CreatorService {
    */
   async getPayoutSettings() {
     try {
-      const response = await api.get('/api/creator/payouts/settings');
+      const response = await api.get('/creator/payouts/settings');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -533,7 +533,7 @@ class CreatorService {
    */
   async updatePayoutSettings(data) {
     try {
-      const response = await api.put('/api/creator/payouts/settings', {
+      const response = await api.put('/creator/payouts/settings', {
         minimum_payout: data.minimum_payout,
         auto_payout: data.auto_payout,
         auto_payout_day: data.auto_payout_day,
@@ -555,7 +555,7 @@ class CreatorService {
    */
   async getAnalytics(period = '30d') {
     try {
-      const response = await api.get('/api/creator/analytics', {
+      const response = await api.get('/creator/analytics', {
         params: { period }
       });
       return response;
@@ -569,7 +569,7 @@ class CreatorService {
    */
   async getSubscriberAnalytics(params = {}) {
     try {
-      const response = await api.get('/api/creator/analytics/subscribers', {
+      const response = await api.get('/creator/analytics/subscribers', {
         params: {
           start_date: params.start_date,
           end_date: params.end_date,
@@ -587,7 +587,7 @@ class CreatorService {
    */
   async getContentPerformance(params = {}) {
     try {
-      const response = await api.get('/api/creator/analytics/content', {
+      const response = await api.get('/creator/analytics/content', {
         params: {
           period: params.period || '30d',
           content_type: params.content_type,
@@ -605,7 +605,7 @@ class CreatorService {
    */
   async getAudienceDemographics() {
     try {
-      const response = await api.get('/api/creator/analytics/demographics');
+      const response = await api.get('/creator/analytics/demographics');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -617,7 +617,7 @@ class CreatorService {
    */
   async getDashboardData(period = '7d') {
     try {
-      const response = await api.get('/api/creator/analytics', {
+      const response = await api.get('/creator/analytics', {
         params: { period, compare: false }
       });
       return response;
@@ -631,7 +631,7 @@ class CreatorService {
    */
   async getRealTimeMetrics() {
     try {
-      const response = await api.get('/api/creator/analytics/realtime');
+      const response = await api.get('/creator/analytics/realtime');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -643,7 +643,7 @@ class CreatorService {
    */
   async getRecentActivity(limit = 10) {
     try {
-      const response = await api.get('/api/creator/messages/analytics', {
+      const response = await api.get('/creator/messages/analytics', {
         params: { limit, recent: true }
       });
       return response;
@@ -661,7 +661,7 @@ class CreatorService {
    */
   async getConnections(params = {}) {
     try {
-      const response = await api.get('/api/creator/connections', {
+      const response = await api.get('/creator/connections', {
         params: {
           filter: params.filter || 'all', // 'all', 'new', 'subscribed', 'high_value'
           sort: params.sort || 'recent',
@@ -680,7 +680,7 @@ class CreatorService {
    */
   async getBrowseSuggestions() {
     try {
-      const response = await api.get('/api/creator/connections/suggestions');
+      const response = await api.get('/creator/connections/suggestions');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -696,7 +696,7 @@ class CreatorService {
    */
   async getSettings() {
     try {
-      const response = await api.get('/api/creator/settings');
+      const response = await api.get('/creator/settings');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -708,7 +708,7 @@ class CreatorService {
    */
   async updateSettings(data) {
     try {
-      const response = await api.put('/api/creator/settings', data);
+      const response = await api.put('/creator/settings', data);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -720,7 +720,7 @@ class CreatorService {
    */
   async updateNotificationPreferences(data) {
     try {
-      const response = await api.put('/api/creator/settings/notifications', {
+      const response = await api.put('/creator/settings/notifications', {
         email_notifications: data.email_notifications,
         push_notifications: data.push_notifications,
         sms_notifications: data.sms_notifications,
@@ -737,7 +737,7 @@ class CreatorService {
    */
   async updatePrivacySettings(data) {
     try {
-      const response = await api.put('/api/creator/settings/privacy', {
+      const response = await api.put('/creator/settings/privacy', {
         show_online_status: data.show_online_status,
         show_last_seen: data.show_last_seen,
         allow_screenshots: data.allow_screenshots,

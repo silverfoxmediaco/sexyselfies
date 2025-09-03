@@ -30,7 +30,7 @@ class SocketService {
       return this.socket;
     }
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'ws://localhost:5002';
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'wss://sexyselfies-api.onrender.com';
     const authToken = token || localStorage.getItem('token');
     
     if (!authToken) {

@@ -10,6 +10,7 @@ import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import api from '../services/api.config';
 import './CreatorAnalytics.css';
 
 const CreatorAnalytics = () => {
@@ -92,13 +93,8 @@ const CreatorAnalytics = () => {
           console.log('DEV MODE: Using mock analytics data');
         }, 800);
       } else {
-        const response = await fetch(`/api/creator/analytics?period=${selectedPeriod}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        const data = await response.json();
-        setAnalyticsData(data);
+        const response = await api.get(`/creator/analytics?period=${selectedPeriod}&compare=false`);
+        setAnalyticsData(response);
         setLoading(false);
       }
     } catch (error) {

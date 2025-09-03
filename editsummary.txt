@@ -453,6 +453,59 @@ const response = await api.post('/admin/auth/login', formData);
 
 **Expected Result:** Slide-out menu now includes a clearly visible X button in the top-right corner, providing users with an intuitive way to close the menu and improving overall usability.
 
-Last Updated: Current Session + AdminHeader Close Button Addition  
-Total Files Modified: 33
-Critical Issues Resolved: 17
+### 19. Critical API Configuration Fixes - September 3, 2025
+**Files:** Multiple frontend files with API configuration issues
+**Issue:** Server errors showing double `/api` URLs, localhost references, and infinite loading loops
+
+**Root Cause Analysis:**
+- **Double `/api` URLs**: `sexyselfies-api.onrender.com/api/v1/api/creator/analytics` (notice double `/api`)
+- **Localhost references**: Some files still using hardcoded localhost URLs in production  
+- **Mixed API methods**: Files using raw axios/fetch instead of configured api instance
+- **Function ordering**: CreatorProfilePage useEffect calling undefined function
+
+**Files Fixed:**
+
+**CreatorAnalytics.jsx:**
+- Added: `import api from '../services/api.config'`
+- Changed: `fetch('/api/creator/analytics')` → `api.get('/creator/analytics?period=${period}&compare=false')`
+- Result: Eliminates double `/api` and 404 errors
+
+**BrowseMembers.jsx:**
+- Changed: `import axios` → `import api from '../services/api.config'`
+- Fixed: `axios.get('http://localhost:5002/api/creator/members')` → `api.get('/creator/members')`
+- Fixed: `axios.post('http://localhost:5002/api/creator/messages')` → `api.post('/creator/messages')`
+- Result: Removes localhost hardcodes and double `/api`
+
+**CreatorProfilePage.jsx:**
+- Removed: `window.location.hostname === 'localhost'` check
+- Fixed: Function ordering to prevent infinite loading loop
+- Enhanced: Error handling in loadProfileData function
+
+**BrowseCreators.jsx:**
+- Changed: `window.location.hostname === 'localhost'` → `import.meta.env.DEV`
+- Result: Proper development mode detection
+
+**socket.service.js:**
+- Changed: `'ws://localhost:5002'` → `'wss://sexyselfies-api.onrender.com'`
+- Result: Production WebSocket URL fallback
+
+**Expected Results:**
+- No more `sexyselfies-api.onrender.com/api/v1/api/creator/analytics` double `/api` errors
+- No more `localhost:5002/api/creator/members` 404 errors in production
+- CreatorProfilePage infinite loading loop resolved
+- All API calls use configured api instance with proper authentication
+
+**API Call Pattern Standardized:**
+```javascript
+// BEFORE (causes double /api):
+fetch('/api/creator/analytics')
+axios.get('localhost:5002/api/creator/members')
+
+// AFTER (correct):
+api.get('/creator/analytics?period=7d&compare=false')
+api.get('/creator/members')
+```
+
+Last Updated: September 3, 2025 - API Configuration Fixes
+Total Files Modified: 38 (+5 new fixes)
+Critical Issues Resolved: 22 (+5 new fixes)

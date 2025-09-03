@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import creatorService from '../services/creator.service';
 import './CreatorEarnings.css';
 
 const CreatorEarnings = () => {
@@ -102,12 +103,7 @@ const CreatorEarnings = () => {
           console.log('DEV MODE: Using mock earnings data');
         }, 800);
       } else {
-        const response = await fetch(`/api/creator/earnings?period=${selectedPeriod}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        const data = await response.json();
+        const data = await creatorService.getEarnings(selectedPeriod);
         setEarningsData(data);
         setLoading(false);
       }
@@ -164,16 +160,8 @@ const CreatorEarnings = () => {
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payouts/available`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setPayoutData(data.data);
-      }
+      const data = await creatorService.getPayoutHistory();
+      setPayoutData(data);
     } catch (error) {
       console.error('Failed to load payout data:', error);
     }
@@ -184,28 +172,20 @@ const CreatorEarnings = () => {
     setSubmitting(true);
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payouts/request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          requestedAmount: parseFloat(requestForm.amount),
-          message: requestForm.message
-        })
+      const data = await creatorService.requestPayout({
+        amount: parseFloat(requestForm.amount),
+        payout_method: 'bank', // default method
+        account_details: {},
+        notes: requestForm.message
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (!data.error) {
         alert('Payout request submitted! You will receive an email confirmation and we will process it within 1-2 business days.');
         setShowPayoutModal(false);
         setRequestForm({ amount: '', message: '' });
         loadPayoutData(); // Refresh payout data
       } else {
-        alert(data.error || 'Failed to submit payout request');
+        alert(data.message || 'Failed to submit payout request');
       }
     } catch (error) {
       console.error('Payout request error:', error);

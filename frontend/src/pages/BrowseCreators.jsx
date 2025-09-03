@@ -73,7 +73,7 @@ const BrowseCreators = () => {
     if (!token) {
       console.log('❌ No token found, redirecting to login...');
       // For development, set mock authentication
-      if (window.location.hostname === 'localhost' || 
+      if (import.meta.env.DEV || 
           window.location.hostname.includes('onrender.com')) {
         console.log('🔧 Development mode: Setting mock authentication');
         localStorage.setItem('token', 'dev-token-' + Date.now());

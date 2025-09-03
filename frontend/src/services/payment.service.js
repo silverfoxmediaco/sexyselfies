@@ -15,7 +15,7 @@ class PaymentService {
    */
   async initializePayment(data) {
     try {
-      const response = await api.post('/api/payment/initialize', {
+      const response = await api.post('/payment/initialize', {
         payment_type: data.payment_type, // 'subscription', 'credits', 'tip', 'content', 'message'
         amount: data.amount,
         currency: data.currency || 'USD',
@@ -44,7 +44,7 @@ class PaymentService {
    */
   async processPayment(data) {
     try {
-      const response = await api.post('/api/payment/process', {
+      const response = await api.post('/payment/process', {
         session_id: data.session_id || sessionStorage.getItem('payment_session'),
         payment_method: data.payment_method, // 'credit_card', 'crypto', 'paypal'
         card_details: data.card_details ? {
@@ -85,7 +85,7 @@ class PaymentService {
    */
   async verifyPayment(transactionId) {
     try {
-      const response = await api.get(`/api/payment/verify/${transactionId}`);
+      const response = await api.get(`/payment/verify/${transactionId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -97,7 +97,7 @@ class PaymentService {
    */
   async handlePaymentCallback(params) {
     try {
-      const response = await api.post('/api/payment/callback', {
+      const response = await api.post('/payment/callback', {
         ...params,
         session_id: sessionStorage.getItem('payment_session')
       });
@@ -121,7 +121,7 @@ class PaymentService {
    */
   async getCreditPackages() {
     try {
-      const response = await api.get('/api/payment/credits/packages');
+      const response = await api.get('/payment/credits/packages');
       
       // Add bonus calculations for UI display
       if (response.data?.packages) {
@@ -145,7 +145,7 @@ class PaymentService {
    */
   async purchaseCredits(packageId, paymentMethod = 'card') {
     try {
-      const response = await api.post('/api/payment/credits/purchase', {
+      const response = await api.post('/payment/credits/purchase', {
         package_id: packageId,
         payment_method: paymentMethod,
         return_url: `${window.location.origin}/member/credits/success`,
@@ -168,7 +168,7 @@ class PaymentService {
    */
   async getCreditBalance() {
     try {
-      const response = await api.get('/api/payment/credits/balance');
+      const response = await api.get('/payment/credits/balance');
       
       // Store in localStorage for offline access
       if (response.data?.balance !== undefined) {
@@ -200,7 +200,7 @@ class PaymentService {
    */
   async getCreditHistory(params = {}) {
     try {
-      const response = await api.get('/api/payment/credits/history', {
+      const response = await api.get('/payment/credits/history', {
         params: {
           type: params.type, // 'earned', 'spent', 'purchased', 'refunded'
           start_date: params.start_date,
@@ -220,7 +220,7 @@ class PaymentService {
    */
   async transferCredits(recipientId, amount, message = '') {
     try {
-      const response = await api.post('/api/payment/credits/transfer', {
+      const response = await api.post('/payment/credits/transfer', {
         recipient_id: recipientId,
         recipient_type: 'creator', // 'creator' or 'member'
         amount,
@@ -249,7 +249,7 @@ class PaymentService {
    */
   async createSubscription(creatorId, data) {
     try {
-      const response = await api.post('/api/payment/subscription/create', {
+      const response = await api.post('/payment/subscription/create', {
         creator_id: creatorId,
         tier: data.tier || 'basic', // 'basic', 'vip', 'premium'
         duration: data.duration || 30, // days
@@ -274,7 +274,7 @@ class PaymentService {
    */
   async cancelSubscription(subscriptionId, reason) {
     try {
-      const response = await api.post(`/api/payment/subscription/${subscriptionId}/cancel`, {
+      const response = await api.post(`/payment/subscription/${subscriptionId}/cancel`, {
         reason,
         cancel_immediately: false // Let it run until end of period
       });
@@ -289,7 +289,7 @@ class PaymentService {
    */
   async reactivateSubscription(subscriptionId) {
     try {
-      const response = await api.post(`/api/payment/subscription/${subscriptionId}/reactivate`);
+      const response = await api.post(`/payment/subscription/${subscriptionId}/reactivate`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -301,7 +301,7 @@ class PaymentService {
    */
   async updateSubscription(subscriptionId, data) {
     try {
-      const response = await api.put(`/api/payment/subscription/${subscriptionId}`, {
+      const response = await api.put(`/payment/subscription/${subscriptionId}`, {
         tier: data.tier,
         auto_renew: data.auto_renew,
         payment_method: data.payment_method
@@ -317,7 +317,7 @@ class PaymentService {
    */
   async getActiveSubscriptions() {
     try {
-      const response = await api.get('/api/payment/subscriptions/active');
+      const response = await api.get('/payment/subscriptions/active');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -329,7 +329,7 @@ class PaymentService {
    */
   async getSubscriptionHistory(params = {}) {
     try {
-      const response = await api.get('/api/payment/subscriptions/history', {
+      const response = await api.get('/payment/subscriptions/history', {
         params: {
           status: params.status, // 'active', 'cancelled', 'expired'
           page: params.page || 1,
@@ -351,7 +351,7 @@ class PaymentService {
    */
   async getTransactionHistory(params = {}) {
     try {
-      const response = await api.get('/api/payment/transactions', {
+      const response = await api.get('/payment/transactions', {
         params: {
           type: params.type, // 'all', 'purchase', 'subscription', 'tip', 'refund'
           status: params.status, // 'pending', 'completed', 'failed', 'refunded'
@@ -375,7 +375,7 @@ class PaymentService {
    */
   async getTransactionDetails(transactionId) {
     try {
-      const response = await api.get(`/api/payment/transactions/${transactionId}`);
+      const response = await api.get(`/payment/transactions/${transactionId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -387,7 +387,7 @@ class PaymentService {
    */
   async requestRefund(transactionId, reason, details) {
     try {
-      const response = await api.post(`/api/payment/transactions/${transactionId}/refund`, {
+      const response = await api.post(`/payment/transactions/${transactionId}/refund`, {
         reason, // 'not_received', 'not_as_described', 'unauthorized', 'other'
         details,
         amount: null // null for full refund, or specify partial amount
@@ -403,7 +403,7 @@ class PaymentService {
    */
   async downloadInvoice(transactionId) {
     try {
-      const response = await api.get(`/api/payment/transactions/${transactionId}/invoice`, {
+      const response = await api.get(`/payment/transactions/${transactionId}/invoice`, {
         responseType: 'blob'
       });
       
@@ -431,7 +431,7 @@ class PaymentService {
    */
   async getPaymentMethods() {
     try {
-      const response = await api.get('/api/payment/methods');
+      const response = await api.get('/payment/methods');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -443,7 +443,7 @@ class PaymentService {
    */
   async addPaymentMethod(data) {
     try {
-      const response = await api.post('/api/payment/methods', {
+      const response = await api.post('/payment/methods', {
         type: data.type, // 'card', 'paypal', 'crypto'
         card_details: data.card_details,
         billing_address: data.billing_address,
@@ -460,7 +460,7 @@ class PaymentService {
    */
   async updatePaymentMethod(methodId, data) {
     try {
-      const response = await api.put(`/api/payment/methods/${methodId}`, data);
+      const response = await api.put(`/payment/methods/${methodId}`, data);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -472,7 +472,7 @@ class PaymentService {
    */
   async deletePaymentMethod(methodId) {
     try {
-      const response = await api.delete(`/api/payment/methods/${methodId}`);
+      const response = await api.delete(`/payment/methods/${methodId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -484,7 +484,7 @@ class PaymentService {
    */
   async setDefaultPaymentMethod(methodId) {
     try {
-      const response = await api.put(`/api/payment/methods/${methodId}/default`);
+      const response = await api.put(`/payment/methods/${methodId}/default`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -500,7 +500,7 @@ class PaymentService {
    */
   async getPayoutBalance() {
     try {
-      const response = await api.get('/api/payment/payouts/balance');
+      const response = await api.get('/payment/payouts/balance');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -512,7 +512,7 @@ class PaymentService {
    */
   async requestPayout(data) {
     try {
-      const response = await api.post('/api/payment/payouts/request', {
+      const response = await api.post('/payment/payouts/request', {
         amount: data.amount,
         method: data.method, // 'bank', 'paypal', 'crypto'
         account_details: data.account_details,
@@ -529,7 +529,7 @@ class PaymentService {
    */
   async getPayoutHistory(params = {}) {
     try {
-      const response = await api.get('/api/payment/payouts/history', {
+      const response = await api.get('/payment/payouts/history', {
         params: {
           status: params.status, // 'pending', 'processing', 'completed', 'failed'
           start_date: params.start_date,
@@ -549,7 +549,7 @@ class PaymentService {
    */
   async getPayoutSettings() {
     try {
-      const response = await api.get('/api/payment/payouts/settings');
+      const response = await api.get('/payment/payouts/settings');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -561,7 +561,7 @@ class PaymentService {
    */
   async updatePayoutSettings(data) {
     try {
-      const response = await api.put('/api/payment/payouts/settings', {
+      const response = await api.put('/payment/payouts/settings', {
         minimum_payout: data.minimum_payout,
         auto_payout: data.auto_payout,
         payout_day: data.payout_day,
@@ -583,7 +583,7 @@ class PaymentService {
    */
   async validatePromoCode(code, itemType, itemId) {
     try {
-      const response = await api.post('/api/payment/promo/validate', {
+      const response = await api.post('/payment/promo/validate', {
         code,
         item_type: itemType, // 'subscription', 'credits', 'content'
         item_id: itemId
@@ -599,7 +599,7 @@ class PaymentService {
    */
   async applyPromoCode(code, sessionId) {
     try {
-      const response = await api.post('/api/payment/promo/apply', {
+      const response = await api.post('/payment/promo/apply', {
         code,
         session_id: sessionId || sessionStorage.getItem('payment_session')
       });
@@ -618,7 +618,7 @@ class PaymentService {
    */
   async getSpendingLimits() {
     try {
-      const response = await api.get('/api/payment/limits');
+      const response = await api.get('/payment/limits');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -630,7 +630,7 @@ class PaymentService {
    */
   async setSpendingLimits(data) {
     try {
-      const response = await api.put('/api/payment/limits', {
+      const response = await api.put('/payment/limits', {
         daily_limit: data.daily_limit,
         weekly_limit: data.weekly_limit,
         monthly_limit: data.monthly_limit,
@@ -649,7 +649,7 @@ class PaymentService {
    */
   async verifySpendingPin(pin) {
     try {
-      const response = await api.post('/api/payment/limits/verify-pin', { pin });
+      const response = await api.post('/payment/limits/verify-pin', { pin });
       
       // Store verification for session
       if (response.data?.verified) {
@@ -672,7 +672,7 @@ class PaymentService {
    */
   async getSpendingAnalytics(params = {}) {
     try {
-      const response = await api.get('/api/payment/analytics/spending', {
+      const response = await api.get('/payment/analytics/spending', {
         params: {
           period: params.period || '30d',
           group_by: params.group_by || 'day',
@@ -690,7 +690,7 @@ class PaymentService {
    */
   async getEarningsAnalytics(params = {}) {
     try {
-      const response = await api.get('/api/payment/analytics/earnings', {
+      const response = await api.get('/payment/analytics/earnings', {
         params: {
           period: params.period || '30d',
           group_by: params.group_by || 'day',
@@ -708,7 +708,7 @@ class PaymentService {
    */
   async exportTransactionReport(params = {}) {
     try {
-      const response = await api.get('/api/payment/reports/export', {
+      const response = await api.get('/payment/reports/export', {
         params: {
           format: params.format || 'csv', // 'csv', 'pdf', 'excel'
           start_date: params.start_date,

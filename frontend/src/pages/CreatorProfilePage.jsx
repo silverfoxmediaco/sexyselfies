@@ -31,6 +31,73 @@ const CreatorProfilePage = () => {
     rating: 0
   });
 
+  const loadProfileData = async () => {
+    console.log('CreatorProfilePage: loadProfileData called');
+    try {
+      // Check if in development mode - use multiple methods
+      const isDevelopment = import.meta.env.DEV || 
+                           import.meta.env.MODE === 'development' || 
+                           localStorage.getItem('token') === 'dev-token-12345';
+      console.log('CreatorProfilePage: isDevelopment =', isDevelopment);
+      console.log('CreatorProfilePage: import.meta.env.DEV =', import.meta.env.DEV);
+      console.log('CreatorProfilePage: import.meta.env.MODE =', import.meta.env.MODE);
+      console.log('CreatorProfilePage: hostname =', window.location.hostname);
+      console.log('CreatorProfilePage: localStorage token =', localStorage.getItem('token'));
+      
+      if (isDevelopment) {
+        // Use mock data in development
+        const mockProfile = {
+          displayName: "Sarah Martinez",
+          bio: "Content creator passionate about fitness and lifestyle",
+          location: "Los Angeles, CA",
+          profilePhoto: "/placeholders/sarah.jpg",
+          isVerified: true,
+          subscribers: 1234,
+          totalContent: 67,
+          joinDate: "2023-08-15"
+        };
+
+        const mockStats = {
+          views: 15420,
+          likes: 3240,
+          earnings: 2847.50,
+          rating: 4.8
+        };
+
+        setProfileData(mockProfile);
+        setStats(mockStats);
+        console.log('DEV MODE: Using mock profile data', mockProfile);
+        return; // Exit early in development mode
+      } else {
+        // TODO: Replace with actual API call
+        const response = await api.get('/creators/profile');
+        setProfileData(response.profile);
+        if (response.stats) {
+          setStats(response.stats);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      
+      // Get creator info from localStorage as fallback
+      const storedDisplayName = localStorage.getItem('displayName') || 
+                               localStorage.getItem('creatorName') ||
+                               localStorage.getItem('username') ||
+                               'Unknown Creator';
+      
+      setProfileData({
+        displayName: storedDisplayName,
+        bio: "No bio available",
+        location: "Unknown location",
+        profilePhoto: "/placeholders/default-avatar.jpg",
+        isVerified: false,
+        subscribers: 0,
+        totalContent: 0,
+        joinDate: new Date().toISOString()
+      });
+    }
+  };
+
   useEffect(() => {
     loadProfileData();
   }, []);
@@ -41,8 +108,7 @@ const CreatorProfilePage = () => {
       // Check if in development mode - use multiple methods
       const isDevelopment = import.meta.env.DEV || 
                            import.meta.env.MODE === 'development' || 
-                           localStorage.getItem('token') === 'dev-token-12345' ||
-                           window.location.hostname === 'localhost';
+                           localStorage.getItem('token') === 'dev-token-12345';
       console.log('CreatorProfilePage: isDevelopment =', isDevelopment);
       console.log('CreatorProfilePage: import.meta.env.DEV =', import.meta.env.DEV);
       console.log('CreatorProfilePage: import.meta.env.MODE =', import.meta.env.MODE);
@@ -84,7 +150,9 @@ const CreatorProfilePage = () => {
         // TODO: Replace with actual API call
         const response = await api.get('/creators/profile');
         setProfileData(response.profile);
-        setStats(response.stats);
+        if (response.stats) {
+          setStats(response.stats);
+        }
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -137,20 +205,23 @@ const CreatorProfilePage = () => {
 
       // Use uploadApi for file uploads
       const { uploadApi } = await import('../services/api.config');
-      const response = await uploadApi.post('/upload/profile-image', formData);
+      const response = await uploadApi.post('/creators/profile/image', formData);
 
       if (response && response.success) {
         // Update profile data with new photo
         setProfileData(prev => ({
           ...prev,
-          profilePhoto: response.data.imageUrl
+          profilePhoto: response.data.imageUrl || response.data.profilePhoto
         }));
         
         // Clear the file input
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
+        
+        console.log('Profile photo uploaded successfully:', response.data);
       } else {
+        console.error('Upload response:', response);
         alert('Failed to upload photo. Please try again.');
       }
     } catch (error) {

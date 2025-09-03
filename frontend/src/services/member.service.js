@@ -42,7 +42,7 @@ class MemberService {
    */
   async deleteAccount(password, reason) {
     try {
-      const response = await api.delete('/api/member/profile', {
+      const response = await api.delete('/member/profile', {
         data: { password, reason }
       });
       return response;
@@ -97,7 +97,7 @@ class MemberService {
    */
   async browseCreators(params = {}) {
     try {
-      const response = await api.get('/api/member/discover', {
+      const response = await api.get('/member/discover', {
         params: {
           categories: params.categories,
           gender: params.gender,
@@ -126,7 +126,7 @@ class MemberService {
    */
   async getCreatorProfile(creatorId) {
     try {
-      const response = await api.get(`/api/member/creators/${creatorId}`);
+      const response = await api.get(`/member/creators/${creatorId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -138,7 +138,7 @@ class MemberService {
    */
   async getCreatorContent(creatorId, params = {}) {
     try {
-      const response = await api.get(`/api/member/creators/${creatorId}/content`, {
+      const response = await api.get(`/member/creators/${creatorId}/content`, {
         params: {
           type: params.type, // 'photos', 'videos', 'all'
           page: params.page || 1,
@@ -156,7 +156,7 @@ class MemberService {
    */
   async searchCreators(query, filters = {}) {
     try {
-      const response = await api.get('/api/member/search/creators', {
+      const response = await api.get('/member/search/creators', {
         params: {
           q: query,
           ...filters
@@ -177,7 +177,7 @@ class MemberService {
    */
   async swipeCreator(creatorId, action) {
     try {
-      const response = await api.post('/api/member/swipe', {
+      const response = await api.post('/member/swipe', {
         creator_id: creatorId,
         action: action, // 'like', 'superlike', 'pass'
         swiped_at: new Date().toISOString()
@@ -193,7 +193,7 @@ class MemberService {
    */
   async undoSwipe() {
     try {
-      const response = await api.post('/api/member/swipe/undo');
+      const response = await api.post('/member/swipe/undo');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -205,7 +205,7 @@ class MemberService {
    */
   async getMatches(params = {}) {
     try {
-      const response = await api.get('/api/member/matches', {
+      const response = await api.get('/member/matches', {
         params: {
           filter: params.filter || 'all', // 'all', 'new', 'online', 'subscribed'
           sort: params.sort || 'recent', // 'recent', 'alphabetical', 'active'
@@ -224,7 +224,7 @@ class MemberService {
    */
   async unmatch(creatorId, reason) {
     try {
-      const response = await api.delete(`/api/member/matches/${creatorId}`, {
+      const response = await api.delete(`/member/matches/${creatorId}`, {
         data: { reason }
       });
       return response;
@@ -242,7 +242,7 @@ class MemberService {
    */
   async subscribeToCreator(creatorId, data = {}) {
     try {
-      const response = await api.post(`/api/member/creators/${creatorId}/subscribe`, {
+      const response = await api.post(`/member/creators/${creatorId}/subscribe`, {
         subscription_tier: data.tier || 'basic', // 'basic', 'vip', 'premium'
         duration: data.duration || 1, // months
         auto_renew: data.auto_renew !== false,
@@ -259,7 +259,7 @@ class MemberService {
    */
   async cancelSubscription(creatorId, reason) {
     try {
-      const response = await api.delete(`/api/member/creators/${creatorId}/subscribe`, {
+      const response = await api.delete(`/member/creators/${creatorId}/subscribe`, {
         data: { 
           reason,
           cancel_immediately: false // false = cancel at end of period
@@ -276,7 +276,7 @@ class MemberService {
    */
   async getSubscriptions(params = {}) {
     try {
-      const response = await api.get('/api/member/subscriptions', {
+      const response = await api.get('/member/subscriptions', {
         params: {
           status: params.status || 'active', // 'active', 'expired', 'cancelled', 'all'
           page: params.page || 1,
@@ -294,7 +294,7 @@ class MemberService {
    */
   async reactivateSubscription(creatorId) {
     try {
-      const response = await api.post(`/api/member/subscriptions/${creatorId}/reactivate`);
+      const response = await api.post(`/member/subscriptions/${creatorId}/reactivate`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -310,7 +310,7 @@ class MemberService {
    */
   async purchaseContent(contentId, paymentMethod = 'credits') {
     try {
-      const response = await api.post(`/api/member/content/${contentId}/purchase`, {
+      const response = await api.post(`/member/content/${contentId}/purchase`, {
         payment_method: paymentMethod
       });
       return response;
@@ -324,7 +324,7 @@ class MemberService {
    */
   async purchaseMessage(messageId, paymentMethod = 'credits') {
     try {
-      const response = await api.post(`/api/member/messages/${messageId}/purchase`, {
+      const response = await api.post(`/member/messages/${messageId}/purchase`, {
         payment_method: paymentMethod
       });
       return response;
@@ -338,7 +338,7 @@ class MemberService {
    */
   async getPurchasedContent(params = {}) {
     try {
-      const response = await api.get('/api/member/purchased', {
+      const response = await api.get('/member/purchased', {
         params: {
           type: params.type, // 'photos', 'videos', 'messages', 'all'
           creator_id: params.creator_id,
@@ -358,7 +358,7 @@ class MemberService {
    */
   async buyCredits(package_id, paymentMethod) {
     try {
-      const response = await api.post('/api/member/credits/purchase', {
+      const response = await api.post('/member/credits/purchase', {
         package_id,
         payment_method: paymentMethod, // 'card', 'paypal', 'crypto'
         return_url: `${window.location.origin}/member/credits/success`,
@@ -375,7 +375,7 @@ class MemberService {
    */
   async getCreditPackages() {
     try {
-      const response = await api.get('/api/member/credits/packages');
+      const response = await api.get('/member/credits/packages');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -387,7 +387,7 @@ class MemberService {
    */
   async getCreditBalance() {
     try {
-      const response = await api.get('/api/member/credits/balance');
+      const response = await api.get('/member/credits/balance');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -399,7 +399,7 @@ class MemberService {
    */
   async getTransactionHistory(params = {}) {
     try {
-      const response = await api.get('/api/member/transactions', {
+      const response = await api.get('/member/transactions', {
         params: {
           type: params.type, // 'purchase', 'subscription', 'tip', 'credit', 'all'
           start_date: params.start_date,
@@ -423,7 +423,7 @@ class MemberService {
    */
   async getConversations(params = {}) {
     try {
-      const response = await api.get('/api/member/messages/conversations', {
+      const response = await api.get('/member/messages/conversations', {
         params: {
           filter: params.filter || 'all', // 'all', 'unread', 'matches', 'subscribed'
           sort: params.sort || 'recent',
@@ -442,7 +442,7 @@ class MemberService {
    */
   async getMessages(creatorId, params = {}) {
     try {
-      const response = await api.get(`/api/member/messages/${creatorId}`, {
+      const response = await api.get(`/member/messages/${creatorId}`, {
         params: {
           page: params.page || 1,
           limit: params.limit || 50
@@ -471,7 +471,7 @@ class MemberService {
         formData.append('tip_amount', data.tip_amount);
       }
       
-      const response = await uploadApi.post(`/api/member/messages/${creatorId}/send`, formData);
+      const response = await uploadApi.post(`/member/messages/${creatorId}/send`, formData);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -483,7 +483,7 @@ class MemberService {
    */
   async sendTip(creatorId, amount, message = '') {
     try {
-      const response = await api.post(`/api/member/creators/${creatorId}/tip`, {
+      const response = await api.post(`/member/creators/${creatorId}/tip`, {
         amount,
         message,
         payment_method: 'credits'
@@ -499,7 +499,7 @@ class MemberService {
    */
   async markMessagesAsRead(creatorId) {
     try {
-      const response = await api.put(`/api/member/messages/${creatorId}/read`);
+      const response = await api.put(`/member/messages/${creatorId}/read`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -511,7 +511,7 @@ class MemberService {
    */
   async reportMessage(messageId, reason, details) {
     try {
-      const response = await api.post(`/api/member/messages/${messageId}/report`, {
+      const response = await api.post(`/member/messages/${messageId}/report`, {
         reason, // 'spam', 'inappropriate', 'scam', 'harassment', 'other'
         details
       });
@@ -530,7 +530,7 @@ class MemberService {
    */
   async likeContent(contentId) {
     try {
-      const response = await api.post(`/api/member/content/${contentId}/like`);
+      const response = await api.post(`/member/content/${contentId}/like`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -542,7 +542,7 @@ class MemberService {
    */
   async unlikeContent(contentId) {
     try {
-      const response = await api.delete(`/api/member/content/${contentId}/like`);
+      const response = await api.delete(`/member/content/${contentId}/like`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -554,7 +554,7 @@ class MemberService {
    */
   async commentOnContent(contentId, comment) {
     try {
-      const response = await api.post(`/api/member/content/${contentId}/comment`, {
+      const response = await api.post(`/member/content/${contentId}/comment`, {
         comment
       });
       return response;
@@ -568,7 +568,7 @@ class MemberService {
    */
   async deleteComment(commentId) {
     try {
-      const response = await api.delete(`/api/member/comments/${commentId}`);
+      const response = await api.delete(`/member/comments/${commentId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -580,7 +580,7 @@ class MemberService {
    */
   async reportContent(contentId, reason, details) {
     try {
-      const response = await api.post(`/api/member/content/${contentId}/report`, {
+      const response = await api.post(`/member/content/${contentId}/report`, {
         reason, // 'inappropriate', 'copyright', 'spam', 'misleading', 'other'
         details
       });
@@ -595,7 +595,7 @@ class MemberService {
    */
   async reportCreator(creatorId, reason, details) {
     try {
-      const response = await api.post(`/api/member/creators/${creatorId}/report`, {
+      const response = await api.post(`/member/creators/${creatorId}/report`, {
         reason, // 'fake', 'scam', 'inappropriate', 'harassment', 'other'
         details
       });
@@ -610,7 +610,7 @@ class MemberService {
    */
   async blockCreator(creatorId, reason) {
     try {
-      const response = await api.post(`/api/member/creators/${creatorId}/block`, {
+      const response = await api.post(`/member/creators/${creatorId}/block`, {
         reason
       });
       return response;
@@ -624,7 +624,7 @@ class MemberService {
    */
   async unblockCreator(creatorId) {
     try {
-      const response = await api.delete(`/api/member/creators/${creatorId}/block`);
+      const response = await api.delete(`/member/creators/${creatorId}/block`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -636,7 +636,7 @@ class MemberService {
    */
   async getBlockedCreators() {
     try {
-      const response = await api.get('/api/member/blocked');
+      const response = await api.get('/member/blocked');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -652,7 +652,7 @@ class MemberService {
    */
   async addToFavorites(creatorId) {
     try {
-      const response = await api.post(`/api/member/favorites/${creatorId}`);
+      const response = await api.post(`/member/favorites/${creatorId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -664,7 +664,7 @@ class MemberService {
    */
   async removeFromFavorites(creatorId) {
     try {
-      const response = await api.delete(`/api/member/favorites/${creatorId}`);
+      const response = await api.delete(`/member/favorites/${creatorId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -676,7 +676,7 @@ class MemberService {
    */
   async getFavorites(params = {}) {
     try {
-      const response = await api.get('/api/member/favorites', {
+      const response = await api.get('/member/favorites', {
         params: {
           page: params.page || 1,
           limit: params.limit || 20
@@ -693,7 +693,7 @@ class MemberService {
    */
   async createList(name, description) {
     try {
-      const response = await api.post('/api/member/lists', {
+      const response = await api.post('/member/lists', {
         name,
         description
       });
@@ -708,7 +708,7 @@ class MemberService {
    */
   async addToList(listId, creatorId) {
     try {
-      const response = await api.post(`/api/member/lists/${listId}/creators/${creatorId}`);
+      const response = await api.post(`/member/lists/${listId}/creators/${creatorId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -724,7 +724,7 @@ class MemberService {
    */
   async getSettings() {
     try {
-      const response = await api.get('/api/member/settings');
+      const response = await api.get('/member/settings');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -736,7 +736,7 @@ class MemberService {
    */
   async updateSettings(data) {
     try {
-      const response = await api.put('/api/member/settings', data);
+      const response = await api.put('/member/settings', data);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -748,7 +748,7 @@ class MemberService {
    */
   async updateDiscoveryPreferences(data) {
     try {
-      const response = await api.put('/api/member/settings/discovery', {
+      const response = await api.put('/member/settings/discovery', {
         show_me: data.show_me, // 'everyone', 'women', 'men', 'other'
         age_range: data.age_range,
         distance: data.distance,
@@ -767,7 +767,7 @@ class MemberService {
    */
   async updateNotificationPreferences(data) {
     try {
-      const response = await api.put('/api/member/settings/notifications', {
+      const response = await api.put('/member/settings/notifications', {
         email_notifications: data.email_notifications,
         push_notifications: data.push_notifications,
         sms_notifications: data.sms_notifications,
@@ -784,7 +784,7 @@ class MemberService {
    */
   async updatePrivacySettings(data) {
     try {
-      const response = await api.put('/api/member/settings/privacy', {
+      const response = await api.put('/member/settings/privacy', {
         profile_visibility: data.profile_visibility, // 'public', 'matches_only', 'private'
         show_online_status: data.show_online_status,
         show_last_seen: data.show_last_seen,
@@ -803,7 +803,7 @@ class MemberService {
    */
   async updatePaymentMethods(data) {
     try {
-      const response = await api.put('/api/member/settings/payment', data);
+      const response = await api.put('/member/settings/payment', data);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -819,7 +819,7 @@ class MemberService {
    */
   async getActivitySummary(period = '30d') {
     try {
-      const response = await api.get('/api/member/activity', {
+      const response = await api.get('/member/activity', {
         params: { period }
       });
       return response;
@@ -833,7 +833,7 @@ class MemberService {
    */
   async getSpendingSummary(params = {}) {
     try {
-      const response = await api.get('/api/member/spending', {
+      const response = await api.get('/member/spending', {
         params: {
           start_date: params.start_date,
           end_date: params.end_date,

@@ -8,7 +8,7 @@ import {
   HandHeart, Send, CreditCard, Sparkles, Crown,
   Flame, Diamond, Trophy, Target, BarChart3
 } from 'lucide-react';
-import axios from 'axios';
+import api from '../services/api.config';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -397,17 +397,7 @@ const BrowseMembers = () => {
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
-      const API_URL = 'http://localhost:5002';
-      
-      const response = await axios.get(
-        `${API_URL}/api/creator/members`,
-        { 
-          headers: { 
-            Authorization: `Bearer ${token}` 
-          } 
-        }
-      );
+      const response = await api.get('/creator/members');
       
       if (response.data.success) {
         setMembers(response.data.data);
@@ -598,22 +588,11 @@ const BrowseMembers = () => {
   const sendMessageToMember = async (memberId, message) => {
     setSendingMessage(true);
     try {
-      const token = localStorage.getItem('token');
-      const API_URL = 'http://localhost:5002';
-      
-      await axios.post(
-        `${API_URL}/api/creator/messages`,
-        {
-          recipientId: memberId,
-          message: message,
-          type: 'personal'
-        },
-        { 
-          headers: { 
-            Authorization: `Bearer ${token}` 
-          } 
-        }
-      );
+      await api.post('/creator/messages', {
+        recipientId: memberId,
+        message: message,
+        type: 'personal'
+      });
       
       alert('Message sent successfully!');
     } catch (err) {

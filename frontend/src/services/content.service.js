@@ -52,7 +52,7 @@ class ContentService {
         }));
       }
       
-      const response = await uploadApi.post('/api/content/upload', formData, {
+      const response = await uploadApi.post('/content/upload', formData, {
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           if (data.onProgress) {
@@ -92,7 +92,7 @@ class ContentService {
           }
         });
         
-        const upload = uploadApi.post('/api/content/upload', formData, {
+        const upload = uploadApi.post('/content/upload', formData, {
           onUploadProgress: (progressEvent) => {
             const fileProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
             const totalProgress = Math.round(((completed + (fileProgress / 100)) / files.length) * 100);
@@ -139,7 +139,7 @@ class ContentService {
         formData.append('current_byte', current_byte);
         formData.append('total_size', total_size);
         
-        await uploadApi.post('/api/content/upload/chunk', formData);
+        await uploadApi.post('/content/upload/chunk', formData);
         
         current_byte += chunk_size;
         
@@ -149,7 +149,7 @@ class ContentService {
       }
       
       // Finalize upload
-      const response = await api.post('/api/content/upload/finalize', {
+      const response = await api.post('/content/upload/finalize', {
         upload_id: uploadId
       });
       
@@ -168,7 +168,7 @@ class ContentService {
    */
   async getContent(params = {}) {
     try {
-      const response = await api.get('/api/content', {
+      const response = await api.get('/content', {
         params: {
           type: params.type, // 'photo', 'video', 'audio', 'all'
           visibility: params.visibility, // 'public', 'subscribers', 'premium', 'private'
@@ -208,7 +208,7 @@ class ContentService {
    */
   async getContentById(contentId) {
     try {
-      const response = await api.get(`/api/content/${contentId}`);
+      const response = await api.get(`/content/${contentId}`);
       
       // Cache for offline viewing
       this.cacheContent(response.data);
@@ -231,7 +231,7 @@ class ContentService {
    */
   async updateContent(contentId, data) {
     try {
-      const response = await api.put(`/api/content/${contentId}`, {
+      const response = await api.put(`/content/${contentId}`, {
         title: data.title,
         description: data.description,
         visibility: data.visibility,
@@ -258,7 +258,7 @@ class ContentService {
    */
   async deleteContent(contentId) {
     try {
-      const response = await api.delete(`/api/content/${contentId}`);
+      const response = await api.delete(`/content/${contentId}`);
       
       // Remove from cache
       this.removeCachedContent(contentId);
@@ -274,7 +274,7 @@ class ContentService {
    */
   async archiveContent(contentId) {
     try {
-      const response = await api.put(`/api/content/${contentId}/archive`);
+      const response = await api.put(`/content/${contentId}/archive`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -286,7 +286,7 @@ class ContentService {
    */
   async restoreContent(contentId) {
     try {
-      const response = await api.put(`/api/content/${contentId}/restore`);
+      const response = await api.put(`/content/${contentId}/restore`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -302,7 +302,7 @@ class ContentService {
    */
   async likeContent(contentId) {
     try {
-      const response = await api.post(`/api/content/${contentId}/like`);
+      const response = await api.post(`/content/${contentId}/like`);
       
       // Update local like state
       this.updateCachedContentLike(contentId, true);
@@ -318,7 +318,7 @@ class ContentService {
    */
   async unlikeContent(contentId) {
     try {
-      const response = await api.delete(`/api/content/${contentId}/like`);
+      const response = await api.delete(`/content/${contentId}/like`);
       
       // Update local like state
       this.updateCachedContentLike(contentId, false);
@@ -334,7 +334,7 @@ class ContentService {
    */
   async viewContent(contentId) {
     try {
-      const response = await api.post(`/api/content/${contentId}/view`, {
+      const response = await api.post(`/content/${contentId}/view`, {
         duration: 0, // Will be updated as user watches
         device_type: this.getDeviceType(),
         referrer: document.referrer
@@ -352,7 +352,7 @@ class ContentService {
    */
   async updateViewDuration(contentId, duration) {
     try {
-      const response = await api.put(`/api/content/${contentId}/view`, {
+      const response = await api.put(`/content/${contentId}/view`, {
         duration
       });
       return response;
@@ -368,7 +368,7 @@ class ContentService {
    */
   async shareContent(contentId, platform) {
     try {
-      const response = await api.post(`/api/content/${contentId}/share`, {
+      const response = await api.post(`/content/${contentId}/share`, {
         platform // 'link', 'twitter', 'reddit', 'telegram', 'whatsapp'
       });
       
@@ -397,7 +397,7 @@ class ContentService {
    */
   async reportContent(contentId, reason, details) {
     try {
-      const response = await api.post(`/api/content/${contentId}/report`, {
+      const response = await api.post(`/content/${contentId}/report`, {
         reason, // 'inappropriate', 'copyright', 'spam', 'misleading', 'underage', 'other'
         details,
         timestamp: new Date().toISOString()
@@ -417,7 +417,7 @@ class ContentService {
    */
   async getComments(contentId, params = {}) {
     try {
-      const response = await api.get(`/api/content/${contentId}/comments`, {
+      const response = await api.get(`/content/${contentId}/comments`, {
         params: {
           sort: params.sort || 'newest', // 'newest', 'oldest', 'popular'
           page: params.page || 1,
@@ -435,7 +435,7 @@ class ContentService {
    */
   async addComment(contentId, text, replyTo = null) {
     try {
-      const response = await api.post(`/api/content/${contentId}/comments`, {
+      const response = await api.post(`/content/${contentId}/comments`, {
         text,
         reply_to: replyTo
       });
@@ -450,7 +450,7 @@ class ContentService {
    */
   async deleteComment(commentId) {
     try {
-      const response = await api.delete(`/api/comments/${commentId}`);
+      const response = await api.delete(`/comments/${commentId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -462,7 +462,7 @@ class ContentService {
    */
   async likeComment(commentId) {
     try {
-      const response = await api.post(`/api/comments/${commentId}/like`);
+      const response = await api.post(`/comments/${commentId}/like`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -474,7 +474,7 @@ class ContentService {
    */
   async reportComment(commentId, reason) {
     try {
-      const response = await api.post(`/api/comments/${commentId}/report`, {
+      const response = await api.post(`/comments/${commentId}/report`, {
         reason
       });
       return response;
@@ -492,7 +492,7 @@ class ContentService {
    */
   async getContentAnalytics(contentId) {
     try {
-      const response = await api.get(`/api/content/${contentId}/analytics`);
+      const response = await api.get(`/content/${contentId}/analytics`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -504,7 +504,7 @@ class ContentService {
    */
   async getTrendingContent(params = {}) {
     try {
-      const response = await api.get('/api/content/trending', {
+      const response = await api.get('/content/trending', {
         params: {
           period: params.period || '24h', // '1h', '24h', '7d', '30d'
           category: params.category,
@@ -523,7 +523,7 @@ class ContentService {
    */
   async getRecommendedContent(params = {}) {
     try {
-      const response = await api.get('/api/content/recommended', {
+      const response = await api.get('/content/recommended', {
         params: {
           based_on: params.based_on, // 'history', 'likes', 'subscriptions'
           limit: params.limit || 20
@@ -544,7 +544,7 @@ class ContentService {
    */
   async downloadContent(contentId) {
     try {
-      const response = await api.get(`/api/content/${contentId}/download`, {
+      const response = await api.get(`/content/${contentId}/download`, {
         responseType: 'blob'
       });
       
@@ -568,7 +568,7 @@ class ContentService {
    */
   async saveForOffline(contentId) {
     try {
-      const response = await api.get(`/api/content/${contentId}/offline`);
+      const response = await api.get(`/content/${contentId}/offline`);
       
       // Store in IndexedDB for offline access
       await this.storeOfflineContent(contentId, response.data);

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
 import {
   Upload, X, Image, Video, DollarSign, Tag, Eye, EyeOff,
   AlertCircle, CheckCircle, Loader, Plus, Sparkles, TrendingUp,
@@ -10,6 +9,7 @@ import {
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { uploadApi } from '../services/api.config';
 import './CreatorContentUpload.css';
 
 const CreatorContentUpload = () => {
@@ -211,15 +211,11 @@ const CreatorContentUpload = () => {
           u.id === upload.id ? { ...u, status: 'uploading' } : u
         ));
         
-        // Upload with progress tracking
-        const response = await axios.post(
-          '/api/creator/content/upload',
+        // Upload with progress tracking - using uploadApi from config
+        const response = await uploadApi.post(
+          '/creator/content/upload',
           formData,
           {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'multipart/form-data'
-            },
             onUploadProgress: (progressEvent) => {
               const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
               setUploadProgress(prev => ({ ...prev, [upload.id]: progress }));

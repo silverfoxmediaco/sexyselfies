@@ -290,7 +290,7 @@ const CreatorProfile = () => {
     if (hasMatched) {
       navigate(`/member/messages/${creatorId}`);
     } else {
-      alert('You need to match with this creator first!');
+      alert('You need to connect with this creator first!');
     }
   };
 
