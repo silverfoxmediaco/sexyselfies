@@ -520,6 +520,45 @@ api.get('/creator/members')
 
 **Result:** Build should now complete successfully without duplicate declaration errors
 
-Last Updated: September 3, 2025 - Build Fix + API Configuration Fixes  
-Total Files Modified: 39 (+6 new fixes)
-Critical Issues Resolved: 23 (+6 new fixes)
+### 21. SPA Routing Fix - Page Refresh 404 Errors - September 3, 2025
+**Files:** `frontend/render.yaml`, `frontend/public/200.html` (created), `frontend/public/404.html` (created)
+**Issue:** "Unable to load dashboard" and 404 errors when refreshing `/creator/dashboard` and other SPA routes
+
+**Root Cause Analysis:**
+- Render static site not handling React Router client-side routes properly
+- Environment variable `VITE_API_URL` included `/v1` causing double API paths
+- Missing fallback HTML files for SPA routing
+
+**Fixes Applied:**
+
+**Environment Variable Fix:**
+- **Changed:** `VITE_API_URL: https://sexyselfies-api.onrender.com/api/v1` 
+- **To:** `VITE_API_URL: https://sexyselfies-api.onrender.com/api`
+- **Reason:** Our api.config.js automatically adds `/v1`, so including it in env var caused double `/api/v1/v1`
+
+**SPA Routing Fallbacks:**
+- **Created:** `frontend/public/200.html` - Fallback for successful route requests
+- **Created:** `frontend/public/404.html` - Fallback for 404 errors
+- **Both files:** Store current path in sessionStorage and redirect to `/index.html`
+- **React Router:** RedirectHandler in main.jsx processes stored paths
+
+**Render Configuration:**
+- **Confirmed:** `routes.type: rewrite` and `source: /*` properly configured
+- **Confirmed:** `_redirects` file has all creator routes mapped to `/index.html`
+- **Confirmed:** `vite.config.js` has `copyPublicDir: true` for deploying public files
+
+**Expected Results:**
+- ✅ `/creator/dashboard` refresh should load properly
+- ✅ All `/creator/*`, `/member/*`, `/admin/*` routes work on refresh
+- ✅ No more "Unable to load dashboard" errors
+- ✅ API calls use correct URLs without double `/api` paths
+
+**Testing URLs:**
+- https://sexyselfies-frontend.onrender.com/creator/dashboard
+- https://sexyselfies-frontend.onrender.com/creator/profile  
+- https://sexyselfies-frontend.onrender.com/member/browse-creators
+- https://sexyselfies-frontend.onrender.com/admin/dashboard
+
+Last Updated: September 3, 2025 - SPA Routing + Build + API Configuration Fixes
+Total Files Modified: 42 (+9 new fixes)  
+Critical Issues Resolved: 26 (+9 new fixes)
