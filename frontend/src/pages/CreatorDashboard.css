@@ -269,6 +269,7 @@
 
 .range-btn {
   padding: 10px 8px;
+  margin: 10px;
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -1289,6 +1290,8 @@
   border: 1px solid var(--border, #2A2A2C);
   border-radius: 20px;
   padding: 24px;
+  margin-top: 20px;
+  margin-bottom: 10px;
   transition: all 0.3s ease;
 }
 
@@ -1390,6 +1393,8 @@
   border: 1px solid var(--border, #2A2A2C);
   border-radius: 20px;
   padding: 24px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   transition: all 0.3s ease;
 }
 
@@ -1482,6 +1487,7 @@
   border: 1px solid var(--border, #2A2A2C);
   border-radius: 20px;
   padding: 24px;
+  margin-top: 10px;
   transition: all 0.3s ease;
 }
 
