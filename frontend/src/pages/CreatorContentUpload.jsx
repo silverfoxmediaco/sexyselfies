@@ -8,13 +8,16 @@ import {
   Save, Send, Info, Zap, Lock, Unlock, Star, Hash, MessageCircle
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import CreatorMainHeader from '../components/CreatorMainHeader';
+import CreatorMainFooter from '../components/CreatorMainFooter';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import { uploadApi } from '../services/api.config';
 import './CreatorContentUpload.css';
 
 const CreatorContentUpload = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -726,6 +729,9 @@ const CreatorContentUpload = () => {
 
   return (
     <div className="content-upload-page">
+      {/* Desktop Header */}
+      {isDesktop && <CreatorMainHeader />}
+      
       {/* Background */}
       <div className="upload-bg">
         <div className="bg-gradient-1"></div>
@@ -830,6 +836,9 @@ const CreatorContentUpload = () => {
           )}
         </div>
       </div>
+      
+      {/* Desktop Footer */}
+      {isDesktop && <CreatorMainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

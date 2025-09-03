@@ -559,6 +559,42 @@ api.get('/creator/members')
 - https://sexyselfies-frontend.onrender.com/member/browse-creators
 - https://sexyselfies-frontend.onrender.com/admin/dashboard
 
-Last Updated: September 3, 2025 - SPA Routing + Build + API Configuration Fixes
-Total Files Modified: 42 (+9 new fixes)  
-Critical Issues Resolved: 26 (+9 new fixes)
+### 22. CreatorContentUpload Header/Footer Fix - September 3, 2025
+**File:** `frontend/src/pages/CreatorContentUpload.jsx`
+**Issue:** https://sexyselfies-frontend.onrender.com/creator/upload page missing creator header and main footer
+
+**Problem:** CreatorContentUpload page only had BottomNavigation for mobile, missing desktop header and footer components
+
+**Fix Applied:**
+- **Added:** `import CreatorMainHeader from '../components/CreatorMainHeader'`
+- **Added:** `import CreatorMainFooter from '../components/CreatorMainFooter'`
+- **Added:** `import { useIsDesktop }` hook for responsive display
+- **Added:** `{isDesktop && <CreatorMainHeader />}` at top of page
+- **Added:** `{isDesktop && <CreatorMainFooter />}` before BottomNavigation
+
+**Layout Structure (Fixed):**
+```jsx
+<div className="content-upload-page">
+  {/* Desktop Header */}
+  {isDesktop && <CreatorMainHeader />}
+  
+  {/* Page Content */}
+  <div className="upload-container">...</div>
+  
+  {/* Desktop Footer */}
+  {isDesktop && <CreatorMainFooter />}
+  
+  {/* Mobile Navigation */}
+  {isMobile && <BottomNavigation />}
+</div>
+```
+
+**Result:** 
+- ✅ Desktop users now see proper creator header with navigation
+- ✅ Desktop users now see proper main footer 
+- ✅ Mobile users still see bottom navigation (unchanged)
+- ✅ Consistent with other protected creator pages like Dashboard, Analytics, Profile
+
+Last Updated: September 3, 2025 - Header/Footer + SPA Routing + Build + API Fixes
+Total Files Modified: 43 (+10 new fixes)  
+Critical Issues Resolved: 27 (+10 new fixes)
