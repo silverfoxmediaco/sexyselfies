@@ -166,18 +166,18 @@ export const AuthProvider = ({ children }) => {
         throw new Error('Invalid user role');
       }
 
-      if (response && response.data && response.data.token && response.data.user) {
+      if (response && response.token && response.user) {
         // Update state
         dispatch({
           type: actionTypes.AUTH_LOGIN_SUCCESS,
           payload: {
-            user: { ...response.data.user, role: userRole },
+            user: { ...response.user, role: userRole },
             role: userRole,
-            token: response.data.token
+            token: response.token
           }
         });
 
-        return { success: true, user: response.data.user };
+        return { success: true, user: response.user };
       } else {
         throw new Error('Invalid login response');
       }

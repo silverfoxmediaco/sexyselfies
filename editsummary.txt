@@ -1103,6 +1103,74 @@ const name = profileResponse?.data?.displayName ||
 - ✅ Fallback system ensures it never breaks
 - ✅ Matches real logged-in user data from database
 
-Last Updated: September 3, 2025 - Dashboard Username + Profile URL + Dashboard Mock Data Removal + CRITICAL Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
-Total Files Modified: 53 (+21 new fixes)  
-Critical Issues Resolved: 33 (+16 new fixes)
+### 35. Critical Authentication Fixes - Creator Login 404 & Token Errors - September 3, 2025 🚨
+**Files:** `frontend/src/services/auth.service.js`, `frontend/src/contexts/AuthContext.jsx`
+**Issue:** Two critical authentication bugs preventing creator login: 404 on `/auth/creator/me` and "Cannot read properties of undefined (reading 'token')"
+
+**Problem 1 - Wrong API Endpoint (404 Error):**
+- Frontend AuthContext trying to call `/auth/creator/me` endpoint
+- Backend only has generic `/auth/me` endpoint for all user types (admin, creator, member)
+- Line 314 in auth.service.js: `` `/auth/${userRole}/me` `` was generating wrong URLs
+
+**Problem 2 - Response Structure Mismatch (Token Undefined):**
+- API interceptor in api.config.js unwraps responses: `return response.data;`
+- AuthContext expecting wrapped response: `response.data.token`
+- creatorLogin function expecting wrapped response: `response.data.token`
+- Should be accessing unwrapped response: `response.token`
+
+**Fixes Applied:**
+
+**1. Auth Service Endpoint Fix:**
+```javascript
+// BEFORE (wrong):
+const endpoint = userRole === 'admin' 
+  ? '/auth/admin/me'
+  : `/auth/${userRole}/me`;  // Creates /auth/creator/me, /auth/member/me
+
+// AFTER (correct):
+const endpoint = userRole === 'admin' 
+  ? '/auth/admin/me'
+  : '/auth/me';  // Uses generic /auth/me for creators and members
+```
+
+**2. AuthContext Response Structure Fix:**
+```javascript
+// BEFORE (wrapped - causes undefined error):
+if (response && response.data && response.data.token && response.data.user) {
+  token: response.data.token,
+  user: response.data.user
+
+// AFTER (unwrapped - matches interceptor):
+if (response && response.token && response.user) {
+  token: response.token,
+  user: response.user
+```
+
+**3. CreatorLogin Response Structure Fix:**
+```javascript
+// BEFORE (wrapped - causes undefined error):
+if (response.data.token) {
+  localStorage.setItem('token', response.data.token);
+  localStorage.setItem('userId', response.data.user.id);
+
+// AFTER (unwrapped - matches interceptor):
+if (response.token) {
+  localStorage.setItem('token', response.token);
+  localStorage.setItem('userId', response.user.id);
+```
+
+**Expected Results:**
+- ✅ No more 404 errors on `/auth/creator/me`
+- ✅ No more "Cannot read properties of undefined (reading 'token')" errors
+- ✅ Creator login at `tamara@sexyselfies.com / Password123$` should work
+- ✅ Token validation should succeed
+- ✅ AuthContext state properly populated
+- ✅ Consistent API response handling across all authentication
+
+**API Endpoint Confirmed Working:**
+- `POST /api/v1/auth/creator/login` ✅ (backend exists)
+- `GET /api/v1/auth/me` ✅ (backend exists for token validation)
+
+Last Updated: September 3, 2025 - CRITICAL Authentication Fixes + Dashboard Username + Profile URL + Dashboard Mock Data Removal + Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
+Total Files Modified: 55 (+2 critical auth fixes)  
+Critical Issues Resolved: 35 (+2 authentication fixes)

@@ -164,22 +164,22 @@ class AuthService {
       });
 
       // Store tokens
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('creatorToken', response.data.token);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
+      if (response.token) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('creatorToken', response.token);
+        localStorage.setItem('refreshToken', response.refreshToken);
         localStorage.setItem('userRole', 'creator');
-        localStorage.setItem('userId', response.data.user.id);
-        localStorage.setItem('displayName', response.data.user.displayName || '');
-        localStorage.setItem('username', response.data.user.username || '');
-        localStorage.setItem('creatorVerificationStatus', response.data.user.verificationStatus || 'pending');
+        localStorage.setItem('userId', response.user.id);
+        localStorage.setItem('displayName', response.displayName || response.user.displayName || '');
+        localStorage.setItem('username', response.user.username || '');
+        localStorage.setItem('creatorVerificationStatus', response.user.verificationStatus || 'pending');
         
         if (rememberMe) {
           localStorage.setItem('rememberMe', 'true');
           localStorage.setItem('savedEmail', email);
         }
         
-        apiHelpers.setAuthToken(response.data.token);
+        apiHelpers.setAuthToken(response.token);
 
         // Register for push notifications
         if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -311,7 +311,7 @@ class AuthService {
 
       const endpoint = userRole === 'admin' 
         ? '/auth/admin/me'
-        : `/auth/${userRole}/me`;
+        : '/auth/me';
 
       const response = await api.get(endpoint);
       
