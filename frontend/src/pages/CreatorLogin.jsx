@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import api from '../services/api.config';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   Mail, Lock, Eye, EyeOff, LogIn, 
   ArrowRight, Sparkles, Heart, DollarSign 
@@ -14,12 +14,14 @@ import './CreatorLogin.css';
 
 const CreatorLogin = () => {
   const navigate = useNavigate();
+  const { login, USER_ROLES } = useAuth();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    rememberMe: false
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -68,59 +70,39 @@ const CreatorLogin = () => {
       return;
     }
     
-    console.log('Form validation passed, making API call...');
+    console.log('Form validation passed, using AuthContext...');
     setIsLoading(true);
     
     try {
-      console.log('=== API DEBUG INFO ===');
-      console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
-      console.log('Making API request to: /auth/creator/login');
-      console.log('======================');
-      const response = await api.post('/auth/creator/login', formData);
-      console.log('API response received:', response);
+      const credentials = {
+        email: formData.email,
+        password: formData.password,
+        rememberMe: formData.rememberMe || false
+      };
+
+      const result = await login(credentials, USER_ROLES.CREATOR);
       
-      if (response && response.success) {
-        // Store token and user info
-        localStorage.setItem('creatorToken', response.token);
-        localStorage.setItem('token', response.token); // Keep both for compatibility
-        localStorage.setItem('userRole', 'creator');
-        localStorage.setItem('userId', response.user.id);
-        localStorage.setItem('userEmail', response.user.email);
-        localStorage.setItem('creatorId', response.creatorId);
-        
-        // Store creator data for header display
-        const creatorData = {
-          id: response.creatorId,
-          email: response.user.email,
-          role: response.user.role,
-          isVerified: response.isVerified,
-          profileComplete: response.profileComplete
-        };
-        localStorage.setItem('creatorData', JSON.stringify(creatorData));
-        
-        // Try to get displayName from various sources
-        const displayName = response.user.displayName || 
-                          response.displayName || 
-                          response.user.email.split('@')[0];
-        localStorage.setItem('creatorName', displayName);
-        localStorage.setItem('userDisplayName', displayName);
-        
+      if (result.success) {
+        console.log('Login successful, navigating...');
         // Check verification and profile status
-        if (!response.isVerified) {
+        if (!result.user.isVerified) {
           // Creator needs to verify ID or wait for approval
           navigate('/creator/verify-id');
-        } else if (response.profileComplete === false) {
+        } else if (result.user.profileComplete === false) {
           // Creator needs to complete profile setup
           navigate('/creator/profile-setup');
         } else {
           // Everything complete, go to dashboard
           navigate('/creator/dashboard');
         }
+      } else {
+        console.error('Login failed:', result.error);
+        setErrors({
+          general: result.error || 'Login failed. Please try again.'
+        });
       }
     } catch (error) {
       console.error('Login error:', error);
-      console.error('Error response:', error.response);
-      console.error('Error message:', error.message);
       setErrors({
         general: error.message || 'Invalid email or password'
       });

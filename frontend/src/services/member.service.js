@@ -1,10 +1,43 @@
 import api, { uploadApi } from './api.config';
+import authService from './auth.service';
 
 /**
  * Member Service
  * Handles all member-related API calls including discovery, matching, purchases, and interactions
  */
 class MemberService {
+  // ==========================================
+  // AUTHENTICATION
+  // ==========================================
+  
+  /**
+   * Member login
+   */
+  async login(credentials) {
+    try {
+      const response = await authService.memberLogin(credentials.email, credentials.password, credentials.rememberMe);
+      return {
+        success: true,
+        token: response.token,
+        user: response.user
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Member register
+   */
+  async register(data) {
+    try {
+      const response = await authService.memberRegister(data);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // ==========================================
   // MEMBER PROFILE
   // ==========================================

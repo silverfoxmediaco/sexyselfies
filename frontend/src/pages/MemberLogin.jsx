@@ -6,7 +6,7 @@ import {
   Heart, Shield, Star, Users, Sparkles, 
   ChevronRight, Check, ArrowLeft
 } from 'lucide-react';
-import authService from '../services/auth.service';
+import { useAuth } from '../contexts/AuthContext';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -16,6 +16,7 @@ import './MemberLogin.css';
 const MemberLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login, USER_ROLES } = useAuth();
   const isMobile = useIsMobile();
   const userRole = getUserRole();
   const [formData, setFormData] = useState({
@@ -90,38 +91,38 @@ const MemberLogin = () => {
     setLoginError('');
     
     try {
-      const response = await authService.memberLogin(
-        formData.email,
-        formData.password,
-        formData.rememberMe
-      );
+      const credentials = {
+        email: formData.email,
+        password: formData.password,
+        rememberMe: formData.rememberMe
+      };
 
-      console.log('Login response structure:', response);
+      const result = await login(credentials, USER_ROLES.MEMBER);
       
-      if (response && response.success) {
-        console.log('Login successful:', response);
+      if (result.success) {
+        console.log('Login successful:', result);
         
-        // Handle remember me (authService already handles token storage)
+        // Handle remember me
         if (formData.rememberMe) {
           localStorage.setItem('rememberedEmail', formData.email);
         } else {
           localStorage.removeItem('rememberedEmail');
         }
         
-        // Use backend's redirect logic
-        const redirectPath = response.redirectTo || '/member/browse-creators';
+        // Use backend's redirect logic or default
+        const redirectPath = result.user.redirectTo || from;
         console.log('Redirecting to:', redirectPath);
         
-        // Pass first-time setup flag if going to filters
+        // Pass first-time setup flag if applicable
         const navigationOptions = { replace: true };
-        if (response.isFirstTimeSetup && redirectPath === '/member/filters') {
+        if (result.user.isFirstTimeSetup && redirectPath === '/member/filters') {
           navigationOptions.state = { isFirstTime: true };
         }
         
         navigate(redirectPath, navigationOptions);
       } else {
-        console.error('Login failed - no success in response:', response);
-        setLoginError('Login failed. Please try again.');
+        console.error('Login failed:', result.error);
+        setLoginError(result.error || 'Login failed. Please try again.');
       }
     } catch (error) {
       console.error('Login error:', error);

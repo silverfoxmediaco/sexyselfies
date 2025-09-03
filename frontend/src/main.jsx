@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 import './index.css';
 
 console.log('🚀 SexySelfies App Starting...');
@@ -84,10 +85,11 @@ import LandingPageV2 from './pages/LandingPageV2';
 console.log('🎯 Mounting React App to root element...');
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
-      <AppLayout>
-        <RedirectHandler />
-        <Routes>
+    <AuthProvider>
+      <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+        <AppLayout>
+          <RedirectHandler />
+          <Routes>
           {/* Landing Pages */}
           <Route path="/" element={<LandingPageV2 />} />
           <Route path="/landing-v1" element={<LandingPage />} />
@@ -199,6 +201,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             />
             <Route 
               path="profile/:username" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorProfilePage />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
+              path="profile" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorProfilePage />
@@ -444,5 +454,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </Routes>
       </AppLayout>
     </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>
 );

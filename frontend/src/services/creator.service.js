@@ -1,10 +1,43 @@
 import api, { uploadApi } from './api.config';
+import authService from './auth.service';
 
 /**
  * Creator Service
  * Handles all creator-related API calls including content, earnings, analytics, and active sales
  */
 class CreatorService {
+  // ==========================================
+  // AUTHENTICATION
+  // ==========================================
+  
+  /**
+   * Creator login
+   */
+  async login(credentials) {
+    try {
+      const response = await authService.creatorLogin(credentials.email, credentials.password, credentials.rememberMe);
+      return {
+        success: true,
+        token: response.data.token,
+        user: response.data.user
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Creator register  
+   */
+  async register(data) {
+    try {
+      const response = await authService.creatorRegister(data);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // ==========================================
   // CREATOR PROFILE
   // ==========================================

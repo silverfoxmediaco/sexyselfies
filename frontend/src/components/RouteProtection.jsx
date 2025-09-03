@@ -1,13 +1,29 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 // Protected Route Component for Creators
 export function ProtectedCreatorRoute({ children }) {
-  const token = localStorage.getItem('token');
-  const userRole = localStorage.getItem('userRole');
+  const { isAuthenticated, isCreator, isLoading } = useAuth();
   
-  if (!token || userRole !== 'creator') {
-    // Redirect to login if not authenticated
+  // Show loading while auth is being initialized
+  if (isLoading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#0A0A0A',
+        color: '#FFFFFF'
+      }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated || !isCreator) {
+    // Redirect to login if not authenticated or not a creator
     return <Navigate to="/creator/login" replace />;
   }
   
@@ -16,11 +32,26 @@ export function ProtectedCreatorRoute({ children }) {
 
 // Protected Route Component for Members
 export function ProtectedMemberRoute({ children }) {
-  const token = localStorage.getItem('token');
-  const userRole = localStorage.getItem('userRole');
+  const { isAuthenticated, isMember, isLoading } = useAuth();
   
-  if (!token || userRole !== 'member') {
-    // Redirect to login if not authenticated
+  // Show loading while auth is being initialized
+  if (isLoading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#0A0A0A',
+        color: '#FFFFFF'
+      }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated || !isMember) {
+    // Redirect to login if not authenticated or not a member
     return <Navigate to="/member/login" replace />;
   }
   

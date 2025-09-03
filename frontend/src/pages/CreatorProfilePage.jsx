@@ -6,25 +6,28 @@ import {
   Heart, Users, DollarSign, TrendingUp, Share2,
   Star, Calendar, Check, Clock, AlertCircle, Upload
 } from 'lucide-react';
-// import CreatorProfilePreview from './CreatorProfilePreview';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
-import api from '../services/api.config';
+import { useAuth } from '../contexts/AuthContext';
+import creatorService from '../services/creator.service';
 import './CreatorProfilePage.css';
 
 const CreatorProfilePage = () => {
   const navigate = useNavigate();
   const { username } = useParams();
+  const { user, isAuthenticated, isCreator, isLoading: authLoading } = useAuth();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const fileInputRef = useRef(null);
+  
   const [profileData, setProfileData] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [error, setError] = useState(null);
   const [stats, setStats] = useState({
     totalViews: 0,
     matches: 0,
@@ -32,78 +35,72 @@ const CreatorProfilePage = () => {
     rating: 0
   });
 
+  // Redirect to correct profile URL if no username provided
+  useEffect(() => {
+    if (!username && user && isCreator && !authLoading) {
+      const currentUsername = user.username || user.displayName || 'profile';
+      console.log('CreatorProfilePage: Redirecting to proper profile URL:', `/creator/profile/${currentUsername}`);
+      navigate(`/creator/profile/${currentUsername}`, { replace: true });
+      return;
+    }
+  }, [username, user, isCreator, authLoading, navigate]);
+
+  // Load profile data
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && username) {
+      loadProfileData();
+    }
+  }, [username, isAuthenticated, authLoading]);
+
   const loadProfileData = async () => {
-    console.log('CreatorProfilePage: loadProfileData called');
+    console.log('CreatorProfilePage: Loading profile data for username:', username);
+    setLoading(true);
+    setError(null);
+
     try {
-      // Check if in development mode - use multiple methods
-      const isDevelopment = import.meta.env.DEV || 
-                           import.meta.env.MODE === 'development' || 
-                           localStorage.getItem('token') === 'dev-token-12345';
-      console.log('CreatorProfilePage: isDevelopment =', isDevelopment);
-      console.log('CreatorProfilePage: import.meta.env.DEV =', import.meta.env.DEV);
-      console.log('CreatorProfilePage: import.meta.env.MODE =', import.meta.env.MODE);
-      console.log('CreatorProfilePage: hostname =', window.location.hostname);
-      console.log('CreatorProfilePage: localStorage token =', localStorage.getItem('token'));
-      
-      if (isDevelopment) {
-        // Use mock data in development
-        const mockProfile = {
-          displayName: "Sarah Martinez",
-          bio: "Content creator passionate about fitness and lifestyle",
-          location: "Los Angeles, CA",
-          profilePhoto: "/placeholders/sarah.jpg",
-          isVerified: true,
-          subscribers: 1234,
-          totalContent: 67,
-          joinDate: "2023-08-15"
-        };
+      // Check if this is the current user's profile
+      const isOwnProfile = user && (
+        username === user.username || 
+        username === user.displayName ||
+        !username
+      );
 
-        const mockStats = {
-          views: 15420,
-          likes: 3240,
-          earnings: 2847.50,
-          rating: 4.8
-        };
+      if (isOwnProfile) {
+        // Load own profile data
+        const response = await creatorService.getProfile();
+        if (response && response.data) {
+          setProfileData({
+            ...response.data,
+            isOwnProfile: true
+          });
 
-        setProfileData(mockProfile);
-        setStats(mockStats);
-        console.log('DEV MODE: Using mock profile data', mockProfile);
-        return; // Exit early in development mode
-      } else {
-        // TODO: Replace with actual API call
-        const response = await api.get('/creators/profile');
-        setProfileData(response.profile);
-        if (response.stats) {
-          setStats(response.stats);
+          // Load analytics stats for own profile
+          try {
+            const statsResponse = await creatorService.getAnalytics('30d');
+            if (statsResponse && statsResponse.data) {
+              setStats({
+                totalViews: statsResponse.data.views || 0,
+                matches: statsResponse.data.connections || 0,
+                earnings: statsResponse.data.earnings || 0,
+                rating: statsResponse.data.rating || 0
+              });
+            }
+          } catch (error) {
+            console.warn('Could not load profile stats:', error);
+          }
         }
+      } else {
+        // Load other creator's public profile (if implemented)
+        console.warn('Public profile viewing not yet implemented');
+        setError('Profile not found');
       }
     } catch (error) {
       console.error('Error loading profile:', error);
-      
-      // Get creator info from localStorage as fallback
-      const storedDisplayName = localStorage.getItem('displayName') || 
-                               localStorage.getItem('creatorName') ||
-                               localStorage.getItem('username') ||
-                               'Unknown Creator';
-      
-      setProfileData({
-        displayName: storedDisplayName,
-        bio: "No bio available",
-        location: "Unknown location",
-        profilePhoto: "/placeholders/default-avatar.jpg",
-        isVerified: false,
-        subscribers: 0,
-        totalContent: 0,
-        joinDate: new Date().toISOString()
-      });
+      setError(error.message || 'Failed to load profile');
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    loadProfileData();
-  }, []);
 
   const handlePhotoUpload = async (event) => {
     const file = event.target.files[0];
@@ -124,12 +121,7 @@ const CreatorProfilePage = () => {
     setUploadingPhoto(true);
 
     try {
-      const formData = new FormData();
-      formData.append('profileImage', file);
-
-      // Use uploadApi for file uploads
-      const { uploadApi } = await import('../services/api.config');
-      const response = await uploadApi.post('/creators/profile/image', formData);
+      const response = await creatorService.updateProfilePhoto(file);
 
       if (response && response.success) {
         // Update profile data with new photo
@@ -157,22 +149,72 @@ const CreatorProfilePage = () => {
   };
 
   const handleAvatarClick = () => {
-    if (fileInputRef.current && !uploadingPhoto) {
+    if (fileInputRef.current && !uploadingPhoto && profileData?.isOwnProfile) {
       fileInputRef.current.click();
     }
   };
 
-  if (loading) {
-    console.log('CreatorProfilePage: Still loading...');
+  // Show loading while auth is initializing or profile is loading
+  if (authLoading || loading) {
     return (
       <div className="creator-profile-loading">
         <div className="loading-spinner"></div>
-        <p>Loading your profile...</p>
+        <p>Loading profile...</p>
       </div>
     );
   }
 
-  console.log('CreatorProfilePage: Rendering main content', { profileData, stats });
+  // Show error if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="creator-profile-error">
+        <AlertCircle size={48} />
+        <h2>Authentication Required</h2>
+        <p>Please log in to view this profile.</p>
+        <button onClick={() => navigate('/creator/login')}>
+          Go to Login
+        </button>
+      </div>
+    );
+  }
+
+  // Show error if not a creator
+  if (!isCreator) {
+    return (
+      <div className="creator-profile-error">
+        <AlertCircle size={48} />
+        <h2>Access Denied</h2>
+        <p>This page is only available to creators.</p>
+        <button onClick={() => navigate('/')}>
+          Go Home
+        </button>
+      </div>
+    );
+  }
+
+  // Show error if profile failed to load
+  if (error) {
+    return (
+      <div className="creator-profile-error">
+        <AlertCircle size={48} />
+        <h2>Profile Not Found</h2>
+        <p>{error}</p>
+        <button onClick={() => navigate('/creator/dashboard')}>
+          Go to Dashboard
+        </button>
+      </div>
+    );
+  }
+
+  // Show loading if no profile data yet
+  if (!profileData) {
+    return (
+      <div className="creator-profile-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading profile data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="creator-profile-page">
@@ -184,7 +226,7 @@ const CreatorProfilePage = () => {
         <div className="profile-page-header-content">
           <h1>
             <User size={24} />
-            My Profile
+            {profileData?.isOwnProfile ? 'My Profile' : `${profileData.displayName}'s Profile`}
           </h1>
         </div>
       </div>
@@ -194,24 +236,29 @@ const CreatorProfilePage = () => {
         <div className="profile-card">
           <div className="profile-avatar">
             {profileData?.profilePhoto ? (
-              <div className="avatar-container" onClick={handleAvatarClick}>
+              <div 
+                className={`avatar-container ${profileData?.isOwnProfile ? 'clickable' : ''}`} 
+                onClick={handleAvatarClick}
+              >
                 <img src={profileData.profilePhoto} alt={profileData.displayName} />
-                <div className="avatar-overlay">
-                  {uploadingPhoto ? (
-                    <div className="upload-spinner">
-                      <div className="spinner"></div>
-                    </div>
-                  ) : (
-                    <>
-                      <Camera size={24} />
-                      <span>Change Photo</span>
-                    </>
-                  )}
-                </div>
+                {profileData?.isOwnProfile && (
+                  <div className="avatar-overlay">
+                    {uploadingPhoto ? (
+                      <div className="upload-spinner">
+                        <div className="spinner"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <Camera size={24} />
+                        <span>Change Photo</span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
               <div 
-                className={`avatar-placeholder ${uploadingPhoto ? 'uploading' : ''}`}
+                className={`avatar-placeholder ${uploadingPhoto ? 'uploading' : ''} ${profileData?.isOwnProfile ? 'clickable' : ''}`}
                 onClick={handleAvatarClick}
               >
                 {uploadingPhoto ? (
@@ -222,27 +269,29 @@ const CreatorProfilePage = () => {
                 ) : (
                   <>
                     <Camera size={32} />
-                    <span>Add Photo</span>
+                    <span>{profileData?.isOwnProfile ? 'Add Photo' : 'No Photo'}</span>
                   </>
                 )}
               </div>
             )}
             {profileData?.isOnline && <div className="online-indicator"></div>}
             
-            {/* Hidden file input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handlePhotoUpload}
-              style={{ display: 'none' }}
-              disabled={uploadingPhoto}
-            />
+            {/* Hidden file input - only for own profile */}
+            {profileData?.isOwnProfile && (
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoUpload}
+                style={{ display: 'none' }}
+                disabled={uploadingPhoto}
+              />
+            )}
           </div>
 
           <div className="profile-info">
             <div className="name-section">
-              <h2>{profileData?.displayName || 'Your Name'}</h2>
+              <h2>{profileData?.displayName || 'Creator Name'}</h2>
               {profileData?.isVerified && (
                 <div className="verified-badge">
                   <Check size={14} />
@@ -267,52 +316,53 @@ const CreatorProfilePage = () => {
             <p className="profile-bio">
               {profileData?.bio || 'Add a bio to tell members about yourself...'}
             </p>
-
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon views">
-              <Eye size={20} />
+        {/* Stats Grid - Only for own profile */}
+        {profileData?.isOwnProfile && (
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon views">
+                <Eye size={20} />
+              </div>
+              <div className="stat-content">
+                <span className="stat-value">{(stats?.totalViews || 0).toLocaleString()}</span>
+                <span className="stat-label">Total Views</span>
+              </div>
             </div>
-            <div className="stat-content">
-              <span className="stat-value">{(stats?.totalViews || 0).toLocaleString()}</span>
-              <span className="stat-label">Total Views</span>
-            </div>
-          </div>
 
-          <div className="stat-card">
-            <div className="stat-icon matches">
-              <Heart size={20} />
+            <div className="stat-card">
+              <div className="stat-icon matches">
+                <Heart size={20} />
+              </div>
+              <div className="stat-content">
+                <span className="stat-value">{(stats?.matches || 0).toLocaleString()}</span>
+                <span className="stat-label">Matches</span>
+              </div>
             </div>
-            <div className="stat-content">
-              <span className="stat-value">{(stats?.matches || 0).toLocaleString()}</span>
-              <span className="stat-label">Matches</span>
-            </div>
-          </div>
 
-          <div className="stat-card">
-            <div className="stat-icon earnings">
-              <DollarSign size={20} />
+            <div className="stat-card">
+              <div className="stat-icon earnings">
+                <DollarSign size={20} />
+              </div>
+              <div className="stat-content">
+                <span className="stat-value">${(stats?.earnings || 0).toLocaleString()}</span>
+                <span className="stat-label">Total Earnings</span>
+              </div>
             </div>
-            <div className="stat-content">
-              <span className="stat-value">${(stats?.earnings || 0).toLocaleString()}</span>
-              <span className="stat-label">Total Earnings</span>
-            </div>
-          </div>
 
-          <div className="stat-card">
-            <div className="stat-icon rating">
-              <Star size={20} />
-            </div>
-            <div className="stat-content">
-              <span className="stat-value">{stats?.rating || 0}</span>
-              <span className="stat-label">Rating</span>
+            <div className="stat-card">
+              <div className="stat-icon rating">
+                <Star size={20} />
+              </div>
+              <div className="stat-content">
+                <span className="stat-value">{stats?.rating || 0}</span>
+                <span className="stat-label">Rating</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Profile Details */}
@@ -391,50 +441,52 @@ const CreatorProfilePage = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="quick-actions">
-        <h3>Quick Actions</h3>
-        <div className="actions-grid">
-          <motion.button
-            className="quick-action-btn"
-            onClick={() => navigate('/creator/profile-setup')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Edit3 size={20} />
-            <span>Edit Profile</span>
-          </motion.button>
-          
-          <motion.button
-            className="quick-action-btn"
-            onClick={() => setShowPreview(true)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Eye size={20} />
-            <span>Preview Profile</span>
-          </motion.button>
-          
-          <motion.button
-            className="quick-action-btn"
-            onClick={() => navigate('/creator/settings')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Settings size={20} />
-            <span>Settings</span>
-          </motion.button>
-          
-          <motion.button
-            className="quick-action-btn"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Share2 size={20} />
-            <span>Share Profile</span>
-          </motion.button>
+      {/* Quick Actions - Only for own profile */}
+      {profileData?.isOwnProfile && (
+        <div className="quick-actions">
+          <h3>Quick Actions</h3>
+          <div className="actions-grid">
+            <motion.button
+              className="quick-action-btn"
+              onClick={() => navigate('/creator/profile-setup')}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Edit3 size={20} />
+              <span>Edit Profile</span>
+            </motion.button>
+            
+            <motion.button
+              className="quick-action-btn"
+              onClick={() => setShowPreview(true)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Eye size={20} />
+              <span>Preview Profile</span>
+            </motion.button>
+            
+            <motion.button
+              className="quick-action-btn"
+              onClick={() => navigate('/creator/settings')}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Settings size={20} />
+              <span>Settings</span>
+            </motion.button>
+            
+            <motion.button
+              className="quick-action-btn"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Share2 size={20} />
+              <span>Share Profile</span>
+            </motion.button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Profile Preview Modal */}
       {showPreview && (
