@@ -66,50 +66,29 @@ const CreatorDashboard = () => {
 
       const dashboard = analyticsResponse.dashboard;
       
-      // Transform API data to dashboard format with realistic fallbacks
+      // Transform API data to dashboard format with zero fallbacks
       const statsData = {
-        views: dashboard?.traffic?.overview?.totalVisits || Math.floor(Math.random() * 5000) + 8000,
-        viewsChange: calculateChange(dashboard?.traffic?.trends?.change || (Math.random() * 20 + 5)),
-        connections: dashboard?.audience?.total || Math.floor(Math.random() * 500) + 800,
-        connectionsChange: calculateChange(dashboard?.audience?.new || (Math.random() * 15 + 2)),
-        revenue: dashboard?.revenue?.total || (Math.random() * 2000 + 1500),
-        revenueChange: calculateChange(dashboard?.revenue?.change || (Math.random() * 25 + 8)),
-        avgRating: dashboard?.engagement?.rating || (4.6 + Math.random() * 0.4),
-        ratingChange: calculateChange(dashboard?.engagement?.ratingChange || (Math.random() * 0.4 - 0.2))
+        views: dashboard?.traffic?.overview?.totalVisits || 0,
+        viewsChange: calculateChange(dashboard?.traffic?.trends?.change || 0),
+        connections: dashboard?.audience?.total || 0,
+        connectionsChange: calculateChange(dashboard?.audience?.new || 0),
+        revenue: dashboard?.revenue?.total || 0,
+        revenueChange: calculateChange(dashboard?.revenue?.change || 0),
+        avgRating: dashboard?.engagement?.rating || 0,
+        ratingChange: calculateChange(dashboard?.engagement?.ratingChange || 0)
       };
 
-      // Get recent activity with fallback mock data
+      // Get recent activity - no fallback data, show empty state if none
       const activityResponse = await creatorService.getRecentActivity(5);
       let recentActivity = activityResponse.error ? [] : (activityResponse.data || []);
-      
-      // Add mock activity if no real data to maintain activity illusion
-      if (recentActivity.length === 0) {
-        recentActivity = [
-          { type: 'purchase', user: 'Sarah M.', action: 'purchased your photo set', amount: 29.99, time: '5 min ago' },
-          { type: 'tip', user: 'Mike R.', action: 'sent you a tip', amount: 50, time: '1 hour ago' },
-          { type: 'connection', user: 'Emma L.', action: 'connected with you', time: '2 hours ago' },
-          { type: 'message', user: 'Jessica K.', action: 'sent you a message', time: '3 hours ago' },
-          { type: 'view', user: 'David P.', action: 'viewed your profile', time: '4 hours ago' }
-        ];
-      }
 
-      // Get top content with fallback mock data
+      // Get top content - no fallback data, show empty state if none
       const contentResponse = await creatorService.getContentPerformance({ 
         period: timeRange, 
         sort: 'earnings',
         limit: 4 
       });
       let topContent = contentResponse.error ? [] : (contentResponse.data || []);
-      
-      // Add mock content if no real data to maintain content illusion
-      if (topContent.length === 0) {
-        topContent = [
-          { id: 1, contentType: 'photo', title: 'Sunset Beach', earnings: 124.50, views: 892, thumbnailUrl: contentImages[0] },
-          { id: 2, contentType: 'video', title: 'Morning Routine', earnings: 98.75, views: 654, thumbnailUrl: contentImages[1] },
-          { id: 3, contentType: 'photo', title: 'Coffee Vibes', earnings: 87.25, views: 743, thumbnailUrl: contentImages[2] },
-          { id: 4, contentType: 'video', title: 'Workout Session', earnings: 76.50, views: 612, thumbnailUrl: contentImages[3] }
-        ];
-      }
 
       setDashboardData({
         stats: statsData,
@@ -121,7 +100,7 @@ const CreatorDashboard = () => {
       console.error('Dashboard load error:', error);
       setError(error.message || 'Failed to load dashboard data');
       
-      // Use fallback data in case of error
+      // Use zero fallback data in case of error
       setDashboardData({
         stats: {
           views: 0,
@@ -130,7 +109,7 @@ const CreatorDashboard = () => {
           connectionsChange: 0,
           revenue: 0,
           revenueChange: 0,
-          avgRating: 4.8,
+          avgRating: 0,
           ratingChange: 0
         },
         recentActivity: [],
@@ -264,16 +243,6 @@ const CreatorDashboard = () => {
   );
 
   // Import images at the top of the component
-  const contentImages = [
-    '/src/assets/IMG_5017.jpg',
-    '/src/assets/IMG_5019.jpg',
-    '/src/assets/IMG_5020.jpg',
-    '/src/assets/IMG_5021.jpg',
-    '/src/assets/IMG_5023.jpg',
-    '/src/assets/IMG_5027.jpg',
-    '/src/assets/IMG_5028.jpg',
-    '/src/assets/IMG_5029.jpg'
-  ];
 
   // Top Content Component with real data
   const TopContent = () => (
@@ -299,7 +268,7 @@ const CreatorDashboard = () => {
             >
               <div className="creator-dashboard-content-preview">
                 <img 
-                  src={content.thumbnailUrl || content.mediaUrl || contentImages[index] || contentImages[0]} 
+                  src={content.thumbnailUrl || content.mediaUrl} 
                   alt={content.title || `Content ${index + 1}`}
                   className="creator-dashboard-content-image"
                   onError={(e) => {
