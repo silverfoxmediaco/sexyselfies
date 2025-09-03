@@ -891,6 +891,43 @@ Dashboard load error: {error: true, message: 'The requested resource was not fou
 - ✅ Creator-specific branding and navigation for member discovery
 - ✅ Consistent with other creator pages (Dashboard, Analytics, Earnings, Profile, Upload, Messages, Connections)
 
-Last Updated: September 3, 2025 - Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Dashboard Fix + Mobile Spacing + UX + SPA Routing + Build + API Fixes
+### 31. Creator Dashboard Layout Structure Fix - September 3, 2025 🚨
+**File:** `frontend/src/pages/CreatorDashboard.jsx`
+**Issue:** https://sexyselfies-frontend.onrender.com/creator/dashboard broken layout with overlapping content and poor formatting
+
+**Problem:** Dashboard had incorrect layout structure with CreatorMainHeader outside the main container, causing CSS conflicts and layout collapse
+
+**Critical Fix Applied:**
+- **Fixed:** Incorrect layout structure causing broken dashboard display
+- **Changed:** `<> <CreatorMainHeader /> <div className="creator-dashboard">` 
+- **To:** `<div className="creator-dashboard"> {isDesktop && <CreatorMainHeader />}`
+- **Fixed:** Footer positioning from outside container to inside with proper conditional rendering
+
+**Layout Structure (Fixed):**
+```jsx
+<div className="creator-dashboard">
+  {/* Desktop Header */}
+  {isDesktop && <CreatorMainHeader />}
+  
+  {/* Dashboard Content */}
+  <div className="creator-dashboard-header">...</div>
+  {/* All dashboard components */}
+  
+  {/* Desktop Footer */}
+  {isDesktop && <CreatorMainFooter />}
+  
+  {/* Mobile Navigation */}
+  {isMobile && <BottomNavigation userRole={userRole} />}
+</div>
+```
+
+**Result:**
+- ✅ Fixed broken dashboard layout and overlapping content
+- ✅ Restored proper dashboard formatting and structure
+- ✅ Desktop users see proper creator header/footer positioning
+- ✅ Mobile users see proper bottom navigation
+- ✅ Consistent with other creator pages layout pattern
+
+Last Updated: September 3, 2025 - CRITICAL Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
 Total Files Modified: 51 (+18 new fixes)  
 Critical Issues Resolved: 33 (+16 new fixes)

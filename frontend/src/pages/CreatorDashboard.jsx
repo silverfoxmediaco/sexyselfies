@@ -393,9 +393,9 @@ const CreatorDashboard = () => {
   }
 
   return (
-    <>
-      <CreatorMainHeader />
-      <div className="creator-dashboard">
+    <div className="creator-dashboard">
+      {/* Desktop Header */}
+      {isDesktop && <CreatorMainHeader />}
       {/* Dashboard Header - SIMPLIFIED WITHOUT ACTION BUTTONS */}
       <div className="creator-dashboard-header">
         <div className="creator-dashboard-header-content">
@@ -507,11 +507,12 @@ const CreatorDashboard = () => {
       {/* Quick Actions */}
       <QuickActions />
       
+      {/* Desktop Footer */}
+      {isDesktop && <CreatorMainFooter />}
+      
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
-    {isDesktop && <CreatorMainFooter />}
-    </>
   );
 };
 
