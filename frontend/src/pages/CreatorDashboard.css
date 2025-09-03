@@ -267,6 +267,18 @@
   width: 100%;
 }
 
+/* Creator Dashboard Time Range Selector */
+.creator-dashboard-time-range-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: var(--surface, #121212);
+  padding: 10px;
+  border-radius: 12px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
 .range-btn {
   padding: 10px 8px;
   background: transparent;
