@@ -1,0 +1,412 @@
+/* VerificationModal Styles */
+.VerificationModal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-md);
+}
+
+.VerificationModal-content {
+  background: var(--surface-700);
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border-600);
+}
+
+/* Mobile full screen */
+@media (max-width: 768px) {
+  .VerificationModal-overlay {
+    padding: 0;
+  }
+  
+  .VerificationModal-content {
+    border-radius: 0;
+    max-width: 100%;
+    max-height: 100vh;
+    height: 100vh;
+  }
+}
+
+.VerificationModal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--border-600);
+}
+
+.VerificationModal-header h2 {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.VerificationModal-closeBtn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 24px;
+  cursor: pointer;
+  padding: var(--space-sm);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.VerificationModal-closeBtn:hover {
+  background: var(--bg-800);
+  color: var(--text-primary);
+}
+
+.VerificationModal-body {
+  padding: var(--space-lg);
+}
+
+.VerificationModal-section {
+  margin-bottom: var(--space-xl);
+}
+
+.VerificationModal-section h3 {
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.VerificationModal-infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.VerificationModal-infoItem {
+  background: var(--bg-800);
+  padding: var(--space-md);
+  border-radius: 8px;
+  border: 1px solid var(--border-600);
+}
+
+.VerificationModal-infoItem label {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-xs);
+}
+
+.VerificationModal-infoItem p {
+  color: var(--text-primary);
+  font-size: 14px;
+  margin: 0;
+  word-break: break-word;
+}
+
+.VerificationModal-userId {
+  font-size: 12px !important;
+  opacity: 0.7;
+  font-family: monospace;
+}
+
+.VerificationModal-documentsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.VerificationModal-documentItem {
+  background: var(--bg-800);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-600);
+  transition: all 0.2s ease;
+}
+
+.VerificationModal-documentItem:hover {
+  border-color: var(--primary-600);
+  transform: translateY(-2px);
+}
+
+.VerificationModal-documentPreview {
+  position: relative;
+  aspect-ratio: 3/2;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.VerificationModal-documentPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.VerificationModal-documentPreview:hover img {
+  transform: scale(1.05);
+}
+
+.VerificationModal-documentOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: white;
+  gap: var(--space-xs);
+}
+
+.VerificationModal-documentPreview:hover .VerificationModal-documentOverlay {
+  opacity: 1;
+}
+
+.VerificationModal-documentOverlay span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.VerificationModal-documentInfo {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.VerificationModal-documentType {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.VerificationModal-documentLabel {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.VerificationModal-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+.VerificationModal-actionBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: var(--touch-target-min);
+}
+
+.VerificationModal-actionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.VerificationModal-approve {
+  background: var(--success);
+  color: white;
+}
+
+.VerificationModal-approve:hover:not(:disabled) {
+  background: #16a34a;
+  transform: translateY(-2px);
+}
+
+.VerificationModal-reject {
+  background: var(--error);
+  color: white;
+}
+
+.VerificationModal-reject:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+.VerificationModal-cancel {
+  background: var(--bg-800);
+  color: var(--text-primary);
+  border: 1px solid var(--border-600);
+}
+
+.VerificationModal-cancel:hover:not(:disabled) {
+  background: var(--surface-700);
+}
+
+.VerificationModal-rejectForm {
+  background: var(--bg-800);
+  padding: var(--space-lg);
+  border-radius: 8px;
+  border: 1px solid var(--border-600);
+  margin-top: var(--space-lg);
+}
+
+.VerificationModal-rejectForm h4 {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.VerificationModal-rejectForm textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: var(--space-md);
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.VerificationModal-rejectForm textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.VerificationModal-rejectForm textarea::placeholder {
+  color: var(--text-secondary);
+}
+
+.VerificationModal-rejectActions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.VerificationModal-keyboardHints {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-600);
+}
+
+.VerificationModal-keyboardHints span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.VerificationModal-keyboardHints kbd {
+  background: var(--bg-800);
+  border: 1px solid var(--border-600);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Document Viewer Modal */
+.VerificationModal-documentViewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: var(--space-lg);
+}
+
+.VerificationModal-documentViewerContent {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.VerificationModal-documentClose {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  padding: var(--space-sm);
+  z-index: 1;
+}
+
+.VerificationModal-documentViewerContent img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.VerificationModal-documentTitle {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: var(--space-md);
+  text-align: center;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .VerificationModal-infoGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .VerificationModal-documentsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .VerificationModal-actions {
+    flex-direction: column;
+  }
+  
+  .VerificationModal-rejectActions {
+    flex-direction: column;
+  }
+  
+  .VerificationModal-keyboardHints {
+    flex-wrap: wrap;
+  }
+  
+  .VerificationModal-documentViewer {
+    padding: var(--space-md);
+  }
+  
+  .VerificationModal-documentClose {
+    top: -40px;
+    font-size: 28px;
+  }
+}
