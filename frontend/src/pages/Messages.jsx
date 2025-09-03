@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import socketService from '../services/socket.service';
 import BottomNavigation from '../components/BottomNavigation';
-import MainHeader from '../components/MainHeader';
-import MainFooter from '../components/MainFooter';
+import CreatorMainHeader from '../components/CreatorMainHeader';
+import CreatorMainFooter from '../components/CreatorMainFooter';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './Messages.css';
 
@@ -302,7 +302,7 @@ const Messages = () => {
 
   return (
     <>
-      {isDesktop && <MainHeader />}
+      {isDesktop && <CreatorMainHeader />}
       <div className="messages-container">
       {/* Header */}
       <div className="messages-header">
@@ -514,7 +514,7 @@ const Messages = () => {
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
       </div>
-      {isDesktop && <MainFooter />}
+      {isDesktop && <CreatorMainFooter />}
     </>
   );
 };

@@ -9,8 +9,8 @@ import {
   Flame, Diamond, Trophy, Target, BarChart3
 } from 'lucide-react';
 import api from '../services/api.config';
-import MainHeader from '../components/MainHeader';
-import MainFooter from '../components/MainFooter';
+import CreatorMainHeader from '../components/CreatorMainHeader';
+import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './BrowseMembers.css';
@@ -628,7 +628,7 @@ const BrowseMembers = () => {
   return (
     <div className="browse-members-page">
       {/* Desktop Header */}
-      {isDesktop && <MainHeader />}
+      {isDesktop && <CreatorMainHeader />}
       <div className="discovery-container">
         {/* Analytics Cards */}
         <div className="analytics-cards">
@@ -1114,7 +1114,7 @@ const BrowseMembers = () => {
       </div>
       
       {/* Desktop Footer */}
-      {isDesktop && <MainFooter />}
+      {isDesktop && <CreatorMainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

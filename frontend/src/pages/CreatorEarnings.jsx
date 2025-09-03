@@ -9,13 +9,16 @@ import {
   ChevronRight, ExternalLink, AlertCircle, CheckCircle, Send
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import CreatorMainHeader from '../components/CreatorMainHeader';
+import CreatorMainFooter from '../components/CreatorMainFooter';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import creatorService from '../services/creator.service';
 import './CreatorEarnings.css';
 
 const CreatorEarnings = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [selectedPeriod, setSelectedPeriod] = useState('30d');
   const [loading, setLoading] = useState(true);
@@ -215,6 +218,9 @@ const CreatorEarnings = () => {
 
   return (
     <div className="creator-earnings">
+      {/* Desktop Header */}
+      {isDesktop && <CreatorMainHeader />}
+      
       {/* Header */}
       <div className="earnings-header">
         <div className="header-content">
@@ -688,6 +694,9 @@ const CreatorEarnings = () => {
           </motion.div>
         </div>
       )}
+      
+      {/* Desktop Footer */}
+      {isDesktop && <CreatorMainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

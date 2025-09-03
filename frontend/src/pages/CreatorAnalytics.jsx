@@ -6,8 +6,8 @@ import {
   ChevronLeft, ChevronRight, BarChart3, PieChart, Activity,
   Target, Award, Zap, ArrowUp, ArrowDown, Minus
 } from 'lucide-react';
-import MainHeader from '../components/MainHeader';
-import MainFooter from '../components/MainFooter';
+import CreatorMainHeader from '../components/CreatorMainHeader';
+import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import api from '../services/api.config';
@@ -166,7 +166,7 @@ const CreatorAnalytics = () => {
   return (
     <div className="creator-analytics">
       {/* Desktop Header */}
-      {isDesktop && <MainHeader />}
+      {isDesktop && <CreatorMainHeader />}
       {/* Header */}
       <div className="analytics-header">
         <div className="analytics-header-content">
@@ -489,7 +489,7 @@ const CreatorAnalytics = () => {
       </div>
 
       {/* Desktop Footer */}
-      {isDesktop && <MainFooter />}
+      {isDesktop && <CreatorMainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

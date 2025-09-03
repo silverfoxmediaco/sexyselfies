@@ -6,14 +6,17 @@ import {
   Clock, ChevronRight, Eye, Gift, DollarSign, Calendar,
   MapPin, TrendingUp, Camera, MoreHorizontal
 } from 'lucide-react';
+import CreatorMainHeader from '../components/CreatorMainHeader';
+import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import api from '../services/api.config';
 import './CreatorConnections.css';
 
 const CreatorConnections = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -197,6 +200,9 @@ const CreatorConnections = () => {
 
   return (
     <div className="creator-connections">
+      {/* Desktop Header */}
+      {isDesktop && <CreatorMainHeader />}
+      
       {/* Header */}
       <div className="connections-header">
         <div className="connections-header-content">
@@ -451,6 +457,9 @@ const CreatorConnections = () => {
           </motion.button>
         </div>
       </div>
+
+      {/* Desktop Footer */}
+      {isDesktop && <CreatorMainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
