@@ -948,6 +948,7 @@
   align-items: center;
   padding-top: 30px;
   border-top: 1px solid var(--border, #2A2A2C);
+  position: relative;
 }
 
 .nav-btn {
@@ -1002,7 +1003,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .upload-container {
-    padding: 20px;
+    padding: 20px 20px 120px 20px; /* Extra bottom padding for fixed navigation */
   }
 
   .upload-header {
@@ -1065,13 +1066,35 @@
   }
 
   .upload-navigation {
-    flex-direction: column;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border, #2A2A2C);
+    z-index: 100;
+    flex-direction: row;
     gap: 12px;
   }
 
   .nav-btn {
-    width: 100%;
+    flex: 1;
     justify-content: center;
+    padding: 14px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    min-height: 48px;
+  }
+
+  .nav-btn span {
+    display: block;
+  }
+
+  .nav-btn svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
