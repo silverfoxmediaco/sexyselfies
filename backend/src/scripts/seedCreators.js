@@ -43,8 +43,8 @@ const mockCreatorData = [
       videos: { min: 2.99, default: 7.99, max: 19.99 },
       messages: { min: 0.99, default: 2.99, max: 9.99 }
     },
-    profileImage: 'beaufitulbrunette1.png',
-    coverImage: 'beautifulbrunette2.png',
+    profileImage: 'ai-creator-1.png',
+    coverImage: 'ai-creator-2.png',
     verified: true,
     showInBrowse: true
   },
@@ -71,8 +71,8 @@ const mockCreatorData = [
       videos: { min: 2.99, default: 5.99, max: 19.99 },
       messages: { min: 0.99, default: 1.99, max: 9.99 }
     },
-    profileImage: 'beautifulbrunette2.png',
-    coverImage: 'beautifulbrunette4.png',
+    profileImage: 'ai-creator-3.png',
+    coverImage: 'ai-creator-4.png',
     verified: true,
     showInBrowse: true
   },
@@ -99,8 +99,8 @@ const mockCreatorData = [
       videos: { min: 2.99, default: 12.99, max: 19.99 },
       messages: { min: 0.99, default: 4.99, max: 9.99 }
     },
-    profileImage: 'beautifulbrunette4.png',
-    coverImage: 'cuteblondeselfie1.png',
+    profileImage: 'ai-creator-5.png',
+    coverImage: 'ai-creator-6.png',
     verified: true,
     showInBrowse: true,
     isTopCreator: true
@@ -128,8 +128,8 @@ const mockCreatorData = [
       videos: { min: 2.99, default: 4.99, max: 19.99 },
       messages: { min: 0.99, default: 1.49, max: 9.99 }
     },
-    profileImage: 'cuteblondeselfie1.png',
-    coverImage: 'beaufitulbrunette1.png',
+    profileImage: 'ai-creator-7.png',
+    coverImage: 'ai-creator-8.png',
     verified: false,
     showInBrowse: true
   },
@@ -156,8 +156,8 @@ const mockCreatorData = [
       videos: { min: 2.99, default: 6.99, max: 19.99 },
       messages: { min: 0.99, default: 2.49, max: 9.99 }
     },
-    profileImage: 'beautifulebrunette3.png',
-    coverImage: 'cuteblondeselfie2.png',
+    profileImage: 'ai-creator-9.png',
+    coverImage: 'ai-creator-10.png',
     verified: true,
     showInBrowse: true
   },
@@ -184,8 +184,8 @@ const mockCreatorData = [
       videos: { min: 2.99, default: 3.99, max: 19.99 },
       messages: { min: 0.99, default: 0.99, max: 9.99 }
     },
-    profileImage: 'cuteblondeselfie2.png',
-    coverImage: 'beautifulebrunette3.png',
+    profileImage: 'ai-creator-11.png',
+    coverImage: 'ai-creator-12.png',
     verified: false,
     showInBrowse: true
   },
@@ -212,8 +212,8 @@ const mockCreatorData = [
       videos: { min: 2.99, default: 8.99, max: 19.99 },
       messages: { min: 0.99, default: 3.49, max: 9.99 }
     },
-    profileImage: 'beaufitulbrunette1.png', // Reusing for variety
-    coverImage: 'beautifulbrunette4.png',
+    profileImage: 'ai-creator-13.png',
+    coverImage: 'ai-creator-14.png',
     verified: true,
     showInBrowse: true
   },
@@ -240,8 +240,8 @@ const mockCreatorData = [
       videos: { min: 2.99, default: 9.99, max: 19.99 },
       messages: { min: 0.99, default: 3.99, max: 9.99 }
     },
-    profileImage: 'creator8.png',
-    coverImage: 'creator9.png',
+    profileImage: 'ai-creator-15.png',
+    coverImage: 'ai-creator-16.png',
     verified: true,
     showInBrowse: true
   },
@@ -268,8 +268,8 @@ const mockCreatorData = [
       videos: { min: 2.99, default: 5.99, max: 19.99 },
       messages: { min: 0.99, default: 1.99, max: 9.99 }
     },
-    profileImage: 'creator10.png',
-    coverImage: 'creator8.png',
+    profileImage: 'ai-creator-17.png',
+    coverImage: 'ai-creator-18.png',
     verified: false,
     showInBrowse: true
   },
@@ -296,8 +296,8 @@ const mockCreatorData = [
       videos: { min: 2.99, default: 11.99, max: 19.99 },
       messages: { min: 0.99, default: 4.49, max: 9.99 }
     },
-    profileImage: 'creator11.png',
-    coverImage: 'creator12.png',
+    profileImage: 'ai-creator-19.png',
+    coverImage: 'ai-creator-20.png',
     verified: true,
     showInBrowse: true,
     isTopCreator: true
@@ -991,9 +991,46 @@ async function createCreator(creatorData) {
     console.log(`  ✅ User created: ${user.email}`);
     
     // 2. Upload images to Cloudinary
-    const frontendPublicPath = path.join(__dirname, '../../../frontend/public/placeholders');
-    const profileImagePath = path.join(frontendPublicPath, creatorData.profileImage);
-    const coverImagePath = path.join(frontendPublicPath, creatorData.coverImage);
+    // Try placeholders first, then fall back to assets
+    const placeholderPath = path.join(__dirname, '../../../frontend/public/placeholders');
+    const assetsPath = path.join(__dirname, '../../../frontend/src/assets');
+    
+    let profileImagePath = path.join(placeholderPath, creatorData.profileImage);
+    let coverImagePath = path.join(placeholderPath, creatorData.coverImage);
+    
+    // If placeholder doesn't exist, try to find a good assets image
+    if (!fs.existsSync(profileImagePath)) {
+      // Get available assets images (AI-generated ones are high quality)
+      const assetsImages = fs.readdirSync(assetsPath)
+        .filter(file => file.includes('jessatsexyselfies') && file.endsWith('.png'))
+        .sort();
+      
+      if (assetsImages.length > 0) {
+        // Use hash of creator name to consistently pick same image
+        const imageIndex = Math.abs(creatorData.displayName.split('').reduce((a, b) => {
+          return ((a << 5) - a) + b.charCodeAt(0);
+        }, 0)) % assetsImages.length;
+        
+        profileImagePath = path.join(assetsPath, assetsImages[imageIndex]);
+        console.log(`  📸 Using assets image: ${assetsImages[imageIndex]}`);
+      }
+    }
+    
+    // Same logic for cover image (use different image)
+    if (!fs.existsSync(coverImagePath)) {
+      const assetsImages = fs.readdirSync(assetsPath)
+        .filter(file => file.includes('jessatsexyselfies') && file.endsWith('.png'))
+        .sort();
+      
+      if (assetsImages.length > 0) {
+        // Offset by 1 to get different image for cover
+        const imageIndex = (Math.abs(creatorData.displayName.split('').reduce((a, b) => {
+          return ((a << 5) - a) + b.charCodeAt(0);
+        }, 0)) + 1) % assetsImages.length;
+        
+        coverImagePath = path.join(assetsPath, assetsImages[imageIndex]);
+      }
+    }
     
     let profileImageUrl = null;
     let coverImageUrl = null;
