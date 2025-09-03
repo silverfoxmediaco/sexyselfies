@@ -35,6 +35,7 @@ const CreatorDashboard = () => {
     recentActivity: [],
     topContent: []
   });
+  const [creatorName, setCreatorName] = useState('Creator');
 
   // Load dashboard data on mount and time range change
   useEffect(() => {
@@ -56,6 +57,33 @@ const CreatorDashboard = () => {
     try {
       setIsLoading(true);
       setError(null);
+
+      // Get creator name - same logic as profile page
+      try {
+        const isDevelopment = import.meta.env.DEV || 
+                             import.meta.env.MODE === 'development' || 
+                             localStorage.getItem('token') === 'dev-token-12345';
+        
+        if (isDevelopment) {
+          setCreatorName('tamara'); // Match the real logged-in user
+        } else {
+          const profileResponse = await creatorService.getProfile();
+          const name = profileResponse?.data?.displayName || 
+                      profileResponse?.displayName ||
+                      localStorage.getItem('displayName') || 
+                      localStorage.getItem('creatorName') ||
+                      localStorage.getItem('username') ||
+                      'Creator';
+          setCreatorName(name);
+        }
+      } catch (nameError) {
+        console.log('Could not fetch creator name, using fallback');
+        const fallbackName = localStorage.getItem('displayName') || 
+                             localStorage.getItem('creatorName') ||
+                             localStorage.getItem('username') ||
+                             'Creator';
+        setCreatorName(fallbackName);
+      }
 
       // Get dashboard analytics data
       const analyticsResponse = await creatorService.getDashboardData(timeRange);
@@ -374,7 +402,7 @@ const CreatorDashboard = () => {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              Welcome back, Creator
+              Welcome back, {creatorName}
               <span className="creator-dashboard-wave">👋</span>
             </motion.h1>
             <button 

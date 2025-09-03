@@ -198,7 +198,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
-              path="profile" 
+              path="profile/:username" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorProfilePage />

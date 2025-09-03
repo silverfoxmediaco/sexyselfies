@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   User, Edit3, Eye, Settings, Camera, MapPin, 
@@ -16,6 +16,7 @@ import './CreatorProfilePage.css';
 
 const CreatorProfilePage = () => {
   const navigate = useNavigate();
+  const { username } = useParams();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();

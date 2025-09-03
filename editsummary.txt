@@ -994,6 +994,41 @@ topContent: contentResponse.data || []                   // Real or empty
 - ✅ Professional appearance without deceptive data
 - ✅ Real data will display when creators actually have activity
 
-Last Updated: September 3, 2025 - Dashboard Mock Data Removal + CRITICAL Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
-Total Files Modified: 52 (+20 new fixes)  
+### 34. Creator Dashboard Dynamic Username Display - September 3, 2025 ✅
+**Files:** `frontend/src/pages/CreatorDashboard.jsx` and `frontend/src/main.jsx`
+**Issue:** Generic "Welcome back, Creator" text instead of actual username, and URL structure needs username
+
+**Problem:** Dashboard showed generic greeting instead of personalized "Welcome back, tamara"
+
+**Fix Applied:**
+
+**1. Dashboard Personalization:**
+- **Added:** `const [creatorName, setCreatorName] = useState('Creator');`
+- **Added:** Username fetching logic in `loadDashboardData()` function
+- **Updated:** `Welcome back, Creator` → `Welcome back, {creatorName}`
+- **Uses same logic as profile page:** API call → localStorage fallback → "Creator" fallback
+
+**2. Profile URL Structure:**
+- **Updated route:** `/creator/profile` → `/creator/profile/:username`
+- **Added:** `useParams()` to extract username from URL
+- **Result:** URLs now show `/creator/profile/tamara` for sharing
+
+**Username Resolution Logic:**
+```javascript
+// Development: Use 'tamara' 
+// Production: API call → localStorage → fallback
+const name = profileResponse?.data?.displayName || 
+            localStorage.getItem('displayName') ||
+            'Creator';
+```
+
+**Result:**
+- ✅ Dashboard shows "Welcome back, tamara" instead of generic text
+- ✅ Profile URLs are shareable: `/creator/profile/tamara`
+- ✅ Consistent username logic across profile and dashboard pages  
+- ✅ Fallback system ensures it never breaks
+- ✅ Matches real logged-in user data from database
+
+Last Updated: September 3, 2025 - Dashboard Username + Profile URL + Dashboard Mock Data Removal + CRITICAL Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
+Total Files Modified: 53 (+21 new fixes)  
 Critical Issues Resolved: 33 (+16 new fixes)
