@@ -147,9 +147,17 @@ const CreatorProfileSetup = () => {
       const response = await axios.get('/api/creator/ai/profile-suggestions', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setAiSuggestions(response.data.suggestions);
+      
+      // Only update if we got valid suggestions data
+      if (response.data && response.data.suggestions) {
+        setAiSuggestions(prevSuggestions => ({
+          ...prevSuggestions,
+          ...response.data.suggestions
+        }));
+      }
     } catch (error) {
       console.error('Error fetching AI suggestions:', error);
+      // Keep existing suggestions on error - don't overwrite with undefined
     }
   };
   
@@ -482,7 +490,7 @@ const CreatorProfileSetup = () => {
               <div className="success-stats">
                 <div className="stat">
                   <TrendingUp size={20} />
-                  <span>Est. ${aiSuggestions.estimatedEarnings.min}-${aiSuggestions.estimatedEarnings.max}/mo</span>
+                  <span>Est. ${aiSuggestions?.estimatedEarnings?.min || 500}-${aiSuggestions?.estimatedEarnings?.max || 2500}/mo</span>
                 </div>
                 <div className="stat">
                   <Star size={20} />
@@ -849,7 +857,7 @@ const StepThree = ({ formData, setFormData, errors, aiSuggestions }) => {
         <div className="form-group">
           <label className="form-label">
             Photo Price
-            <span className="ai-suggestion">AI suggests: ${aiSuggestions.photoPricing}</span>
+            <span className="ai-suggestion">AI suggests: ${aiSuggestions?.photoPricing || 3.99}</span>
           </label>
           <input
             type="number"
@@ -1030,11 +1038,11 @@ const StepFour = ({ formData, setFormData, errors, aiSuggestions }) => {
         <div className="ai-features">
           <div className="ai-feature">
             <Clock size={16} />
-            <span>Best posting time: {aiSuggestions.bestPostingTime}</span>
+            <span>Best posting time: {aiSuggestions?.bestPostingTime || '8:00 PM - 10:00 PM'}</span>
           </div>
           <div className="ai-feature">
             <TrendingUp size={16} />
-            <span>Estimated earnings: ${aiSuggestions.estimatedEarnings.min}-${aiSuggestions.estimatedEarnings.max}/mo</span>
+            <span>Estimated earnings: ${aiSuggestions?.estimatedEarnings?.min || 500}-${aiSuggestions?.estimatedEarnings?.max || 2500}/mo</span>
           </div>
         </div>
       </div>
@@ -1139,7 +1147,7 @@ const StepFive = ({ formData, setFormData, errors, aiSuggestions, onPreview }) =
             </div>
             <div className="stat">
               <TrendingUp size={16} />
-              <span>Est. ${aiSuggestions.estimatedEarnings.min}-${aiSuggestions.estimatedEarnings.max}/mo</span>
+              <span>Est. ${aiSuggestions?.estimatedEarnings?.min || 500}-${aiSuggestions?.estimatedEarnings?.max || 2500}/mo</span>
             </div>
           </div>
         </div>
