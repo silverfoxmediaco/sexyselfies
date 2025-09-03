@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { 
-  Menu, X, ChevronDown, LogOut,
+  Menu, X, LogOut,
   Home, Camera, DollarSign, TrendingUp, 
   Settings, User, Bell, MessageCircle,
   Users, Grid3x3, CreditCard, BarChart3,
@@ -13,8 +13,7 @@ import logo from '../assets/sexysselfies_logo.png';
 
 const CreatorMainHeader = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -30,6 +29,11 @@ const CreatorMainHeader = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Close menu on route change
+    setMenuOpen(false);
+  }, [location]);
+
   const handleLogout = async () => {
     try {
       await authService.logout();
@@ -44,11 +48,19 @@ const CreatorMainHeader = () => {
 
   const creatorNavItems = [
     { label: 'Dashboard', path: '/creator/dashboard', icon: Home },
-    { label: 'Content', path: '/creator/content', icon: Camera },
+    { label: 'Upload Content', path: '/creator/upload', icon: Camera },
     { label: 'Analytics', path: '/creator/analytics', icon: BarChart3 },
     { label: 'Earnings', path: '/creator/earnings', icon: DollarSign },
     { label: 'Messages', path: '/creator/messages', icon: MessageCircle },
     { label: 'Connections', path: '/creator/connections', icon: Users },
+    { label: 'Browse Members', path: '/creator/browse-members', icon: Heart },
+  ];
+
+  const profileNavItems = [
+    { label: 'My Profile', path: '/creator/profile', icon: User },
+    { label: 'Settings', path: '/creator/settings', icon: Settings },
+    { label: 'Verification', path: '/creator/verification', icon: Shield },
+    { label: 'Payments', path: '/creator/payments', icon: CreditCard },
   ];
 
   const isActivePath = (path) => {
@@ -56,145 +68,112 @@ const CreatorMainHeader = () => {
   };
 
   return (
-    <header className={`creator-main-header ${scrolled ? 'scrolled' : ''}`}>
-      <div className="header-container">
-        {/* Logo */}
-        <div className="header-logo">
-          <Link to="/creator/dashboard">
-            <img src={logo} alt="SexySelfies" />
-          </Link>
-        </div>
-
-        {/* Desktop Navigation */}
-        <nav className="desktop-nav">
-          <ul className="nav-links">
-            {creatorNavItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <li key={item.path} className={isActivePath(item.path) ? 'active' : ''}>
-                  <Link to={item.path}>
-                    <Icon size={18} />
-                    <span>{item.label}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        {/* Right Side Actions */}
-        <div className="header-actions">
-          {/* Notifications */}
-          <button className="notification-btn">
-            <Bell size={20} />
-            <span className="notification-badge">3</span>
-          </button>
-
-          {/* Creator Profile Dropdown */}
-          <div className="user-menu-container">
-            <button 
-              className="user-menu-trigger"
-              onClick={() => setShowUserMenu(!showUserMenu)}
-            >
-              <div className="user-avatar">
-                <User size={20} />
-              </div>
-              <span className="user-name">{creatorName}</span>
-              <ChevronDown size={16} />
-            </button>
-
-            {showUserMenu && (
-              <div className="user-menu-dropdown">
-                <div className="user-menu-header">
-                  <div className="user-info">
-                    <div className="user-avatar">
-                      <User size={24} />
-                    </div>
-                    <div>
-                      <div className="user-name">{creatorName}</div>
-                      <div className="user-role">Creator</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="user-menu-links">
-                  <Link to="/creator/profile" onClick={() => setShowUserMenu(false)}>
-                    <User size={16} />
-                    My Profile
-                  </Link>
-                  <Link to="/creator/settings" onClick={() => setShowUserMenu(false)}>
-                    <Settings size={16} />
-                    Settings
-                  </Link>
-                  <Link to="/creator/verification" onClick={() => setShowUserMenu(false)}>
-                    <Shield size={16} />
-                    Verification
-                  </Link>
-                  <Link to="/creator/subscription" onClick={() => setShowUserMenu(false)}>
-                    <Zap size={16} />
-                    Subscription
-                  </Link>
-                  <Link to="/creator/payments" onClick={() => setShowUserMenu(false)}>
-                    <CreditCard size={16} />
-                    Payments
-                  </Link>
-                </div>
-
-                <div className="user-menu-footer">
-                  <button onClick={handleLogout} className="logout-btn">
-                    <LogOut size={16} />
-                    Sign Out
-                  </button>
-                </div>
-              </div>
-            )}
+    <>
+      {/* Top Navigation Bar */}
+      <header className={`creator-main-header ${scrolled ? 'scrolled' : ''}`}>
+        <div className="creator-header-container">
+          {/* Logo */}
+          <div className="creator-header-logo">
+            <Link to="/creator/dashboard">
+              <img src={logo} alt="SexySelfies" />
+            </Link>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <button 
-            className="mobile-menu-toggle"
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
-          >
-            {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Navigation */}
-      {showMobileMenu && (
-        <div className="mobile-nav">
-          <div className="mobile-nav-links">
-            {creatorNavItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link 
-                  key={item.path}
-                  to={item.path}
-                  className={isActivePath(item.path) ? 'active' : ''}
-                  onClick={() => setShowMobileMenu(false)}
-                >
-                  <Icon size={20} />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-            <div className="mobile-nav-divider"></div>
-            <Link to="/creator/profile" onClick={() => setShowMobileMenu(false)}>
-              <User size={20} />
-              <span>My Profile</span>
-            </Link>
-            <Link to="/creator/settings" onClick={() => setShowMobileMenu(false)}>
-              <Settings size={20} />
-              <span>Settings</span>
-            </Link>
-            <button onClick={handleLogout} className="mobile-logout">
-              <LogOut size={20} />
-              <span>Sign Out</span>
+          {/* Right Side Actions */}
+          <div className="creator-header-actions">
+            {/* Notifications */}
+            <button className="creator-notification-btn">
+              <Bell size={20} />
+              <span className="creator-notification-badge">3</span>
             </button>
+
+            {/* Hamburger Menu Button */}
+            <button 
+              className="creator-hamburger-menu"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Right Slide-Out Menu Overlay */}
+      {menuOpen && (
+        <div className="creator-menu-overlay" onClick={() => setMenuOpen(false)}>
+          <div className="creator-slide-menu" onClick={(e) => e.stopPropagation()}>
+            {/* Close Button */}
+            <button 
+              className="creator-close-btn" 
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
+            >
+              <X size={24} />
+            </button>
+
+            {/* User Info Section */}
+            <div className="creator-user-info-section">
+              <div className="creator-user-avatar">
+                <User size={24} />
+              </div>
+              <div className="creator-user-details">
+                <span className="creator-user-name">{creatorName}</span>
+                <span className="creator-user-role">Creator</span>
+              </div>
+            </div>
+
+            {/* Main Navigation Links */}
+            <div className="creator-nav-section">
+              <h3 className="creator-nav-section-title">Navigation</h3>
+              <div className="creator-nav-links">
+                {creatorNavItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link 
+                      key={item.path}
+                      to={item.path}
+                      className={`creator-nav-link ${isActivePath(item.path) ? 'active' : ''}`}
+                    >
+                      <Icon className="creator-nav-icon" size={20} />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Profile & Settings Section */}
+            <div className="creator-nav-section">
+              <h3 className="creator-nav-section-title">Account</h3>
+              <div className="creator-nav-links">
+                {profileNavItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link 
+                      key={item.path}
+                      to={item.path}
+                      className={`creator-nav-link ${isActivePath(item.path) ? 'active' : ''}`}
+                    >
+                      <Icon className="creator-nav-icon" size={20} />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Logout Section */}
+            <div className="creator-logout-section">
+              <button onClick={handleLogout} className="creator-logout-btn">
+                <LogOut size={20} />
+                <span>Sign Out</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 };
 
