@@ -259,7 +259,9 @@ const CreatorProfilePage = () => {
             <div className="profile-meta">
               <span className="meta-item">
                 <MapPin size={14} />
-                {profileData?.location || 'Location not set'}
+                {typeof profileData?.location === 'object' 
+                  ? profileData?.location?.country || 'Location not set'
+                  : profileData?.location || 'Location not set'}
               </span>
               <span className="meta-item">
                 <Calendar size={14} />
@@ -337,7 +339,11 @@ const CreatorProfilePage = () => {
             </div>
             <div className="detail-item">
               <span className="detail-label">Location</span>
-              <span className="detail-value">{profileData?.location || 'Not specified'}</span>
+              <span className="detail-value">
+                {typeof profileData?.location === 'object' 
+                  ? profileData?.location?.country || 'Not specified'
+                  : profileData?.location || 'Not specified'}
+              </span>
             </div>
           </div>
         </div>
