@@ -95,91 +95,14 @@ const CreatorProfilePage = () => {
         totalContent: 0,
         joinDate: new Date().toISOString()
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     loadProfileData();
   }, []);
-
-  const loadProfileData = async () => {
-    console.log('CreatorProfilePage: loadProfileData called');
-    try {
-      // Check if in development mode - use multiple methods
-      const isDevelopment = import.meta.env.DEV || 
-                           import.meta.env.MODE === 'development' || 
-                           localStorage.getItem('token') === 'dev-token-12345';
-      console.log('CreatorProfilePage: isDevelopment =', isDevelopment);
-      console.log('CreatorProfilePage: import.meta.env.DEV =', import.meta.env.DEV);
-      console.log('CreatorProfilePage: import.meta.env.MODE =', import.meta.env.MODE);
-      console.log('CreatorProfilePage: hostname =', window.location.hostname);
-      console.log('CreatorProfilePage: localStorage token =', localStorage.getItem('token'));
-      
-      if (isDevelopment) {
-        // Use mock data in development
-        const mockProfile = {
-          displayName: "Sarah Martinez",
-          bio: "Lifestyle content creator & fitness enthusiast. Join me for exclusive behind-the-scenes content!",
-          profilePhoto: null,
-          coverPhoto: null,
-          age: 24,
-          location: "Los Angeles, CA",
-          orientation: "Straight",
-          gender: "Female",
-          bodyType: "Athletic",
-          pricing: {
-            photos: 2.99,
-            videos: 5.99
-          },
-          isVerified: true,
-          isOnline: true
-        };
-
-        const mockStats = {
-          totalViews: 15420,
-          matches: 1247,
-          earnings: 3840.50,
-          rating: 4.8
-        };
-
-        setProfileData(mockProfile);
-        setStats(mockStats);
-        console.log('DEV MODE: Using mock profile data', mockProfile);
-        return; // Exit early in development mode
-      } else {
-        // TODO: Replace with actual API call
-        const response = await api.get('/creators/profile');
-        setProfileData(response.profile);
-        if (response.stats) {
-          setStats(response.stats);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-      
-      // Get creator info from localStorage as fallback
-      const storedDisplayName = localStorage.getItem('displayName') || 
-                               localStorage.getItem('creatorName') ||
-                               localStorage.getItem('username') ||
-                               localStorage.getItem('userEmail')?.split('@')[0];
-      
-      // Set default values on error with localStorage fallbacks
-      setProfileData({
-        displayName: storedDisplayName || "Creator Name",
-        bio: "Add your bio to attract more subscribers and connections!",
-        isVerified: false,
-        isOnline: false
-      });
-      setStats({
-        totalViews: 0,
-        matches: 0,
-        earnings: 0,
-        rating: 0
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handlePhotoUpload = async (event) => {
     const file = event.target.files[0];
