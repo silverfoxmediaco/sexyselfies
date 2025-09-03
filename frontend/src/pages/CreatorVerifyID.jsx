@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MainHeader from '../components/MainHeader';
-import MainFooter from '../components/MainFooter';
+import CreatorMainHeader from '../components/CreatorMainHeader';
+import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import api, { uploadApi } from '../services/api.config';
@@ -187,7 +187,7 @@ const CreatorVerifyID = () => {
     return (
       <div className="verify-id-page">
         {/* Desktop Header */}
-        {isDesktop && <MainHeader />}
+        {isDesktop && <CreatorMainHeader />}
         <div className="verify-container success-container">
           <div className="success-icon">✅</div>
           <h1>Verification Submitted!</h1>
@@ -251,7 +251,7 @@ const CreatorVerifyID = () => {
           </div>
         </div>
       {/* Desktop Footer */}
-      {isDesktop && <MainFooter />}
+      {isDesktop && <CreatorMainFooter />}
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
       </div>
@@ -261,7 +261,7 @@ const CreatorVerifyID = () => {
   return (
     <div className="verify-id-page">
       {/* Desktop Header */}
-      {isDesktop && <MainHeader />}
+      {isDesktop && <CreatorMainHeader />}
       <div className="verify-container">
         <div className="verify-header">
           <h1>Verify Your Identity</h1>
@@ -453,7 +453,7 @@ const CreatorVerifyID = () => {
         </div>
       </div>
       {/* Desktop Footer */}
-      {isDesktop && <MainFooter />}
+      {isDesktop && <CreatorMainFooter />}
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>

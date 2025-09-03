@@ -606,9 +606,15 @@ exports.creatorLogin = async (req, res, next) => {
       console.log('Found existing creator profile:', creator._id);
       profileComplete = creator.profileComplete || false;
       isVerified = creator.isVerified || false;
-      needsIdVerification = !creator.verificationSubmittedAt;
+      needsIdVerification = !creator.verificationSubmittedAt || (!creator.isVerified && creator.verificationStatus !== 'approved');
       
-      console.log('Creator status:', { profileComplete, isVerified, needsIdVerification });
+      console.log('Creator status:', { 
+        profileComplete, 
+        isVerified, 
+        needsIdVerification, 
+        verificationSubmittedAt: creator.verificationSubmittedAt,
+        verificationStatus: creator.verificationStatus 
+      });
     }
 
     // Update last login and email verification
@@ -636,7 +642,11 @@ exports.creatorLogin = async (req, res, next) => {
       isVerified,
       profileComplete,
       needsIdVerification,
-      redirectTo: needsIdVerification ? '/creator/verify-id' : '/creator/dashboard'
+      redirectTo: needsIdVerification 
+        ? '/creator/verify-id' 
+        : !isVerified && creator.verificationStatus === 'pending'
+          ? '/creator/verification-pending'
+          : '/creator/dashboard'
     };
     
     console.log('Calling sendTokenResponse with additionalData:', Object.keys(additionalData));

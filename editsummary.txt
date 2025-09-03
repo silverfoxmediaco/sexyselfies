@@ -1171,6 +1171,113 @@ if (response.token) {
 - `POST /api/v1/auth/creator/login` ✅ (backend exists)
 - `GET /api/v1/auth/me` ✅ (backend exists for token validation)
 
-Last Updated: September 3, 2025 - CRITICAL Authentication Fixes + Dashboard Username + Profile URL + Dashboard Mock Data Removal + Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
-Total Files Modified: 55 (+2 critical auth fixes)  
-Critical Issues Resolved: 35 (+2 authentication fixes)
+### 36. CreatorVerifyID Header/Footer Fix - September 3, 2025 ✅
+**File:** `frontend/src/pages/CreatorVerifyID.jsx`
+**Issue:** https://sexyselfies-frontend.onrender.com/creator/verify-id using generic header/footer instead of creator-specific components
+
+**Problem:** CreatorVerifyID page was using `MainHeader` and `MainFooter` instead of creator-specific components for the `/creator/verify-id` route
+
+**Fix Applied:**
+- **Changed:** `import MainHeader` → `import CreatorMainHeader`
+- **Changed:** `import MainFooter` → `import CreatorMainFooter`
+- **Updated:** Both success and form sections:
+  - `{isDesktop && <MainHeader />}` → `{isDesktop && <CreatorMainHeader />}`
+  - `{isDesktop && <MainFooter />}` → `{isDesktop && <CreatorMainFooter />}`
+
+**Layout Structure (Fixed):**
+```jsx
+<div className="verify-id-page">
+  {/* Desktop Header */}
+  {isDesktop && <CreatorMainHeader />}
+  
+  {/* Verification Content */}
+  <div className="verify-container">...</div>
+  
+  {/* Desktop Footer */}  
+  {isDesktop && <CreatorMainFooter />}
+  
+  {/* Mobile Navigation */}
+  {isMobile && <BottomNavigation userRole={userRole} />}
+</div>
+```
+
+**Result:**
+- ✅ Desktop users now see proper creator navigation header
+- ✅ Desktop users now see proper creator footer
+- ✅ Mobile users still see bottom navigation (unchanged)
+- ✅ Creator-specific branding and navigation for ID verification
+- ✅ Consistent with other creator pages (Dashboard, Analytics, Earnings, Profile, Upload, Messages, Connections, Browse Members)
+
+### 37. Creator Verification Redirect Logic Fix - September 3, 2025 🚨
+**File:** `backend/src/controllers/auth.controller.js`
+**Issue:** Verified creators being redirected to `/creator/verify-id` instead of `/creator/dashboard` after login
+
+**Problem Analysis:**
+- `tamara@sexyselfies.com` should be verified but was still redirected to verification page
+- Logic was only checking `!creator.verificationSubmittedAt` for `needsIdVerification`
+- Missing verification status validation - should also check if `isVerified = true`
+
+**Root Cause:**
+```javascript
+// BEFORE (flawed logic):
+needsIdVerification = !creator.verificationSubmittedAt;
+redirectTo: needsIdVerification ? '/creator/verify-id' : '/creator/dashboard'
+
+// This would redirect verified creators to verify-id if verificationSubmittedAt was missing
+```
+
+**Verification Flow Logic:**
+1. **New Creator**: No `verificationSubmittedAt` → Redirect to `/creator/verify-id`
+2. **Documents Submitted**: Has `verificationSubmittedAt`, `isVerified = false`, `status = 'pending'` → Redirect to `/creator/verification-pending`
+3. **Verified Creator**: Has `isVerified = true`, `status = 'approved'` → Redirect to `/creator/dashboard`
+
+**Fixes Applied:**
+
+**1. Enhanced needsIdVerification Logic:**
+```javascript
+// BEFORE (incomplete):
+needsIdVerification = !creator.verificationSubmittedAt;
+
+// AFTER (comprehensive):
+needsIdVerification = !creator.verificationSubmittedAt || (!creator.isVerified && creator.verificationStatus !== 'approved');
+```
+
+**2. Enhanced Redirect Logic:**
+```javascript
+// BEFORE (basic):
+redirectTo: needsIdVerification ? '/creator/verify-id' : '/creator/dashboard'
+
+// AFTER (comprehensive):
+redirectTo: needsIdVerification 
+  ? '/creator/verify-id' 
+  : !isVerified && creator.verificationStatus === 'pending'
+    ? '/creator/verification-pending'
+    : '/creator/dashboard'
+```
+
+**3. Enhanced Debug Logging:**
+```javascript
+console.log('Creator status:', { 
+  profileComplete, 
+  isVerified, 
+  needsIdVerification, 
+  verificationSubmittedAt: creator.verificationSubmittedAt,
+  verificationStatus: creator.verificationStatus 
+});
+```
+
+**Expected Results:**
+- ✅ `tamara@sexyselfies.com` (verified creator) redirects to `/creator/dashboard`
+- ✅ New creators redirect to `/creator/verify-id`
+- ✅ Pending verification creators redirect to `/creator/verification-pending` 
+- ✅ Comprehensive verification status checking
+- ✅ Better debugging for verification issues
+
+**Creator Flow Fixed:**
+1. **Unverified + No Documents**: `/creator/verify-id`
+2. **Unverified + Pending Documents**: `/creator/verification-pending`
+3. **Verified Creator**: `/creator/dashboard` ✅
+
+Last Updated: September 3, 2025 - Creator Verification Redirect Fix + CreatorVerifyID Header/Footer + CRITICAL Authentication Fixes + Dashboard Username + Profile URL + Dashboard Mock Data Removal + Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
+Total Files Modified: 57 (+1 verification logic fix)  
+Critical Issues Resolved: 37 (+1 verification redirect fix)
