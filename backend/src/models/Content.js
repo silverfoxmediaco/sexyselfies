@@ -34,8 +34,20 @@ const contentSchema = new mongoose.Schema({
     dimensions: {
       width: Number,
       height: Number
-    }
+    },
+    cloudinaryPublicId: String, // For deletion from Cloudinary
+    originalName: String // Original filename for reference
   }],
+  uploadBatch: {
+    type: String,
+    default: function() {
+      return new mongoose.Types.ObjectId().toString(); // Generate unique batch ID
+    }
+  },
+  contentOrder: {
+    type: Number,
+    default: 0 // Order within upload batch
+  },
   price: {
     type: Number,
     required: true,

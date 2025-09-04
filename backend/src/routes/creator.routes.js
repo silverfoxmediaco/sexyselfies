@@ -9,6 +9,7 @@ const creatorProfileController = require('../controllers/creator.profile.control
 const creatorContentController = require('../controllers/creator.content.controller');
 const creatorConnectionController = require('../controllers/creator.connection.controller');
 const notificationController = require('../controllers/notification.controller');
+const uploadController = require('../controllers/upload.controller');
 
 // Import middleware with error handling
 let protect, authorize;
@@ -122,6 +123,9 @@ if (creatorContentController.uploadContent) {
     res.status(501).json({ message: 'Content image upload coming soon' });
   });
 }
+
+// Add the route that frontend expects - using upload controller
+router.post('/content/upload', contentImagesUpload, uploadController.uploadContent);
 
 // Content upload with correct middleware for video
 router.post('/content/video', contentVideoUpload, (req, res) => {

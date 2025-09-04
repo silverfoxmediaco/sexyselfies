@@ -201,13 +201,14 @@ const CreatorContentUpload = () => {
         formData.append('content', upload.file);
         formData.append('title', contentDetails.title || upload.name);
         formData.append('description', contentDetails.description);
-        formData.append('category', contentDetails.category);
+        formData.append('type', upload.type); // photo or video
         formData.append('tags', JSON.stringify(contentDetails.tags));
         formData.append('price', upload.price);
-        formData.append('visibility', contentDetails.visibility);
-        formData.append('watermark', contentDetails.watermark);
-        formData.append('allowComments', contentDetails.allowComments);
-        formData.append('allowTips', contentDetails.allowTips);
+        formData.append('isFree', contentDetails.visibility === 'free');
+        formData.append('isPreview', contentDetails.visibility === 'preview');
+        if (contentDetails.scheduledDate) {
+          formData.append('scheduledFor', contentDetails.scheduledDate);
+        }
         
         // Update upload status
         setUploads(prev => prev.map(u => 
@@ -229,9 +230,17 @@ const CreatorContentUpload = () => {
           }
         );
         
-        // Mark as complete
+        // Mark as complete and update with backend data
+        const backendData = response.data.data;
         setUploads(prev => prev.map(u => 
-          u.id === upload.id ? { ...u, status: 'complete' } : u
+          u.id === upload.id ? { 
+            ...u, 
+            status: 'complete',
+            contentId: backendData.contentId, // MongoDB _id from backend
+            uploadBatch: backendData.uploadBatch, // Batch ID for grouping
+            cloudinaryPublicId: backendData.media[0]?.cloudinaryPublicId, // For deletion
+            backendUrl: backendData.media[0]?.url // Cloudinary URL
+          } : u
         ));
       }
       
@@ -242,7 +251,15 @@ const CreatorContentUpload = () => {
       
     } catch (error) {
       console.error('Upload error:', error);
-      setErrors({ submit: 'Failed to upload content. Please try again.' });
+      
+      // Mark failed uploads
+      setUploads(prev => prev.map(u => 
+        u.status === 'uploading' ? { ...u, status: 'error' } : u
+      ));
+      
+      setErrors({ 
+        submit: error.response?.data?.error || error.response?.data?.message || 'Upload failed. Please try again.' 
+      });
     } finally {
       setIsUploading(false);
     }
@@ -347,6 +364,11 @@ const CreatorContentUpload = () => {
                   {upload.status === 'complete' && (
                     <div className="creator-content-upload-success-overlay">
                       <CheckCircle size={32} />
+                      {upload.contentId && (
+                        <small style={{ fontSize: '10px', marginTop: '4px', color: 'white' }}>
+                          ID: {upload.contentId.toString().slice(-8)}
+                        </small>
+                      )}
                     </div>
                   )}
                   

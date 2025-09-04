@@ -168,8 +168,11 @@ exports.uploadContent = async (req, res) => {
       });
     }
 
+    // Generate batch ID for this upload session
+    const uploadBatch = new require('mongoose').Types.ObjectId().toString();
+
     // Process media files
-    const media = await Promise.all(mediaFiles.map(async (file) => {
+    const media = await Promise.all(mediaFiles.map(async (file, index) => {
       // Get file metadata from Cloudinary if needed
       let dimensions = {};
       let duration = null;
@@ -197,7 +200,9 @@ exports.uploadContent = async (req, res) => {
         type: file.resource_type === 'video' ? 'video' : 'image',
         duration: duration,
         size: file.size,
-        dimensions: dimensions
+        dimensions: dimensions,
+        cloudinaryPublicId: file.filename, // Store Cloudinary public ID
+        originalName: file.originalname // Store original filename
       };
     }));
 
@@ -216,10 +221,12 @@ exports.uploadContent = async (req, res) => {
       description: description || '',
       thumbnail: thumbnail,
       media: media,
+      uploadBatch: uploadBatch,
+      contentOrder: 0, // Will be updated if multiple files in batch
       price: parseFloat(price) || creator.contentPrice || 2.99,
       isFree: isFree === 'true' || isFree === true,
       isPreview: isPreview === 'true' || isPreview === true,
-      tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim())) : [],
+      tags: tags ? (Array.isArray(tags) ? tags : JSON.parse(tags || '[]')) : [],
       scheduledFor: scheduledFor ? new Date(scheduledFor) : null,
       expiresAt: expiresAt ? new Date(expiresAt) : null,
       isActive: !scheduledFor || new Date(scheduledFor) <= new Date()
@@ -227,7 +234,26 @@ exports.uploadContent = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      data: content
+      data: {
+        contentId: content._id,
+        uploadBatch: uploadBatch,
+        title: content.title,
+        description: content.description,
+        price: content.price,
+        type: content.type,
+        media: content.media.map(m => ({
+          url: m.url,
+          type: m.type,
+          size: m.size,
+          dimensions: m.dimensions,
+          cloudinaryPublicId: m.cloudinaryPublicId,
+          originalName: m.originalName
+        })),
+        thumbnail: content.thumbnail,
+        tags: content.tags,
+        isActive: content.isActive,
+        createdAt: content.createdAt
+      }
     });
   } catch (error) {
     console.error('Content upload error:', error);
