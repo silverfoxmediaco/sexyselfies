@@ -22,6 +22,7 @@ Fixed authentication flow issues, creator verification redirects, and updated Cr
 55. **Removed Allow Comments Feature** - Removed "Allow comments" checkbox as comments don't make sense for swipable content in this platform context
 56. **Made Allow Tips Checkbox Functional** - Added allowTips field to Content model, upload controller processing, and frontend form data to make the "Accept tips" checkbox actually functional
 57. **Added Free Content Option in Upload Step 1** - Added "Free" checkbox per file in the upload process allowing creators to set individual content as free samples, updated Content model to allow price = 0, and backend logic to auto-set isFree = true when price is 0
+58. **Fixed API Endpoint Mismatch** - Changed `/creator/content/upload` to `/creators/content/upload` in frontend API calls to match backend route mounting (plural vs singular)
 
 ## Previous Session Overview  
 Rebuilt the creator profile system with enterprise-grade architecture suitable for millions of users, replacing band-aid localStorage solutions with proper database-driven authentication and data management.

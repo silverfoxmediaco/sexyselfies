@@ -205,7 +205,7 @@ class CreatorService {
         formData.append('thumbnail', data.thumbnail);
       }
       
-      const response = await uploadApi.post('/creator/content/upload', formData, {
+      const response = await uploadApi.post('/creators/content/upload', formData, {
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           if (data.onProgress) {

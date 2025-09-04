@@ -216,7 +216,7 @@ const CreatorContentUpload = () => {
         
         // Upload with progress tracking - using uploadApi from config
         const response = await uploadApi.post(
-          '/creator/content/upload',
+          '/creators/content/upload',
           formData,
           {
             onUploadProgress: (progressEvent) => {
