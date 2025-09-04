@@ -52,7 +52,7 @@
 }
 
 /* Container */
-.upload-container {
+.creator-content-upload-container {
   position: relative;
   z-index: 1;
   max-width: 1200px;
@@ -61,7 +61,7 @@
 }
 
 /* Header */
-.upload-header {
+.creator-content-upload-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -80,7 +80,7 @@
   }
 }
 
-.back-btn {
+.creator-content-upload-back-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -94,7 +94,7 @@
   font-size: 14px;
 }
 
-.back-btn:hover {
+.creator-content-upload-back-btn:hover {
   background: rgba(255, 255, 255, 0.05);
   transform: translateX(-4px);
 }
@@ -117,7 +117,7 @@
   gap: 12px;
 }
 
-.save-draft-btn {
+.creator-content-upload-save-draft-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -132,19 +132,19 @@
   font-weight: 500;
 }
 
-.save-draft-btn:hover {
+.creator-content-upload-save-draft-btn:hover {
   background: rgba(255, 255, 255, 0.15);
 }
 
 /* Progress Steps */
-.upload-steps {
+.creator-content-upload-steps {
   display: flex;
   justify-content: center;
   margin-bottom: 40px;
   position: relative;
 }
 
-.upload-steps::before {
+.creator-content-upload-steps::before {
   content: '';
   position: absolute;
   top: 20px;
@@ -231,7 +231,7 @@
 }
 
 /* Drop Zone */
-.drop-zone {
+.creator-content-upload-drop-zone {
   border: 2px dashed var(--border, #2A2A2C);
   border-radius: 16px;
   padding: 60px 40px;
@@ -242,18 +242,18 @@
   margin-bottom: 30px;
 }
 
-.drop-zone:hover {
+.creator-content-upload-drop-zone:hover {
   border-color: var(--primary, #17D2C2);
   background: rgba(23, 210, 194, 0.05);
 }
 
-.drop-zone.dragging {
+.creator-content-upload-drop-zone.creator-content-upload-dragging {
   border-color: var(--primary, #17D2C2);
   background: rgba(23, 210, 194, 0.1);
   transform: scale(1.02);
 }
 
-.drop-zone.has-files {
+.creator-content-upload-drop-zone.creator-content-upload-has-files {
   padding: 30px;
 }
 
