@@ -5,7 +5,7 @@ import {
   Upload, X, Image, Video, DollarSign, Tag, Eye, EyeOff,
   AlertCircle, CheckCircle, Loader, Plus, Sparkles, TrendingUp,
   Calendar, Clock, FileText, Camera, Film, ArrowLeft, ArrowRight,
-  Save, Send, Info, Zap, Lock, Unlock, Star, Hash, MessageCircle
+  Save, Send, Info, Zap, Lock, Unlock, Star, Hash, Gift
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
@@ -38,8 +38,6 @@ const CreatorContentUpload = () => {
     },
     visibility: 'public', // public, private, scheduled
     scheduledDate: null,
-    watermark: true,
-    allowComments: true,
     allowTips: true
   });
   
@@ -206,6 +204,7 @@ const CreatorContentUpload = () => {
         formData.append('price', upload.price);
         formData.append('isFree', contentDetails.visibility === 'free');
         formData.append('isPreview', contentDetails.visibility === 'preview');
+        formData.append('allowTips', contentDetails.allowTips);
         if (contentDetails.scheduledDate) {
           formData.append('scheduledFor', contentDetails.scheduledDate);
         }
@@ -392,17 +391,30 @@ const CreatorContentUpload = () => {
                     <span className="creator-content-upload-file-size">
                       {(upload.size / 1024 / 1024).toFixed(2)} MB
                     </span>
-                    <div className="creator-content-upload-price-input">
-                      <DollarSign size={14} />
-                      <input
-                        type="number"
-                        min="0.99"
-                        max="99.99"
-                        step="0.01"
-                        value={upload.price}
-                        onChange={(e) => updateFilePrice(upload.id, e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
+                    <div className="creator-content-upload-price-controls">
+                      <label className="creator-content-upload-free-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={upload.price === 0}
+                          onChange={(e) => updateFilePrice(upload.id, e.target.checked ? 0 : 2.99)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <span>Free</span>
+                      </label>
+                      {upload.price > 0 && (
+                        <div className="creator-content-upload-price-input">
+                          <DollarSign size={14} />
+                          <input
+                            type="number"
+                            min="0.99"
+                            max="99.99"
+                            step="0.01"
+                            value={upload.price}
+                            onChange={(e) => updateFilePrice(upload.id, e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -553,29 +565,7 @@ const CreatorContentUpload = () => {
         <h3>Advanced Settings</h3>
         
         <div className="creator-content-upload-settings-grid">
-          <label className="creator-content-upload-setting-item">
-            <input
-              type="checkbox"
-              checked={contentDetails.watermark}
-              onChange={(e) => setContentDetails(prev => ({ ...prev, watermark: e.target.checked }))}
-            />
-            <span className="creator-content-upload-setting-label">
-              <Lock size={16} />
-              Add watermark
-            </span>
-          </label>
           
-          <label className="creator-content-upload-setting-item">
-            <input
-              type="checkbox"
-              checked={contentDetails.allowComments}
-              onChange={(e) => setContentDetails(prev => ({ ...prev, allowComments: e.target.checked }))}
-            />
-            <span className="creator-content-upload-setting-label">
-              <MessageCircle size={16} />
-              Allow comments
-            </span>
-          </label>
           
           <label className="creator-content-upload-setting-item">
             <input
@@ -671,6 +661,21 @@ const CreatorContentUpload = () => {
       <div className="creator-content-upload-visibility-options">
         <h3>Visibility</h3>
         <div className="creator-content-upload-visibility-grid">
+          <label className="creator-content-upload-visibility-option">
+            <input
+              type="radio"
+              name="visibility"
+              value="free"
+              checked={contentDetails.visibility === 'free'}
+              onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
+            />
+            <div className="creator-content-upload-option-content">
+              <Gift size={20} />
+              <span className="creator-content-upload-option-title">Free</span>
+              <span className="creator-content-upload-option-desc">Free sample for everyone</span>
+            </div>
+          </label>
+          
           <label className="creator-content-upload-visibility-option">
             <input
               type="radio"

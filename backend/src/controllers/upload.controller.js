@@ -156,6 +156,7 @@ exports.uploadContent = async (req, res) => {
       tags, 
       isFree, 
       isPreview,
+      allowTips,
       scheduledFor,
       expiresAt 
     } = req.body;
@@ -226,8 +227,9 @@ exports.uploadContent = async (req, res) => {
       uploadBatch: uploadBatch,
       contentOrder: 0, // Will be updated if multiple files in batch
       price: parseFloat(price) || creator.contentPrice || 2.99,
-      isFree: isFree === 'true' || isFree === true,
+      isFree: (isFree === 'true' || isFree === true) || parseFloat(price) === 0,
       isPreview: isPreview === 'true' || isPreview === true,
+      allowTips: allowTips === 'true' || allowTips === true,
       tags: tags ? (Array.isArray(tags) ? tags : JSON.parse(tags || '[]')) : [],
       scheduledFor: scheduledFor ? new Date(scheduledFor) : null,
       expiresAt: expiresAt ? new Date(expiresAt) : null,
@@ -253,6 +255,7 @@ exports.uploadContent = async (req, res) => {
         })),
         thumbnail: content.thumbnail,
         tags: content.tags,
+        allowTips: content.allowTips,
         isActive: content.isActive,
         createdAt: content.createdAt
       }

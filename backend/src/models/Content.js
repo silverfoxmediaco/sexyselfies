@@ -51,7 +51,7 @@ const contentSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: true,
-    min: 0.99,
+    min: 0, // Allow 0 for free content
     max: 99.99
   },
   isFree: {
@@ -94,6 +94,10 @@ const contentSchema = new mongoose.Schema({
       type: Number,
       default: 0
     }
+  },
+  allowTips: {
+    type: Boolean,
+    default: true
   },
   isActive: {
     type: Boolean,

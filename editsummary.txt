@@ -17,6 +17,11 @@ Fixed authentication flow issues, creator verification redirects, and updated Cr
 50. **Improved Upload Controller Response Structure** - Updated upload controller to return contentId, uploadBatch, media with cloudinaryPublicIds for frontend tracking
 51. **Enhanced Frontend Content ID Handling** - Updated CreatorContentUpload.jsx to capture and store backend contentId, uploadBatch, cloudinaryPublicId, and backendUrl for proper content tracking
 52. **Added Content ID Display in Upload Success** - Show last 8 digits of MongoDB contentId in upload success overlay for user reference and debugging
+53. **Fixed Upload Controller Import Order Issue** - Moved CloudinaryStorage and related imports to top of upload.controller.js to resolve initialization error
+54. **Removed Watermark Feature for MVP** - Removed watermark checkbox and related functionality from CreatorContentUpload form to simplify MVP scope
+55. **Removed Allow Comments Feature** - Removed "Allow comments" checkbox as comments don't make sense for swipable content in this platform context
+56. **Made Allow Tips Checkbox Functional** - Added allowTips field to Content model, upload controller processing, and frontend form data to make the "Accept tips" checkbox actually functional
+57. **Added Free Content Option in Upload Step 1** - Added "Free" checkbox per file in the upload process allowing creators to set individual content as free samples, updated Content model to allow price = 0, and backend logic to auto-set isFree = true when price is 0
 
 ## Previous Session Overview  
 Rebuilt the creator profile system with enterprise-grade architecture suitable for millions of users, replacing band-aid localStorage solutions with proper database-driven authentication and data management.
