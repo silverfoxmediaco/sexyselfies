@@ -606,14 +606,16 @@ exports.creatorLogin = async (req, res, next) => {
       console.log('Found existing creator profile:', creator._id);
       profileComplete = creator.profileComplete || false;
       isVerified = creator.isVerified || false;
-      needsIdVerification = !creator.verificationSubmittedAt || (!creator.isVerified && creator.verificationStatus !== 'approved');
+      // Use main verification fields as source of truth, ignore nested verification.status
+      needsIdVerification = !creator.isVerified || creator.verificationStatus !== 'approved';
       
       console.log('Creator status:', { 
         profileComplete, 
         isVerified, 
         needsIdVerification, 
         verificationSubmittedAt: creator.verificationSubmittedAt,
-        verificationStatus: creator.verificationStatus 
+        verificationStatus: creator.verificationStatus,
+        verificationNestedStatus: creator.verification?.status 
       });
     }
 

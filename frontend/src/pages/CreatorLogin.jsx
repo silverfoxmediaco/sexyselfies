@@ -84,17 +84,17 @@ const CreatorLogin = () => {
       
       if (result.success) {
         console.log('Login successful, navigating...');
-        // Check verification and profile status
-        if (!result.user.isVerified) {
-          // Creator needs to verify ID or wait for approval
-          navigate('/creator/verify-id');
-        } else if (result.user.profileComplete === false) {
-          // Creator needs to complete profile setup
-          navigate('/creator/profile-setup');
-        } else {
-          // Everything complete, go to dashboard
-          navigate('/creator/dashboard');
-        }
+        console.log('Backend redirectTo:', result.redirectTo);
+        console.log('User verification status:', {
+          isVerified: result.isVerified,
+          profileComplete: result.profileComplete,
+          needsIdVerification: result.needsIdVerification
+        });
+        
+        // Use backend's redirectTo recommendation
+        const redirectPath = result.redirectTo || '/creator/dashboard';
+        console.log('Navigating to:', redirectPath);
+        navigate(redirectPath);
       } else {
         console.error('Login failed:', result.error);
         setErrors({

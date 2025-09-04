@@ -1278,6 +1278,85 @@ console.log('Creator status:', {
 2. **Unverified + Pending Documents**: `/creator/verification-pending`
 3. **Verified Creator**: `/creator/dashboard` ✅
 
-Last Updated: September 3, 2025 - Creator Verification Redirect Fix + CreatorVerifyID Header/Footer + CRITICAL Authentication Fixes + Dashboard Username + Profile URL + Dashboard Mock Data Removal + Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
-Total Files Modified: 57 (+1 verification logic fix)  
-Critical Issues Resolved: 37 (+1 verification redirect fix)
+### 38. Frontend Navigation Override Fix + Database Inconsistency - September 3, 2025 🚨
+**Files:** `frontend/src/contexts/AuthContext.jsx`, `frontend/src/pages/CreatorLogin.jsx`, `backend/src/controllers/auth.controller.js`
+**Issue:** Verified creator `tamara@sexyselfies.com` still redirected to `/creator/verify-id` despite backend fixes
+
+**Root Cause Analysis:**
+1. **Frontend Override Issue**: `CreatorLogin.jsx` had hardcoded navigation logic that ignored backend's `redirectTo` field
+2. **Database Inconsistency**: Tamara's record had conflicting verification status:
+   - ✅ `isVerified: true`
+   - ✅ `verificationStatus: "approved"`  
+   - ❌ `verification.status: "pending"` (inconsistent)
+
+**Frontend Navigation Fixes:**
+
+**1. AuthContext Response Enhancement:**
+```javascript
+// BEFORE (incomplete):
+return { success: true, user: response.user };
+
+// AFTER (comprehensive):
+return { 
+  success: true, 
+  user: response.user,
+  redirectTo: response.redirectTo,
+  isVerified: response.isVerified,
+  profileComplete: response.profileComplete,
+  needsIdVerification: response.needsIdVerification
+};
+```
+
+**2. CreatorLogin Navigation Fix:**
+```javascript
+// BEFORE (hardcoded logic ignoring backend):
+if (!result.user.isVerified) {
+  navigate('/creator/verify-id');
+} else if (result.user.profileComplete === false) {
+  navigate('/creator/profile-setup');
+} else {
+  navigate('/creator/dashboard');
+}
+
+// AFTER (respects backend redirectTo):
+const redirectPath = result.redirectTo || '/creator/dashboard';
+console.log('Backend redirectTo:', result.redirectTo);
+navigate(redirectPath);
+```
+
+**Backend Verification Logic Fix:**
+```javascript
+// BEFORE (checked nested verification.status):
+needsIdVerification = !creator.verificationSubmittedAt || (!creator.isVerified && creator.verificationStatus !== 'approved');
+
+// AFTER (prioritizes main verification fields):
+needsIdVerification = !creator.isVerified || creator.verificationStatus !== 'approved';
+```
+
+**Database Inconsistency Analysis:**
+```json
+// Tamara's record showed:
+{
+  "isVerified": true,                    // ✅ Main field
+  "verificationStatus": "approved",      // ✅ Main field  
+  "verification": {
+    "status": "pending"                  // ❌ Nested field inconsistent
+  }
+}
+```
+
+**Expected Results:**
+- ✅ Frontend now respects backend's `redirectTo` field
+- ✅ Verified creators like tamara redirect to `/creator/dashboard`  
+- ✅ Backend prioritizes main verification fields over nested ones
+- ✅ Enhanced debugging logs for verification status
+- ✅ No more frontend navigation overrides
+
+**Testing Flow:**
+1. Login `tamara@sexyselfies.com` → Backend determines redirect based on `isVerified: true` 
+2. Backend returns `redirectTo: '/creator/dashboard'`
+3. Frontend respects this and navigates to dashboard ✅
+
+Last Updated: September 3, 2025 - Frontend Navigation Override Fix + Creator Verification Redirect Fix + CreatorVerifyID Header/Footer + CRITICAL Authentication Fixes + Dashboard Username + Profile URL + Dashboard Mock Data Removal + Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
+Total Files Modified: 60 (+3 navigation and verification fixes)  
+Critical Issues Resolved: 38 (+1 navigation override fix)

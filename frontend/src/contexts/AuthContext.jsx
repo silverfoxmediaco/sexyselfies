@@ -177,7 +177,14 @@ export const AuthProvider = ({ children }) => {
           }
         });
 
-        return { success: true, user: response.user };
+        return { 
+          success: true, 
+          user: response.user,
+          redirectTo: response.redirectTo,
+          isVerified: response.isVerified,
+          profileComplete: response.profileComplete,
+          needsIdVerification: response.needsIdVerification
+        };
       } else {
         throw new Error('Invalid login response');
       }
