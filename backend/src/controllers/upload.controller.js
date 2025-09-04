@@ -1,3 +1,10 @@
+const Creator = require('../models/Creator');
+const Member = require('../models/Member');
+const Content = require('../models/Content');
+const { cloudinary } = require('../config/cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
+
 // Create storage for verification documents (separate configuration)
 const verificationStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -11,12 +18,7 @@ const verificationStorage = new CloudinaryStorage({
 const uploadVerificationDocs = multer({ 
   storage: verificationStorage,
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
-});const Creator = require('../models/Creator');
-const Member = require('../models/Member');
-const Content = require('../models/Content');
-const { cloudinary } = require('../config/cloudinary');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const multer = require('multer');
+});
 
 // Upload profile image for creator or member
 exports.uploadProfileImage = async (req, res) => {
