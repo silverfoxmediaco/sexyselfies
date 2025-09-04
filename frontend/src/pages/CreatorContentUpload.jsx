@@ -253,16 +253,16 @@ const CreatorContentUpload = () => {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="upload-step"
+      className="creator-content-upload-step"
     >
-      <div className="step-header">
+      <div className="creator-content-upload-step-header">
         <h2>Upload Your Content</h2>
         <p>Share your exclusive photos and videos with your fans</p>
       </div>
 
       {/* Drop Zone */}
       <div
-        className={`drop-zone ${isDragging ? 'dragging' : ''} ${uploads.length > 0 ? 'has-files' : ''}`}
+        className={`creator-content-upload-drop-zone ${isDragging ? 'creator-content-upload-dragging' : ''} ${uploads.length > 0 ? 'creator-content-upload-has-files' : ''}`}
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -279,24 +279,24 @@ const CreatorContentUpload = () => {
         />
         
         {uploads.length === 0 ? (
-          <div className="drop-zone-content">
-            <Upload size={48} className="drop-icon" />
+          <div className="creator-content-upload-drop-zone-content">
+            <Upload size={48} className="creator-content-upload-drop-icon" />
             <h3>Drag & drop your files here</h3>
             <p>or click to browse</p>
-            <div className="file-types">
-              <span className="file-type">
+            <div className="creator-content-upload-file-types">
+              <span className="creator-content-upload-file-type">
                 <Image size={16} />
                 Images
               </span>
-              <span className="file-type">
+              <span className="creator-content-upload-file-type">
                 <Video size={16} />
                 Videos
               </span>
             </div>
-            <p className="file-limit">Max 100MB per file</p>
+            <p className="creator-content-upload-file-limit">Max 100MB per file</p>
           </div>
         ) : (
-          <div className="add-more">
+          <div className="creator-content-upload-add-more">
             <Plus size={24} />
             <span>Add more files</span>
           </div>
@@ -304,7 +304,7 @@ const CreatorContentUpload = () => {
       </div>
 
       {errors.file && (
-        <div className="error-message">
+        <div className="creator-content-upload-error-message">
           <AlertCircle size={16} />
           {errors.file}
         </div>
@@ -312,22 +312,22 @@ const CreatorContentUpload = () => {
 
       {/* File Preview Grid */}
       {uploads.length > 0 && (
-        <div className="file-preview-grid">
+        <div className="creator-content-upload-file-preview-grid">
           <AnimatePresence>
             {uploads.map((upload) => (
               <motion.div
                 key={upload.id}
-                className="file-preview-card"
+                className="creator-content-upload-file-preview-card"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 layout
               >
-                <div className="preview-container">
+                <div className="creator-content-upload-preview-container">
                   {upload.type === 'image' ? (
                     <img src={upload.preview} alt={upload.name} />
                   ) : (
-                    <div className="video-preview">
+                    <div className="creator-content-upload-video-preview">
                       <Video size={32} />
                       <span>Video</span>
                     </div>
@@ -335,9 +335,9 @@ const CreatorContentUpload = () => {
                   
                   {/* Upload Progress */}
                   {upload.status === 'uploading' && (
-                    <div className="upload-progress-overlay">
-                      <div className="progress-circle">
-                        <Loader className="spinning" size={24} />
+                    <div className="creator-content-upload-progress-overlay">
+                      <div className="creator-content-upload-progress-circle">
+                        <Loader className="creator-content-upload-spinning" size={24} />
                         <span>{upload.progress}%</span>
                       </div>
                     </div>
@@ -345,7 +345,7 @@ const CreatorContentUpload = () => {
                   
                   {/* Success Indicator */}
                   {upload.status === 'complete' && (
-                    <div className="upload-success-overlay">
+                    <div className="creator-content-upload-success-overlay">
                       <CheckCircle size={32} />
                     </div>
                   )}
@@ -353,7 +353,7 @@ const CreatorContentUpload = () => {
                   {/* Remove Button */}
                   {upload.status === 'pending' && (
                     <button
-                      className="remove-btn"
+                      className="creator-content-upload-remove-btn"
                       onClick={(e) => {
                         e.stopPropagation();
                         removeFile(upload.id);
@@ -364,13 +364,13 @@ const CreatorContentUpload = () => {
                   )}
                 </div>
                 
-                <div className="file-info">
-                  <p className="file-name">{upload.name}</p>
-                  <div className="file-meta">
-                    <span className="file-size">
+                <div className="creator-content-upload-file-info">
+                  <p className="creator-content-upload-file-name">{upload.name}</p>
+                  <div className="creator-content-upload-file-meta">
+                    <span className="creator-content-upload-file-size">
                       {(upload.size / 1024 / 1024).toFixed(2)} MB
                     </span>
-                    <div className="price-input">
+                    <div className="creator-content-upload-price-input">
                       <DollarSign size={14} />
                       <input
                         type="number"
@@ -392,21 +392,21 @@ const CreatorContentUpload = () => {
 
       {/* AI Price Suggestion */}
       {uploads.length > 0 && (
-        <div className="ai-suggestion-card">
-          <div className="suggestion-header">
+        <div className="creator-content-upload-ai-suggestion-card">
+          <div className="creator-content-upload-suggestion-header">
             <Sparkles size={18} />
             <span>AI Recommendation</span>
           </div>
-          <div className="suggestion-content">
+          <div className="creator-content-upload-suggestion-content">
             <p>Based on your content type and market analysis:</p>
-            <div className="suggestion-items">
-              <div className="suggestion-item">
-                <span className="label">Suggested Price:</span>
-                <span className="value">${aiSuggestions.suggestedPrice}</span>
+            <div className="creator-content-upload-suggestion-items">
+              <div className="creator-content-upload-suggestion-item">
+                <span className="creator-content-upload-label">Suggested Price:</span>
+                <span className="creator-content-upload-value">${aiSuggestions.suggestedPrice}</span>
               </div>
-              <div className="suggestion-item">
-                <span className="label">Est. Earnings:</span>
-                <span className="value">{aiSuggestions.estimatedEarnings}</span>
+              <div className="creator-content-upload-suggestion-item">
+                <span className="creator-content-upload-label">Est. Earnings:</span>
+                <span className="creator-content-upload-value">{aiSuggestions.estimatedEarnings}</span>
               </div>
             </div>
           </div>
@@ -420,22 +420,22 @@ const CreatorContentUpload = () => {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="details-step"
+      className="creator-content-upload-details-step"
     >
-      <div className="step-header">
+      <div className="creator-content-upload-step-header">
         <h2>Add Details</h2>
         <p>Help your fans discover your content</p>
       </div>
 
       {/* Title */}
-      <div className="form-group">
-        <label className="form-label">
+      <div className="creator-content-upload-form-group">
+        <label className="creator-content-upload-form-label">
           <FileText size={16} />
           Title (Optional)
         </label>
         <input
           type="text"
-          className="form-input"
+          className="creator-content-upload-form-input"
           placeholder="Give your content a catchy title..."
           value={contentDetails.title}
           onChange={(e) => setContentDetails(prev => ({ ...prev, title: e.target.value }))}
@@ -443,13 +443,13 @@ const CreatorContentUpload = () => {
       </div>
 
       {/* Description */}
-      <div className="form-group">
-        <label className="form-label">
+      <div className="creator-content-upload-form-group">
+        <label className="creator-content-upload-form-label">
           <FileText size={16} />
           Description (Optional)
         </label>
         <textarea
-          className="form-textarea"
+          className="creator-content-upload-form-textarea"
           placeholder="Tell your fans what makes this content special..."
           rows="3"
           value={contentDetails.description}
@@ -458,17 +458,17 @@ const CreatorContentUpload = () => {
       </div>
 
       {/* Categories */}
-      <div className="form-group">
-        <label className="form-label">
+      <div className="creator-content-upload-form-group">
+        <label className="creator-content-upload-form-label">
           <Tag size={16} />
           Category
-          <span className="required">*</span>
+          <span className="creator-content-upload-required">*</span>
         </label>
-        <div className="category-grid">
+        <div className="creator-content-upload-category-grid">
           {contentTypes.map(category => (
             <motion.button
               key={category.id}
-              className={`category-btn ${contentDetails.category === category.id ? 'selected' : ''} ${category.color}`}
+              className={`creator-content-upload-category-btn ${contentDetails.category === category.id ? 'creator-content-upload-selected' : ''} creator-content-upload-${category.color}`}
               onClick={() => setContentDetails(prev => ({ ...prev, category: category.id }))}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -479,23 +479,23 @@ const CreatorContentUpload = () => {
           ))}
         </div>
         {errors.category && (
-          <span className="error-text">{errors.category}</span>
+          <span className="creator-content-upload-error-text">{errors.category}</span>
         )}
       </div>
 
       {/* Tags */}
-      <div className="form-group">
-        <label className="form-label">
+      <div className="creator-content-upload-form-group">
+        <label className="creator-content-upload-form-label">
           <Hash size={16} />
           Tags (Max 5)
-          <span className="required">*</span>
+          <span className="creator-content-upload-required">*</span>
         </label>
-        <div className="tags-section">
-          <div className="popular-tags">
+        <div className="creator-content-upload-tags-section">
+          <div className="creator-content-upload-popular-tags">
             {popularTags.map(tag => (
               <button
                 key={tag}
-                className={`tag-btn ${contentDetails.tags.includes(tag) ? 'selected' : ''}`}
+                className={`creator-content-upload-tag-btn ${contentDetails.tags.includes(tag) ? 'creator-content-upload-selected' : ''}`}
                 onClick={() => toggleTag(tag)}
                 disabled={!contentDetails.tags.includes(tag) && contentDetails.tags.length >= 5}
               >
@@ -505,14 +505,14 @@ const CreatorContentUpload = () => {
           </div>
           <input
             type="text"
-            className="tag-input"
+            className="creator-content-upload-tag-input"
             placeholder="Add custom tag and press Enter..."
             onKeyPress={addCustomTag}
             disabled={contentDetails.tags.length >= 5}
           />
-          <div className="selected-tags">
+          <div className="creator-content-upload-selected-tags">
             {contentDetails.tags.map(tag => (
-              <span key={tag} className="selected-tag">
+              <span key={tag} className="creator-content-upload-selected-tag">
                 #{tag}
                 <button onClick={() => toggleTag(tag)}>
                   <X size={14} />
@@ -522,46 +522,46 @@ const CreatorContentUpload = () => {
           </div>
         </div>
         {errors.tags && (
-          <span className="error-text">{errors.tags}</span>
+          <span className="creator-content-upload-error-text">{errors.tags}</span>
         )}
       </div>
 
       {/* Advanced Settings */}
-      <div className="advanced-settings">
+      <div className="creator-content-upload-advanced-settings">
         <h3>Advanced Settings</h3>
         
-        <div className="settings-grid">
-          <label className="setting-item">
+        <div className="creator-content-upload-settings-grid">
+          <label className="creator-content-upload-setting-item">
             <input
               type="checkbox"
               checked={contentDetails.watermark}
               onChange={(e) => setContentDetails(prev => ({ ...prev, watermark: e.target.checked }))}
             />
-            <span className="setting-label">
+            <span className="creator-content-upload-setting-label">
               <Lock size={16} />
               Add watermark
             </span>
           </label>
           
-          <label className="setting-item">
+          <label className="creator-content-upload-setting-item">
             <input
               type="checkbox"
               checked={contentDetails.allowComments}
               onChange={(e) => setContentDetails(prev => ({ ...prev, allowComments: e.target.checked }))}
             />
-            <span className="setting-label">
+            <span className="creator-content-upload-setting-label">
               <MessageCircle size={16} />
               Allow comments
             </span>
           </label>
           
-          <label className="setting-item">
+          <label className="creator-content-upload-setting-item">
             <input
               type="checkbox"
               checked={contentDetails.allowTips}
               onChange={(e) => setContentDetails(prev => ({ ...prev, allowTips: e.target.checked }))}
             />
-            <span className="setting-label">
+            <span className="creator-content-upload-setting-label">
               <DollarSign size={16} />
               Accept tips
             </span>
@@ -570,17 +570,17 @@ const CreatorContentUpload = () => {
       </div>
 
       {/* AI Suggestions */}
-      <div className="ai-suggestion-card">
-        <div className="suggestion-header">
+      <div className="creator-content-upload-ai-suggestion-card">
+        <div className="creator-content-upload-suggestion-header">
           <Sparkles size={18} />
           <span>AI Insights</span>
         </div>
-        <div className="suggestion-content">
-          <div className="insight-item">
+        <div className="creator-content-upload-suggestion-content">
+          <div className="creator-content-upload-insight-item">
             <Clock size={16} />
             <span>Best posting time: {aiSuggestions.bestPostTime}</span>
           </div>
-          <div className="insight-item">
+          <div className="creator-content-upload-insight-item">
             <Tag size={16} />
             <span>Suggested tags: {aiSuggestions.suggestedTags.join(', ')}</span>
           </div>
@@ -594,32 +594,32 @@ const CreatorContentUpload = () => {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="review-step"
+      className="creator-content-upload-review-step"
     >
-      <div className="step-header">
+      <div className="creator-content-upload-step-header">
         <h2>Review & Publish</h2>
         <p>Make sure everything looks perfect</p>
       </div>
 
       {/* Content Summary */}
-      <div className="review-card">
+      <div className="creator-content-upload-review-card">
         <h3>Content Summary</h3>
-        <div className="summary-grid">
-          <div className="summary-item">
-            <span className="label">Files:</span>
-            <span className="value">{uploads.length} items</span>
+        <div className="creator-content-upload-summary-grid">
+          <div className="creator-content-upload-summary-item">
+            <span className="creator-content-upload-label">Files:</span>
+            <span className="creator-content-upload-value">{uploads.length} items</span>
           </div>
-          <div className="summary-item">
-            <span className="label">Category:</span>
-            <span className="value">{contentDetails.category}</span>
+          <div className="creator-content-upload-summary-item">
+            <span className="creator-content-upload-label">Category:</span>
+            <span className="creator-content-upload-value">{contentDetails.category}</span>
           </div>
-          <div className="summary-item">
-            <span className="label">Tags:</span>
-            <span className="value">{contentDetails.tags.join(', ')}</span>
+          <div className="creator-content-upload-summary-item">
+            <span className="creator-content-upload-label">Tags:</span>
+            <span className="creator-content-upload-value">{contentDetails.tags.join(', ')}</span>
           </div>
-          <div className="summary-item">
-            <span className="label">Total Size:</span>
-            <span className="value">
+          <div className="creator-content-upload-summary-item">
+            <span className="creator-content-upload-label">Total Size:</span>
+            <span className="creator-content-upload-value">
               {(uploads.reduce((acc, u) => acc + u.size, 0) / 1024 / 1024).toFixed(2)} MB
             </span>
           </div>
@@ -627,18 +627,18 @@ const CreatorContentUpload = () => {
       </div>
 
       {/* Pricing Summary */}
-      <div className="review-card">
+      <div className="creator-content-upload-review-card">
         <h3>Pricing</h3>
-        <div className="pricing-list">
+        <div className="creator-content-upload-pricing-list">
           {uploads.map(upload => (
-            <div key={upload.id} className="pricing-item">
-              <span className="file-name">{upload.name}</span>
-              <span className="price">${upload.price}</span>
+            <div key={upload.id} className="creator-content-upload-pricing-item">
+              <span className="creator-content-upload-file-name">{upload.name}</span>
+              <span className="creator-content-upload-price">${upload.price}</span>
             </div>
           ))}
-          <div className="pricing-total">
+          <div className="creator-content-upload-pricing-total">
             <span>Average Price:</span>
-            <span className="total">
+            <span className="creator-content-upload-total">
               ${(uploads.reduce((acc, u) => acc + u.price, 0) / uploads.length).toFixed(2)}
             </span>
           </div>
@@ -646,10 +646,10 @@ const CreatorContentUpload = () => {
       </div>
 
       {/* Visibility Options */}
-      <div className="visibility-options">
+      <div className="creator-content-upload-visibility-options">
         <h3>Visibility</h3>
-        <div className="visibility-grid">
-          <label className="visibility-option">
+        <div className="creator-content-upload-visibility-grid">
+          <label className="creator-content-upload-visibility-option">
             <input
               type="radio"
               name="visibility"
@@ -657,14 +657,14 @@ const CreatorContentUpload = () => {
               checked={contentDetails.visibility === 'public'}
               onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
             />
-            <div className="option-content">
+            <div className="creator-content-upload-option-content">
               <Unlock size={20} />
-              <span className="option-title">Public</span>
-              <span className="option-desc">Available to all matches</span>
+              <span className="creator-content-upload-option-title">Public</span>
+              <span className="creator-content-upload-option-desc">Available to all matches</span>
             </div>
           </label>
           
-          <label className="visibility-option">
+          <label className="creator-content-upload-visibility-option">
             <input
               type="radio"
               name="visibility"
@@ -672,14 +672,14 @@ const CreatorContentUpload = () => {
               checked={contentDetails.visibility === 'private'}
               onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
             />
-            <div className="option-content">
+            <div className="creator-content-upload-option-content">
               <Lock size={20} />
-              <span className="option-title">Private</span>
-              <span className="option-desc">Only for selected fans</span>
+              <span className="creator-content-upload-option-title">Private</span>
+              <span className="creator-content-upload-option-desc">Only for selected fans</span>
             </div>
           </label>
           
-          <label className="visibility-option">
+          <label className="creator-content-upload-visibility-option">
             <input
               type="radio"
               name="visibility"
@@ -687,31 +687,31 @@ const CreatorContentUpload = () => {
               checked={contentDetails.visibility === 'scheduled'}
               onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
             />
-            <div className="option-content">
+            <div className="creator-content-upload-option-content">
               <Calendar size={20} />
-              <span className="option-title">Schedule</span>
-              <span className="option-desc">Post at optimal time</span>
+              <span className="creator-content-upload-option-title">Schedule</span>
+              <span className="creator-content-upload-option-desc">Post at optimal time</span>
             </div>
           </label>
         </div>
       </div>
 
       {/* Estimated Earnings */}
-      <div className="earnings-preview">
-        <div className="earnings-header">
+      <div className="creator-content-upload-earnings-preview">
+        <div className="creator-content-upload-earnings-header">
           <TrendingUp size={20} />
           <span>Estimated Earnings</span>
         </div>
-        <div className="earnings-content">
-          <div className="earnings-stat">
-            <span className="stat-label">Per View:</span>
-            <span className="stat-value">
+        <div className="creator-content-upload-earnings-content">
+          <div className="creator-content-upload-earnings-stat">
+            <span className="creator-content-upload-stat-label">Per View:</span>
+            <span className="creator-content-upload-stat-value">
               ${(uploads.reduce((acc, u) => acc + u.price, 0) / uploads.length).toFixed(2)}
             </span>
           </div>
-          <div className="earnings-stat">
-            <span className="stat-label">Potential (100 views):</span>
-            <span className="stat-value highlight">
+          <div className="creator-content-upload-earnings-stat">
+            <span className="creator-content-upload-stat-label">Potential (100 views):</span>
+            <span className="creator-content-upload-stat-value creator-content-upload-highlight">
               ${(uploads.reduce((acc, u) => acc + u.price, 0) / uploads.length * 100).toFixed(2)}
             </span>
           </div>
@@ -719,7 +719,7 @@ const CreatorContentUpload = () => {
       </div>
 
       {errors.submit && (
-        <div className="error-message">
+        <div className="creator-content-upload-error-message">
           <AlertCircle size={16} />
           {errors.submit}
         </div>
@@ -728,34 +728,34 @@ const CreatorContentUpload = () => {
   );
 
   return (
-    <div className="content-upload-page">
+    <div className="creator-content-upload-page">
       {/* Desktop Header */}
       {isDesktop && <CreatorMainHeader />}
       
       {/* Background */}
-      <div className="upload-bg">
-        <div className="bg-gradient-1"></div>
-        <div className="bg-gradient-2"></div>
+      <div className="creator-content-upload-bg">
+        <div className="creator-content-upload-bg-gradient-1"></div>
+        <div className="creator-content-upload-bg-gradient-2"></div>
       </div>
 
-      <div className="upload-container">
+      <div className="creator-content-upload-container">
         {/* Header */}
-        <div className="upload-header">
+        <div className="creator-content-upload-header">
           <button 
-            className="back-btn"
+            className="creator-content-upload-back-btn"
             onClick={() => navigate('/creator/dashboard')}
           >
             <ArrowLeft size={20} />
             <span>Back to Dashboard</span>
           </button>
           
-          <div className="header-title">
+          <div className="creator-content-upload-header-title">
             <h1>Upload Content</h1>
             <p>Share your exclusive content with fans</p>
           </div>
           
-          <div className="header-actions">
-            <button className="save-draft-btn">
+          <div className="creator-content-upload-header-actions">
+            <button className="creator-content-upload-save-draft-btn">
               <Save size={18} />
               <span>Save Draft</span>
             </button>
@@ -763,23 +763,23 @@ const CreatorContentUpload = () => {
         </div>
 
         {/* Progress Steps */}
-        <div className="upload-steps">
-          <div className={`step ${currentStep >= 1 ? 'active' : ''} ${currentStep === 1 ? 'current' : ''}`}>
-            <div className="step-number">
+        <div className="creator-content-upload-steps">
+          <div className={`creator-content-upload-step-indicator ${currentStep >= 1 ? 'creator-content-upload-active' : ''} ${currentStep === 1 ? 'creator-content-upload-current' : ''}`}>
+            <div className="creator-content-upload-step-number">
               {currentStep > 1 ? <CheckCircle size={20} /> : '1'}
             </div>
             <span>Upload</span>
           </div>
           
-          <div className={`step ${currentStep >= 2 ? 'active' : ''} ${currentStep === 2 ? 'current' : ''}`}>
-            <div className="step-number">
+          <div className={`creator-content-upload-step-indicator ${currentStep >= 2 ? 'creator-content-upload-active' : ''} ${currentStep === 2 ? 'creator-content-upload-current' : ''}`}>
+            <div className="creator-content-upload-step-number">
               {currentStep > 2 ? <CheckCircle size={20} /> : '2'}
             </div>
             <span>Details</span>
           </div>
           
-          <div className={`step ${currentStep >= 3 ? 'active' : ''} ${currentStep === 3 ? 'current' : ''}`}>
-            <div className="step-number">
+          <div className={`creator-content-upload-step-indicator ${currentStep >= 3 ? 'creator-content-upload-active' : ''} ${currentStep === 3 ? 'creator-content-upload-current' : ''}`}>
+            <div className="creator-content-upload-step-number">
               {currentStep > 3 ? <CheckCircle size={20} /> : '3'}
             </div>
             <span>Review</span>
@@ -787,7 +787,7 @@ const CreatorContentUpload = () => {
         </div>
 
         {/* Step Content */}
-        <div className="step-content">
+        <div className="creator-content-upload-step-content">
           <AnimatePresence mode="wait">
             {currentStep === 1 && <UploadStep key="upload" />}
             {currentStep === 2 && <DetailsStep key="details" />}
@@ -796,9 +796,9 @@ const CreatorContentUpload = () => {
         </div>
 
         {/* Navigation */}
-        <div className="upload-navigation">
+        <div className="creator-content-upload-navigation">
           <button
-            className="nav-btn secondary"
+            className="creator-content-upload-nav-btn creator-content-upload-secondary"
             onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
             disabled={currentStep === 1}
           >
@@ -808,7 +808,7 @@ const CreatorContentUpload = () => {
           
           {currentStep < 3 ? (
             <button
-              className="nav-btn primary"
+              className="creator-content-upload-nav-btn creator-content-upload-primary"
               onClick={() => setCurrentStep(prev => prev + 1)}
               disabled={currentStep === 1 && uploads.length === 0}
             >
@@ -817,13 +817,13 @@ const CreatorContentUpload = () => {
             </button>
           ) : (
             <button
-              className="nav-btn publish"
+              className="creator-content-upload-nav-btn creator-content-upload-publish"
               onClick={handleUpload}
               disabled={isUploading}
             >
               {isUploading ? (
                 <>
-                  <Loader className="spinning" size={18} />
+                  <Loader className="creator-content-upload-spinning" size={18} />
                   <span>Publishing...</span>
                 </>
               ) : (
