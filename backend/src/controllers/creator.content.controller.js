@@ -1,4 +1,4 @@
-const CreatorContent = require('../models/CreatorContent');
+const Content = require('../models/Content');
 const CreatorProfile = require('../models/CreatorProfile');
 const CreatorEarnings = require('../models/CreatorEarnings');
 const CreatorAnalytics = require('../models/CreatorAnalytics');
@@ -287,6 +287,73 @@ exports.getMyContent = async (req, res) => {
   }
 };
 
+// Get creator's content (simplified version for content management)
+exports.getContent = async (req, res) => {
+  try {
+    const creatorId = req.user.id;
+    const { 
+      page = 1, 
+      limit = 20, 
+      contentType, 
+      sortBy = '-createdAt' 
+    } = req.query;
+    
+    const query = { 
+      creator: creatorId,
+      isActive: true
+    };
+    
+    if (contentType && contentType !== 'all') {
+      query.type = contentType;
+    }
+    
+    const skip = (page - 1) * limit;
+    
+    const content = await Content.find(query)
+      .sort(sortBy)
+      .limit(parseInt(limit))
+      .skip(skip);
+    
+    const total = await Content.countDocuments(query);
+    
+    // Map to frontend expected structure
+    const mappedContent = content.map(item => ({
+      _id: item._id,
+      title: item.title || 'Untitled',
+      description: item.description || '',
+      type: item.type,
+      price: item.price || 0,
+      thumbnail: item.customThumbnail?.url || item.thumbnail || (item.media && item.media[0]?.url),
+      media: item.media || [],
+      views: item.stats?.views || 0,
+      likes: item.stats?.likes || 0,
+      earnings: item.stats?.revenue || 0,
+      createdAt: item.createdAt,
+      duration: item.media && item.media[0]?.duration || null,
+      fileCount: item.media ? item.media.length : 1,
+      fileSize: item.media && item.media[0]?.size ? `${(item.media[0].size / 1024 / 1024).toFixed(1)}MB` : 'Unknown'
+    }));
+    
+    res.json({
+      success: true,
+      content: mappedContent,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    console.error('Get content error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching content',
+      content: []
+    });
+  }
+};
+
 // Update content with AI re-analysis
 exports.updateContent = async (req, res) => {
   try {
@@ -371,7 +438,7 @@ exports.deleteContent = async (req, res) => {
     const creatorId = req.user.id;
     const contentId = req.params.contentId;
     
-    const content = await CreatorContent.findOne({ 
+    const content = await Content.findOne({ 
       _id: contentId, 
       creator: creatorId 
     });
@@ -384,11 +451,17 @@ exports.deleteContent = async (req, res) => {
     }
     
     // Soft delete to preserve analytics
-    content.visibility.status = 'deleted';
-    content.visibility.deletedAt = new Date();
+    content.isActive = false;
     await content.save();
     
-    // Delete from CDN after 30 days (scheduled job)
+    // Optional: Delete from Cloudinary (can be done in scheduled job for performance)
+    // if (content.media && content.media.length > 0) {
+    //   for (const mediaItem of content.media) {
+    //     if (mediaItem.cloudinaryPublicId) {
+    //       await cloudinary.uploader.destroy(mediaItem.cloudinaryPublicId);
+    //     }
+    //   }
+    // }
     
     res.json({
       success: true,
@@ -399,6 +472,54 @@ exports.deleteContent = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error deleting content'
+    });
+  }
+};
+
+// Update content pricing
+exports.updateContentPricing = async (req, res) => {
+  try {
+    const creatorId = req.user.id;
+    const contentId = req.params.contentId;
+    const { price } = req.body;
+    
+    if (price === undefined || price < 0 || price > 99.99) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid price. Price must be between $0.00 and $99.99'
+      });
+    }
+    
+    const content = await Content.findOne({ 
+      _id: contentId, 
+      creator: creatorId 
+    });
+    
+    if (!content) {
+      return res.status(404).json({
+        success: false,
+        message: 'Content not found'
+      });
+    }
+    
+    content.price = price;
+    content.isFree = price === 0;
+    await content.save();
+    
+    res.json({
+      success: true,
+      message: 'Price updated successfully',
+      content: {
+        id: content._id,
+        price: content.price,
+        isFree: content.isFree
+      }
+    });
+  } catch (error) {
+    console.error('Update pricing error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating price'
     });
   }
 };

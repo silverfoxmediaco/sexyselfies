@@ -134,17 +134,41 @@ router.post('/content/video', contentVideoUpload, (req, res) => {
   res.status(501).json({ message: 'Content video upload coming soon' });
 });
 
-router.put('/content/:contentId', (req, res) => {
-  res.status(501).json({ message: 'Content update coming soon' });
-});
+// Update content
+if (creatorContentController.updateContent) {
+  router.put('/content/:contentId', creatorContentController.updateContent);
+} else {
+  router.put('/content/:contentId', (req, res) => {
+    res.status(501).json({ message: 'Content update coming soon' });
+  });
+}
 
-router.delete('/content/:contentId', (req, res) => {
-  res.status(501).json({ message: 'Content deletion coming soon' });
-});
+// Delete content
+if (creatorContentController.deleteContent) {
+  router.delete('/content/:contentId', creatorContentController.deleteContent);
+} else {
+  router.delete('/content/:contentId', (req, res) => {
+    res.status(501).json({ message: 'Content deletion coming soon' });
+  });
+}
 
-router.get('/content/:contentId/analytics', (req, res) => {
-  res.status(501).json({ message: 'Content analytics coming soon' });
-});
+// Update content pricing
+if (creatorContentController.updateContentPricing) {
+  router.patch('/content/:contentId/price', creatorContentController.updateContentPricing);
+} else {
+  router.patch('/content/:contentId/price', (req, res) => {
+    res.status(501).json({ message: 'Price update coming soon' });
+  });
+}
+
+// Content analytics
+if (creatorContentController.getContentAnalytics) {
+  router.get('/content/:contentId/analytics', creatorContentController.getContentAnalytics);
+} else {
+  router.get('/content/:contentId/analytics', (req, res) => {
+    res.status(501).json({ message: 'Content analytics coming soon' });
+  });
+}
 
 // ==========================================
 // MESSAGING SYSTEM

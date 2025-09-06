@@ -272,6 +272,30 @@ class CreatorService {
   }
 
   /**
+   * Update content pricing
+   */
+  async updateContentPrice(contentId, price) {
+    try {
+      const response = await api.patch(`/creator/content/${contentId}/price`, { price });
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Update content details
+   */
+  async updateContent(contentId, updates) {
+    try {
+      const response = await api.put(`/creator/content/${contentId}`, updates);
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
    * Get content analytics
    */
   async getContentAnalytics(contentId) {

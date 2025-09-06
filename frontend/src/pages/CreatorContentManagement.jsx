@@ -29,6 +29,13 @@ const CreatorContentManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState('newest'); // newest, oldest, popular, earnings
+  const [editingContent, setEditingContent] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    description: '',
+    price: 0
+  });
   
   // Analytics state
   const [analytics, setAnalytics] = useState({
@@ -99,6 +106,54 @@ const CreatorContentManagement = () => {
       console.error('Failed to delete content:', err);
       alert('Failed to delete some items. Please try again.');
     }
+  };
+
+  const handleEditContent = (item) => {
+    setEditingContent(item);
+    setEditForm({
+      title: item.title || '',
+      description: item.description || '',
+      price: item.price || 0
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingContent) return;
+
+    try {
+      // Update price if changed
+      if (editForm.price !== editingContent.price) {
+        await creatorService.updateContentPrice(editingContent._id, editForm.price);
+      }
+
+      // Update other details if they exist (basic implementation)
+      if (editForm.title !== editingContent.title || editForm.description !== editingContent.description) {
+        await creatorService.updateContent(editingContent._id, {
+          title: editForm.title,
+          description: editForm.description
+        });
+      }
+
+      // Update local state
+      setContent(content.map(item => 
+        item._id === editingContent._id 
+          ? { ...item, title: editForm.title, description: editForm.description, price: editForm.price }
+          : item
+      ));
+
+      setShowEditModal(false);
+      setEditingContent(null);
+    } catch (err) {
+      console.error('Failed to update content:', err);
+      alert('Failed to update content. Please try again.');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setShowEditModal(false);
+    setEditingContent(null);
+    setEditForm({ title: '', description: '', price: 0 });
   };
 
   const toggleItemSelection = (id) => {
@@ -427,7 +482,7 @@ const CreatorContentManagement = () => {
                   <div className="content-mgmt-item-actions">
                     <button 
                       className="content-mgmt-action-btn"
-                      onClick={() => navigate(`/creator/content/${item._id}/edit`)}
+                      onClick={() => handleEditContent(item)}
                       title="Edit"
                     >
                       <Edit size={18} />
@@ -461,6 +516,76 @@ const CreatorContentManagement = () => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="content-mgmt-modal-overlay" onClick={handleCancelEdit}>
+          <div className="content-mgmt-edit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="content-mgmt-modal-header">
+              <h3>Edit Content</h3>
+              <button className="content-mgmt-modal-close" onClick={handleCancelEdit}>
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="content-mgmt-modal-content">
+              <div className="content-mgmt-form-group">
+                <label htmlFor="edit-title">Title</label>
+                <input
+                  id="edit-title"
+                  type="text"
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                  placeholder="Enter content title"
+                  maxLength="100"
+                />
+              </div>
+              
+              <div className="content-mgmt-form-group">
+                <label htmlFor="edit-description">Description</label>
+                <textarea
+                  id="edit-description"
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                  placeholder="Enter content description"
+                  maxLength="500"
+                  rows="3"
+                />
+              </div>
+              
+              <div className="content-mgmt-form-group">
+                <label htmlFor="edit-price">Price ($)</label>
+                <input
+                  id="edit-price"
+                  type="number"
+                  value={editForm.price}
+                  onChange={(e) => setEditForm({...editForm, price: parseFloat(e.target.value) || 0})}
+                  min="0"
+                  max="99.99"
+                  step="0.01"
+                />
+                <small>Set to $0.00 to make content free</small>
+              </div>
+            </div>
+            
+            <div className="content-mgmt-modal-actions">
+              <button 
+                className="content-mgmt-btn content-mgmt-btn-secondary" 
+                onClick={handleCancelEdit}
+              >
+                Cancel
+              </button>
+              <button 
+                className="content-mgmt-btn content-mgmt-btn-primary" 
+                onClick={handleSaveEdit}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
 
       {isDesktop && <CreatorMainFooter />}
