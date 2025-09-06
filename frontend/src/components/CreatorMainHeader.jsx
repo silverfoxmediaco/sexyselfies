@@ -80,6 +80,23 @@ const CreatorMainHeader = () => {
             </Link>
           </div>
 
+          {/* Desktop Navigation - Hidden on Mobile */}
+          <nav className="creator-desktop-nav">
+            {creatorNavItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link 
+                  key={item.path}
+                  to={item.path}
+                  className={`creator-desktop-nav-link ${isActivePath(item.path) ? 'active' : ''}`}
+                >
+                  <Icon className="creator-desktop-nav-icon" size={18} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
           {/* Right Side Actions */}
           <div className="creator-header-actions">
             {/* Notifications */}
