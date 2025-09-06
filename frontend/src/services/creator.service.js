@@ -244,7 +244,7 @@ class CreatorService {
    */
   async updateContent(contentId, data) {
     try {
-      const response = await api.put(`/creator/content/${contentId}`, {
+      const response = await api.put(`/creators/content/${contentId}`, {
         title: data.title,
         description: data.description,
         visibility: data.visibility,
@@ -264,7 +264,7 @@ class CreatorService {
    */
   async deleteContent(contentId) {
     try {
-      const response = await api.delete(`/creator/content/${contentId}`);
+      const response = await api.delete(`/creators/content/${contentId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -276,7 +276,7 @@ class CreatorService {
    */
   async updateContentPrice(contentId, price) {
     try {
-      const response = await api.patch(`/creator/content/${contentId}/price`, { price });
+      const response = await api.patch(`/creators/content/${contentId}/price`, { price });
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -288,7 +288,7 @@ class CreatorService {
    */
   async updateContent(contentId, updates) {
     try {
-      const response = await api.put(`/creator/content/${contentId}`, updates);
+      const response = await api.put(`/creators/content/${contentId}`, updates);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -300,7 +300,7 @@ class CreatorService {
    */
   async getContentAnalytics(contentId) {
     try {
-      const response = await api.get(`/creator/content/${contentId}/analytics`);
+      const response = await api.get(`/creators/content/${contentId}/analytics`);
       return response;
     } catch (error) {
       throw this.handleError(error);
