@@ -187,7 +187,8 @@ exports.uploadContent = async (req, res) => {
 
     // Generate batch ID for this upload session
     console.log('🔍 Generating upload batch ID...');
-    const uploadBatch = new require('mongoose').Types.ObjectId().toString();
+    const mongoose = require('mongoose');
+    const uploadBatch = new mongoose.Types.ObjectId().toString();
     console.log('Upload batch:', uploadBatch);
 
     // Process media files
