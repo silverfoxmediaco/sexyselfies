@@ -283,7 +283,8 @@ const CreatorContentUpload = () => {
         );
         
         // Mark as complete and update with backend data
-        const backendData = response.data.data;
+        // Note: API interceptor already unwraps response.data, so we access response.data directly
+        const backendData = response.data || response;
         console.log('🔍 Backend response data:', backendData);
         console.log('🔍 ContentId from backend:', backendData.contentId);
         setUploads(prev => prev.map(u => 
