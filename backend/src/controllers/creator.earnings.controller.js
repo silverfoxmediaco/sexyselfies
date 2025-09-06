@@ -1,6 +1,6 @@
 const CreatorEarnings = require('../models/CreatorEarnings');
 const CreatorProfile = require('../models/CreatorProfile');
-const CreatorContent = require('../models/CreatorContent');
+const Content = require('../models/Content');
 const CreatorConnection = require('../models/CreatorConnection');
 const CreatorMessage = require('../models/CreatorMessage');
 const mongoose = require('mongoose');
@@ -593,7 +593,7 @@ function getPeriodDates(period) {
 
 async function calculateRealtimeEarnings(creatorId, periodDates) {
   // Aggregate earnings from different sources
-  const contentEarnings = await CreatorContent.aggregate([
+  const contentEarnings = await Content.aggregate([
     {
       $match: {
         creator: mongoose.Types.ObjectId(creatorId),

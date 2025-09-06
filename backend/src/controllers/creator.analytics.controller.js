@@ -1,6 +1,6 @@
 const CreatorAnalytics = require('../models/CreatorAnalytics');
 const CreatorProfile = require('../models/CreatorProfile');
-const CreatorContent = require('../models/CreatorContent');
+const Content = require('../models/Content');
 const CreatorConnection = require('../models/CreatorConnection');
 const CreatorMessage = require('../models/CreatorMessage');
 const CreatorEarnings = require('../models/CreatorEarnings');
@@ -716,7 +716,7 @@ async function getTrafficAnalytics(creatorId, periodDates) {
 }
 
 async function getContentAnalytics(creatorId, periodDates) {
-  const content = await CreatorContent.find({
+  const content = await Content.find({
     creator: creatorId,
     createdAt: { $gte: periodDates.start }
   });

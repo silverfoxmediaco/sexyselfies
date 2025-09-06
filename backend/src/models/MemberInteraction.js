@@ -113,7 +113,7 @@ const memberInteractionSchema = new mongoose.Schema({
     // Content included
     contentIds: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CreatorContent'
+      ref: 'Content'
     }],
     
     // Offer expiration
@@ -184,7 +184,7 @@ const memberInteractionSchema = new mongoose.Schema({
     // Content purchased
     purchasedContent: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CreatorContent'
+      ref: 'Content'
     }],
     
     // Time from interaction to purchase (in hours)

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Creator = require('../models/Creator');
 const CreatorProfile = require('../models/CreatorProfile');
-const CreatorContent = require('../models/CreatorContent');
+const Content = require('../models/Content');
 const CreatorAnalytics = require('../models/CreatorAnalytics');
 const { rateLimiter } = require('../middleware/rateLimit.middleware');
 const { cacheMiddleware } = require('../middleware/cache.middleware');
@@ -216,7 +216,7 @@ router.get('/creator/:username',
         .select('branding personalization preferences.contentTypes analytics.performance');
       
       // Get sample content (blurred)
-      const sampleContent = await CreatorContent.find({
+      const sampleContent = await Content.find({
         creator: creator._id,
         'visibility.status': 'active',
         'visibility.public': true
@@ -422,7 +422,7 @@ router.get('/search',
         }));
       } else if (type === 'content') {
         // Search public content
-        const content = await CreatorContent.find({
+        const content = await Content.find({
           $or: [
             { title: { $regex: q, $options: 'i' } },
             { description: { $regex: q, $options: 'i' } },
@@ -480,12 +480,12 @@ router.get('/stats',
           })
         },
         content: {
-          total: await CreatorContent.countDocuments({ 'visibility.status': 'active' }),
-          photos: await CreatorContent.countDocuments({ 
+          total: await Content.countDocuments({ 'visibility.status': 'active' }),
+          photos: await Content.countDocuments({ 
             'visibility.status': 'active',
             contentType: 'photo'
           }),
-          videos: await CreatorContent.countDocuments({ 
+          videos: await Content.countDocuments({ 
             'visibility.status': 'active',
             contentType: 'video'
           })

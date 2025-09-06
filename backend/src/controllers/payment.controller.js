@@ -2,7 +2,7 @@
 const crypto = require('crypto');
 
 // Stub imports - these will be created as needed
-const CreatorContent = require('../models/CreatorContent');
+const Content = require('../models/Content');
 const CreatorMessage = require('../models/CreatorMessage');
 const CreatorEarnings = require('../models/CreatorEarnings');
 const CreatorConnection = require('../models/CreatorConnection');
@@ -106,7 +106,7 @@ exports.processContentUnlock = async (req, res) => {
     const { contentId } = req.body;
     
     // Get content
-    const content = await CreatorContent.findById(contentId);
+    const content = await Content.findById(contentId);
     
     if (!content) {
       return res.status(404).json({
@@ -668,7 +668,7 @@ async function completeContentUnlock(transaction) {
     console.log('Completing content unlock:', transaction._id);
     
     // 1. Get the content
-    const content = await CreatorContent.findById(transaction.referenceId);
+    const content = await Content.findById(transaction.referenceId);
     if (!content) {
       throw new Error('Content not found');
     }

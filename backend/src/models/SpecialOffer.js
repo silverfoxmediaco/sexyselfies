@@ -126,7 +126,7 @@ const specialOfferSchema = new mongoose.Schema({
       items: [{
         contentId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'CreatorContent'
+          ref: 'Content'
         },
         contentType: {
           type: String,
@@ -395,7 +395,7 @@ const specialOfferSchema = new mongoose.Schema({
     // Content accessed
     contentAccessed: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CreatorContent'
+      ref: 'Content'
     }],
     
     // Device/platform

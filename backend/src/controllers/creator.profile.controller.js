@@ -1,6 +1,6 @@
 const CreatorProfile = require('../models/CreatorProfile');
 const Creator = require('../models/Creator');
-const CreatorContent = require('../models/CreatorContent');
+const Content = require('../models/Content');
 const CreatorEarnings = require('../models/CreatorEarnings');
 const cloudinary = require('../config/cloudinary');
 const mongoose = require('mongoose');
@@ -148,7 +148,7 @@ exports.getAnalytics = async (req, res) => {
     }
     
     // Get content performance
-    const contentStats = await CreatorContent.aggregate([
+    const contentStats = await Content.aggregate([
       { $match: { creator: mongoose.Types.ObjectId(creatorId) } },
       {
         $group: {
@@ -162,7 +162,7 @@ exports.getAnalytics = async (req, res) => {
     ]);
     
     // Calculate best performing content
-    const topContent = await CreatorContent.find({ creator: creatorId })
+    const topContent = await Content.find({ creator: creatorId })
       .sort('-monetization.earnings.total')
       .limit(5)
       .select('title contentType analytics monetization ai');
@@ -281,7 +281,7 @@ exports.getAIRecommendations = async (req, res) => {
     
     const profile = await CreatorProfile.findOne({ creator: creatorId });
     const earnings = await CreatorEarnings.findOne({ creator: creatorId });
-    const recentContent = await CreatorContent.find({ creator: creatorId })
+    const recentContent = await Content.find({ creator: creatorId })
       .sort('-createdAt')
       .limit(10);
     
