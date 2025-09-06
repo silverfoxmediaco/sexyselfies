@@ -224,7 +224,7 @@ class CreatorService {
    */
   async getContent(params = {}) {
     try {
-      const response = await api.get('/creator/content', {
+      const response = await api.get('/creators/content', {
         params: {
           page: params.page || 1,
           limit: params.limit || 20,
