@@ -42,6 +42,62 @@ router.get('/:id/preview', getContentPreview);
 // Get creator's public content list
 router.get('/creator/:creatorId', getCreatorContent);
 
+// Get single content (full access if unlocked, preview if not) - PUBLIC
+router.get('/:id', 
+  // Custom middleware for public content access
+  async (req, res, next) => {
+    try {
+      const { id: contentId } = req.params;
+      
+      // Check if content exists
+      const content = await require('../models/Content').findById(contentId);
+      if (!content) {
+        return res.status(404).json({
+          success: false,
+          message: 'Content not found'
+        });
+      }
+      
+      // Default to no access for unauthenticated users
+      req.hasAccess = false;
+      
+      // If user is authenticated, check for access
+      if (req.user) {
+        const memberId = req.user.id;
+        
+        // Creator always has access to their own content
+        if (content.creator.toString() === memberId) {
+          req.hasAccess = true;
+        } else {
+          // Check if member has purchased this content
+          const Transaction = require('../models/Transaction');
+          const transaction = await Transaction.findOne({
+            memberId,
+            contentId,
+            type: 'content_unlock',
+            status: 'completed'
+          });
+          
+          if (transaction) {
+            req.hasAccess = true;
+          }
+        }
+      }
+      
+      // Store content for controller
+      req.content = content;
+      next();
+    } catch (error) {
+      console.error('Content access check error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Server error checking content access'
+      });
+    }
+  },
+  getContent
+);
+
 // ============================================
 // PROTECTED ROUTES (Auth required)
 // ============================================
@@ -50,12 +106,6 @@ router.use(protect);
 // ------------------------------------------
 // MEMBER ROUTES
 // ------------------------------------------
-
-// Get single content (full access if unlocked, preview if not)
-router.get('/:id', 
-  checkContentUnlock,  // Sets req.hasAccess
-  getContent
-);
 
 // Unlock single content (micro-transaction)
 router.post('/:id/unlock',
