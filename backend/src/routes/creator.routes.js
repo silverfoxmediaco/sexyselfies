@@ -24,18 +24,20 @@ try {
 }
 
 // Import upload middleware with correct exports
-let profileImageUpload, contentImagesUpload, contentVideoUpload;
+let profileImageUpload, contentImagesUpload, contentVideoUpload, contentWithThumbnailUpload;
 try {
   const uploadMiddleware = require('../middleware/upload.middleware');
   profileImageUpload = uploadMiddleware.profileImageUpload;
   contentImagesUpload = uploadMiddleware.contentImagesUpload;
   contentVideoUpload = uploadMiddleware.contentVideoUpload;
+  contentWithThumbnailUpload = uploadMiddleware.contentWithThumbnailUpload;
 } catch (e) {
   console.log('Warning: upload.middleware not loading properly');
   // Create dummy middleware functions
   profileImageUpload = (req, res, next) => next();
   contentImagesUpload = (req, res, next) => next();
   contentVideoUpload = (req, res, next) => next();
+  contentWithThumbnailUpload = (req, res, next) => next();
 }
 
 // ==========================================
@@ -124,8 +126,8 @@ if (creatorContentController.uploadContent) {
   });
 }
 
-// Add the route that frontend expects - using upload controller
-router.post('/content/upload', contentImagesUpload, uploadController.uploadContent);
+// Add the route that frontend expects - using upload controller with custom thumbnail support
+router.post('/content/upload', contentWithThumbnailUpload, uploadController.uploadContent);
 
 // Content upload with correct middleware for video
 router.post('/content/video', contentVideoUpload, (req, res) => {

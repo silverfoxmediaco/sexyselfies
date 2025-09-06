@@ -747,7 +747,7 @@ const CreatorContentUpload = () => {
             <div className="creator-content-upload-option-content">
               <Unlock size={20} />
               <span className="creator-content-upload-option-title">Public</span>
-              <span className="creator-content-upload-option-desc">Available to all matches</span>
+              <span className="creator-content-upload-option-desc">Available to all connections</span>
             </div>
           </label>
           
@@ -762,7 +762,7 @@ const CreatorContentUpload = () => {
             <div className="creator-content-upload-option-content">
               <Lock size={20} />
               <span className="creator-content-upload-option-title">Private</span>
-              <span className="creator-content-upload-option-desc">Only for selected fans</span>
+              <span className="creator-content-upload-option-desc">Only for selected connections</span>
             </div>
           </label>
           
