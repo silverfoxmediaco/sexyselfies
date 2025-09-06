@@ -281,6 +281,8 @@ const CreatorContentUpload = () => {
         
         // Mark as complete and update with backend data
         const backendData = response.data.data;
+        console.log('🔍 Backend response data:', backendData);
+        console.log('🔍 ContentId from backend:', backendData.contentId);
         setUploads(prev => prev.map(u => 
           u.id === upload.id ? { 
             ...u, 
@@ -425,7 +427,7 @@ const CreatorContentUpload = () => {
                       <CheckCircle size={32} />
                       {upload.contentId && (
                         <small style={{ fontSize: '10px', marginTop: '4px', color: 'white' }}>
-                          ID: {upload.contentId.toString().slice(-8)}
+                          ID: {String(upload.contentId).slice(-8)}
                         </small>
                       )}
                     </div>
