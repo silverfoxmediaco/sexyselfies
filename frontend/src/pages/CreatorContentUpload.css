@@ -113,29 +113,6 @@
   margin: 0;
 }
 
-.creator-content-upload-header-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.creator-content-upload-save-draft-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--border, #2A2A2C);
-  border-radius: 12px;
-  color: var(--text-primary, #FFFFFF);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.creator-content-upload-save-draft-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
 
 /* Progress Steps */
 .creator-content-upload-steps {
@@ -1035,13 +1012,6 @@
     align-items: flex-start;
   }
 
-  .creator-content-upload-header-actions {
-    width: 100%;
-  }
-
-  .creator-content-upload-save-draft-btn {
-    flex: 1;
-  }
 
   .creator-content-upload-steps {
     margin-bottom: 30px;

@@ -27,14 +27,20 @@ const profileImageStorage = new CloudinaryStorage({
   }
 });
 
-// Create storage for content images
+// Create storage for content images and videos (mixed content)
 const contentImageStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'sexyselfies/content',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-    transformation: [{ width: 1200, height: 1200, crop: 'limit' }],
-    public_id: (req, file) => `content_${req.user.id}_${Date.now()}`
+  params: (req, file) => {
+    const isVideo = file.mimetype && file.mimetype.startsWith('video/');
+    return {
+      folder: isVideo ? 'sexyselfies/videos' : 'sexyselfies/content',
+      resource_type: isVideo ? 'video' : 'image',
+      allowed_formats: isVideo 
+        ? ['mp4', 'mov', 'avi', 'webm', 'mkv']
+        : ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+      transformation: isVideo ? [] : [{ width: 1200, height: 1200, crop: 'limit' }],
+      public_id: `content_${req.user.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    };
   }
 });
 
@@ -68,7 +74,7 @@ const uploadProfileImage = multer({
 
 const uploadContentImage = multer({ 
   storage: contentImageStorage,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+  limits: { fileSize: 100 * 1024 * 1024 } // 100MB limit for both images and videos
 });
 
 // VERIFICATION UPLOAD INSTANCE - THIS WAS MISSING!

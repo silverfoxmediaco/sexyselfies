@@ -133,20 +133,29 @@ exports.uploadCoverImage = async (req, res) => {
 // Upload content (images or video)
 exports.uploadContent = async (req, res) => {
   try {
+    console.log('🔍 Upload request received');
+    console.log('User:', req.user?.id, req.user?.role);
+    console.log('Files:', req.files?.length || 0);
+    console.log('Body:', req.body);
+    
     if (req.user.role !== 'creator') {
+      console.log('❌ Access denied: not a creator');
       return res.status(403).json({
         success: false,
         error: 'Only creators can upload content'
       });
     }
 
+    console.log('🔍 Finding creator profile...');
     const creator = await Creator.findOne({ user: req.user.id });
     if (!creator) {
+      console.log('❌ Creator profile not found');
       return res.status(404).json({
         success: false,
         error: 'Creator profile not found'
       });
     }
+    console.log('✅ Creator found:', creator._id);
 
     const { 
       title, 
@@ -162,9 +171,12 @@ exports.uploadContent = async (req, res) => {
     } = req.body;
 
     // Handle multiple images or single video
+    console.log('🔍 Processing files...');
     const mediaFiles = req.files || (req.file ? [req.file] : []);
+    console.log('Media files found:', mediaFiles?.length || 0);
     
     if (!mediaFiles || mediaFiles.length === 0) {
+      console.log('❌ No files uploaded');
       return res.status(400).json({
         success: false,
         error: 'No files uploaded'
@@ -172,40 +184,58 @@ exports.uploadContent = async (req, res) => {
     }
 
     // Generate batch ID for this upload session
+    console.log('🔍 Generating upload batch ID...');
     const uploadBatch = new require('mongoose').Types.ObjectId().toString();
+    console.log('Upload batch:', uploadBatch);
 
     // Process media files
+    console.log('🔍 Processing media files...');
     const media = await Promise.all(mediaFiles.map(async (file, index) => {
-      // Get file metadata from Cloudinary if needed
+      console.log(`Processing file ${index + 1}:`, { 
+        filename: file.filename, 
+        originalname: file.originalname, 
+        mimetype: file.mimetype,
+        path: file.path 
+      });
+      // Get file metadata - file should be from Cloudinary multer middleware
       let dimensions = {};
       let duration = null;
       
-      if (file.resource_type === 'video') {
-        // For videos, we might want to get duration from Cloudinary
-        const resource = await cloudinary.api.resource(file.filename, { 
-          resource_type: 'video' 
-        });
-        duration = resource.duration;
-        dimensions = {
-          width: resource.width,
-          height: resource.height
-        };
+      // Determine file type from mimetype since resource_type might not be set
+      const isVideo = file.mimetype && file.mimetype.startsWith('video/');
+      
+      if (isVideo) {
+        // For videos, try to get metadata from Cloudinary
+        try {
+          const resource = await cloudinary.api.resource(file.filename, { 
+            resource_type: 'video' 
+          });
+          duration = resource.duration;
+          dimensions = {
+            width: resource.width,
+            height: resource.height
+          };
+        } catch (error) {
+          console.log('Could not get video metadata:', error.message);
+          // Use defaults
+          dimensions = { width: 1280, height: 720 };
+        }
       } else {
-        // For images
+        // For images, use basic dimensions
         dimensions = {
-          width: file.width || 1200,
-          height: file.height || 1200
+          width: 1200,
+          height: 1200
         };
       }
 
       return {
-        url: file.path,
-        type: file.resource_type === 'video' ? 'video' : 'image',
+        url: file.path, // Cloudinary URL
+        type: isVideo ? 'video' : 'image',
         duration: duration,
         size: file.size,
         dimensions: dimensions,
-        cloudinaryPublicId: file.filename, // Store Cloudinary public ID
-        originalName: file.originalname // Store original filename
+        cloudinaryPublicId: file.filename, // Cloudinary public ID
+        originalName: file.originalname // Original filename
       };
     }));
 
@@ -217,6 +247,19 @@ exports.uploadContent = async (req, res) => {
     }
 
     // Create content document
+    console.log('🔍 Creating content document...');
+    console.log('Content data:', {
+      creator: creator._id,
+      type: type || (media[0].type === 'video' ? 'video' : 'photo'),
+      title: title || '',
+      description: description || '',
+      thumbnail: thumbnail,
+      mediaCount: media.length,
+      uploadBatch: uploadBatch,
+      price: parseFloat(price) || creator.contentPrice || 2.99,
+      allowTips: allowTips === 'true' || allowTips === true
+    });
+    
     const content = await Content.create({
       creator: creator._id,
       type: type || (media[0].type === 'video' ? 'video' : 'photo'),
@@ -261,7 +304,8 @@ exports.uploadContent = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Content upload error:', error);
+    console.error('💥 Content upload error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       error: error.message

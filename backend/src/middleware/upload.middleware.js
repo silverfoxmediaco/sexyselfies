@@ -4,7 +4,7 @@ const { uploadProfileImage, uploadContentImage, uploadContentVideo } = require('
 exports.profileImageUpload = uploadProfileImage.single('profileImage');
 
 // Middleware for content image upload (multiple)
-exports.contentImagesUpload = uploadContentImage.array('images', 10); // Max 10 images
+exports.contentImagesUpload = uploadContentImage.array('content', 10); // Max 10 files (images/videos)
 
 // Middleware for content video upload
 exports.contentVideoUpload = uploadContentVideo.single('video');

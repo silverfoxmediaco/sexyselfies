@@ -5,7 +5,7 @@ import {
   Upload, X, Image, Video, DollarSign, Tag, Eye, EyeOff,
   AlertCircle, CheckCircle, Loader, Plus, Sparkles, TrendingUp,
   Calendar, Clock, FileText, Camera, Film, ArrowLeft, ArrowRight,
-  Save, Send, Info, Zap, Lock, Unlock, Star, Hash, Gift
+  Send, Lock, Unlock, Hash, Gift
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
@@ -216,7 +216,7 @@ const CreatorContentUpload = () => {
         
         // Upload with progress tracking - using uploadApi from config
         const response = await uploadApi.post(
-          '/creators/content/upload',
+          '/upload/content',
           formData,
           {
             onUploadProgress: (progressEvent) => {
@@ -781,12 +781,6 @@ const CreatorContentUpload = () => {
             <p>Share your exclusive content with fans</p>
           </div>
           
-          <div className="creator-content-upload-header-actions">
-            <button className="creator-content-upload-save-draft-btn">
-              <Save size={18} />
-              <span>Save Draft</span>
-            </button>
-          </div>
         </div>
 
         {/* Progress Steps */}
