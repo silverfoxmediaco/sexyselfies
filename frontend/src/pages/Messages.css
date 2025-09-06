@@ -9,6 +9,13 @@
   position: relative;
 }
 
+/* Desktop: Account for fixed CreatorMainHeader */
+@media (min-width: 1024px) {
+  .messages-container {
+    padding-top: 70px;
+  }
+}
+
 /* Header */
 .messages-header {
   background: rgba(18, 18, 18, 0.95);
