@@ -115,7 +115,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="browse-members" 
               element={
-<BrowseMembers />
+                <ProtectedCreatorRoute>
+                  <BrowseMembers />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
+              path=":creatorId/browse-members" 
+              element={
+                <ProtectedCreatorRoute>
+                  <BrowseMembers />
+                </ProtectedCreatorRoute>
               } 
             />
             
@@ -123,7 +133,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="members" 
               element={
-<CreatorManageMembers />
+                <ProtectedCreatorRoute>
+                  <CreatorManageMembers />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
+              path=":creatorId/members" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorManageMembers />
+                </ProtectedCreatorRoute>
               } 
             />
             
@@ -131,7 +151,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="messages" 
               element={
-<Messages />
+                <ProtectedCreatorRoute>
+                  <Messages />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
+              path=":creatorId/messages" 
+              element={
+                <ProtectedCreatorRoute>
+                  <Messages />
+                </ProtectedCreatorRoute>
               } 
             />
             
@@ -139,7 +169,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="connections" 
               element={
-<CreatorConnections />
+                <ProtectedCreatorRoute>
+                  <CreatorConnections />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
+              path=":creatorId/connections" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorConnections />
+                </ProtectedCreatorRoute>
               } 
             />
             
@@ -155,11 +195,29 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
               path="profile-setup" 
               element={
-<CreatorProfileSetup />
+                <ProtectedCreatorRoute>
+                  <CreatorProfileSetup />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
+              path=":creatorId/profile-setup" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorProfileSetup />
+                </ProtectedCreatorRoute>
               } 
             />
             <Route 
               path="profile-preview" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorProfilePreview />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
+              path=":creatorId/profile-preview" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorProfilePreview />
@@ -215,10 +273,26 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
+              path="earnings" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorEarnings />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
               path=":creatorId/earnings" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorEarnings />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
+              path="analytics" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorAnalytics />
                 </ProtectedCreatorRoute>
               } 
             />
@@ -243,6 +317,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               element={
                 <ProtectedCreatorRoute>
                   <CreatorProfilePage />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
+              path="settings" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorSettingsPage />
                 </ProtectedCreatorRoute>
               } 
             />
