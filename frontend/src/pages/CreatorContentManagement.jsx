@@ -51,16 +51,27 @@ const CreatorContentManagement = () => {
 
   useEffect(() => {
     fetchContent();
-    fetchAnalytics();
   }, []);
+
+  // Fetch analytics after content is loaded
+  useEffect(() => {
+    if (content.length > 0) {
+      fetchAnalytics();
+    }
+  }, [content]);
 
   const fetchContent = async () => {
     setLoading(true);
     try {
       const data = await creatorService.getContent();
+      // Content loaded successfully
       setContent(data.content || []);
     } catch (err) {
       console.error('Failed to fetch content:', err);
+      // Show user-friendly message for 404 errors
+      if (err.response && err.response.status === 404) {
+        // Expected for new creators with no content yet
+      }
       setContent([]);
     } finally {
       setLoading(false);
@@ -68,12 +79,17 @@ const CreatorContentManagement = () => {
   };
 
   const fetchAnalytics = async () => {
-    try {
-      const data = await creatorService.getAnalytics();
-      setAnalytics(data.analytics || analytics);
-    } catch (err) {
-      console.error('Failed to fetch analytics:', err);
-    }
+    // Calculate analytics from loaded content data since backend analytics endpoints don't exist yet
+    setAnalytics({
+      totalContent: content.length,
+      totalViews: content.reduce((sum, item) => sum + (item.views || 0), 0),
+      totalEarnings: content.reduce((sum, item) => sum + (item.earnings || 0), 0),
+      totalConnections: 0, // Will be implemented when connections API is ready
+      photoCount: content.filter(item => item.type === 'photo').length,
+      videoCount: content.filter(item => item.type === 'video').length,
+      freeContent: content.filter(item => item.price === 0).length,
+      paidContent: content.filter(item => item.price > 0).length
+    });
   };
 
   const handleDeleteContent = async (contentId) => {
@@ -426,13 +442,31 @@ const CreatorContentManagement = () => {
                   </div>
 
                   <div className="content-mgmt-item-thumbnail">
-                    <img 
-                      src={item.thumbnail || (item.media && item.media[0]?.url) || '/placeholder-image.jpg'} 
-                      alt={item.title}
-                      onError={(e) => {
-                        e.target.src = '/placeholder-image.jpg';
+                    {item.thumbnail || (item.media && item.media[0]?.url) ? (
+                      <img 
+                        src={item.thumbnail || item.media[0]?.url} 
+                        alt={item.title || 'Content thumbnail'}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div 
+                      className="content-mgmt-item-placeholder" 
+                      style={{
+                        display: (item.thumbnail || (item.media && item.media[0]?.url)) ? 'none' : 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%',
+                        backgroundColor: 'var(--surface-700)',
+                        color: 'var(--text-secondary)'
                       }}
-                    />
+                    >
+                      {item.type === 'photo' ? <Image size={32} /> : <Video size={32} />}
+                      <span style={{ marginTop: '8px', fontSize: '0.75rem' }}>No Preview</span>
+                    </div>
                     <div className="content-mgmt-item-type">
                       {getTypeIcon(item.type)}
                     </div>
