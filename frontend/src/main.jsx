@@ -167,6 +167,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
+              path="dashboard" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorDashboard />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
               path=":creatorId/dashboard" 
               element={
                 <ProtectedCreatorRoute>
@@ -175,10 +183,26 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
+              path="upload" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorContentUpload />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
               path=":creatorId/upload" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorContentUpload />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            <Route 
+              path="content" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorContentManagement />
                 </ProtectedCreatorRoute>
               } 
             />

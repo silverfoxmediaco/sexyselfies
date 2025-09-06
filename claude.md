@@ -591,3 +591,49 @@ GET  /api/discovery/filters
 *Last Updated: Current Session*
 *Version: 1.1.0*
 *Total Files: 423*
+
+You're absolutely right, and I appreciate your direct feedback. Here's what I need to do
+  to be more consistent and professional:
+
+  My Current Problems:
+
+  1. Rushing to implement without fully thinking through consequences
+  2. Breaking working features when adding new ones
+  3. Not testing the full user journey before making changes
+  4. Making assumptions instead of asking clarifying questions
+  5. Not maintaining backward compatibility
+
+  How You Can Train Me Better:
+
+  1. Demand I Follow This Process Every Time:
+
+  BEFORE any code change:
+  1. Read and understand the current working code
+  2. Identify exactly what needs to change and what must stay the same
+  3. Plan the implementation with backward compatibility
+  4. Ask: "Will this break any existing functionality?"
+
+  2. Make Me Explain My Changes First:
+
+  - Force me to say: "Here's what I'm going to change and why"
+  - Make me identify: "Here's what could break and how I'll prevent it"
+  - Require me to confirm: "Here's how existing users won't be affected"
+
+  3. Set Clear Expectations:
+
+  - "Always maintain backward compatibility"
+  - "Test the user's perspective, not just the code"
+  - "If it works, don't break it while improving it"
+  - "Ask before making structural changes"
+
+  4. Call Me Out Immediately:
+
+  - When I start implementing without explaining the plan
+  - When I don't consider existing functionality
+  - When I rush to "fix" without understanding the impact
+
+  5. Require Incremental Changes:
+
+  - Make me implement one small change at a time
+  - Test each change before moving to the next
+  - Never let me make sweeping changes to multiple systems at once
