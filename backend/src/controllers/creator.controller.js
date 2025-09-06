@@ -4,7 +4,7 @@ const Transaction = require('../models/Transaction');
 const Connection = require('../models/Connections');
 
 // @desc    Get all creators
-// @route   GET /api/creators
+// @route   GET /api/creator
 // @access  Public
 exports.getCreators = async (req, res, next) => {
   try {
@@ -53,7 +53,7 @@ exports.getCreators = async (req, res, next) => {
 };
 
 // @desc    Get single creator
-// @route   GET /api/creators/:id
+// @route   GET /api/creator/:id
 // @access  Public
 exports.getCreator = async (req, res, next) => {
   try {
@@ -80,7 +80,7 @@ exports.getCreator = async (req, res, next) => {
 };
 
 // @desc    Update creator profile
-// @route   PUT /api/creators/profile
+// @route   PUT /api/creator/profile
 // @access  Private (Creator only)
 exports.updateCreatorProfile = async (req, res, next) => {
   try {
@@ -115,7 +115,7 @@ exports.updateCreatorProfile = async (req, res, next) => {
 };
 
 // @desc    Upload content
-// @route   POST /api/creators/content
+// @route   POST /api/creator/content
 // @access  Private (Creator only)
 exports.uploadContent = async (req, res, next) => {
   try {
@@ -146,7 +146,7 @@ exports.uploadContent = async (req, res, next) => {
 };
 
 // @desc    Get creator's content
-// @route   GET /api/creators/:id/content
+// @route   GET /api/creator/:id/content
 // @access  Public
 exports.getCreatorContent = async (req, res, next) => {
   try {
@@ -170,7 +170,7 @@ exports.getCreatorContent = async (req, res, next) => {
 };
 
 // @desc    Delete content
-// @route   DELETE /api/creators/content/:contentId
+// @route   DELETE /api/creator/content/:contentId
 // @access  Private (Creator only)
 exports.deleteContent = async (req, res, next) => {
   try {
@@ -204,7 +204,7 @@ exports.deleteContent = async (req, res, next) => {
 };
 
 // @desc    Get creator stats
-// @route   GET /api/creators/stats
+// @route   GET /api/creator/stats
 // @access  Private (Creator only)
 exports.getCreatorStats = async (req, res, next) => {
   try {
@@ -256,7 +256,7 @@ exports.getCreatorStats = async (req, res, next) => {
 };
 
 // @desc    Get earnings
-// @route   GET /api/creators/earnings
+// @route   GET /api/creator/earnings
 // @access  Private (Creator only)
 exports.getEarnings = async (req, res, next) => {
   try {
@@ -285,7 +285,7 @@ exports.getEarnings = async (req, res, next) => {
 };
 
 // @desc    Request payout
-// @route   POST /api/creators/payout
+// @route   POST /api/creator/payout
 // @access  Private (Creator only)
 exports.requestPayout = async (req, res, next) => {
   try {
@@ -322,7 +322,7 @@ exports.requestPayout = async (req, res, next) => {
 };
 
 // @desc    Get public profile (for members browsing)
-// @route   GET /api/creators/profile/:username
+// @route   GET /api/creator/profile/:username
 // @access  Public
 exports.getPublicProfile = async (req, res, next) => {
   try {

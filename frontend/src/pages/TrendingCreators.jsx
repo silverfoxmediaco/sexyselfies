@@ -158,7 +158,7 @@ const TrendingCreators = () => {
     // Production API call
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/v1/creators/trending', {
+      const response = await axios.get('/api/v1/creator/trending', {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           period: selectedPeriod,

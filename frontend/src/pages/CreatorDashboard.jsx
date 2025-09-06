@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import creatorService from '../services/creator.service';
 import './CreatorDashboard.css';
@@ -15,6 +15,7 @@ import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection
 
 const CreatorDashboard = () => {
   const navigate = useNavigate();
+  const { creatorId } = useParams();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
@@ -209,7 +210,7 @@ const CreatorDashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          onClick={() => navigate('/creator/analytics')}
+          onClick={() => navigate(`/creator/${creatorId}/analytics`)}
           style={{ cursor: 'pointer' }}
         >
           <div className="creator-dashboard-stat-header">
@@ -453,34 +454,34 @@ const CreatorDashboard = () => {
           <div className="dashboard-header-actions-small">
             <button 
               className="view-full-btn secondary"
-              onClick={() => navigate('/creator/earnings')}
+              onClick={() => navigate(`/creator/${creatorId}/earnings`)}
             >
               View Earnings
             </button>
             <button 
               className="view-full-btn"
-              onClick={() => navigate('/creator/analytics')}
+              onClick={() => navigate(`/creator/${creatorId}/analytics`)}
             >
               View Analytics
             </button>
           </div>
         </div>
         <div className="mini-charts">
-          <div className="mini-chart" onClick={() => navigate('/creator/earnings')}>
+          <div className="mini-chart" onClick={() => navigate(`/creator/${creatorId}/earnings`)}>
             <div className="chart-title">Revenue Trend</div>
             <div className="chart-placeholder">
               <div className="trend-line revenue-trend"></div>
             </div>
             <div className="chart-value">{formatCurrency(dashboardData.stats.revenue)}</div>
           </div>
-          <div className="mini-chart" onClick={() => navigate('/creator/analytics')}>
+          <div className="mini-chart" onClick={() => navigate(`/creator/${creatorId}/analytics`)}>
             <div className="chart-title">Views This Week</div>
             <div className="chart-placeholder">
               <div className="trend-line views-trend"></div>
             </div>
             <div className="chart-value">{formatNumber(dashboardData.stats.views)}</div>
           </div>
-          <div className="mini-chart" onClick={() => navigate('/creator/analytics')}>
+          <div className="mini-chart" onClick={() => navigate(`/creator/${creatorId}/analytics`)}>
             <div className="chart-title">Conversion Rate</div>
             <div className="chart-placeholder">
               <div className="trend-line conversion-trend"></div>

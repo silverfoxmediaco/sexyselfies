@@ -275,7 +275,7 @@ exports.creatorRegister = async (req, res, next) => {
     // Create response data
     const additionalData = {
       message: 'Creator registration successful! Please complete ID verification to start earning.',
-      redirectTo: '/creator/verify-id',
+      redirectTo: `/creator/${creator[0]._id}/verify-id`,
       profileComplete: false,
       isVerified: false,
       needsIdVerification: true,
@@ -390,19 +390,19 @@ exports.login = async (req, res, next) => {
           additionalData.profileComplete = false;
         }
         
-        // Determine redirect path
+        // Determine redirect path with creator ID
         if (additionalData.needsIdVerification) {
-          additionalData.redirectTo = '/creator/verify-id';
+          additionalData.redirectTo = `/creator/${creator._id}/verify-id`;
         } else if (!additionalData.isVerified) {
-          additionalData.redirectTo = '/creator/verification-pending';
+          additionalData.redirectTo = `/creator/${creator._id}/verification-pending`;
         } else if (!additionalData.profileComplete) {
-          additionalData.redirectTo = '/creator/profile-setup';
+          additionalData.redirectTo = `/creator/${creator._id}/profile-setup`;
         } else {
-          additionalData.redirectTo = '/creator/dashboard';
+          additionalData.redirectTo = `/creator/${creator._id}/dashboard`;
         }
       } else {
         // Creator profile doesn't exist, create it
-        await Creator.create({
+        const newCreator = await Creator.create({
           user: user._id,
           displayName: user.email.split('@')[0],
           birthDate: new Date('1995-01-01'),
@@ -447,7 +447,7 @@ exports.login = async (req, res, next) => {
         additionalData.profileComplete = false;
         additionalData.isVerified = false;
         additionalData.needsIdVerification = true;
-        additionalData.redirectTo = '/creator/verify-id';
+        additionalData.redirectTo = `/creator/${newCreator._id}/verify-id`;
       }
     } else if (user.role === 'member') {
       const member = await Member.findOne({ user: user._id });

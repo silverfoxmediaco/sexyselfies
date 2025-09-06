@@ -189,7 +189,7 @@ router.get('/docs', (req, res) => {
         base: '/api/v1/public',
         endpoints: [
           'GET /trending',
-          'GET /creators',
+          'GET /creator',
           'GET /creator/:username',
           'GET /categories',
           'GET /search'

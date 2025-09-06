@@ -78,7 +78,7 @@ router.get('/trending',
 );
 
 // Browse all public creators with filters
-router.get('/creators',
+router.get('/creator',
   cacheMiddleware(300),
   async (req, res) => {
     try {

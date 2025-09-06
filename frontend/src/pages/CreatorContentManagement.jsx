@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
   ArrowLeft, Plus, Search, Filter, Grid, List, 
   Eye, Edit, Trash2, Download, Share2, 
@@ -16,6 +16,7 @@ import './CreatorContentManagement.css';
 
 const CreatorContentManagement = () => {
   const navigate = useNavigate();
+  const { creatorId } = useParams();
   const isDesktop = useIsDesktop();
   const isMobile = useIsMobile();
   const userRole = getUserRole();
@@ -294,11 +295,11 @@ const CreatorContentManagement = () => {
         {/* Header */}
         <header className="content-mgmt-header">
           <div className="content-mgmt-header-content">
-            <button className="content-mgmt-back-btn" onClick={() => navigate('/creator/dashboard')}>
+            <button className="content-mgmt-back-btn" onClick={() => navigate(`/creator/${creatorId}/dashboard`)}>
               <ArrowLeft size={20} />
             </button>
             <h1>Content Management</h1>
-            <button className="content-mgmt-upload-btn" onClick={() => navigate('/creator/content/upload')}>
+            <button className="content-mgmt-upload-btn" onClick={() => navigate(`/creator/${creatorId}/upload`)}>
               <Plus size={20} />
             </button>
           </div>
@@ -459,7 +460,7 @@ const CreatorContentManagement = () => {
               {content.length === 0 && (
                 <button 
                   className="content-mgmt-upload-first-btn"
-                  onClick={() => navigate('/creator/content/upload')}
+                  onClick={() => navigate(`/creator/${creatorId}/upload`)}
                 >
                   <Plus size={20} />
                   Upload Your First Content

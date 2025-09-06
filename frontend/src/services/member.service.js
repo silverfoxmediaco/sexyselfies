@@ -159,7 +159,7 @@ class MemberService {
    */
   async getCreatorProfile(creatorId) {
     try {
-      const response = await api.get(`/member/creators/${creatorId}`);
+      const response = await api.get(`/member/creator/${creatorId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -171,7 +171,7 @@ class MemberService {
    */
   async getCreatorContent(creatorId, params = {}) {
     try {
-      const response = await api.get(`/member/creators/${creatorId}/content`, {
+      const response = await api.get(`/member/creator/${creatorId}/content`, {
         params: {
           type: params.type, // 'photos', 'videos', 'all'
           page: params.page || 1,
@@ -189,7 +189,7 @@ class MemberService {
    */
   async searchCreators(query, filters = {}) {
     try {
-      const response = await api.get('/member/search/creators', {
+      const response = await api.get('/member/search/creator', {
         params: {
           q: query,
           ...filters
@@ -275,7 +275,7 @@ class MemberService {
    */
   async subscribeToCreator(creatorId, data = {}) {
     try {
-      const response = await api.post(`/member/creators/${creatorId}/subscribe`, {
+      const response = await api.post(`/member/creator/${creatorId}/subscribe`, {
         subscription_tier: data.tier || 'basic', // 'basic', 'vip', 'premium'
         duration: data.duration || 1, // months
         auto_renew: data.auto_renew !== false,
@@ -292,7 +292,7 @@ class MemberService {
    */
   async cancelSubscription(creatorId, reason) {
     try {
-      const response = await api.delete(`/member/creators/${creatorId}/subscribe`, {
+      const response = await api.delete(`/member/creator/${creatorId}/subscribe`, {
         data: { 
           reason,
           cancel_immediately: false // false = cancel at end of period
@@ -516,7 +516,7 @@ class MemberService {
    */
   async sendTip(creatorId, amount, message = '') {
     try {
-      const response = await api.post(`/member/creators/${creatorId}/tip`, {
+      const response = await api.post(`/member/creator/${creatorId}/tip`, {
         amount,
         message,
         payment_method: 'credits'
@@ -628,7 +628,7 @@ class MemberService {
    */
   async reportCreator(creatorId, reason, details) {
     try {
-      const response = await api.post(`/member/creators/${creatorId}/report`, {
+      const response = await api.post(`/member/creator/${creatorId}/report`, {
         reason, // 'fake', 'scam', 'inappropriate', 'harassment', 'other'
         details
       });
@@ -643,7 +643,7 @@ class MemberService {
    */
   async blockCreator(creatorId, reason) {
     try {
-      const response = await api.post(`/member/creators/${creatorId}/block`, {
+      const response = await api.post(`/member/creator/${creatorId}/block`, {
         reason
       });
       return response;
@@ -657,7 +657,7 @@ class MemberService {
    */
   async unblockCreator(creatorId) {
     try {
-      const response = await api.delete(`/member/creators/${creatorId}/block`);
+      const response = await api.delete(`/member/creator/${creatorId}/block`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -741,7 +741,7 @@ class MemberService {
    */
   async addToList(listId, creatorId) {
     try {
-      const response = await api.post(`/member/lists/${listId}/creators/${creatorId}`);
+      const response = await api.post(`/member/lists/${listId}/creator/${creatorId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);

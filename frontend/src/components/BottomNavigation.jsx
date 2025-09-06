@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { 
   Flame, Heart, MessageCircle, User, Home,
   Upload, DollarSign, TrendingUp, Settings,
@@ -16,6 +16,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
   
   const navigate = useNavigate();
   const location = useLocation();
+  const { creatorId } = useParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -31,7 +32,16 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
 
   // Main bottom nav items - Updated with Connections for members
   const getNavItems = () => {
-    if (userRole === 'creator') {
+    if (userRole === 'creator' && creatorId) {
+      return [
+        { icon: Home, label: 'Home', path: `/creator/${creatorId}/dashboard`, color: '#17D2C2' },
+        { icon: Compass, label: 'Browse', path: `/creator/${creatorId}/browse-members`, color: '#EF4444' },
+        { icon: Menu, label: 'Menu', action: 'menu', color: '#6B7280' },
+        { icon: Link2, label: 'Connections', path: `/creator/${creatorId}/connections`, color: '#8B5CF6' },
+        { icon: User, label: 'Profile', path: `/creator/${creatorId}/profile`, color: '#3B82F6' }
+      ];
+    } else if (userRole === 'creator') {
+      // Fallback for when creatorId is not available
       return [
         { icon: Home, label: 'Home', path: '/creator/dashboard', color: '#17D2C2' },
         { icon: Compass, label: 'Browse', path: '/creator/browse-members', color: '#EF4444' },
@@ -69,7 +79,40 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
 
   // Menu items in slideout - Updated with Connections in menu
   const getMenuItems = () => {
-    if (userRole === 'creator') {
+    if (userRole === 'creator' && creatorId) {
+      return [
+        // Quick Actions Section
+        { section: 'Quick Actions' },
+        { icon: RefreshCw, label: 'Refresh Dashboard', action: 'refresh', highlight: refreshing },
+        { icon: Bell, label: 'Notifications', path: `/creator/${creatorId}/notifications`, badge: notificationCount },
+        { icon: Plus, label: 'Upload Content', path: `/creator/${creatorId}/upload`, primary: true },
+        
+        { section: 'divider' },
+        
+        // Analytics & Earnings
+        { section: 'Analytics' },
+        { icon: TrendingUp, label: 'Analytics', path: `/creator/${creatorId}/analytics` },
+        { icon: DollarSign, label: 'Earnings', path: `/creator/${creatorId}/earnings` },
+        { icon: BarChart3, label: 'Sales Dashboard', path: `/creator/${creatorId}/sales` },
+        
+        { section: 'divider' },
+        
+        // Content & Members
+        { section: 'Content & Members' },
+        { icon: Grid3x3, label: 'My Content', path: `/creator/${creatorId}/content` },
+        { icon: Users, label: 'My Members', path: `/creator/${creatorId}/members` },
+        { icon: Link2, label: 'Member Connections', path: `/creator/${creatorId}/connections` },
+        
+        { section: 'divider' },
+        
+        // Settings & Support
+        { section: 'Account' },
+        { icon: Settings, label: 'Settings', path: `/creator/${creatorId}/settings` },
+        { icon: HelpCircle, label: 'Creator Help', path: `/creator/${creatorId}/help` },
+        { icon: LogOut, label: 'Logout', action: 'logout' }
+      ];
+    } else if (userRole === 'creator') {
+      // Fallback for when creatorId is not available
       return [
         // Quick Actions Section
         { section: 'Quick Actions' },

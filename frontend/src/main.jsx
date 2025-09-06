@@ -167,7 +167,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
-              path="dashboard" 
+              path=":creatorId/dashboard" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorDashboard />
@@ -175,7 +175,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
-              path="upload" 
+              path=":creatorId/upload" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorContentUpload />
@@ -183,7 +183,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
-              path="content" 
+              path=":creatorId/content" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorContentManagement />
@@ -191,7 +191,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
-              path="earnings" 
+              path=":creatorId/earnings" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorEarnings />
@@ -199,7 +199,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
-              path="analytics" 
+              path=":creatorId/analytics" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorAnalytics />
@@ -207,7 +207,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
-              path="profile/:username" 
+              path=":creatorId/profile/:username" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorProfilePage />
@@ -215,7 +215,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
-              path="profile" 
+              path=":creatorId/profile" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorProfilePage />
@@ -223,7 +223,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               } 
             />
             <Route 
-              path="settings" 
+              path=":creatorId/settings" 
               element={
                 <ProtectedCreatorRoute>
                   <CreatorSettingsPage />

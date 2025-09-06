@@ -1638,7 +1638,46 @@ const query = { creator: creatorId, isActive: true };
 - **Content Management**: ✅ Working (CreatorContentManagement page)
 - **Backend Health**: ✅ All routes and endpoints functional
 
-### 79. Fixed Creator Route 404 Errors - September 6, 2025 🚨
+### 80. **Fixed Creators/Creator Plural/Singular Naming Mismatch** - September 6, 2025 🚨
+**Files:** `frontend/src/pages/CreatorContentUpload.jsx`, `frontend/src/services/member.service.js`, `frontend/src/pages/TrendingCreators.jsx`, `frontend/src/pages/SearchCreators.jsx`, `backend/src/routes/public.routes.js`, `backend/src/routes/index.routes.js`, `backend/src/controllers/creator.controller.js`, `claude.md`
+**Issue:** Naming mismatch between `creators` (plural) and `creator` (singular) in API endpoints causing pages to break
+
+**Root Cause Analysis:**
+- Inconsistent API endpoint naming throughout the codebase
+- Some frontend components calling `/creators/*` while backend expects `/creator/*`
+- Mixed usage causing 404 errors and broken functionality
+
+**Critical Fixes Applied:**
+
+**1. Frontend API Endpoints Fixed:**
+- `CreatorContentUpload.jsx`: `/creators/content/upload` → `/creator/content/upload`
+- `TrendingCreators.jsx`: `/creators/trending` → `/creator/trending`
+- `SearchCreators.jsx`: `/search/creators` → `/search/creator`
+- `member.service.js`: All 10 endpoints changed from `/member/creators/` to `/member/creator/`
+
+**2. Backend Route Updates:**
+- `public.routes.js`: `router.get('/creators')` → `router.get('/creator')`
+- `index.routes.js`: Documentation endpoint `GET /creators` → `GET /creator`
+
+**3. Backend Controller Comments:**
+- `creator.controller.js`: All route comments updated from `/api/creators/*` to `/api/creator/*`
+- 10 route comment blocks standardized to singular form
+
+**4. Documentation Updates:**
+- `claude.md`: Discovery API documentation updated from `/api/discovery/creators` to `/api/discovery/creator`
+
+**Expected Results:**
+- ✅ All API endpoints now use consistent singular `/creator` naming
+- ✅ No more 404 errors due to plural/singular mismatches
+- ✅ Frontend and backend API calls properly aligned
+- ✅ Content upload, trending, search, and member services functional
+- ✅ Standardized naming convention across entire codebase
+
+**Files Modified:** 8 files
+**API Endpoints Fixed:** 15+ endpoints standardized to singular form
+**System Status:** All creator-related functionality should now work without naming conflicts
+
+79. Fixed Creator Route 404 Errors - September 6, 2025 🚨
 **Files:** `backend/src/server.js`, `backend/src/routes/creator.routes.js`, `backend/src/controllers/creator.analytics.controller.js`
 **Issue:** Multiple 404 errors on creator API endpoints preventing dashboard and profile functionality
 

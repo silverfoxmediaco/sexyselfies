@@ -102,7 +102,7 @@ const SearchCreators = () => {
         filters: activeFilters
       };
       
-      const response = await axios.post('/api/v1/search/creators', searchData, {
+      const response = await axios.post('/api/v1/search/creator', searchData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
