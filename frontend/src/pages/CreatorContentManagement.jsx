@@ -586,7 +586,6 @@ const CreatorContentManagement = () => {
           </div>
         </div>
       )}
-      </div>
 
       {isDesktop && <CreatorMainFooter />}
       
