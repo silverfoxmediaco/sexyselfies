@@ -82,6 +82,9 @@ import Library from './components/Library';
 import LandingPage from './pages/LandingPage';
 import LandingPageV2 from './pages/LandingPageV2';
 
+// Import Content View
+import ContentView from './pages/ContentView';
+
 
 console.log('🎯 Mounting React App to root element...');
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -94,6 +97,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           {/* Landing Pages */}
           <Route path="/" element={<LandingPageV2 />} />
           <Route path="/landing-v1" element={<LandingPage />} />
+          
+          {/* Content View - Public route for viewing individual content */}
+          <Route path="/content/:id" element={<ContentView />} />
           
           {/* Main App Route - Redirect to home */}
           <Route path="/app" element={<Navigate to="/" replace />} />

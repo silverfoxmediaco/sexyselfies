@@ -861,6 +861,36 @@ class ContentService {
       message: error.message || 'Content operation failed'
     };
   }
+
+  // Unlock content (purchase/unlock)
+  async unlockContent(contentId) {
+    try {
+      const response = await api.post(`/content/${contentId}/unlock`);
+      
+      // Update cached content to show as unlocked
+      this.updateCachedContentAccess(contentId, true);
+      
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  // Helper method to update cached content access
+  updateCachedContentAccess(contentId, hasAccess) {
+    try {
+      const cached = this.getCachedContent();
+      if (cached && Array.isArray(cached.content)) {
+        const item = cached.content.find(c => c._id === contentId);
+        if (item) {
+          item.hasAccess = hasAccess;
+          this.cacheContent(cached);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to update cached content access:', error);
+    }
+  }
 }
 
 // Create and export singleton instance

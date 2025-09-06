@@ -209,6 +209,43 @@ const CreatorContentManagement = () => {
     return price === 0 ? 'Free' : `$${price.toFixed(2)}`;
   };
 
+  const handleShareContent = async (item) => {
+    const shareUrl = `${window.location.origin}/content/${item._id}`;
+    
+    if (navigator.share) {
+      // Use native share API if available (mobile)
+      try {
+        await navigator.share({
+          title: item.title || 'Check out my content!',
+          text: `Check out "${item.title}" on SexySelfies`,
+          url: shareUrl
+        });
+      } catch (error) {
+        // User cancelled or error occurred, fallback to clipboard
+        copyToClipboard(shareUrl);
+      }
+    } else {
+      // Fallback to clipboard copy
+      copyToClipboard(shareUrl);
+    }
+  };
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('Link copied to clipboard!');
+    } catch (error) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('Link copied to clipboard!');
+    }
+  };
+
   // Filter and sort content
   const filteredAndSortedContent = content
     .filter(item => {
@@ -532,6 +569,7 @@ const CreatorContentManagement = () => {
 
                     <button 
                       className="content-mgmt-action-btn"
+                      onClick={() => handleShareContent(item)}
                       title="Share"
                     >
                       <Share2 size={18} />

@@ -205,4 +205,72 @@ exports.updateContentPricing = async (req, res) => {
   }
 };
 
+// Update content details (title, description, visibility, etc.)
+exports.updateContent = async (req, res) => {
+  try {
+    // Find the creator profile first
+    const Creator = require('../models/Creator');
+    const creator = await Creator.findOne({ user: req.user.id });
+    if (!creator) {
+      return res.status(404).json({
+        success: false,
+        message: 'Creator profile not found'
+      });
+    }
+
+    const { contentId } = req.params;
+    const { title, description, price, visibility, tags, allow_comments, allow_downloads } = req.body;
+    
+    // Find and update the content
+    const content = await Content.findOne({ 
+      _id: contentId, 
+      creator: creator._id 
+    });
+    
+    if (!content) {
+      return res.status(404).json({
+        success: false,
+        message: 'Content not found'
+      });
+    }
+    
+    // Update fields if provided
+    if (title !== undefined) content.title = title;
+    if (description !== undefined) content.description = description;
+    if (price !== undefined) {
+      content.price = price;
+      content.isFree = price === 0;
+    }
+    if (visibility !== undefined) content.visibility = visibility;
+    if (tags !== undefined) content.tags = tags;
+    if (allow_comments !== undefined) content.allowComments = allow_comments;
+    if (allow_downloads !== undefined) content.allowDownloads = allow_downloads;
+    
+    content.updatedAt = new Date();
+    await content.save();
+    
+    res.json({
+      success: true,
+      message: 'Content updated successfully',
+      content: {
+        id: content._id,
+        title: content.title,
+        description: content.description,
+        price: content.price,
+        isFree: content.isFree,
+        visibility: content.visibility,
+        tags: content.tags,
+        allowComments: content.allowComments,
+        allowDownloads: content.allowDownloads
+      }
+    });
+  } catch (error) {
+    console.error('Update content error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating content'
+    });
+  }
+};
+
 module.exports = exports;
