@@ -5,7 +5,7 @@ import {
   Eye, Edit, Trash2, Download, Share2, 
   Image, Video, Calendar, DollarSign,
   TrendingUp, Users, Heart, MessageSquare,
-  Settings, MoreVertical, Upload, AlertCircle
+  Settings, MoreVertical, Upload, AlertCircle, X
 } from 'lucide-react';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
