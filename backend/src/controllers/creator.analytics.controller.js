@@ -568,6 +568,74 @@ exports.getPredictiveAnalytics = async (req, res) => {
   }
 };
 
+// Get content analytics specifically
+exports.getContentAnalytics = async (req, res) => {
+  try {
+    const creatorId = req.user.id;
+    const { period = '7d', sort = 'earnings' } = req.query;
+    
+    const startDate = new Date();
+    switch(period) {
+      case '24h':
+        startDate.setDate(startDate.getDate() - 1);
+        break;
+      case '7d':
+        startDate.setDate(startDate.getDate() - 7);
+        break;
+      case '30d':
+        startDate.setDate(startDate.getDate() - 30);
+        break;
+      default:
+        startDate.setDate(startDate.getDate() - 7);
+    }
+
+    // Get content with analytics
+    const content = await Content.find({
+      creator: creatorId,
+      createdAt: { $gte: startDate }
+    }).sort({ 
+      [sort === 'earnings' ? 'earnings' : sort === 'views' ? 'views' : 'likes']: -1 
+    }).limit(50);
+
+    // Calculate totals
+    const totals = {
+      totalContent: content.length,
+      totalViews: content.reduce((sum, c) => sum + (c.views || 0), 0),
+      totalLikes: content.reduce((sum, c) => sum + (c.likes || 0), 0),
+      totalEarnings: content.reduce((sum, c) => sum + (c.earnings || 0), 0),
+      avgViewsPerContent: content.length > 0 ? 
+        (content.reduce((sum, c) => sum + (c.views || 0), 0) / content.length).toFixed(1) : 0
+    };
+
+    const analytics = {
+      period,
+      totals,
+      content: content.map(item => ({
+        _id: item._id,
+        title: item.title,
+        type: item.type,
+        price: item.price,
+        views: item.views || 0,
+        likes: item.likes || 0,
+        earnings: item.earnings || 0,
+        createdAt: item.createdAt,
+        thumbnail: item.thumbnail
+      }))
+    };
+
+    res.json({
+      success: true,
+      analytics
+    });
+  } catch (error) {
+    console.error('Get content analytics error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching content analytics'
+    });
+  }
+};
+
 // Export analytics data
 exports.exportAnalytics = async (req, res) => {
   try {

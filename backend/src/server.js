@@ -323,8 +323,8 @@ console.log('🚀 Mounting API routes...');
 app.use(`${API_V1}/auth`, authRoutes);
 console.log('✅ Auth routes mounted at:', `${API_V1}/auth`);
 
-app.use(`${API_V1}/creators`, creatorRoutes);
-console.log('✅ Creator routes mounted at:', `${API_V1}/creators`);
+app.use(`${API_V1}/creator`, creatorRoutes);
+console.log('✅ Creator routes mounted at:', `${API_V1}/creator`);
 
 app.use(`${API_V1}/members`, memberRoutes);
 console.log('✅ Member routes mounted at:', `${API_V1}/members`);
@@ -522,7 +522,7 @@ server.listen(PORT, () => {
   console.log('========================================');
   console.log('📋 Available endpoints:');
   console.log('  Auth: /api/v1/auth');
-  console.log('  Creators: /api/v1/creators');
+  console.log('  Creator: /api/v1/creator');
   console.log('  Members: /api/v1/members');
   console.log('  Creator Sales: /api/v1/creator/sales');
   console.log('  Member Profiles: /api/v1/creator/members');

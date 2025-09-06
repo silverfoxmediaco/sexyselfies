@@ -309,6 +309,15 @@ if (creatorAnalyticsController.getAnalyticsDashboard) {
   router.get('/analytics', creatorAnalyticsController.getAnalyticsDashboard);
 }
 
+// Get content analytics - added missing route
+if (creatorAnalyticsController.getContentAnalytics) {
+  router.get('/analytics/content', creatorAnalyticsController.getContentAnalytics);
+} else {
+  router.get('/analytics/content', (req, res) => {
+    res.status(501).json({ message: 'Content analytics coming soon' });
+  });
+}
+
 // Get real-time analytics
 if (creatorAnalyticsController.getRealTimeAnalytics) {
   router.get('/analytics/realtime', creatorAnalyticsController.getRealTimeAnalytics);
