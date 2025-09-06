@@ -7,7 +7,10 @@ import {
 } from 'lucide-react';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
-import { useIsDesktop, useIsMobile } from '../utils/mobileDetection';
+import CreatorMainHeader from '../components/CreatorMainHeader';
+import CreatorMainFooter from '../components/CreatorMainFooter';
+import BottomNavigation from '../components/BottomNavigation';
+import { useIsDesktop, useIsMobile, getUserRole } from '../utils/mobileDetection';
 import contentService from '../services/content.service';
 import './ContentView.css';
 
@@ -16,6 +19,7 @@ const ContentView = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
   const isMobile = useIsMobile();
+  const userRole = getUserRole();
   
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +27,10 @@ const ContentView = () => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [liked, setLiked] = useState(false);
   const [hasAccess, setHasAccess] = useState(false);
+
+  // Determine which header/footer to use based on user role
+  const Header = userRole === 'creator' ? CreatorMainHeader : MainHeader;
+  const Footer = userRole === 'creator' ? CreatorMainFooter : MainFooter;
 
   useEffect(() => {
     loadContent();
@@ -128,12 +136,13 @@ const ContentView = () => {
   if (loading) {
     return (
       <div className="content-view-container">
-        <MainHeader />
+        <Header />
         <div className="content-view-loading">
           <div className="content-view-spinner"></div>
           <p>Loading content...</p>
         </div>
-        {isMobile && <MainFooter />}
+        {isMobile && userRole === 'creator' ? <BottomNavigation /> : isMobile && <Footer />}
+        {isDesktop && <Footer />}
       </div>
     );
   }
@@ -141,7 +150,7 @@ const ContentView = () => {
   if (error || !content) {
     return (
       <div className="content-view-container">
-        <MainHeader />
+        <Header />
         <div className="content-view-error">
           <AlertCircle size={48} />
           <h2>Content Not Found</h2>
@@ -153,7 +162,8 @@ const ContentView = () => {
             Go Back
           </button>
         </div>
-        {isMobile && <MainFooter />}
+        {isMobile && userRole === 'creator' ? <BottomNavigation /> : isMobile && <Footer />}
+        {isDesktop && <Footer />}
       </div>
     );
   }
@@ -162,7 +172,7 @@ const ContentView = () => {
 
   return (
     <div className="content-view-container">
-      <MainHeader />
+      <Header />
       
       <div className={`content-view-main ${isDesktop ? 'content-view-desktop' : ''}`}>
         {/* Header */}
@@ -334,7 +344,8 @@ const ContentView = () => {
         </div>
       </div>
 
-      {isMobile && <MainFooter />}
+      {isMobile && userRole === 'creator' ? <BottomNavigation /> : isMobile && <Footer />}
+      {isDesktop && <Footer />}
     </div>
   );
 };

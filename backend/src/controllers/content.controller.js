@@ -84,7 +84,7 @@ const getContent = async (req, res) => {
     const hasAccess = req.hasAccess; // Set by checkContentUnlock middleware
 
     const content = await Content.findById(id)
-      .populate('creatorId', 'username profileImage bio isVerified');
+      .populate('creator', 'displayName profileImage bio isVerified');
 
     if (!content) {
       return res.status(404).json({
