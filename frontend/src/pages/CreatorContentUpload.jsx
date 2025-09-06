@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload, X, Image, Video, DollarSign, Tag, Eye, EyeOff,
-  AlertCircle, CheckCircle, Loader, Plus, Sparkles, TrendingUp,
-  Calendar, Clock, FileText, Camera, Film, ArrowLeft, ArrowRight,
+  AlertCircle, CheckCircle, Loader, Plus, TrendingUp,
+  Calendar, FileText, Camera, Film, ArrowLeft, ArrowRight,
   Send, Lock, Unlock, Hash, Gift
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
@@ -43,12 +43,6 @@ const CreatorContentUpload = () => {
   
   const [errors, setErrors] = useState({});
   const [isUploading, setIsUploading] = useState(false);
-  const [aiSuggestions, setAiSuggestions] = useState({
-    suggestedPrice: 3.99,
-    suggestedTags: ['lifestyle', 'fashion', 'exclusive'],
-    bestPostTime: '8:00 PM EST',
-    estimatedEarnings: '$15-45'
-  });
 
   // Categories
   const contentTypes = [
@@ -424,28 +418,6 @@ const CreatorContentUpload = () => {
         </div>
       )}
 
-      {/* AI Price Suggestion */}
-      {uploads.length > 0 && (
-        <div className="creator-content-upload-ai-suggestion-card">
-          <div className="creator-content-upload-suggestion-header">
-            <Sparkles size={18} />
-            <span>AI Recommendation</span>
-          </div>
-          <div className="creator-content-upload-suggestion-content">
-            <p>Based on your content type and market analysis:</p>
-            <div className="creator-content-upload-suggestion-items">
-              <div className="creator-content-upload-suggestion-item">
-                <span className="creator-content-upload-label">Suggested Price:</span>
-                <span className="creator-content-upload-value">${aiSuggestions.suggestedPrice}</span>
-              </div>
-              <div className="creator-content-upload-suggestion-item">
-                <span className="creator-content-upload-label">Est. Earnings:</span>
-                <span className="creator-content-upload-value">{aiSuggestions.estimatedEarnings}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </motion.div>
   );
 
@@ -581,23 +553,6 @@ const CreatorContentUpload = () => {
         </div>
       </div>
 
-      {/* AI Suggestions */}
-      <div className="creator-content-upload-ai-suggestion-card">
-        <div className="creator-content-upload-suggestion-header">
-          <Sparkles size={18} />
-          <span>AI Insights</span>
-        </div>
-        <div className="creator-content-upload-suggestion-content">
-          <div className="creator-content-upload-insight-item">
-            <Clock size={16} />
-            <span>Best posting time: {aiSuggestions.bestPostTime}</span>
-          </div>
-          <div className="creator-content-upload-insight-item">
-            <Tag size={16} />
-            <span>Suggested tags: {aiSuggestions.suggestedTags.join(', ')}</span>
-          </div>
-        </div>
-      </div>
     </motion.div>
   );
 

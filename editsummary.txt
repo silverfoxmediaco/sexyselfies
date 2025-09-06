@@ -30,6 +30,7 @@ Fixed authentication flow issues, creator verification redirects, and updated Cr
 63. **Enhanced Cloudinary Storage for Mixed Content** - Updated contentImageStorage to handle both images and videos dynamically, with separate folders and resource types based on file mimetype
 64. **Increased Upload File Size Limit** - Changed uploadContentImage limit from 10MB to 100MB to accommodate both high-quality images and videos
 65. **Added Video Play Icon Overlay** - Added minimal centered play circle icon overlay on video thumbnails in CreatorProfileModal content grid to clearly distinguish videos from photos, using Material Design play_circle icon with proper z-index layering and no interference with existing click handlers
+66. **Removed Non-Functional AI Suggestion Cards** - Removed both AI price recommendation card (Step 1) and AI insights card (Step 2) from CreatorContentUpload since they only displayed static mock data with no real AI integration, also cleaned up related state, imports, and CSS to reduce code complexity
 
 ## Previous Session Overview  
 Rebuilt the creator profile system with enterprise-grade architecture suitable for millions of users, replacing band-aid localStorage solutions with proper database-driven authentication and data management.
