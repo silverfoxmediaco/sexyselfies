@@ -280,9 +280,12 @@ exports.uploadContent = async (req, res) => {
       allowTips: allowTips === 'true' || allowTips === true
     });
     
+    // Map frontend 'image' type to backend 'photo' type for Content model
+    const contentType = type === 'image' ? 'photo' : (type || (media[0].type === 'video' ? 'video' : 'photo'));
+    
     const content = await Content.create({
       creator: creator._id,
-      type: type || (media[0].type === 'video' ? 'video' : 'photo'),
+      type: contentType,
       title: title || '',
       description: description || '',
       thumbnail: thumbnail,

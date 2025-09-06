@@ -242,9 +242,12 @@ const CreatorContentUpload = () => {
       for (const upload of uploads) {
         const formData = new FormData();
         formData.append('content', upload.file);
-        formData.append('title', contentDetails.title || upload.name);
+        // Truncate title to 100 characters to meet model validation
+        const title = contentDetails.title || upload.name;
+        const truncatedTitle = title.length > 100 ? title.substring(0, 97) + '...' : title;
+        formData.append('title', truncatedTitle);
         formData.append('description', contentDetails.description);
-        formData.append('type', upload.type); // photo or video
+        formData.append('type', upload.type === 'image' ? 'photo' : upload.type); // Map image -> photo for backend
         formData.append('tags', JSON.stringify(contentDetails.tags));
         formData.append('price', upload.price);
         formData.append('isFree', contentDetails.visibility === 'free');
@@ -620,7 +623,11 @@ const CreatorContentUpload = () => {
             type="text"
             className="creator-content-upload-tag-input"
             placeholder="Add custom tag and press Enter..."
-            onKeyPress={addCustomTag}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                addCustomTag(e);
+              }
+            }}
             disabled={contentDetails.tags.length >= 5}
           />
           <div className="creator-content-upload-selected-tags">
