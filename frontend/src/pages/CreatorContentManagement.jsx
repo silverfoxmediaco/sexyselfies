@@ -251,7 +251,7 @@ const CreatorContentManagement = () => {
 
   return (
     <>
-      {isDesktop && <CreatorMainHeader />}
+      <CreatorMainHeader />
       
       <div className="content-mgmt-container">
         {/* Header */}

@@ -6,6 +6,13 @@
   padding-bottom: var(--space-2xl);
 }
 
+/* Account for fixed header on desktop */
+@media (min-width: 1024px) {
+  .content-mgmt-container {
+    padding-top: 70px; /* Height of CreatorMainHeader */
+  }
+}
+
 /* Header */
 .content-mgmt-header {
   position: sticky;
