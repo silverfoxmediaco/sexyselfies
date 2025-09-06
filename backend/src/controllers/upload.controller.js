@@ -172,8 +172,10 @@ exports.uploadContent = async (req, res) => {
 
     // Handle multiple images or single video
     console.log('🔍 Processing files...');
-    const mediaFiles = req.files || (req.file ? [req.file] : []);
+    const mediaFiles = req.files?.content || (req.file ? [req.file] : []);
+    const customThumbnail = req.files?.customThumbnail?.[0]; // Custom thumbnail for videos
     console.log('Media files found:', mediaFiles?.length || 0);
+    console.log('Custom thumbnail:', customThumbnail ? 'Yes' : 'No');
     
     if (!mediaFiles || mediaFiles.length === 0) {
       console.log('❌ No files uploaded');
@@ -239,11 +241,27 @@ exports.uploadContent = async (req, res) => {
       };
     }));
 
-    // Set thumbnail (first image or video thumbnail)
+    // Set thumbnail (custom thumbnail, first image, or auto-generated video thumbnail)
     let thumbnail = media[0].url;
-    if (media[0].type === 'video') {
-      // Generate video thumbnail
+    if (customThumbnail && media[0].type === 'video') {
+      // Use custom thumbnail for videos
+      console.log('🔍 Using custom thumbnail for video');
+      thumbnail = customThumbnail.path;
+    } else if (media[0].type === 'video') {
+      // Generate auto video thumbnail
+      console.log('🔍 Using auto-generated thumbnail for video');
       thumbnail = thumbnail.replace('/upload/', '/upload/so_0/');
+    }
+
+    // Prepare custom thumbnail data if provided
+    let customThumbnailData = null;
+    if (customThumbnail && media[0].type === 'video') {
+      customThumbnailData = {
+        url: customThumbnail.path,
+        cloudinaryPublicId: customThumbnail.filename,
+        isCustom: true
+      };
+      console.log('🔍 Custom thumbnail data:', customThumbnailData);
     }
 
     // Create content document
@@ -254,6 +272,7 @@ exports.uploadContent = async (req, res) => {
       title: title || '',
       description: description || '',
       thumbnail: thumbnail,
+      customThumbnail: customThumbnailData,
       mediaCount: media.length,
       uploadBatch: uploadBatch,
       price: parseFloat(price) || creator.contentPrice || 2.99,
@@ -266,6 +285,7 @@ exports.uploadContent = async (req, res) => {
       title: title || '',
       description: description || '',
       thumbnail: thumbnail,
+      customThumbnail: customThumbnailData,
       media: media,
       uploadBatch: uploadBatch,
       contentOrder: 0, // Will be updated if multiple files in batch

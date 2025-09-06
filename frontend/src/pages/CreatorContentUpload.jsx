@@ -27,6 +27,7 @@ const CreatorContentUpload = () => {
   // Form state
   const [uploads, setUploads] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [videoThumbnails, setVideoThumbnails] = useState({});
   const [contentDetails, setContentDetails] = useState({
     title: '',
     description: '',
@@ -111,7 +112,8 @@ const CreatorContentUpload = () => {
       name: file.name,
       progress: 0,
       status: 'pending', // pending, uploading, complete, error
-      price: contentDetails.pricing.amount
+      price: contentDetails.pricing.amount,
+      customThumbnail: null // For video custom thumbnails
     }));
 
     setUploads(prev => [...prev, ...newUploads]);
@@ -121,11 +123,20 @@ const CreatorContentUpload = () => {
   // Remove file from upload list
   const removeFile = (id) => {
     setUploads(prev => prev.filter(upload => upload.id !== id));
-    // Clean up preview URL
+    // Clean up preview URLs
     const upload = uploads.find(u => u.id === id);
     if (upload?.preview) {
       URL.revokeObjectURL(upload.preview);
     }
+    if (upload?.customThumbnail) {
+      URL.revokeObjectURL(upload.customThumbnail);
+    }
+    // Remove video thumbnail from state
+    setVideoThumbnails(prev => {
+      const newThumbnails = { ...prev };
+      delete newThumbnails[id];
+      return newThumbnails;
+    });
   };
 
   // Update individual file price
@@ -157,6 +168,46 @@ const CreatorContentUpload = () => {
         e.target.value = '';
       }
     }
+  };
+
+  // Handle video thumbnail upload
+  const handleThumbnailUpload = (videoId, file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    
+    const thumbnailUrl = URL.createObjectURL(file);
+    
+    // Update uploads with custom thumbnail
+    setUploads(prev => prev.map(upload => 
+      upload.id === videoId 
+        ? { ...upload, customThumbnail: thumbnailUrl, thumbnailFile: file }
+        : upload
+    ));
+    
+    // Store in video thumbnails state for easy access
+    setVideoThumbnails(prev => ({
+      ...prev,
+      [videoId]: { url: thumbnailUrl, file }
+    }));
+  };
+
+  // Remove custom thumbnail
+  const removeThumbnail = (videoId) => {
+    const upload = uploads.find(u => u.id === videoId);
+    if (upload?.customThumbnail) {
+      URL.revokeObjectURL(upload.customThumbnail);
+    }
+    
+    setUploads(prev => prev.map(upload => 
+      upload.id === videoId 
+        ? { ...upload, customThumbnail: null, thumbnailFile: null }
+        : upload
+    ));
+    
+    setVideoThumbnails(prev => {
+      const newThumbnails = { ...prev };
+      delete newThumbnails[videoId];
+      return newThumbnails;
+    });
   };
 
   // Validate form
@@ -207,6 +258,11 @@ const CreatorContentUpload = () => {
         setUploads(prev => prev.map(u => 
           u.id === upload.id ? { ...u, status: 'uploading' } : u
         ));
+        
+        // Add custom thumbnail for videos
+        if (upload.type === 'video' && upload.thumbnailFile) {
+          formData.append('customThumbnail', upload.thumbnailFile);
+        }
         
         // Upload with progress tracking - using uploadApi from config
         const response = await uploadApi.post(
@@ -338,8 +394,18 @@ const CreatorContentUpload = () => {
                     <img src={upload.preview} alt={upload.name} />
                   ) : (
                     <div className="creator-content-upload-video-preview">
-                      <Video size={32} />
-                      <span>Video</span>
+                      {upload.customThumbnail ? (
+                        <img 
+                          src={upload.customThumbnail} 
+                          alt="Custom thumbnail" 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <>
+                          <Video size={32} />
+                          <span>Video</span>
+                        </>
+                      )}
                     </div>
                   )}
                   
@@ -381,6 +447,45 @@ const CreatorContentUpload = () => {
                 
                 <div className="creator-content-upload-file-info">
                   <p className="creator-content-upload-file-name">{upload.name}</p>
+                  
+                  {/* Custom Thumbnail Upload for Videos */}
+                  {upload.type === 'video' && upload.status === 'pending' && (
+                    <div className="creator-content-upload-thumbnail-section">
+                      <label className="creator-content-upload-thumbnail-label">
+                        Custom Thumbnail (Optional)
+                      </label>
+                      <div className="creator-content-upload-thumbnail-controls">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) handleThumbnailUpload(upload.id, file);
+                          }}
+                          style={{ display: 'none' }}
+                          id={`thumbnail-${upload.id}`}
+                        />
+                        <label 
+                          htmlFor={`thumbnail-${upload.id}`}
+                          className="creator-content-upload-thumbnail-btn"
+                        >
+                          <Image size={14} />
+                          {upload.customThumbnail ? 'Change' : 'Upload'}
+                        </label>
+                        {upload.customThumbnail && (
+                          <button
+                            type="button"
+                            onClick={() => removeThumbnail(upload.id)}
+                            className="creator-content-upload-thumbnail-remove"
+                          >
+                            <X size={14} />
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="creator-content-upload-file-meta">
                     <span className="creator-content-upload-file-size">
                       {(upload.size / 1024 / 1024).toFixed(2)} MB

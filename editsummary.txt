@@ -1444,6 +1444,71 @@ Updated all className identifiers to use unique `creator-content-upload-` prefix
 
 **Backup Created:** `CreatorContentUpload.css.backup` for rollback if needed
 
-Last Updated: September 3, 2025 - CreatorContentUpload Unique className + Frontend Navigation Override Fix + Creator Verification Redirect Fix + CreatorVerifyID Header/Footer + CRITICAL Authentication Fixes + Dashboard Username + Profile URL + Dashboard Mock Data Removal + Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
-Total Files Modified: 62 (+2 creator upload className fixes)  
-Critical Issues Resolved: 39 (+1 unique className implementation)
+### 40. YouTube-Style Custom Thumbnail Upload Implementation - September 6, 2025 ✅
+**Files:** `frontend/src/pages/CreatorContentUpload.jsx`, `frontend/src/pages/CreatorContentUpload.css`, `backend/src/controllers/upload.controller.js`, `backend/src/middleware/upload.middleware.js`, `backend/src/routes/upload.routes.js`, `backend/src/models/Content.js`
+**Issue:** Video creators lacked control over video thumbnails - only auto-generated thumbnails from first frames
+
+**Problem:** Current system only generates automatic thumbnails from video frames using Cloudinary transform (`/upload/so_0/`), limiting creator control over video presentation in swipe cards.
+
+**YouTube-Style Solution Implemented:**
+
+**1. Frontend Custom Thumbnail UI:**
+- **Added thumbnail upload section** that appears only for video files during upload
+- **Custom thumbnail preview** replaces generic video icon when uploaded
+- **Upload/Change/Remove buttons** for thumbnail management
+- **Real-time preview** in video cards with custom thumbnails
+- **Proper cleanup** of preview URLs to prevent memory leaks
+
+**2. Backend Mixed File Upload Support:**
+- **Enhanced upload middleware** with `contentWithThumbnailUpload` using `multer.fields()`
+- **Simultaneous upload** of content files and thumbnail images in single request
+- **Updated upload controller** to process both content and customThumbnail files
+- **Cloudinary storage** for both video content and thumbnail images
+
+**3. Database Schema Enhancement:**
+```javascript
+customThumbnail: {
+  url: String, // URL of custom thumbnail
+  cloudinaryPublicId: String, // For deletion from Cloudinary  
+  isCustom: Boolean // Flag to identify custom thumbnails
+}
+```
+
+**4. Thumbnail Priority Logic:**
+- **Custom thumbnail** (if uploaded) - highest priority
+- **Auto-generated thumbnail** (Cloudinary transform) - fallback
+- **First frame** - default fallback
+
+**5. CSS Styling:**
+- **Mobile-responsive design** with proper touch targets (44px minimum)
+- **Styled upload/change/remove buttons** with teal primary color scheme
+- **Hover states** and visual feedback for better UX
+- **Consistent design** with existing upload page styling
+
+**Upload Flow:**
+1. Creator uploads video file
+2. Thumbnail section appears with "Upload Custom Thumbnail" option
+3. Creator can upload separate image file as thumbnail
+4. Preview shows custom thumbnail immediately
+5. Backend processes both video and thumbnail files
+6. Custom thumbnail used in swipe cards and content grids
+
+**Expected Results:**
+- ✅ Video creators have full control over video thumbnails
+- ✅ Better video presentation in swipe cards and discovery
+- ✅ YouTube-style thumbnail management experience  
+- ✅ Fallback to auto-generated thumbnails when no custom thumbnail
+- ✅ Proper Cloudinary storage and cleanup
+- ✅ Mobile-first responsive design
+
+**Files Modified:**
+- `frontend/src/pages/CreatorContentUpload.jsx` - Custom thumbnail upload UI
+- `frontend/src/pages/CreatorContentUpload.css` - Thumbnail upload styles  
+- `backend/src/controllers/upload.controller.js` - Custom thumbnail processing
+- `backend/src/middleware/upload.middleware.js` - Mixed file upload support
+- `backend/src/routes/upload.routes.js` - Updated middleware usage
+- `backend/src/models/Content.js` - Custom thumbnail schema
+
+Last Updated: September 6, 2025 - YouTube-Style Custom Thumbnail Upload + CreatorContentUpload Unique className + Frontend Navigation Override Fix + Creator Verification Redirect Fix + CreatorVerifyID Header/Footer + CRITICAL Authentication Fixes + Dashboard Username + Profile URL + Dashboard Mock Data Removal + Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
+Total Files Modified: 68 (+6 custom thumbnail implementation files)  
+Critical Issues Resolved: 40 (+1 YouTube-style custom thumbnail upload)

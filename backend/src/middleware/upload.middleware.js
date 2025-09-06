@@ -1,10 +1,17 @@
 const { uploadProfileImage, uploadContentImage, uploadContentVideo } = require('../config/cloudinary');
+const multer = require('multer');
 
 // Middleware for profile image upload
 exports.profileImageUpload = uploadProfileImage.single('profileImage');
 
 // Middleware for content image upload (multiple)
 exports.contentImagesUpload = uploadContentImage.array('content', 10); // Max 10 files (images/videos)
+
+// Middleware for content with custom thumbnails
+exports.contentWithThumbnailUpload = uploadContentImage.fields([
+  { name: 'content', maxCount: 10 }, // Content files
+  { name: 'customThumbnail', maxCount: 1 } // Custom thumbnail for videos
+]);
 
 // Middleware for content video upload
 exports.contentVideoUpload = uploadContentVideo.single('video');

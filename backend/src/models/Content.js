@@ -23,6 +23,14 @@ const contentSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Thumbnail is required']
   },
+  customThumbnail: {
+    url: String, // URL of custom thumbnail (for videos)
+    cloudinaryPublicId: String, // For deletion from Cloudinary
+    isCustom: {
+      type: Boolean,
+      default: false
+    }
+  },
   media: [{
     url: String,
     type: {

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth.middleware');
 const { uploadVerification, uploadProfileImage } = require('../config/cloudinary');
-const { contentImagesUpload } = require('../middleware/upload.middleware');
+const { contentWithThumbnailUpload } = require('../middleware/upload.middleware');
 const uploadController = require('../controllers/upload.controller');
 const Creator = require('../models/Creator');
 const Member = require('../models/Member');
@@ -250,8 +250,8 @@ router.post('/profile-image',
     }
 });
 
-// Content upload route for creators - matches frontend API call
-router.post('/content', protect, contentImagesUpload, uploadController.uploadContent);
+// Content upload route for creators - matches frontend API call - supports custom thumbnails
+router.post('/content', protect, contentWithThumbnailUpload, uploadController.uploadContent);
 
 // Simple error handler (since we can't import handleUploadError)
 router.use((error, req, res, next) => {
