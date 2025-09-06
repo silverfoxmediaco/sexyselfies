@@ -6,6 +6,7 @@ import {
   ChevronLeft, Lock, Sparkles, Info, Share2
 } from 'lucide-react';
 import './CreatorProfileModal.css';
+import playCircleIcon from '../assets/play_circle_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png';
 
 const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuperLike }) => {
   const [activeTab, setActiveTab] = useState('about');
@@ -240,6 +241,11 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
                           alt=""
                           className={`content-thumbnail ${content.locked ? 'locked' : ''}`}
                         />
+                        {content.type === 'video' && (
+                          <div className="content-play-icon">
+                            <img src={playCircleIcon} alt="Play video" className="play-icon" />
+                          </div>
+                        )}
                         {content.locked && (
                           <div className="content-lock-icon">
                             <Lock size={20} color="#fff" />
