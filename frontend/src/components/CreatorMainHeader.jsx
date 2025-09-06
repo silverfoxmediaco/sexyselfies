@@ -49,6 +49,7 @@ const CreatorMainHeader = () => {
   const creatorNavItems = [
     { label: 'Dashboard', path: '/creator/dashboard', icon: Home },
     { label: 'Upload Content', path: '/creator/upload', icon: Camera },
+    { label: 'My Content', path: '/creator/content', icon: Grid3x3 },
     { label: 'Analytics', path: '/creator/analytics', icon: BarChart3 },
     { label: 'Earnings', path: '/creator/earnings', icon: DollarSign },
     { label: 'Messages', path: '/creator/messages', icon: MessageCircle },
