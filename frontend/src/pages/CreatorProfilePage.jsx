@@ -35,22 +35,30 @@ const CreatorProfilePage = () => {
     rating: 0
   });
 
-  // Redirect to correct profile URL if no username provided
+  // Handle profile URL - if no username provided, show current user's profile
   useEffect(() => {
     if (!username && user && isCreator && !authLoading) {
-      const currentUsername = user.username || user.displayName || 'profile';
-      console.log('CreatorProfilePage: Redirecting to proper profile URL:', `/creator/profile/${currentUsername}`);
-      navigate(`/creator/profile/${currentUsername}`, { replace: true });
+      // Instead of redirecting, just set the username to current user's username
+      // This allows /creator/profile to work as "my profile"
+      const currentUsername = user.username || user.displayName || user.email?.split('@')[0] || user.id;
+      console.log('CreatorProfilePage: No username provided, using current user:', currentUsername);
+      // Set profile data for current user instead of redirecting
+      setProfileData(prevData => ({
+        ...prevData,
+        username: currentUsername,
+        displayName: user.displayName || currentUsername,
+        isOwnProfile: true
+      }));
       return;
     }
-  }, [username, user, isCreator, authLoading, navigate]);
+  }, [username, user, isCreator, authLoading]);
 
   // Load profile data
   useEffect(() => {
-    if (!authLoading && isAuthenticated && username) {
+    if (!authLoading && isAuthenticated && (username || (user && isCreator))) {
       loadProfileData();
     }
-  }, [username, isAuthenticated, authLoading]);
+  }, [username, isAuthenticated, authLoading, user, isCreator]);
 
   const loadProfileData = async () => {
     console.log('CreatorProfilePage: Loading profile data for username:', username);
