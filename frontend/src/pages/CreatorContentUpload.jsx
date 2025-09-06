@@ -247,7 +247,7 @@ const CreatorContentUpload = () => {
         const truncatedTitle = title.length > 100 ? title.substring(0, 97) + '...' : title;
         formData.append('title', truncatedTitle);
         formData.append('description', contentDetails.description);
-        formData.append('type', upload.type === 'image' ? 'photo' : upload.type); // Map image -> photo for backend
+        formData.append('type', upload.type); // Backend handles all type mapping
         formData.append('tags', JSON.stringify(contentDetails.tags));
         formData.append('price', upload.price);
         formData.append('isFree', contentDetails.visibility === 'free');

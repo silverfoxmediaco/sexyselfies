@@ -35,7 +35,7 @@ const contentSchema = new mongoose.Schema({
     url: String,
     type: {
       type: String,
-      enum: ['image', 'video']
+      enum: ['photo', 'video']
     },
     duration: Number, // for videos in seconds
     size: Number, // in bytes

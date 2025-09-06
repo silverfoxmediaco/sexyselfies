@@ -233,7 +233,7 @@ exports.uploadContent = async (req, res) => {
 
       return {
         url: file.path, // Cloudinary URL
-        type: isVideo ? 'video' : 'image',
+        type: isVideo ? 'video' : 'photo', // Match Content model enum
         duration: duration,
         size: file.size,
         dimensions: dimensions,
@@ -280,21 +280,45 @@ exports.uploadContent = async (req, res) => {
       allowTips: allowTips === 'true' || allowTips === true
     });
     
-    // Map frontend 'image' type to backend 'photo' type for Content model
-    const contentType = type === 'image' ? 'photo' : (type || (media[0].type === 'video' ? 'video' : 'photo'));
+    // Robust type mapping - handle all possible frontend inputs
+    let contentType;
+    if (type === 'image' || type === 'photo') {
+      contentType = 'photo';
+    } else if (type === 'video') {
+      contentType = 'video';
+    } else {
+      // Auto-detect from media if type not provided or unknown
+      contentType = (media[0].type === 'video' ? 'video' : 'photo');
+    }
+    
+    // Validate and clean data before saving
+    const cleanTitle = (title || '').substring(0, 100); // Enforce max length
+    const cleanDescription = (description || '').substring(0, 500); // Enforce max length
+    const cleanPrice = Math.min(Math.max(parseFloat(price) || creator.contentPrice || 2.99, 0), 99.99); // Enforce price range
+    
+    console.log('🔍 Final content data before save:', {
+      creator: creator._id,
+      type: contentType,
+      title: cleanTitle,
+      description: cleanDescription,
+      thumbnail: thumbnail,
+      price: cleanPrice,
+      mediaCount: media.length,
+      mediaTypes: media.map(m => m.type)
+    });
     
     const content = await Content.create({
       creator: creator._id,
       type: contentType,
-      title: title || '',
-      description: description || '',
+      title: cleanTitle,
+      description: cleanDescription,
       thumbnail: thumbnail,
       customThumbnail: customThumbnailData,
       media: media,
       uploadBatch: uploadBatch,
       contentOrder: 0, // Will be updated if multiple files in batch
-      price: parseFloat(price) || creator.contentPrice || 2.99,
-      isFree: (isFree === 'true' || isFree === true) || parseFloat(price) === 0,
+      price: cleanPrice,
+      isFree: (isFree === 'true' || isFree === true) || cleanPrice === 0,
       isPreview: isPreview === 'true' || isPreview === true,
       allowTips: allowTips === 'true' || allowTips === true,
       tags: tags ? (Array.isArray(tags) ? tags : JSON.parse(tags || '[]')) : [],
