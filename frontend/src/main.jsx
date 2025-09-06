@@ -57,6 +57,7 @@ import CreatorEarnings from './pages/CreatorEarnings';
 import CreatorConnections from './pages/CreatorConnections';
 import CreatorManageMembers from './pages/CreatorManageMembers';
 import CreatorSettingsPage from './pages/CreatorSettingsPage';
+import CreatorContentManagement from './pages/CreatorContentManagement';
 import BrowseMembers from './pages/BrowseMembers'; 
 
 // Import Member pages
@@ -179,7 +180,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               path="content" 
               element={
                 <ProtectedCreatorRoute>
-                  <ComingSoon title="Content Manager" />
+                  <CreatorContentManagement />
                 </ProtectedCreatorRoute>
               } 
             />
