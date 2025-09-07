@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  TrendingUp, TrendingDown, Eye, Heart, MessageCircle, DollarSign, 
-  Users, Calendar, Clock, Star, Camera, Video, Download, Filter,
-  ChevronLeft, ChevronRight, BarChart3, PieChart, Activity,
+  Eye, Heart, MessageCircle, DollarSign, 
+  Camera, Video, Download, Filter,
+  BarChart3, Activity,
   Target, Award, Zap, ArrowUp, ArrowDown, Minus
 } from 'lucide-react';
 import CreatorMainHeader from '../components/CreatorMainHeader';
@@ -99,6 +99,28 @@ const CreatorAnalytics = () => {
       }
     } catch (error) {
       console.error('Error loading analytics:', error);
+      // Fallback to empty state with basic structure
+      setAnalyticsData({
+        overview: {
+          totalEarnings: 0,
+          earningsChange: 0,
+          totalViews: 0,
+          viewsChange: 0,
+          totalMatches: 0,
+          matchesChange: 0,
+          conversionRate: 0,
+          conversionChange: 0
+        },
+        performance: {
+          topContent: [],
+          recentActivity: []
+        },
+        insights: {
+          bestPerformingDay: 'Monday',
+          peakHours: '8-10 PM',
+          topContentType: 'photos'
+        }
+      });
       setLoading(false);
     }
   };

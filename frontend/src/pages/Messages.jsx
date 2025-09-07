@@ -147,87 +147,16 @@ const Messages = () => {
         
         setConversations(convos);
       } else {
-        // Use mock data as fallback
-        setConversations(getMockConversations());
+        // No conversations found - set empty array
+        setConversations([]);
       }
     } catch (error) {
       console.error('Error fetching conversations:', error);
-      setConversations(getMockConversations());
+      // On error, set empty array instead of mock data
+      setConversations([]);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getMockConversations = () => {
-    const mock = [
-      {
-        id: 1,
-        connectionId: 1,
-        name: 'Luna Rose',
-        username: '@lunarose',
-        avatar: '/placeholders/beautifulbrunette2.png',
-        isOnline: true,
-        lastMessage: 'Hey babe! Just uploaded some spicy new content 🔥',
-        lastMessageTime: '2 min ago',
-        unreadCount: 3,
-        isPinned: true,
-        connectionType: 'premium',
-        isTyping: false,
-        isMuted: false
-      },
-      {
-        id: 2,
-        connectionId: 2,
-        name: 'Sophia Sweet',
-        username: '@sophiasweet',
-        avatar: '/placeholders/cuteblondeselfie1.png',
-        isOnline: true,
-        lastMessage: 'Thanks for the tip! You\'re amazing 😘',
-        lastMessageTime: '15 min ago',
-        unreadCount: 0,
-        isPinned: false,
-        connectionType: 'verified',
-        isTyping: true,
-        isMuted: false
-      },
-      {
-        id: 3,
-        connectionId: 3,
-        name: 'Mia Diamond',
-        username: '@miadiamond',
-        avatar: '/placeholders/beautifulbrunette4.png',
-        isOnline: false,
-        lastMessage: 'Good morning! How are you today?',
-        lastMessageTime: '2 hours ago',
-        unreadCount: 1,
-        isPinned: false,
-        connectionType: 'basic',
-        isTyping: false,
-        isMuted: false
-      },
-      {
-        id: 4,
-        connectionId: 4,
-        name: 'Ashley Fire',
-        username: '@ashleyfire',
-        avatar: '/placeholders/cuteblondeselfie2.png',
-        isOnline: false,
-        lastMessage: 'Can\'t wait to chat more later!',
-        lastMessageTime: 'Yesterday',
-        unreadCount: 0,
-        isPinned: false,
-        connectionType: 'verified',
-        isTyping: false,
-        isMuted: true
-      }
-    ];
-    
-    if (activeFilter === 'unread') {
-      return mock.filter(c => c.unreadCount > 0);
-    } else if (activeFilter === 'online') {
-      return mock.filter(c => c.isOnline);
-    }
-    return mock;
   };
 
   const handleConversationClick = (conversation) => {

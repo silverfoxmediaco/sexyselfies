@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
-  DollarSign, TrendingUp, TrendingDown, Eye, Download, Calendar, 
-  Clock, CreditCard, Wallet, PieChart, BarChart3, Filter, 
-  ArrowUp, ArrowDown, Minus, Star, Users, Camera, Video,
-  MessageCircle, Gift, Zap, Target, Award, RefreshCw,
-  ChevronRight, ExternalLink, AlertCircle, CheckCircle, Send
+  DollarSign, Download, Calendar, 
+  Clock, CreditCard, BarChart3, 
+  ArrowUp, ArrowDown, Minus, Camera, Video,
+  MessageCircle, Gift, Zap, Target,
+  ChevronRight, AlertCircle, CheckCircle, Send
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
@@ -23,7 +23,6 @@ const CreatorEarnings = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('30d');
   const [loading, setLoading] = useState(true);
   const [earningsData, setEarningsData] = useState(null);
-  const [payoutMethod, setPayoutMethod] = useState('weekly');
   const [showPayoutModal, setShowPayoutModal] = useState(false);
   const [payoutData, setPayoutData] = useState({
     availableEarnings: 0,
@@ -112,6 +111,34 @@ const CreatorEarnings = () => {
       }
     } catch (error) {
       console.error('Error loading earnings:', error);
+      // Fallback to empty state with basic structure
+      setEarningsData({
+        overview: {
+          totalEarnings: 0,
+          earningsChange: 0,
+          pendingPayout: 0,
+          payoutChange: 0,
+          thisMonthEarnings: 0,
+          monthChange: 0,
+          avgDailyEarnings: 0,
+          dailyChange: 0
+        },
+        breakdown: {
+          photos: { amount: 0, percentage: 0, count: 0 },
+          videos: { amount: 0, percentage: 0, count: 0 },
+          messages: { amount: 0, percentage: 0, count: 0 },
+          tips: { amount: 0, percentage: 0, count: 0 }
+        },
+        recentTransactions: [],
+        topEarners: [],
+        payoutHistory: [],
+        goals: {
+          monthlyTarget: 0,
+          currentProgress: 0,
+          daysLeft: 0,
+          dailyAvgNeeded: 0
+        }
+      });
       setLoading(false);
     }
   };

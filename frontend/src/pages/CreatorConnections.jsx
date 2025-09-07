@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -157,6 +157,14 @@ const CreatorConnections = () => {
       }
     } catch (error) {
       console.error('Error loading connections:', error);
+      // Fallback to empty state
+      setConnections([]);
+      setStats({
+        totalMatches: 0,
+        activeChats: 0,
+        totalEarnings: 0,
+        avgResponse: 0
+      });
       setLoading(false);
     }
   };
