@@ -34,10 +34,7 @@ const CreatorRegistration = () => {
     dateOfBirth: '',
     country: '',
     
-    // Step 3: Content Types
-    contentTypes: [],
-    
-    // Step 4: Agreement
+    // Step 3: Agreement
     agreeToTerms: false,
     agreeToContentPolicy: false,
     over18Confirmation: false,
@@ -54,12 +51,6 @@ const CreatorRegistration = () => {
     'Germany', 'France', 'Spain', 'Italy', 'Netherlands', 'Other'
   ];
   
-  const contentTypeOptions = [
-    { id: 'photos', label: 'Photos', icon: '📸' },
-    { id: 'videos', label: 'Videos', icon: '🎥' },
-    { id: 'messages', label: 'Messages', icon: '💬' },
-    { id: 'live', label: 'Live Streams', icon: '🔴' }
-  ];
   
   const validateStep = (stepNumber) => {
     const newErrors = {};
@@ -117,12 +108,6 @@ const CreatorRegistration = () => {
         break;
         
       case 3:
-        if (formData.contentTypes.length === 0) {
-          newErrors.contentTypes = 'Please select at least one content type';
-        }
-        break;
-        
-      case 4:
         if (!formData.agreeToTerms) {
           newErrors.agreeToTerms = 'You must agree to the terms of service';
         }
@@ -162,20 +147,11 @@ const CreatorRegistration = () => {
     setErrors(prev => ({ ...prev, [name]: undefined }));
   };
 
-  const handleContentTypeToggle = (type) => {
-    setFormData(prev => ({
-      ...prev,
-      contentTypes: prev.contentTypes.includes(type)
-        ? prev.contentTypes.filter(t => t !== type)
-        : [...prev.contentTypes, type]
-    }));
-    setErrors(prev => ({ ...prev, contentTypes: undefined }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateStep(4)) {
+    if (!validateStep(3)) {
       return;
     }
     
@@ -401,35 +377,6 @@ const CreatorRegistration = () => {
       case 3:
         return (
           <div className="creator-registration-step">
-            <h2>Content Types</h2>
-            <p className="creator-registration-step-subtitle">What type of content will you create?</p>
-            
-            <div className="creator-registration-content-types">
-              {contentTypeOptions.map(option => (
-                <div
-                  key={option.id}
-                  className={`creator-registration-content-type-card ${
-                    formData.contentTypes.includes(option.id) ? 'selected' : ''
-                  }`}
-                  onClick={() => handleContentTypeToggle(option.id)}
-                >
-                  <span className="creator-registration-content-type-icon">{option.icon}</span>
-                  <span className="creator-registration-content-type-label">{option.label}</span>
-                  {formData.contentTypes.includes(option.id) && (
-                    <Check className="creator-registration-check-icon" size={20} />
-                  )}
-                </div>
-              ))}
-            </div>
-            {errors.contentTypes && (
-              <span className="creator-registration-error-message">{errors.contentTypes}</span>
-            )}
-          </div>
-        );
-        
-      case 4:
-        return (
-          <div className="creator-registration-step">
             <h2>Terms & Agreements</h2>
             <p className="creator-registration-step-subtitle">Please review and accept our policies</p>
             
@@ -511,11 +458,11 @@ const CreatorRegistration = () => {
             <div className="creator-registration-progress-bar">
               <div 
                 className="creator-registration-progress-fill"
-                style={{ width: `${(step / 4) * 100}%` }}
+                style={{ width: `${(step / 3) * 100}%` }}
               />
             </div>
             <div className="creator-registration-step-indicator">
-              Step {step} of 4
+              Step {step} of 3
             </div>
           </div>
           
@@ -535,7 +482,7 @@ const CreatorRegistration = () => {
                 </button>
               )}
               
-              {step < 4 ? (
+              {step < 3 ? (
                 <button
                   type="button"
                   onClick={handleNext}
