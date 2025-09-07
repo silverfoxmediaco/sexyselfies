@@ -509,3 +509,10 @@
     gap: 4px;
   }
 }
+
+/* Desktop header spacing */
+@media (min-width: 1024px) {
+  .creator-connections {
+    padding-top: 100px;
+  }
+}

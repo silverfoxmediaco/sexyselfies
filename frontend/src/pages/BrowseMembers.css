@@ -948,3 +948,10 @@
    gap: 24px;
  }
 }
+
+/* Desktop: Account for fixed CreatorMainHeader */
+@media (min-width: 1024px) {
+  .browse-members-page {
+    margin-top: 100px;
+  }
+}
