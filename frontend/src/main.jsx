@@ -46,6 +46,7 @@ import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 // Import Creator pages (all that exist)
 import CreatorRegistration from './pages/CreatorRegistration';
 import CreatorVerifyID from './pages/CreatorVerifyID';
+import CreatorVerificationStatus from './pages/CreatorVerificationStatus';
 import CreatorProfileSetup from './pages/CreatorProfileSetup';
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorContentUpload from './pages/CreatorContentUpload';
@@ -110,6 +111,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="register" element={<CreatorRegistration />} />
             <Route path="verify-id" element={<CreatorVerifyID />} />
             <Route path="login" element={<CreatorLogin />} />
+            
+            {/* Protected creator routes */}
+            <Route 
+              path="verification" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorVerificationStatus />
+                </ProtectedCreatorRoute>
+              } 
+            />
             
             {/* PROFILE ROUTE - Creator's own profile (must come early to avoid ID conflicts) */}
             <Route 
