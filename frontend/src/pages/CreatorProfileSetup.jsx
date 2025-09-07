@@ -53,17 +53,6 @@ const CreatorProfileSetup = () => {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   
-  // AI suggestions state
-  const [aiSuggestions, setAiSuggestions] = useState({
-    displayName: '',
-    bio: '',
-    photoPricing: 3.99,
-    videoPricing: 7.99,
-    messagePricing: 2.99,
-    bestPostingTime: '8:00 PM - 10:00 PM',
-    estimatedEarnings: { min: 500, max: 2500 },
-    topCategories: []
-  });
   
   // Form data - UPDATED: discovery to browse
   const [formData, setFormData] = useState({
@@ -102,7 +91,7 @@ const CreatorProfileSetup = () => {
       videos: { min: 2.99, default: 5.99, max: 19.99 },
       messages: { min: 0.99, default: 1.99, max: 9.99 }
     },
-    pricingStrategy: 'fixed', // fixed, dynamic, ai_optimized
+    pricingStrategy: 'fixed', // Only fixed pricing available
     acceptTips: true,
     bundleDiscounts: true,
     
@@ -112,13 +101,7 @@ const CreatorProfileSetup = () => {
         enabled: true,
         text: "Hey! Thanks for matching with me 💕 Check out my exclusive content!"
       },
-      reEngagement: {
-        enabled: true,
-        days: 7
-      },
-      autoMatch: 'verified', // all, verified, manual
-      smartPricing: true,
-      contentScheduling: true
+      autoMatch: 'verified' // all, verified, manual
     },
     instantPayout: true,
     analytics: true,
@@ -130,9 +113,8 @@ const CreatorProfileSetup = () => {
     confirmOwnership: false
   });
   
-  // Fetch AI suggestions on mount
+  // Check existing profile on mount
   useEffect(() => {
-    fetchAISuggestions();
     checkExistingProfile();
   }, []);
   
@@ -141,25 +123,7 @@ const CreatorProfileSetup = () => {
     calculateCompletion();
   }, [formData, currentStep]);
   
-  const fetchAISuggestions = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/creator/ai/profile-suggestions', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      // Only update if we got valid suggestions data
-      if (response.data && response.data.suggestions) {
-        setAiSuggestions(prevSuggestions => ({
-          ...prevSuggestions,
-          ...response.data.suggestions
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching AI suggestions:', error);
-      // Keep existing suggestions on error - don't overwrite with undefined
-    }
-  };
+  // AI suggestions functionality removed for production
   
   const checkExistingProfile = async () => {
     try {
@@ -305,11 +269,11 @@ const CreatorProfileSetup = () => {
       case 2:
         return <StepTwo formData={formData} setFormData={setFormData} errors={errors} />;
       case 3:
-        return <StepThree formData={formData} setFormData={setFormData} errors={errors} aiSuggestions={aiSuggestions} />;
+        return <StepThree formData={formData} setFormData={setFormData} errors={errors} />;
       case 4:
-        return <StepFour formData={formData} setFormData={setFormData} errors={errors} aiSuggestions={aiSuggestions} />;
+        return <StepFour formData={formData} setFormData={setFormData} errors={errors} />;
       case 5:
-        return <StepFive formData={formData} setFormData={setFormData} errors={errors} aiSuggestions={aiSuggestions} onPreview={() => setShowPreview(true)} />;
+        return <StepFive formData={formData} setFormData={setFormData} errors={errors} onPreview={() => setShowPreview(true)} />;
       default:
         return null;
     }
@@ -490,7 +454,7 @@ const CreatorProfileSetup = () => {
               <div className="success-stats">
                 <div className="stat">
                   <TrendingUp size={20} />
-                  <span>Est. ${aiSuggestions?.estimatedEarnings?.min || 500}-${aiSuggestions?.estimatedEarnings?.max || 2500}/mo</span>
+                  <span>Est. $500-$2500/mo</span>
                 </div>
                 <div className="stat">
                   <Star size={20} />
@@ -765,7 +729,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
 };
 
 // Step 3: Content & Pricing
-const StepThree = ({ formData, setFormData, errors, aiSuggestions }) => {
+const StepThree = ({ formData, setFormData, errors }) => {
   return (
     <div className="step-three">
       <div className="step-header">
@@ -819,45 +783,12 @@ const StepThree = ({ formData, setFormData, errors, aiSuggestions }) => {
         {errors.contentTypes && <span className="error-message">{errors.contentTypes}</span>}
       </div>
       
-      {/* Pricing strategy */}
-      <div className="form-group">
-        <label className="form-label">PRICING STRATEGY</label>
-        <div className="strategy-cards">
-          <div 
-            className={`strategy-card ${formData.pricingStrategy === 'fixed' ? 'active' : ''}`}
-            onClick={() => setFormData(prev => ({ ...prev, pricingStrategy: 'fixed' }))}
-          >
-            <Lock size={20} />
-            <span className="strategy-title">Fixed Prices</span>
-            <span className="strategy-desc">You set the prices</span>
-          </div>
-          
-          <div 
-            className={`strategy-card ${formData.pricingStrategy === 'dynamic' ? 'active' : ''}`}
-            onClick={() => setFormData(prev => ({ ...prev, pricingStrategy: 'dynamic' }))}
-          >
-            <TrendingUp size={20} />
-            <span className="strategy-title">Dynamic Pricing</span>
-            <span className="strategy-desc">Prices adjust with demand</span>
-          </div>
-          
-          <div 
-            className={`strategy-card ${formData.pricingStrategy === 'ai_optimized' ? 'active' : ''}`}
-            onClick={() => setFormData(prev => ({ ...prev, pricingStrategy: 'ai_optimized' }))}
-          >
-            <Bot size={20} />
-            <span className="strategy-title">AI Optimized</span>
-            <span className="strategy-desc">Let AI maximize earnings</span>
-          </div>
-        </div>
-      </div>
       
       {/* Default prices */}
       {formData.contentTypes.photos && (
         <div className="form-group">
           <label className="form-label">
             PHOTO PRICE
-            <span className="ai-suggestion">AI SUGGESTS: ${aiSuggestions?.photoPricing || 3.99}</span>
           </label>
           <div className="pricing-input-wrapper">
             <span className="currency-symbol">$</span>
@@ -880,12 +811,66 @@ const StepThree = ({ formData, setFormData, errors, aiSuggestions }) => {
           </div>
         </div>
       )}
+
+      {/* Video pricing */}
+      {formData.contentTypes.videos && (
+        <div className="form-group">
+          <label className="form-label">
+            VIDEO PRICE
+          </label>
+          <div className="pricing-input-wrapper">
+            <span className="currency-symbol">$</span>
+            <input
+              type="number"
+              className="form-input pricing-input"
+              min="2.99"
+              max="19.99"
+              step="0.01"
+              value={formData.pricing.videos.default}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                pricing: {
+                  ...prev.pricing,
+                  videos: { ...prev.pricing.videos, default: parseFloat(e.target.value) }
+                }
+              }))}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Message pricing */}
+      {formData.contentTypes.messages && (
+        <div className="form-group">
+          <label className="form-label">
+            MESSAGE PRICE
+          </label>
+          <div className="pricing-input-wrapper">
+            <span className="currency-symbol">$</span>
+            <input
+              type="number"
+              className="form-input pricing-input"
+              min="0.99"
+              max="9.99"
+              step="0.01"
+              value={formData.pricing.messages.default}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                pricing: {
+                  ...prev.pricing,
+                  messages: { ...prev.pricing.messages, default: parseFloat(e.target.value) }
+                }
+              }))}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 // Step 4: Smart Features
-const StepFour = ({ formData, setFormData, errors, aiSuggestions }) => {
+const StepFour = ({ formData, setFormData, errors }) => {
   return (
     <div className="step-four">
       <div className="step-header">
@@ -1033,20 +1018,20 @@ const StepFour = ({ formData, setFormData, errors, aiSuggestions }) => {
         </div>
       </div>
       
-      {/* AI Features */}
+      {/* Success Tips */}
       <div className="form-group">
         <label className="form-label">
-          <Bot size={18} />
-          AI Features
+          <TrendingUp size={18} />
+          Success Tips
         </label>
-        <div className="ai-features">
-          <div className="ai-feature">
+        <div className="success-tips">
+          <div className="success-tip">
             <Clock size={16} />
-            <span>Best posting time: {aiSuggestions?.bestPostingTime || '8:00 PM - 10:00 PM'}</span>
+            <span>Post content during peak hours (8-10 PM) for better engagement</span>
           </div>
-          <div className="ai-feature">
-            <TrendingUp size={16} />
-            <span>Estimated earnings: ${aiSuggestions?.estimatedEarnings?.min || 500}-${aiSuggestions?.estimatedEarnings?.max || 2500}/mo</span>
+          <div className="success-tip">
+            <DollarSign size={16} />
+            <span>Creators with automation enabled earn 40% more on average</span>
           </div>
         </div>
       </div>
@@ -1055,7 +1040,7 @@ const StepFour = ({ formData, setFormData, errors, aiSuggestions }) => {
 };
 
 // Step 5: Verification & Launch - WITH PREVIEW BUTTON ADDED
-const StepFive = ({ formData, setFormData, errors, aiSuggestions, onPreview }) => {
+const StepFive = ({ formData, setFormData, errors, onPreview }) => {
   return (
     <div className="step-five">
       <div className="step-header">
@@ -1151,7 +1136,7 @@ const StepFive = ({ formData, setFormData, errors, aiSuggestions, onPreview }) =
             </div>
             <div className="stat">
               <TrendingUp size={16} />
-              <span>Est. ${aiSuggestions?.estimatedEarnings?.min || 500}-${aiSuggestions?.estimatedEarnings?.max || 2500}/mo</span>
+              <span>Est. $500-$2500/mo</span>
             </div>
           </div>
         </div>
