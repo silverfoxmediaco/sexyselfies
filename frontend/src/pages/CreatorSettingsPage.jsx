@@ -642,55 +642,14 @@ const CreatorSettingsPage = () => {
             )}
           </>
         ) : (
-          // Desktop Layout
-          <div className="desktop-settings-layout">
-            <div className="settings-sidebar">
-              <div className="settings-header">
-                <Settings size={28} />
-                <h1>Settings</h1>
-              </div>
-              <nav className="settings-nav">
-                {settingSections.map((section) => (
-                  <button
-                    key={section.id}
-                    className={`nav-item ${activeSection === section.id ? 'active' : ''}`}
-                    onClick={() => setActiveSection(section.id)}
-                  >
-                    <section.icon size={20} />
-                    <span>{section.title}</span>
-                    <ChevronRight size={16} />
-                  </button>
-                ))}
-              </nav>
+          // Desktop Layout - Use same grid as mobile but styled for desktop
+          <div className="desktop-settings-content">
+            <div className="desktop-settings-header">
+              <Settings size={28} />
+              <h1>Settings</h1>
+              <p>Manage your account, privacy, and platform preferences</p>
             </div>
-            
-            <div className="settings-main">
-              <div className="settings-content">
-                <div className="content-header">
-                  <h2>{getSectionTitle()}</h2>
-                  {unsavedChanges && (
-                    <button 
-                      className={`save-btn ${saveStatus}`}
-                      onClick={saveSettings}
-                      disabled={saveStatus === 'saving'}
-                    >
-                      {saveStatus === 'saving' && <div className="spinner" />}
-                      {saveStatus === 'saved' && <Check size={18} />}
-                      {saveStatus === 'error' && <X size={18} />}
-                      {saveStatus === 'idle' && <Save size={18} />}
-                      <span>
-                        {saveStatus === 'saving' ? 'Saving...' :
-                         saveStatus === 'saved' ? 'Saved!' :
-                         saveStatus === 'error' ? 'Error' : 'Save Changes'}
-                      </span>
-                    </button>
-                  )}
-                </div>
-                <div className="desktop-content-body">
-                  {renderActiveSection() || renderMainMenu()}
-                </div>
-              </div>
-            </div>
+            {renderMainMenu()}
           </div>
         )}
 
