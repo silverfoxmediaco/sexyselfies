@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import authService from '../services/auth.service';  // ADD THIS IMPORT
 import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
