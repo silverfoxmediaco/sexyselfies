@@ -7,6 +7,7 @@ import {
   AlertCircle, Shield, DollarSign, Users, Sparkles
 } from 'lucide-react';
 import authService from '../services/auth.service';  // ADD THIS IMPORT
+import MainHeader from '../components/MainHeader';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -494,7 +495,7 @@ const CreatorRegistration = () => {
   return (
     <div className="creator-registration-page">
       {/* Desktop Header */}
-      {isDesktop && <MainHeader />}
+      {isDesktop && <CreatorMainHeader />}
       
       <div className="creator-registration">
         <div className="creator-registration-wrapper">
