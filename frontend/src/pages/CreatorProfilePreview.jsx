@@ -46,9 +46,9 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
     >
       {/* Card Images */}
       <div className="card-image-container">
-        {profileData?.profilePhoto ? (
+        {profileData?.profilePhotoPreview ? (
           <img 
-            src={profileData.profilePhoto} 
+            src={profileData.profilePhotoPreview} 
             alt={profileData.displayName}
             className="card-main-image"
           />
@@ -170,8 +170,8 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
         
         <div className="profile-main-info">
           <div className="profile-avatar">
-            {profileData?.profilePhoto ? (
-              <img src={profileData.profilePhoto} alt={profileData.displayName} />
+            {profileData?.profilePhotoPreview ? (
+              <img src={profileData.profilePhotoPreview} alt={profileData.displayName} />
             ) : (
               <div className="avatar-placeholder">
                 <Camera size={32} />

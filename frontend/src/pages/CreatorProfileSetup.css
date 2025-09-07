@@ -640,7 +640,7 @@
   background: linear-gradient(135deg, rgba(23, 210, 194, 0.1), rgba(23, 210, 194, 0.2));
   border: 2px solid var(--primary);
   border-radius: 12px;
-  color: var(--primary);
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 15px;
   display: flex;
@@ -902,6 +902,8 @@
 }
 
 .step-five .step-header h2 {
+  /* Fallback color for browsers that don't support gradient text */
+  color: var(--primary);
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-300) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -910,6 +912,14 @@
   font-weight: 700;
   margin-bottom: 8px;
   text-align: center;
+}
+
+/* Fallback for unsupported browsers */
+@supports not (-webkit-background-clip: text) {
+  .step-five .step-header h2 {
+    color: var(--primary);
+    background: none;
+  }
 }
 
 .step-five .step-header p {
@@ -1923,6 +1933,8 @@
 }
 
 .step-five .step-header h2 {
+  /* Fallback color for browsers that don't support gradient text */
+  color: var(--primary);
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-300) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1931,6 +1943,14 @@
   font-weight: 700;
   margin-bottom: 8px;
   text-align: center;
+}
+
+/* Fallback for unsupported browsers */
+@supports not (-webkit-background-clip: text) {
+  .step-five .step-header h2 {
+    color: var(--primary);
+    background: none;
+  }
 }
 
 .step-five .step-header p {
