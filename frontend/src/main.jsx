@@ -111,6 +111,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="verify-id" element={<CreatorVerifyID />} />
             <Route path="login" element={<CreatorLogin />} />
             
+            {/* PROFILE ROUTE - Creator's own profile (must come early to avoid ID conflicts) */}
+            <Route 
+              path="profile" 
+              element={
+                <ProtectedCreatorRoute>
+                  <CreatorProfilePage />
+                </ProtectedCreatorRoute>
+              } 
+            />
+            
             {/* BROWSE MEMBERS ROUTE - Creators browse members to target */}
             <Route 
               path="browse-members" 
@@ -320,6 +330,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 </ProtectedCreatorRoute>
               } 
             />
+            
             <Route 
               path="settings" 
               element={

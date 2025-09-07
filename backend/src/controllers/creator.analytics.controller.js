@@ -74,10 +74,11 @@ exports.getAnalyticsDashboard = async (req, res) => {
       comparison: compare ? 
         await getComparisonAnalytics(creatorId, periodDates, compareDates) : null,
       
-      insights: generateActionableInsights(analytics, dashboard),
-      
       opportunities: await identifyOpportunities(creatorId, analytics)
     };
+    
+    // Add insights after dashboard is complete
+    dashboard.insights = generateActionableInsights(analytics, dashboard);
     
     // Save updated analytics
     await analytics.save();

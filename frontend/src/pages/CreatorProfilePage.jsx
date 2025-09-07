@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   User, Edit3, Eye, Settings, Camera, MapPin, 
@@ -16,8 +16,7 @@ import './CreatorProfilePage.css';
 
 const CreatorProfilePage = () => {
   const navigate = useNavigate();
-  const { username } = useParams();
-  const { user, isAuthenticated, isCreator, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isCreator, isLoading: authLoading } = useAuth();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
@@ -35,75 +34,48 @@ const CreatorProfilePage = () => {
     rating: 0
   });
 
-  // Handle profile URL - if no username provided, show current user's profile
+  // Load profile data when component mounts
   useEffect(() => {
-    if (!username && user && isCreator && !authLoading) {
-      // Instead of redirecting, just set the username to current user's username
-      // This allows /creator/profile to work as "my profile"
-      const currentUsername = user.username || user.displayName || user.email?.split('@')[0] || user.id;
-      console.log('CreatorProfilePage: No username provided, using current user:', currentUsername);
-      // Set profile data for current user instead of redirecting
-      setProfileData(prevData => ({
-        ...prevData,
-        username: currentUsername,
-        displayName: user.displayName || currentUsername,
-        isOwnProfile: true
-      }));
-      return;
-    }
-  }, [username, user, isCreator, authLoading]);
-
-  // Load profile data
-  useEffect(() => {
-    if (!authLoading && isAuthenticated && (username || (user && isCreator))) {
+    if (!authLoading && isAuthenticated && isCreator) {
+      console.log('CreatorProfilePage: Loading profile data for creator');
       loadProfileData();
     }
-  }, [username, isAuthenticated, authLoading, user, isCreator]);
+  }, [isAuthenticated, authLoading, isCreator]);
 
   const loadProfileData = async () => {
-    console.log('CreatorProfilePage: Loading profile data for username:', username);
+    console.log('CreatorProfilePage: Loading creator profile data');
     setLoading(true);
     setError(null);
 
     try {
-      // Check if this is the current user's profile
-      const isOwnProfile = user && (
-        username === user.username || 
-        username === user.displayName ||
-        !username
-      );
+      // This page is for the creator's own profile only
+      console.log('CreatorProfilePage: Calling creatorService.getProfile()');
+      const response = await creatorService.getProfile();
+      console.log('CreatorProfilePage: API response:', response);
+      
+      if (response && response.success && response.profile) {
+        console.log('CreatorProfilePage: Setting profile data:', response.profile);
+        setProfileData({
+          ...response.profile,
+          isOwnProfile: true
+        });
 
-      if (isOwnProfile) {
-        // Load own profile data
-        const response = await creatorService.getProfile();
-        if (response && response.data) {
-          setProfileData({
-            ...response.data,
-            isOwnProfile: true
+        // Use stats data from profile API response
+        if (response.stats) {
+          console.log('CreatorProfilePage: Setting stats data:', response.stats);
+          setStats({
+            totalViews: response.stats.totalViews || 0,
+            matches: response.stats.matches || 0,
+            earnings: response.stats.earnings || 0,
+            rating: response.stats.rating || 0
           });
-
-          // Load analytics stats for own profile
-          try {
-            const statsResponse = await creatorService.getAnalytics('30d');
-            if (statsResponse && statsResponse.data) {
-              setStats({
-                totalViews: statsResponse.data.views || 0,
-                matches: statsResponse.data.connections || 0,
-                earnings: statsResponse.data.earnings || 0,
-                rating: statsResponse.data.rating || 0
-              });
-            }
-          } catch (error) {
-            console.warn('Could not load profile stats:', error);
-          }
         }
       } else {
-        // Load other creator's public profile (if implemented)
-        console.warn('Public profile viewing not yet implemented');
-        setError('Profile not found');
+        console.error('CreatorProfilePage: Invalid API response structure:', response);
+        setError('Failed to load profile data');
       }
     } catch (error) {
-      console.error('Error loading profile:', error);
+      console.error('CreatorProfilePage: Error loading profile:', error);
       setError(error.message || 'Failed to load profile');
     } finally {
       setLoading(false);
