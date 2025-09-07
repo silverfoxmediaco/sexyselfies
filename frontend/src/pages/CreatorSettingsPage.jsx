@@ -193,64 +193,137 @@ const CreatorSettingsPage = () => {
   );
 
   // Mobile-optimized setting sections
-  const renderAccountSection = () => (
-    <div className="settings-mobile-section">
-      <div className="mobile-settings-group">
-        <h4>Login Information</h4>
-        <div className="mobile-setting-item">
-          <label>Email Address</label>
-          <input
-            type="email"
-            value={settings.email}
-            onChange={(e) => updateSetting(null, 'email', e.target.value)}
-            className="mobile-input"
-          />
-        </div>
-        <div className="mobile-setting-item">
-          <label>Username</label>
-          <input
-            type="text"
-            value={settings.username}
-            onChange={(e) => updateSetting(null, 'username', e.target.value)}
-            className="mobile-input"
-          />
-        </div>
-      </div>
-
-      <div className="mobile-settings-group">
-        <h4>Security</h4>
-        <div className="mobile-toggle-item">
-          <div className="toggle-content">
-            <div className="toggle-header">
-              <Shield size={20} />
-              <span>Two-Factor Authentication</span>
+  const renderAccountSection = () => {
+    if (isMobile) {
+      return (
+        <div className="settings-mobile-section">
+          <div className="mobile-settings-group">
+            <h4>Login Information</h4>
+            <div className="mobile-setting-item">
+              <label>Email Address</label>
+              <input
+                type="email"
+                value={settings.email}
+                onChange={(e) => updateSetting(null, 'email', e.target.value)}
+                className="mobile-input"
+              />
             </div>
-            <p>Add extra security to your account</p>
+            <div className="mobile-setting-item">
+              <label>Username</label>
+              <input
+                type="text"
+                value={settings.username}
+                onChange={(e) => updateSetting(null, 'username', e.target.value)}
+                className="mobile-input"
+              />
+            </div>
           </div>
-          <label className="mobile-toggle">
-            <input
-              type="checkbox"
-              checked={settings.twoFactorEnabled}
-              onChange={(e) => updateSetting(null, 'twoFactorEnabled', e.target.checked)}
-            />
-            <span className="toggle-slider"></span>
-          </label>
+
+          <div className="mobile-settings-group">
+            <h4>Security</h4>
+            <div className="mobile-toggle-item">
+              <div className="toggle-content">
+                <div className="toggle-header">
+                  <Shield size={20} />
+                  <span>Two-Factor Authentication</span>
+                </div>
+                <p>Add extra security to your account</p>
+              </div>
+              <label className="mobile-toggle">
+                <input
+                  type="checkbox"
+                  checked={settings.twoFactorEnabled}
+                  onChange={(e) => updateSetting(null, 'twoFactorEnabled', e.target.checked)}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div className="mobile-settings-group danger">
+            <h4>Danger Zone</h4>
+            <button 
+              className="mobile-danger-btn"
+              onClick={() => setShowDeleteDialog(true)}
+            >
+              <Trash2 size={18} />
+              Delete Account
+            </button>
+            <p className="danger-warning">This action cannot be undone</p>
+          </div>
+        </div>
+      );
+    }
+    
+    // Desktop version
+    return (
+      <div className="desktop-settings-section">
+        <div className="desktop-settings-group">
+          <h3>Login Information</h3>
+          <div className="desktop-form-grid">
+            <div className="desktop-form-field">
+              <label className="desktop-label">Email Address</label>
+              <input
+                type="email"
+                value={settings.email}
+                onChange={(e) => updateSetting(null, 'email', e.target.value)}
+                className="desktop-input"
+              />
+            </div>
+            <div className="desktop-form-field">
+              <label className="desktop-label">Username</label>
+              <input
+                type="text"
+                value={settings.username}
+                onChange={(e) => updateSetting(null, 'username', e.target.value)}
+                className="desktop-input"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div className="desktop-settings-group">
+          <h3>Security</h3>
+          <div className="desktop-toggle-item">
+            <div className="desktop-toggle-content">
+              <div className="desktop-toggle-header">
+                <Shield size={20} />
+                <div>
+                  <span className="desktop-toggle-title">Two-Factor Authentication</span>
+                  <p className="desktop-toggle-desc">Add extra security to your account</p>
+                </div>
+              </div>
+            </div>
+            <label className="desktop-toggle">
+              <input
+                type="checkbox"
+                checked={settings.twoFactorEnabled}
+                onChange={(e) => updateSetting(null, 'twoFactorEnabled', e.target.checked)}
+              />
+              <span className="desktop-toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        
+        <div className="desktop-settings-group danger">
+          <h3>Danger Zone</h3>
+          <div className="desktop-danger-section">
+            <div className="desktop-danger-content">
+              <h4>Delete Account</h4>
+              <p>This will permanently delete your account, content, and earnings. This action cannot be undone.</p>
+            </div>
+            <button 
+              className="desktop-danger-btn"
+              onClick={() => setShowDeleteDialog(true)}
+            >
+              <Trash2 size={18} />
+              Delete Account
+            </button>
+          </div>
         </div>
       </div>
-
-      <div className="mobile-settings-group danger">
-        <h4>Danger Zone</h4>
-        <button 
-          className="mobile-danger-btn"
-          onClick={() => setShowDeleteDialog(true)}
-        >
-          <Trash2 size={18} />
-          Delete Account
-        </button>
-        <p className="danger-warning">This action cannot be undone</p>
-      </div>
-    </div>
-  );
+    );
+  };
 
   const renderPrivacySection = () => (
     <div className="settings-mobile-section">
