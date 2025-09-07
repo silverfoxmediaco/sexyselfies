@@ -6,11 +6,14 @@ import {
   Download, Trash2, Menu, Eye, EyeOff
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import CreatorMainHeader from '../components/CreatorMainHeader';
+import CreatorMainFooter from '../components/CreatorMainFooter';
+import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import './CreatorSettingsPage.css';
 
 const CreatorSettingsPage = () => {
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [activeSection, setActiveSection] = useState(null); // null = main menu on mobile
   const [settings, setSettings] = useState({
@@ -494,95 +497,160 @@ const CreatorSettingsPage = () => {
   };
 
   return (
-    <div className="creator-settings-mobile">
-      {/* Mobile Header */}
-      <div className="mobile-header">
-        <div className="mobile-header-content">
-          {activeSection ? (
-            <button className="mobile-back-btn" onClick={goBack}>
-              <ChevronLeft size={24} />
-            </button>
-          ) : (
-            <Settings size={24} />
-          )}
-          <h1>{getSectionTitle()}</h1>
-          {unsavedChanges && (
-            <button 
-              className={`mobile-save-btn ${saveStatus}`}
-              onClick={saveSettings}
-              disabled={saveStatus === 'saving'}
-            >
-              {saveStatus === 'saving' && <div className="spinner" />}
-              {saveStatus === 'saved' && <Check size={18} />}
-              {saveStatus === 'error' && <X size={18} />}
-              {saveStatus === 'idle' && <Save size={18} />}
-            </button>
-          )}
-        </div>
-      </div>
+    <div className="CreatorSettingsPage-container">
+      {/* Desktop Header */}
+      {isDesktop && <CreatorMainHeader />}
 
-      {/* Mobile Content */}
-      <div className="mobile-content">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeSection || 'main'}
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -20, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {renderActiveSection()}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* Save Button - Sticky Bottom */}
-      {unsavedChanges && (
-        <div className="mobile-save-bar">
-          <button 
-            className={`mobile-save-bar-btn ${saveStatus}`}
-            onClick={saveSettings}
-            disabled={saveStatus === 'saving'}
-          >
-            {saveStatus === 'saving' && <div className="spinner" />}
-            {saveStatus === 'saved' && <Check size={20} />}
-            {saveStatus === 'error' && <X size={20} />}
-            {saveStatus === 'idle' && <Save size={20} />}
-            <span>
-              {saveStatus === 'saving' ? 'Saving...' :
-               saveStatus === 'saved' ? 'Saved!' :
-               saveStatus === 'error' ? 'Error' : 'Save Changes'}
-            </span>
-          </button>
-        </div>
-      )}
-
-      {/* Delete Dialog */}
-      {showDeleteDialog && (
-        <div className="mobile-modal-overlay">
-          <div className="mobile-delete-dialog">
-            <div className="dialog-header">
-              <AlertTriangle size={32} className="warning-icon" />
-              <h3>Delete Account?</h3>
+      {/* Main Content Wrapper */}
+      <div className={`creator-settings ${isMobile ? 'mobile' : 'desktop'}`}>
+        {isMobile ? (
+          // Mobile Layout
+          <>
+            {/* Mobile Header */}
+            <div className="mobile-header">
+              <div className="mobile-header-content">
+                {activeSection ? (
+                  <button className="mobile-back-btn" onClick={goBack}>
+                    <ChevronLeft size={24} />
+                  </button>
+                ) : (
+                  <Settings size={24} />
+                )}
+                <h1>{getSectionTitle()}</h1>
+                {unsavedChanges && (
+                  <button 
+                    className={`mobile-save-btn ${saveStatus}`}
+                    onClick={saveSettings}
+                    disabled={saveStatus === 'saving'}
+                  >
+                    {saveStatus === 'saving' && <div className="spinner" />}
+                    {saveStatus === 'saved' && <Check size={18} />}
+                    {saveStatus === 'error' && <X size={18} />}
+                    {saveStatus === 'idle' && <Save size={18} />}
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="dialog-content">
-              <p>This will permanently delete your account, content, and earnings.</p>
-              <p><strong>This action cannot be undone.</strong></p>
+
+            {/* Mobile Content */}
+            <div className="mobile-content">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeSection || 'main'}
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -20, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {renderActiveSection()}
+                </motion.div>
+              </AnimatePresence>
             </div>
-            <div className="dialog-actions">
-              <button 
-                className="dialog-btn secondary"
-                onClick={() => setShowDeleteDialog(false)}
-              >
-                Cancel
-              </button>
-              <button className="dialog-btn danger">
-                Delete Forever
-              </button>
+
+            {/* Save Button - Sticky Bottom */}
+            {unsavedChanges && (
+              <div className="mobile-save-bar">
+                <button 
+                  className={`mobile-save-bar-btn ${saveStatus}`}
+                  onClick={saveSettings}
+                  disabled={saveStatus === 'saving'}
+                >
+                  {saveStatus === 'saving' && <div className="spinner" />}
+                  {saveStatus === 'saved' && <Check size={20} />}
+                  {saveStatus === 'error' && <X size={20} />}
+                  {saveStatus === 'idle' && <Save size={20} />}
+                  <span>
+                    {saveStatus === 'saving' ? 'Saving...' :
+                     saveStatus === 'saved' ? 'Saved!' :
+                     saveStatus === 'error' ? 'Error' : 'Save Changes'}
+                  </span>
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          // Desktop Layout
+          <div className="desktop-settings-layout">
+            <div className="settings-sidebar">
+              <div className="settings-header">
+                <Settings size={28} />
+                <h1>Settings</h1>
+              </div>
+              <nav className="settings-nav">
+                {settingSections.map((section) => (
+                  <button
+                    key={section.id}
+                    className={`nav-item ${activeSection === section.id ? 'active' : ''}`}
+                    onClick={() => setActiveSection(section.id)}
+                  >
+                    <section.icon size={20} />
+                    <span>{section.title}</span>
+                    <ChevronRight size={16} />
+                  </button>
+                ))}
+              </nav>
+            </div>
+            
+            <div className="settings-main">
+              <div className="settings-content">
+                <div className="content-header">
+                  <h2>{getSectionTitle()}</h2>
+                  {unsavedChanges && (
+                    <button 
+                      className={`save-btn ${saveStatus}`}
+                      onClick={saveSettings}
+                      disabled={saveStatus === 'saving'}
+                    >
+                      {saveStatus === 'saving' && <div className="spinner" />}
+                      {saveStatus === 'saved' && <Check size={18} />}
+                      {saveStatus === 'error' && <X size={18} />}
+                      {saveStatus === 'idle' && <Save size={18} />}
+                      <span>
+                        {saveStatus === 'saving' ? 'Saving...' :
+                         saveStatus === 'saved' ? 'Saved!' :
+                         saveStatus === 'error' ? 'Error' : 'Save Changes'}
+                      </span>
+                    </button>
+                  )}
+                </div>
+                <div className="desktop-content-body">
+                  {renderActiveSection() || renderMainMenu()}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Delete Dialog */}
+        {showDeleteDialog && (
+          <div className="modal-overlay">
+            <div className="delete-dialog">
+              <div className="dialog-header">
+                <AlertTriangle size={32} className="warning-icon" />
+                <h3>Delete Account?</h3>
+              </div>
+              <div className="dialog-content">
+                <p>This will permanently delete your account, content, and earnings.</p>
+                <p><strong>This action cannot be undone.</strong></p>
+              </div>
+              <div className="dialog-actions">
+                <button 
+                  className="dialog-btn secondary"
+                  onClick={() => setShowDeleteDialog(false)}
+                >
+                  Cancel
+                </button>
+                <button className="dialog-btn danger">
+                  Delete Forever
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Footer */}
+      {isDesktop && <CreatorMainFooter />}
       
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
