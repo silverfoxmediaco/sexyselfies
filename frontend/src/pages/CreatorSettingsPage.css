@@ -672,6 +672,92 @@
   margin: 0;
 }
 
+/* Desktop Section View */
+.desktop-section-view {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.desktop-section-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--settings-border);
+}
+
+.desktop-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--settings-surface);
+  border: 1px solid var(--settings-border);
+  color: var(--settings-text);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.desktop-back-btn:hover {
+  background: var(--settings-surface-hover);
+}
+
+.desktop-section-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--settings-text);
+  margin: 0;
+  flex: 1;
+}
+
+.desktop-section-content {
+  margin-bottom: 32px;
+}
+
+.desktop-save-section {
+  position: sticky;
+  bottom: 0;
+  background: var(--settings-bg);
+  padding: 20px 0;
+  border-top: 1px solid var(--settings-border);
+}
+
+.desktop-save-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--settings-primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.desktop-save-btn:hover {
+  background: var(--settings-primary-hover);
+}
+
+.desktop-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.desktop-save-btn.saved {
+  background: var(--settings-success);
+}
+
+.desktop-save-btn.error {
+  background: var(--settings-error);
+}
+
 /* Desktop Grid Adjustments */
 .creator-settings.desktop .settings-menu-grid {
   grid-template-columns: repeat(3, 1fr);
