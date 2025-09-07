@@ -16,6 +16,13 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
+/* Desktop spacing adjustment */
+@media (min-width: 1024px) {
+  .verify-container {
+    margin-top: 50px;
+  }
+}
+
 .success-container {
   text-align: center;
   max-width: var(--content-width-narrow);
