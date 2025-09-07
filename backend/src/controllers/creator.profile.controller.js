@@ -67,6 +67,127 @@ exports.getProfile = async (req, res) => {
   }
 };
 
+// Setup creator profile with images - Initial profile creation
+exports.setupProfile = async (req, res) => {
+  try {
+    console.log('Profile setup request received');
+    console.log('Files:', req.files);
+    console.log('Body:', req.body);
+
+    // Find creator by user ID
+    const creator = await Creator.findOne({ user: req.user.id });
+    
+    if (!creator) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Creator not found' 
+      });
+    }
+
+    // Parse form data (sent as JSON string)
+    let formData = {};
+    if (req.body.data) {
+      try {
+        formData = JSON.parse(req.body.data);
+      } catch (e) {
+        console.error('Error parsing form data:', e);
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Invalid form data' 
+        });
+      }
+    }
+
+    // Handle image uploads
+    let profileImageUrl = creator.profileImage;
+    let coverImageUrl = creator.coverImage;
+
+    // Upload profile photo if provided
+    if (req.files && req.files.profilePhoto && req.files.profilePhoto[0]) {
+      try {
+        const result = await cloudinary.uploader.upload(req.files.profilePhoto[0].path, {
+          folder: 'sexyselfies/profiles',
+          public_id: `profile_${creator._id}_${Date.now()}`,
+          overwrite: true,
+          quality: 'auto',
+          fetch_format: 'auto'
+        });
+        profileImageUrl = result.secure_url;
+        console.log('Profile image uploaded:', result.secure_url);
+      } catch (uploadError) {
+        console.error('Profile image upload error:', uploadError);
+      }
+    }
+
+    // Upload cover image if provided
+    if (req.files && req.files.coverImage && req.files.coverImage[0]) {
+      try {
+        const result = await cloudinary.uploader.upload(req.files.coverImage[0].path, {
+          folder: 'sexyselfies/covers',
+          public_id: `cover_${creator._id}_${Date.now()}`,
+          overwrite: true,
+          quality: 'auto',
+          fetch_format: 'auto'
+        });
+        coverImageUrl = result.secure_url;
+        console.log('Cover image uploaded:', result.secure_url);
+      } catch (uploadError) {
+        console.error('Cover image upload error:', uploadError);
+      }
+    }
+
+    // Update creator profile
+    const updates = {
+      displayName: formData.displayName || creator.displayName,
+      bio: formData.bio || creator.bio,
+      profileImage: profileImageUrl,
+      coverImage: coverImageUrl,
+      profileComplete: true,
+      // Add other profile fields from formData
+      preferences: {
+        gender: formData.gender,
+        orientation: formData.orientation,
+        ageRange: formData.ageRange,
+        bodyType: formData.bodyType,
+        ethnicity: formData.ethnicity,
+        languages: formData.languages || [],
+        showInBrowse: formData.showInBrowse !== false,
+        browsePreferences: formData.browsePreferences || {}
+      },
+      contentTypes: formData.contentTypes || {},
+      pricing: formData.pricing || {},
+      automation: formData.automation || {},
+      instantPayout: formData.instantPayout || false
+    };
+
+    const updatedCreator = await Creator.findByIdAndUpdate(
+      creator._id,
+      { $set: updates },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: 'Profile setup completed successfully',
+      creator: {
+        id: updatedCreator._id,
+        displayName: updatedCreator.displayName,
+        profileImage: updatedCreator.profileImage,
+        coverImage: updatedCreator.coverImage,
+        profileComplete: updatedCreator.profileComplete
+      }
+    });
+
+  } catch (error) {
+    console.error('Profile setup error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error setting up profile',
+      error: error.message 
+    });
+  }
+};
+
 // Update creator profile with brand customization
 exports.updateProfile = async (req, res) => {
   try {

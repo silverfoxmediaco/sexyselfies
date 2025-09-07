@@ -437,14 +437,52 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  transition: var(--transition-base);
-}
-
-.photo-preview:hover .photo-overlay {
   opacity: 1;
 }
 
+.photo-actions {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.photo-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  min-width: 80px;
+  justify-content: center;
+}
+
+.photo-action-btn svg {
+  flex-shrink: 0;
+}
+
+/* Mobile responsive photo actions */
+@media (max-width: 768px) {
+  .photo-actions {
+    flex-direction: row;
+    gap: 8px;
+  }
+  
+  .photo-action-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-width: 70px;
+  }
+}
+
+/* Legacy overlay styles for backward compatibility */
 .photo-overlay svg {
   color: white;
   margin-bottom: 8px;

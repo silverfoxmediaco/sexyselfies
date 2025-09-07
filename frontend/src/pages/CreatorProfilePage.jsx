@@ -9,6 +9,7 @@ import {
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
+import CreatorProfilePreview from './CreatorProfilePreview';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import { useAuth } from '../contexts/AuthContext';
 import creatorService from '../services/creator.service';
@@ -458,6 +459,19 @@ const CreatorProfilePage = () => {
             
             <motion.button
               className="quick-action-btn"
+              onClick={() => {
+                const profileUrl = `${window.location.origin}/creator/profile/${profileData.id || 'preview'}`;
+                if (navigator.share) {
+                  navigator.share({
+                    title: `Check out ${profileData?.displayName}'s profile`,
+                    text: `${profileData?.displayName} is on SexySelfies!`,
+                    url: profileUrl
+                  });
+                } else {
+                  navigator.clipboard.writeText(profileUrl);
+                  alert('Profile link copied to clipboard!');
+                }
+              }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -469,12 +483,11 @@ const CreatorProfilePage = () => {
       )}
 
       {/* Profile Preview Modal */}
-      {showPreview && (
-        <div className="preview-placeholder">
-          <p>Preview functionality will be added back once the main page loads</p>
-          <button onClick={() => setShowPreview(false)}>Close</button>
-        </div>
-      )}
+      <CreatorProfilePreview 
+        profileData={profileData}
+        isOpen={showPreview}
+        onClose={() => setShowPreview(false)}
+      />
       
       {/* Desktop Footer */}
       {isDesktop && <CreatorMainFooter />}

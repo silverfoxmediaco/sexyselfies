@@ -1745,6 +1745,89 @@ GET /api/v1/creator/health 200 54 - 4.012 ms  (tested and working)
 - `GET /api/v1/creator/messages/analytics` ✅
 - All other creator endpoints now accessible ✅
 
-Last Updated: September 6, 2025 - Fixed Creator Route 404 Errors + CreatorContent Model Cleanup + Content API Retrieval Fix + YouTube-Style Custom Thumbnail Upload + CreatorContentUpload Unique className + Frontend Navigation Override Fix + Creator Verification Redirect Fix + CreatorVerifyID Header/Footer + CRITICAL Authentication Fixes + Dashboard Username + Profile URL + Dashboard Mock Data Removal + Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
-Total Files Modified: 81 (+3 route fix files)  
-Critical Issues Resolved: 43 (+1 route mounting fix)
+### 81. Fixed Missing Profile Setup Backend Endpoint and Added Image Management UI - September 7, 2025 ✅
+**Files:** `backend/src/routes/creator.routes.js`, `backend/src/controllers/creator.profile.controller.js`, `backend/src/middleware/upload.middleware.js`, `frontend/src/pages/CreatorProfileSetup.jsx`, `frontend/src/pages/CreatorProfileSetup.css`
+**Issue:** Profile setup process incomplete - frontend built but missing backend endpoint and no UI options for changing/deleting profile images
+
+**Critical Backend Fix:**
+- **Added missing `/api/creator/profile/setup` endpoint** to creator routes with proper middleware
+- **Created `setupProfile` method** in creator profile controller with comprehensive functionality:
+  - Multi-part form data parsing (JSON + files)
+  - Cloudinary image upload for both profile photo and cover image
+  - Creator model updates with profile completion status
+  - Form validation and error handling
+- **Enhanced upload middleware** to handle multiple fields (`profilePhoto` and `coverImage`)
+- **Cloudinary integration** with organized folder structure (`sexyselfies/profiles`, `sexyselfies/covers`)
+
+**Frontend UI Enhancements:**
+- **Added change/delete buttons** that appear on hover over uploaded images
+- **Enhanced photo overlay** with styled action buttons (Change/Delete)
+- **Delete functionality** clears both file object and preview URL
+- **Change functionality** triggers file input programmatically
+- **Professional button styling** with backdrop blur, hover effects, and color-coded actions
+- **Mobile responsive design** with horizontal layout for smaller screens
+- **Added Trash2 and Edit icons** from Lucide React for better UX
+
+**Photo Management Features:**
+- **Visual feedback** with smooth transitions and hover effects
+- **Action buttons** styled with glassmorphism effect (backdrop-filter blur)
+- **Color-coded interactions**: Teal for change, red for delete
+- **Touch-friendly** mobile design with proper button sizing
+- **Professional appearance** matching existing design system
+
+**Expected User Flow:**
+1. User selects profile photo/cover image → Preview appears
+2. Hovering over image shows "Change" and "Delete" buttons
+3. Change button triggers file picker for new image selection
+4. Delete button removes image and returns to upload prompt
+5. Form submission uploads images to Cloudinary and saves URLs to database
+6. Profile setup completes successfully with images stored
+
+**Technical Implementation:**
+```javascript
+// Backend - Profile setup with image handling
+exports.setupProfile = async (req, res) => {
+  const formData = JSON.parse(req.body.data);
+  
+  // Upload profile photo to Cloudinary
+  if (req.files?.profilePhoto?.[0]) {
+    const result = await cloudinary.uploader.upload(file.path, {
+      folder: 'sexyselfies/profiles',
+      public_id: `profile_${creator._id}_${Date.now()}`
+    });
+    profileImageUrl = result.secure_url;
+  }
+  
+  // Update Creator model with all profile data
+  const updates = { profileImage: profileImageUrl, profileComplete: true };
+  await Creator.findByIdAndUpdate(creator._id, { $set: updates });
+};
+```
+
+**CSS Enhancements:**
+```css
+.photo-action-btn {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all var(--transition-fast);
+}
+
+.photo-action-btn.change-btn:hover {
+  background: rgba(23, 210, 194, 0.2);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+```
+
+**Result:**
+- ✅ Complete profile setup process now functional from frontend to database
+- ✅ Professional image management UI with change/delete options
+- ✅ Images properly uploaded to Cloudinary and URLs saved to Creator model
+- ✅ Mobile-responsive design with touch-friendly controls
+- ✅ Profile images now display correctly in creator profile pages
+- ✅ Backend endpoint tested and working on port 5003
+- ✅ Full integration between frontend UI and backend storage
+
+Last Updated: September 7, 2025 - Fixed Missing Profile Setup Backend Endpoint and Added Image Management UI + Fixed Creator Route 404 Errors + CreatorContent Model Cleanup + Content API Retrieval Fix + YouTube-Style Custom Thumbnail Upload + CreatorContentUpload Unique className + Frontend Navigation Override Fix + Creator Verification Redirect Fix + CreatorVerifyID Header/Footer + CRITICAL Authentication Fixes + Dashboard Username + Profile URL + Dashboard Mock Data Removal + Dashboard CSS Fix + Dashboard Layout Fix + Browse Members Header/Footer + Connections Header/Footer + Messages Header/Footer + Earnings Header/Footer + Analytics Header/Footer + Mobile Spacing + UX + SPA Routing + Build + API Fixes
+Total Files Modified: 86 (+5 profile setup files)  
+Critical Issues Resolved: 44 (+1 profile setup completion fix)

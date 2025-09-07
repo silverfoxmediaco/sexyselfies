@@ -4,7 +4,8 @@
       "WebFetch(domain:sexyselfies-frontend.onrender.com)",
       "Bash(grep:*)",
       "Bash(git commit:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(kill:*)"
     ],
     "deny": [],
     "ask": []

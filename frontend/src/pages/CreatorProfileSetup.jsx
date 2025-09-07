@@ -33,7 +33,9 @@ import {
   Bot,
   Clock,
   Shield,
-  Eye
+  Eye,
+  Trash2,
+  Edit
 } from 'lucide-react';
 
 const CreatorProfileSetup = () => {
@@ -498,6 +500,22 @@ const StepOne = ({ formData, setFormData, errors }) => {
     reader.readAsDataURL(file);
   };
   
+  const handlePhotoDelete = (type) => {
+    if (type === 'profile') {
+      setFormData(prev => ({
+        ...prev,
+        profilePhoto: null,
+        profilePhotoPreview: null
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        coverImage: null,
+        coverImagePreview: null
+      }));
+    }
+  };
+  
   
   return (
     <div className="step-one">
@@ -524,8 +542,24 @@ const StepOne = ({ formData, setFormData, errors }) => {
                   <div className="photo-preview">
                     <img src={formData.profilePhotoPreview} alt="Profile" />
                     <div className="photo-overlay">
-                      <Camera size={24} />
-                      <span>Change Photo</span>
+                      <div className="photo-actions">
+                        <button 
+                          type="button" 
+                          className="photo-action-btn change-btn"
+                          onClick={() => profileInputRef.current?.click()}
+                        >
+                          <Edit size={16} />
+                          <span>Change</span>
+                        </button>
+                        <button 
+                          type="button" 
+                          className="photo-action-btn delete-btn"
+                          onClick={() => handlePhotoDelete('profile')}
+                        >
+                          <Trash2 size={16} />
+                          <span>Delete</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -562,8 +596,24 @@ const StepOne = ({ formData, setFormData, errors }) => {
                   <div className="photo-preview">
                     <img src={formData.coverImagePreview} alt="Cover" />
                     <div className="photo-overlay">
-                      <Upload size={24} />
-                      <span>Change Cover</span>
+                      <div className="photo-actions">
+                        <button 
+                          type="button" 
+                          className="photo-action-btn change-btn"
+                          onClick={() => coverInputRef.current?.click()}
+                        >
+                          <Edit size={16} />
+                          <span>Change</span>
+                        </button>
+                        <button 
+                          type="button" 
+                          className="photo-action-btn delete-btn"
+                          onClick={() => handlePhotoDelete('cover')}
+                        >
+                          <Trash2 size={16} />
+                          <span>Delete</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ) : (

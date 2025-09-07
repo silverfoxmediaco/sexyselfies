@@ -2,7 +2,10 @@ const { uploadProfileImage, uploadContentImage, uploadContentVideo } = require('
 const multer = require('multer');
 
 // Middleware for profile image upload
-exports.profileImageUpload = uploadProfileImage.single('profileImage');
+exports.profileImageUpload = uploadProfileImage.fields([
+  { name: 'profilePhoto', maxCount: 1 },
+  { name: 'coverImage', maxCount: 1 }
+]);
 
 // Middleware for content image upload (multiple)
 exports.contentImagesUpload = uploadContentImage.array('content', 10); // Max 10 files (images/videos)

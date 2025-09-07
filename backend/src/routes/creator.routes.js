@@ -100,6 +100,9 @@ router.put('/profile/privacy', (req, res) => {
   res.status(501).json({ message: 'Privacy settings coming soon' });
 });
 
+// Profile setup endpoint - Initial profile creation with images
+router.post('/profile/setup', profileImageUpload, creatorProfileController.setupProfile);
+
 // ==========================================
 // CONTENT MANAGEMENT
 // ==========================================
