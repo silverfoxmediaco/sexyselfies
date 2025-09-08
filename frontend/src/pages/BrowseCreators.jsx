@@ -441,7 +441,22 @@ const BrowseCreators = () => {
   };
 
   const handleViewProfile = (creator) => {
-    navigate(`/creator/${creator.username}`);
+    // Defensive check for creator and username
+    if (!creator) {
+      console.error('No creator provided to handleViewProfile');
+      return;
+    }
+    
+    // Use username if available, otherwise fall back to _id for backwards compatibility
+    const identifier = creator.username || creator._id;
+    
+    if (!identifier) {
+      console.error('Creator has no username or _id:', creator);
+      return;
+    }
+    
+    console.log('Navigating to creator profile:', identifier);
+    navigate(`/creator/${identifier}`);
   };
 
   const currentCreator = filteredCreators?.[currentIndex];
