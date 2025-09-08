@@ -138,6 +138,18 @@ const CreatorProfileSetup = () => {
         navigate('/creator/dashboard');
       }
       
+      // Pre-populate displayName and username from registration data
+      const storedDisplayName = localStorage.getItem('displayName');
+      const storedUsername = localStorage.getItem('username');
+      
+      if (storedDisplayName || storedUsername) {
+        setFormData(prev => ({ 
+          ...prev, 
+          displayName: storedDisplayName || prev.displayName,
+          username: storedUsername || prev.username
+        }));
+      }
+      
       // Pre-fill any existing data
       if (response.data.existingData) {
         setFormData(prev => ({ ...prev, ...response.data.existingData }));
@@ -148,12 +160,12 @@ const CreatorProfileSetup = () => {
   };
   
   const calculateCompletion = () => {
-    const totalFields = 25; // Total number of required fields
+    const totalFields = 24; // Updated: removed displayName from required fields count
     let completed = 0;
     
-    // Check each field
+    // Check each field (displayName always counts as completed since it's from registration)
     if (formData.profilePhoto) completed++;
-    if (formData.displayName) completed++;
+    if (formData.displayName) completed++; // This will be pre-populated from registration
     if (formData.bio && formData.bio.length > 50) completed++;
     if (formData.gender) completed++;
     if (formData.orientation) completed++;
@@ -170,7 +182,6 @@ const CreatorProfileSetup = () => {
     switch(step) {
       case 1:
         if (!formData.profilePhoto) newErrors.profilePhoto = 'Profile photo is required';
-        if (!formData.displayName) newErrors.displayName = 'Display name is required';
         if (!formData.bio || formData.bio.length < 50) {
           newErrors.bio = 'Bio must be at least 50 characters';
         }
@@ -633,21 +644,6 @@ const StepOne = ({ formData, setFormData, errors }) => {
         </div>
       </div>
       
-      {/* Display name and username */}
-      <div className="form-group">
-        <label className="form-label">
-          Display Name
-          <span className="required">*</span>
-        </label>
-        <input
-          type="text"
-          className={`form-input ${errors.displayName ? 'error' : ''}`}
-          placeholder="Choose a catchy name"
-          value={formData.displayName}
-          onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
-        />
-        {errors.displayName && <span className="error-message">{errors.displayName}</span>}
-      </div>
       
       {/* Bio */}
       <div className="form-group">

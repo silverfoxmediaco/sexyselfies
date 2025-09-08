@@ -116,7 +116,13 @@ const CreatorVerifyID = () => {
     try {
       const formData = new FormData();
       const userId = localStorage.getItem('userId');
-      const userEmail = localStorage.getItem('userEmail') || 'unknown@user.com';
+      const userEmail = localStorage.getItem('userEmail');
+      
+      if (!userEmail) {
+        setErrors({ submit: 'User email not found. Please log out and log back in.' });
+        setLoading(false);
+        return;
+      }
       
       // Add files
       formData.append('idFront', idFront.file);
@@ -138,18 +144,20 @@ const CreatorVerifyID = () => {
       
       // API interceptor already unwraps response.data, so response is the actual data
       if (response && response.success) {
-        // Send email notification to admin using regular api
-        try {
-          await api.post('/notifications/admin-verification', {
-            userId,
-            userEmail,
-            idType,
-            adminEmail: 'admin@sexyselfies.com',
-            message: 'New creator verification request pending review'
-          });
-        } catch (emailError) {
-          console.warn('Admin notification email failed:', emailError);
-          // Don't fail the whole process if email fails
+        // Send email notification to admin using regular api (only if we have valid email)
+        if (userEmail) {
+          try {
+            await api.post('/notifications/admin-verification', {
+              userId,
+              userEmail,
+              idType,
+              adminEmail: 'admin@sexyselfies.com',
+              message: 'New creator verification request pending review'
+            });
+          } catch (emailError) {
+            console.warn('Admin notification email failed:', emailError);
+            // Don't fail the whole process if email fails
+          }
         }
         
         setSubmitted(true);
