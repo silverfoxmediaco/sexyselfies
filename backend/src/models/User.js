@@ -51,9 +51,20 @@ userSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Compare password method
+// Compare password method with timeout protection
 userSchema.methods.matchPassword = async function(enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  try {
+    // Add timeout protection for bcrypt compare
+    const comparePromise = bcrypt.compare(enteredPassword, this.password);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Password comparison timeout')), 5000)
+    );
+    
+    return await Promise.race([comparePromise, timeoutPromise]);
+  } catch (error) {
+    console.error('Password comparison error:', error.message);
+    return false; // Fail secure - return false on timeout or error
+  }
 };
 
 // Generate JWT token
