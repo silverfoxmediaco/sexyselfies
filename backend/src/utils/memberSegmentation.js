@@ -202,8 +202,8 @@ exports.segmentByPreferences = async (options = {}) => {
     let creatorCategories = [];
     if (matchCreatorContent && creatorId) {
       const Creator = require('../models/Creator');
-      const creator = await Creator.findById(creatorId).populate('categories');
-      creatorCategories = creator.categories.map(c => c.name);
+      const creator = await Creator.findById(creatorId);
+      creatorCategories = []; // Categories removed from schema
     }
     
     // Segment based on preference type

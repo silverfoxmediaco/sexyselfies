@@ -25,9 +25,7 @@ exports.findIdealMembers = async (creatorId, options = {}) => {
     } = options;
     
     // Get creator profile and preferences
-    const creator = await Creator.findById(creatorId)
-      .populate('categories')
-      .populate('contentTypes');
+    const creator = await Creator.findById(creatorId);
     
     if (!creator) {
       throw new Error('Creator not found');
@@ -48,11 +46,7 @@ exports.findIdealMembers = async (creatorId, options = {}) => {
       query['member'] = { $nin: interactedMembers };
     }
     
-    // Add category matching if creator has specific categories
-    if (creator.categories && creator.categories.length > 0) {
-      const categoryNames = creator.categories.map(c => c.name);
-      query['preferences.topCategories.category'] = { $in: categoryNames };
-    }
+    // Categories removed - no longer filtering by categories
     
     // Get potential connections
     const potentialConnections = await MemberAnalytics.find(query)
@@ -119,8 +113,7 @@ exports.findIdealMembers = async (creatorId, options = {}) => {
 exports.compatibilityScore = async (creatorId, memberId, focusOn = 'balanced') => {
   try {
     // Get creator data
-    const creator = await Creator.findById(creatorId)
-      .populate('categories');
+    const creator = await Creator.findById(creatorId);
     
     // Get member analytics
     const memberAnalytics = await MemberAnalytics.findOne({ member: memberId });
@@ -386,16 +379,7 @@ async function calculatePreferenceCompatibility(creator, memberAnalytics) {
   const maxScore = 100;
   
   // Category matching (50 points)
-  if (creator.categories && memberAnalytics.preferences.topCategories) {
-    const creatorCategories = creator.categories.map(c => c.name || c);
-    const memberCategories = memberAnalytics.preferences.topCategories.map(c => c.category);
-    
-    const matchingCategories = creatorCategories.filter(c => 
-      memberCategories.includes(c)
-    );
-    
-    score += (matchingCategories.length / Math.max(creatorCategories.length, 1)) * 50;
-  }
+  // Categories removed - skipping category preference scoring
   
   // Content type matching (30 points)
   if (creator.contentTypes && memberAnalytics.preferences.contentTypes) {

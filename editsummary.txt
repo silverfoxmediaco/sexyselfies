@@ -13,6 +13,7 @@ Fixed authentication flow issues, creator verification redirects, and updated Cr
 86. **Fixed Scheduled Jobs Module Error** - Created missing /jobs/index.js to export initializeScheduledJobs function, resolving "Cannot find module './jobs'" server startup error
 87. **Fixed Duplicate MongoDB Schema Index Warning** - Removed redundant creator index in CreatorEarnings.js model that was conflicting with field-level index: true definition
 88. **Fixed Creator Login Timeout Issues** - Added fallback value '7d' for JWT_EXPIRE environment variable in User.js model to prevent JWT signing from hanging, added detailed debugging to sendTokenResponse function to identify response timeout issues
+89. **CRITICAL: Fixed Server Performance Issues** - Removed invalid MongoDB populate calls for non-existent 'categories' field in connections.service.js and memberSegmentation.js that were causing scheduled jobs to throw StrictPopulateError exceptions and severely slow down all API responses
 40. **Fixed Creator Authentication API Endpoints** - Updated auth.service.js to use correct `/auth/me` endpoint instead of `/auth/creator/me` and fixed token access from response structure
 41. **Enhanced AuthContext Response Handling** - Updated AuthContext to pass through all backend response fields (redirectTo, isVerified, profileComplete, needsIdVerification)
 42. **Fixed Creator Login Redirect Logic** - Updated CreatorLogin.jsx to respect backend's redirectTo field instead of hardcoded dashboard navigation
