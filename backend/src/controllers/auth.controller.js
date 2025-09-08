@@ -96,14 +96,12 @@ exports.register = async (req, res, next) => {
     await session.commitTransaction();
     session.endSession();
 
-    // Send welcome email with login link (outside transaction)
-    try {
-      await sendVerificationEmail(email, null, username);
-    } catch (emailError) {
+    // Send welcome email asynchronously (don't block response)
+    sendVerificationEmail(email, null, username).catch(emailError => {
       console.error('Failed to send welcome email:', emailError);
-    }
+    });
 
-    // Return success - no token, they need to login
+    // Return success immediately - no token, they need to login
     res.status(201).json({
       success: true,
       message: 'Registration successful! Please check your email and then login to complete your profile.',
@@ -265,12 +263,10 @@ exports.creatorRegister = async (req, res, next) => {
     await session.commitTransaction();
     session.endSession();
 
-    // Send verification email (outside transaction)
-    try {
-      await sendVerificationEmail(email, null, displayName, 'creator');
-    } catch (emailError) {
+    // Send verification email asynchronously (don't block response)
+    sendVerificationEmail(email, null, displayName, 'creator').catch(emailError => {
       console.error('Failed to send welcome email to creator:', emailError);
-    }
+    });
 
     // Create response data
     const additionalData = {
