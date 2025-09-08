@@ -4,7 +4,8 @@ import {
   X, Heart, MessageCircle, Unlock, MapPin, Check, 
   Camera, Video, Star, TrendingUp, Users, DollarSign,
   Eye, Share2, Bookmark, Send, Gift, Sparkles,
-  ChevronLeft, ChevronRight, MoreHorizontal
+  ChevronLeft, ChevronRight, MoreHorizontal, ArrowLeft,
+  Shield, Bell, Clock, Calendar, Grid3x3, User
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, getUserRole } from '../utils/mobileDetection';
@@ -151,181 +152,210 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
     </motion.div>
   );
 
-  // Full Profile View Component
+  // Full Profile View Component - Updated to match CreatorProfile.jsx structure
   const FullProfileView = () => (
     <motion.div 
-      className="full-profile"
+      className="creator-profile-page"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      {/* Profile Header */}
-      <div className="profile-header">
-        <div className="profile-cover">
-          {profileData?.coverPhoto ? (
-            <img src={profileData.coverPhoto} alt="Cover" />
-          ) : (
-            <div className="cover-gradient"></div>
-          )}
-        </div>
-        
-        <div className="profile-main-info">
-          <div className="profile-avatar">
-            {profileData?.profilePhotoPreview ? (
-              <img src={profileData.profilePhotoPreview} alt={profileData.displayName} />
+      <div className="profile-container">
+        {/* Profile Header */}
+        <div className="profile-header">
+          {/* Cover Photo */}
+          <div className="cover-photo-container">
+            {profileData?.coverImagePreview || profileData?.coverPhoto ? (
+              <img 
+                src={profileData?.coverImagePreview || profileData?.coverPhoto} 
+                alt="Cover" 
+                className="cover-photo"
+              />
             ) : (
-              <div className="avatar-placeholder">
-                <Camera size={32} />
-              </div>
+              <div className="cover-photo placeholder-cover"></div>
             )}
-            <div className="online-badge"></div>
+            <div className="cover-overlay"></div>
+            
+            {/* Action Buttons */}
+            <div className="header-actions">
+              <button className="action-icon-btn">
+                <ArrowLeft size={20} />
+              </button>
+              <button className="action-icon-btn">
+                <Share2 size={20} />
+              </button>
+              <button className="action-icon-btn">
+                <MoreHorizontal size={20} />
+              </button>
+            </div>
           </div>
           
-          <div className="profile-details">
-            <div className="profile-name-row">
-              <h1>{profileData?.displayName || 'Creator Name'}</h1>
-              <div className="verified-badge large">
-                <Check size={14} />
-                <span>Verified</span>
+          {/* Profile Info */}
+          <div className="profile-info">
+            <div className="profile-avatar-section">
+              <div className="profile-avatar">
+                {profileData?.profilePhotoPreview ? (
+                  <img 
+                    src={profileData.profilePhotoPreview} 
+                    alt={profileData.displayName}
+                  />
+                ) : (
+                  <div className="avatar-placeholder">
+                    <Camera size={32} />
+                  </div>
+                )}
+                <span className="online-indicator"></span>
+              </div>
+              
+              <div className="profile-actions">
+                <button className="follow-btn">
+                  <Bell size={18} />
+                  <span>Follow</span>
+                </button>
+                <button className="like-btn">
+                  <Heart size={18} />
+                </button>
+                <button className="message-btn">
+                  <MessageCircle size={18} />
+                </button>
               </div>
             </div>
             
-            <p className="profile-bio">{profileData?.bio || 'Bio will appear here'}</p>
-            
-            <div className="profile-meta">
-              <span className="meta-item">
-                <MapPin size={14} />
-                Los Angeles, CA
-              </span>
-              <span className="meta-item">
-                {getOrientationDisplay()}
-              </span>
-              <span className="meta-item">
-                <Users size={14} />
-                8.2k matches
-              </span>
+            <div className="profile-details">
+              <div className="profile-name-section">
+                <h1 className="profile-name">
+                  {profileData?.displayName || 'Creator Name'}
+                  <Shield className="verified-icon" size={20} />
+                </h1>
+                <span className="profile-username">@{profileData?.username || 'username'}</span>
+              </div>
+              
+              <div className="profile-meta">
+                <span className="meta-item">
+                  <MapPin size={14} />
+                  Los Angeles, CA • 2km away
+                </span>
+                <span className="meta-item">
+                  <Clock size={14} />
+                  Online now
+                </span>
+                <span className="meta-item">
+                  <Calendar size={14} />
+                  Joined Dec 2024
+                </span>
+              </div>
+              
+              <p className="profile-bio">{profileData?.bio || 'Bio will appear here'}</p>
+              
+              <div className="profile-tags">
+                {profileData?.contentTypes?.photos && <span className="profile-tag">#photos</span>}
+                {profileData?.contentTypes?.videos && <span className="profile-tag">#videos</span>}
+                {profileData?.orientation && <span className="profile-tag">#{profileData.orientation.toLowerCase()}</span>}
+                <span className="profile-tag">#exclusive</span>
+              </div>
             </div>
           </div>
           
-          <div className="profile-actions">
-            <motion.button 
-              className="action-btn primary"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Heart size={18} />
-              <span>Match</span>
-            </motion.button>
-            <motion.button 
-              className="action-btn secondary"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <MessageCircle size={18} />
-              <span>Message</span>
-            </motion.button>
-            <motion.button 
-              className="action-btn secondary"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Gift size={18} />
-              <span>Tip</span>
-            </motion.button>
+          {/* Stats Bar */}
+          <div className="profile-stats">
+            <div className="stat-item">
+              <span className="stat-value">156</span>
+              <span className="stat-label">Content</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-value">8.2k</span>
+              <span className="stat-label">Subscribers</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-value">45.6k</span>
+              <span className="stat-label">Likes</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-value">
+                <Star size={14} />
+                4.9
+              </span>
+              <span className="stat-label">Rating</span>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Stats Bar */}
-      <div className="stats-bar">
-        <div className="stat-item">
-          <span className="stat-value">156</span>
-          <span className="stat-label">Content</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-value">8.2k</span>
-          <span className="stat-label">Matches</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-value">4.9</span>
-          <span className="stat-label">Rating</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-value">
-            ${profileData?.pricing?.photos || '2.99'}+
-          </span>
-          <span className="stat-label">Content Price</span>
-        </div>
-      </div>
-
-      {/* Content Grid */}
-      <div className="content-section">
-        <div className="section-header">
-          <h3>
-            <Sparkles size={20} />
-            Exclusive Content
-          </h3>
-          <span className="content-count">156 items</span>
         </div>
         
-        <div className="content-grid">
-          {sampleContent.map((content) => (
-            <motion.div
-              key={content.id}
-              className={`content-item ${content.blur ? 'locked' : ''}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                setSelectedContent(content);
-                setShowUnlockModal(true);
-              }}
-            >
-              <div className="content-preview">
-                {content.type === 'video' && (
-                  <div className="video-indicator">
-                    <Video size={20} />
-                    <span>2:34</span>
-                  </div>
-                )}
-                
-                {content.blur && (
-                  <div className="lock-overlay">
-                    <Unlock size={24} />
-                    <span className="price">${content.price}</span>
-                  </div>
-                )}
-                
-                <div className="content-placeholder">
-                  {content.type === 'photo' ? (
-                    <Camera size={32} />
-                  ) : (
-                    <Video size={32} />
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
+        {/* Content Tabs */}
+        <div className="profile-tabs">
+          <button className="tab-btn active">
+            <Grid3x3 size={18} />
+            <span>Content</span>
+          </button>
+          <button className="tab-btn">
+            <User size={18} />
+            <span>About</span>
+          </button>
+          <button className="tab-btn">
+            <Star size={18} />
+            <span>Reviews</span>
+          </button>
         </div>
-      </div>
-
-      {/* About Section */}
-      <div className="about-section">
-        <h3>About Me</h3>
-        <div className="about-grid">
-          <div className="about-item">
-            <span className="label">Orientation</span>
-            <span className="value">{profileData?.orientation || 'Not specified'}</span>
+        
+        {/* Tab Content */}
+        <div className="tab-content">
+          {/* Content Filter */}
+          <div className="content-filter">
+            <button className="filter-option active">
+              All (156)
+            </button>
+            <button className="filter-option">
+              Photos (124)
+            </button>
+            <button className="filter-option">
+              Videos (32)
+            </button>
+            <button className="filter-option">
+              Locked (89)
+            </button>
           </div>
-          <div className="about-item">
-            <span className="label">Body Type</span>
-            <span className="value">{profileData?.bodyType || 'Not specified'}</span>
-          </div>
-          <div className="about-item">
-            <span className="label">Content Types</span>
-            <span className="value">Photos & Videos</span>
-          </div>
-          <div className="about-item">
-            <span className="label">Active Since</span>
-            <span className="value">New Creator</span>
+          
+          {/* Content Grid */}
+          <div className="content-grid">
+            {sampleContent.map((content) => (
+              <motion.div
+                key={content.id}
+                className={`content-item ${content.blur ? 'locked' : ''}`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  setSelectedContent(content);
+                  setShowUnlockModal(true);
+                }}
+              >
+                <div className="content-preview">
+                  {content.type === 'video' && (
+                    <div className="video-indicator">
+                      <Video size={16} />
+                      <span>2:34</span>
+                    </div>
+                  )}
+                  
+                  {content.blur && (
+                    <div className="lock-overlay">
+                      <Unlock size={20} />
+                      <span className="price">${content.price}</span>
+                    </div>
+                  )}
+                  
+                  <div className="content-placeholder">
+                    {content.type === 'photo' ? (
+                      <Camera size={24} />
+                    ) : (
+                      <Video size={24} />
+                    )}
+                  </div>
+                  
+                  <div className="content-stats">
+                    <Heart size={12} />
+                    <span>234</span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>

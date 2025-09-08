@@ -1,5 +1,28 @@
 /* CreatorProfilePreview.css */
 
+/* Import CreatorProfile styles for consistency */
+@import './CreatorProfile.css';
+
+/* Override styles for preview context */
+.profile-preview-container .creator-profile-page {
+  background: var(--bg-900, #0A0A0A);
+  min-height: 100vh;
+  position: relative;
+}
+
+.profile-preview-container .profile-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Placeholder cover photo */
+.placeholder-cover {
+  background: linear-gradient(135deg, var(--primary-600, #12B7AB) 0%, var(--primary, #17D2C2) 100%);
+  width: 100%;
+  height: 200px;
+}
+
 .profile-preview-container {
   position: fixed;
   top: 0;
