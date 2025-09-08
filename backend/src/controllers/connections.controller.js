@@ -76,11 +76,18 @@ exports.getSwipeStack = async (req, res, next) => {
         };
       }
 
+      // Fix profile image URL
+      let profileImageUrl = creator.profileImage;
+      if (profileImageUrl === 'default-avatar.jpg' || !profileImageUrl || !profileImageUrl.startsWith('http')) {
+        profileImageUrl = '/placeholders/beaufitulbrunette1.png';
+      }
+
       return {
         _id: creator._id,
         id: creator._id.toString(),
+        username: creator.username || creator.displayName?.toLowerCase() || 'user',
         displayName: creator.displayName || 'Unknown',
-        profileImage: creator.profileImage || '/placeholders/beaufitulbrunette1.png',
+        profileImage: profileImageUrl,
         bio: creator.bio || '',
         isVerified: creator.isVerified || false,
         isOnline: isUserOnline(creator.lastActive),

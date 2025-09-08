@@ -27,6 +27,75 @@ router.put('/preferences', updatePreferences);
 router.post('/complete-profile', completeProfile);
 
 // ==========================================
+// CREATOR DISCOVERY & PROFILES
+// ==========================================
+router.get('/creator/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+    
+    // Import Creator model
+    const Creator = require('../models/Creator');
+    const Content = require('../models/Content');
+    
+    // Find creator by username
+    const creator = await Creator.findOne({ 
+      $or: [
+        { username: username },
+        { displayName: username }
+      ]
+    }).populate('user', 'email lastLogin');
+    
+    if (!creator) {
+      return res.status(404).json({
+        success: false,
+        message: 'Creator not found'
+      });
+    }
+    
+    // Get creator's content (public previews and locked content)
+    const content = await Content.find({ 
+      creator: creator._id 
+    }).select('title description price media thumbnail createdAt type isFree')
+      .sort({ createdAt: -1 })
+      .limit(20);
+    
+    // Transform creator data for public view
+    const creatorProfile = {
+      id: creator._id,
+      username: creator.username,
+      displayName: creator.displayName,
+      bio: creator.bio,
+      profileImage: creator.profileImage,
+      coverImage: creator.coverImage,
+      age: creator.age,
+      isVerified: creator.isVerified,
+      isOnline: creator.lastActive > new Date(Date.now() - 15 * 60 * 1000), // Online if active in last 15 min
+      lastActive: creator.lastActive,
+      location: creator.location,
+      contentPrice: creator.contentPrice,
+      stats: creator.stats,
+      preferences: creator.preferences,
+      createdAt: creator.createdAt
+    };
+    
+    res.status(200).json({
+      success: true,
+      data: {
+        creator: creatorProfile,
+        content: content
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error fetching creator profile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// ==========================================
 // CONTENT & PURCHASES (Direct Payment)
 // ==========================================
 router.post('/purchase/:contentId', purchaseContent);

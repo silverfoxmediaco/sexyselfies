@@ -52,176 +52,42 @@ const CreatorProfile = () => {
   const [userCredits, setUserCredits] = useState(100);
   const [viewHistory, setViewHistory] = useState([]);
 
-  // Mock creator data - replace with API call
-  const mockCreator = {
-    id: username,
-    displayName: 'Sophia Martinez',
-    username: `@${username}`,
-    age: 24,
-    profilePhoto: '/placeholders/beaufitulbrunette1.png',
-    coverPhoto: '/placeholders/beautifulbrunette2.png',
-    photos: [
-      '/placeholders/beaufitulbrunette1.png',
-      '/placeholders/beautifulbrunette2.png',
-      '/placeholders/beautifulebrunette3.png',
-      '/placeholders/beautifulbrunette4.png'
-    ],
-    bio: 'Yoga instructor & wellness coach 🧘‍♀️ Living my best life and sharing the journey ✨ Daily content & exclusive behind-the-scenes',
-    verified: true,
-    location: 'Los Angeles, CA',
-    distance: 3,
-    joinedDate: '2024-06-15',
-    lastActive: Date.now() - 300000, // 5 minutes ago
-    isOnline: true,
-    
-    // Stats
-    stats: {
-      totalContent: 156,
-      photoCount: 124,
-      videoCount: 32,
-      subscribers: 8243,
-      likes: 45600,
-      rating: 4.9,
-      reviewCount: 342,
-      responseRate: 98,
-      responseTime: '< 1 hour'
-    },
-    
-    // Attributes
-    orientation: 'Straight',
-    gender: 'Female',
-    bodyType: 'Athletic',
-    ethnicity: 'Latina',
-    height: '5\'6"',
-    interests: ['Yoga', 'Fitness', 'Travel', 'Photography', 'Wellness'],
-    languages: ['English', 'Spanish'],
-    
-    // Pricing
-    pricing: {
-      subscription: 9.99,
-      photos: 2.99,
-      videos: 5.99,
-      customContent: 19.99,
-      messages: 0.99,
-      tipOptions: [5, 10, 20, 50, 100]
-    },
-    
-    // Social links
-    socialLinks: {
-      instagram: 'sophiamartinez',
-      twitter: 'sophiam',
-      website: 'sophiamartinez.com'
-    },
-    
-    // Tags
-    tags: ['#fitness', '#yoga', '#wellness', '#lifestyle', '#exclusive']
-  };
-
-  // Mock content data
-  const mockContent = [
-    {
-      id: '1',
-      type: 'photo',
-      thumbnail: '/placeholders/beautifulbrunette2.png',
-      price: 2.99,
-      isLocked: true,
-      isPurchased: false,
-      likes: 234,
-      date: '2024-12-01',
-      title: 'Morning Yoga Session',
-      duration: null,
-      resolution: '1080x1440'
-    },
-    {
-      id: '2',
-      type: 'video',
-      thumbnail: '/placeholders/beautifulebrunette3.png',
-      price: 5.99,
-      isLocked: true,
-      isPurchased: false,
-      likes: 567,
-      date: '2024-12-02',
-      title: 'Workout Routine',
-      duration: '3:45',
-      resolution: '1080p'
-    },
-    {
-      id: '3',
-      type: 'photo',
-      thumbnail: '/placeholders/beautifulbrunette4.png',
-      price: 0,
-      isLocked: false,
-      isPurchased: false,
-      likes: 890,
-      date: '2024-12-03',
-      title: 'Free Preview',
-      duration: null,
-      resolution: '1080x1440'
-    },
-    {
-      id: '4',
-      type: 'photo',
-      thumbnail: '/placeholders/cuteblondeselfie1.png',
-      price: 2.99,
-      isLocked: true,
-      isPurchased: true,
-      likes: 456,
-      date: '2024-12-04',
-      title: 'Beach Photoshoot',
-      duration: null,
-      resolution: '1080x1440'
-    },
-    {
-      id: '5',
-      type: 'video',
-      thumbnail: '/placeholders/cuteblondeselfie2.png',
-      price: 7.99,
-      isLocked: true,
-      isPurchased: false,
-      likes: 789,
-      date: '2024-12-05',
-      title: 'Exclusive BTS',
-      duration: '5:23',
-      resolution: '4K'
-    },
-    {
-      id: '6',
-      type: 'photo',
-      thumbnail: '/placeholders/beaufitulbrunette1.png',
-      price: 3.99,
-      isLocked: true,
-      isPurchased: false,
-      likes: 345,
-      date: '2024-12-06',
-      title: 'Studio Session',
-      duration: null,
-      resolution: '1080x1440'
-    }
-  ];
 
   // Fetch creator profile
   useEffect(() => {
     const fetchCreatorProfile = async () => {
       setLoading(true);
+      setError(null);
       try {
-        // Simulate API call
-        setTimeout(() => {
-          setCreator(mockCreator);
-          setContent(mockContent);
-          setLoading(false);
-        }, 1000);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/member/creator/${username}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token') || localStorage.getItem('memberToken')}`
+          }
+        });
         
-        // Actual API call would be:
-        // const response = await api.get(`/public/creator/${username}`);
-        // setCreator(response.data.creator);
-        // setContent(response.data.content);
+        if (response.data.success) {
+          setCreator(response.data.data.creator);
+          setContent(response.data.data.content || []);
+        } else {
+          throw new Error(response.data.message || 'Creator not found');
+        }
       } catch (err) {
-        setError('Failed to load creator profile');
+        console.error('Failed to load creator profile:', err);
+        if (err.response?.status === 401) {
+          setError('Please login to view creator profiles');
+        } else if (err.response?.status === 404) {
+          setError('Creator not found');
+        } else {
+          setError('Failed to load creator profile');
+        }
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchCreatorProfile();
+    if (username) {
+      fetchCreatorProfile();
+    }
   }, [username]);
 
   // Handle content purchase

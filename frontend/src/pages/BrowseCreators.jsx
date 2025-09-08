@@ -183,73 +183,9 @@ const BrowseCreators = () => {
       
       setLoadingError(error.message || 'Failed to load creators');
       
-      // Use mock data for development
-      console.log('📱 Loading mock creators for development...');
-      const mockCreators = [
-        {
-          id: '1',
-          _id: '1',
-          profileImage: '/placeholders/beaufitulbrunette1.png',
-          displayName: 'Sophia',
-          age: 24,
-          verified: true,
-          isOnline: true,
-          gender: 'female',
-          bodyType: 'Athletic',
-          ethnicity: 'Caucasian',
-          hairColor: 'Brown',
-          height: 66,
-          bio: 'Living life to the fullest! 💕',
-          location: { city: 'Los Angeles', state: 'CA', distance: 15 },
-          hasMessaged: true,
-          messagePreview: "Hey! I noticed you liked my content...",
-          lastActive: new Date(),
-          createdAt: new Date(Date.now() - 86400000 * 10)
-        },
-        {
-          id: '2',
-          _id: '2',
-          profileImage: '/placeholders/beautifulbrunette2.png',
-          displayName: 'Isabella',
-          age: 22,
-          verified: true,
-          isOnline: false,
-          gender: 'female',
-          bodyType: 'Slim',
-          ethnicity: 'Hispanic/Latino',
-          hairColor: 'Black',
-          height: 64,
-          bio: 'Dance is my passion 💃',
-          location: { city: 'Miami', state: 'FL', distance: 23 },
-          lastActive: new Date(Date.now() - 3600000),
-          hasPoked: true,
-          createdAt: new Date(Date.now() - 86400000 * 5)
-        },
-        {
-          id: '3',
-          _id: '3',
-          profileImage: '/placeholders/beautifulbrunette4.png',
-          displayName: 'Emma',
-          age: 26,
-          verified: true,
-          isOnline: true,
-          gender: 'female',
-          bodyType: 'Curvy',
-          ethnicity: 'Caucasian',
-          hairColor: 'Blonde',
-          height: 68,
-          bio: 'Top creator | Exclusive content daily',
-          location: { city: 'New York', state: 'NY', distance: 8 },
-          isTopCreator: true,
-          monthlyEarnings: 15000,
-          lastActive: new Date(),
-          createdAt: new Date(Date.now() - 86400000 * 45)
-        }
-      ];
-      
-      setCreators(mockCreators);
-      setFilteredCreators(mockCreators);
-      console.log('✅ Mock creators loaded');
+      // No creators found or error loading
+      setCreators([]);
+      setFilteredCreators([]);
     } finally {
       setIsLoading(false);
     }
