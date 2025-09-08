@@ -271,22 +271,22 @@ router.use((error, req, res, next) => {
   });
 });
 
-// Catch-all route for debugging
-router.all('*', (req, res) => {
-  console.log('=== UPLOAD ROUTE CATCH-ALL ===');
-  console.log('Method:', req.method);
-  console.log('Path:', req.path);
-  console.log('Original URL:', req.originalUrl);
-  console.log('Available routes on this router:', router.stack.map(r => ({
-    path: r.route?.path,
-    methods: r.route?.methods
-  })));
-  
-  res.status(404).json({
-    success: false,
-    error: `Upload route not found: ${req.method} ${req.path}`,
-    availableRoutes: router.stack.map(r => r.route?.path).filter(Boolean)
-  });
-});
+// Catch-all route for debugging - commented out due to path-to-regexp compatibility
+// router.all('/*', (req, res) => {
+//   console.log('=== UPLOAD ROUTE CATCH-ALL ===');
+//   console.log('Method:', req.method);
+//   console.log('Path:', req.path);
+//   console.log('Original URL:', req.originalUrl);
+//   console.log('Available routes on this router:', router.stack.map(r => ({
+//     path: r.route?.path,
+//     methods: r.route?.methods
+//   })));
+//   
+//   res.status(404).json({
+//     success: false,
+//     error: `Upload route not found: ${req.method} ${req.path}`,
+//     availableRoutes: router.stack.map(r => r.route?.path).filter(Boolean)
+//   });
+// });
 
 module.exports = router;
