@@ -59,6 +59,7 @@
     min-height: 600px; /* Minimum size for cards */
     max-height: none; /* Remove height restriction */
     max-width: 450px;
+    margin-top: 50px; /* Add 50px top margin for desktop only */
   }
 }
 
