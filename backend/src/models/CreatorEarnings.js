@@ -581,7 +581,7 @@ const creatorEarningsSchema = new mongoose.Schema({
 });
 
 // INDEXES
-creatorEarningsSchema.index({ creator: 1 });
+// Note: creator field already has index: true in field definition above
 creatorEarningsSchema.index({ 'realTimeMetrics.todayEarnings.amount': -1 });
 creatorEarningsSchema.index({ 'analytics.lifetimeEarnings': -1 });
 creatorEarningsSchema.index({ 'goals.monthly.target': 1 });

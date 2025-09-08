@@ -907,33 +907,46 @@ exports.updatePassword = async (req, res, next) => {
 
 // Helper function to get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
-  // Create token
-  const token = user.getSignedJwtToken();
+  console.log('📝 sendTokenResponse: Starting...');
+  
+  try {
+    // Create token
+    console.log('📝 sendTokenResponse: Creating JWT token...');
+    const token = user.getSignedJwtToken();
+    console.log('📝 sendTokenResponse: JWT token created successfully');
 
-  const options = {
-    expires: new Date(
-      Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
-    ),
-    httpOnly: true
-  };
+    const options = {
+      expires: new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
+      ),
+      httpOnly: true
+    };
 
-  if (process.env.NODE_ENV === 'production') {
-    options.secure = true;
+    if (process.env.NODE_ENV === 'production') {
+      options.secure = true;
+    }
+
+    console.log('📝 sendTokenResponse: Preparing response data...');
+    const responseData = {
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role
+      },
+      ...additionalData
+    };
+
+    console.log('📝 sendTokenResponse: Sending response...');
+    res
+      .status(statusCode)
+      .cookie('token', token, options)
+      .json(responseData);
+    
+    console.log('📝 sendTokenResponse: Response sent successfully!');
+  } catch (error) {
+    console.error('❌ sendTokenResponse error:', error);
+    throw error;
   }
-
-  const responseData = {
-    success: true,
-    token,
-    user: {
-      id: user._id,
-      email: user.email,
-      role: user.role
-    },
-    ...additionalData
-  };
-
-  res
-    .status(statusCode)
-    .cookie('token', token, options)
-    .json(responseData);
 };

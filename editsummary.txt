@@ -10,6 +10,9 @@ Fixed authentication flow issues, creator verification redirects, and updated Cr
 83. **Added Username Field to Creator Swipe Data** - Enhanced creator data transformation in getSwipeStack to include username field for proper URL routing, fixing missing creator usernames in browse URLs
 84. **Removed All Mock Data from Frontend** - Eliminated mock data from CreatorProfile.jsx and BrowseCreators.jsx, enabling real API calls for authentic creator data and profiles
 85. **Created Member Creator Profile API Endpoint** - Added GET /api/v1/member/creator/:username endpoint in member.routes.js to fetch creator profiles and content for authenticated members
+86. **Fixed Scheduled Jobs Module Error** - Created missing /jobs/index.js to export initializeScheduledJobs function, resolving "Cannot find module './jobs'" server startup error
+87. **Fixed Duplicate MongoDB Schema Index Warning** - Removed redundant creator index in CreatorEarnings.js model that was conflicting with field-level index: true definition
+88. **Fixed Creator Login Timeout Issues** - Added fallback value '7d' for JWT_EXPIRE environment variable in User.js model to prevent JWT signing from hanging, added detailed debugging to sendTokenResponse function to identify response timeout issues
 40. **Fixed Creator Authentication API Endpoints** - Updated auth.service.js to use correct `/auth/me` endpoint instead of `/auth/creator/me` and fixed token access from response structure
 41. **Enhanced AuthContext Response Handling** - Updated AuthContext to pass through all backend response fields (redirectTo, isVerified, profileComplete, needsIdVerification)
 42. **Fixed Creator Login Redirect Logic** - Updated CreatorLogin.jsx to respect backend's redirectTo field instead of hardcoded dashboard navigation
