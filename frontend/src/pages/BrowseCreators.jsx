@@ -440,8 +440,8 @@ const BrowseCreators = () => {
     setKey(prev => prev + 1);
   };
 
-  const handleViewProfile = (creatorId) => {
-    navigate(`/creator/${creatorId}`);
+  const handleViewProfile = (creator) => {
+    navigate(`/creator/${creator.username}`);
   };
 
   const currentCreator = filteredCreators?.[currentIndex];
@@ -628,7 +628,7 @@ const BrowseCreators = () => {
         
         <button 
           className="browse-creators-action-btn browse-creators-info"
-          onClick={() => handleViewProfile(currentCreator._id)}
+          onClick={() => handleViewProfile(currentCreator)}
           aria-label="View Profile"
         >
           <Info size={24} />

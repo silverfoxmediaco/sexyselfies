@@ -185,8 +185,8 @@ const SearchCreators = () => {
   };
   
   // Handle creator card click
-  const handleCreatorClick = (creatorId) => {
-    navigate(`/creator/${creatorId}`);
+  const handleCreatorClick = (creator) => {
+    navigate(`/creator/${creator.username}`);
   };
   
   // Handle like creator
@@ -413,7 +413,7 @@ const SearchCreators = () => {
                 layoutId={creator._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                onClick={() => handleCreatorClick(creator._id)}
+                onClick={() => handleCreatorClick(creator)}
               >
                 <div className="creator-image">
                   <img

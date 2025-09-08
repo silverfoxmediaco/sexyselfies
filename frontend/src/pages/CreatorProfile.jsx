@@ -20,7 +20,7 @@ import './CreatorProfile.css';
 
 
 const CreatorProfile = () => {
-  const { creatorId } = useParams();
+  const { username } = useParams();
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
   const isMobile = useIsMobile();
@@ -54,9 +54,9 @@ const CreatorProfile = () => {
 
   // Mock creator data - replace with API call
   const mockCreator = {
-    id: creatorId,
+    id: username,
     displayName: 'Sophia Martinez',
-    username: '@sophiamartinez',
+    username: `@${username}`,
     age: 24,
     profilePhoto: '/placeholders/beaufitulbrunette1.png',
     coverPhoto: '/placeholders/beautifulbrunette2.png',
@@ -212,11 +212,7 @@ const CreatorProfile = () => {
         }, 1000);
         
         // Actual API call would be:
-        // const token = localStorage.getItem('token');
-        // const response = await axios.get(
-        //   `/api/v1/creators/${creatorId}`,
-        //   { headers: { Authorization: `Bearer ${token}` } }
-        // );
+        // const response = await api.get(`/public/creator/${username}`);
         // setCreator(response.data.creator);
         // setContent(response.data.content);
       } catch (err) {
@@ -226,7 +222,7 @@ const CreatorProfile = () => {
     };
 
     fetchCreatorProfile();
-  }, [creatorId]);
+  }, [username]);
 
   // Handle content purchase
   const handlePurchaseContent = async (contentItem) => {
@@ -257,7 +253,7 @@ const CreatorProfile = () => {
       // Actual API call would be:
       // const response = await axios.post(
       //   `/api/v1/purchases/content/${contentItem.id}`,
-      //   { creatorId },
+      //   { creatorUsername: username },
       //   { headers: { Authorization: `Bearer ${token}` } }
       // );
     } catch (err) {
@@ -288,7 +284,7 @@ const CreatorProfile = () => {
   // Handle message
   const handleMessage = () => {
     if (hasMatched) {
-      navigate(`/member/messages/${creatorId}`);
+      navigate(`/member/messages/${username}`);
     } else {
       alert('You need to connect with this creator first!');
     }

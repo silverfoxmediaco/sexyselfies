@@ -522,7 +522,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           
           {/* Creator Profile Route (Public - for members to view) */}
           {/* THIS MUST COME AFTER ALL /creator/* ROUTES */}
-          <Route path="/creator/:creatorId" element={<CreatorProfile />} />
+          <Route path="/creator/:username" element={<CreatorProfile />} />
           
           {/* Admin Routes */}
           <Route path="/admin">

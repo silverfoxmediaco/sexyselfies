@@ -191,18 +191,35 @@ router.get('/creator',
   }
 );
 
-// Get public creator profile
-router.get('/creator/:username',
+// Get public creator profile (supports both username and ObjectId for backwards compatibility)
+router.get('/creator/:identifier',
   cacheMiddleware(300),
   async (req, res) => {
     try {
-      const { username } = req.params;
+      const { identifier } = req.params;
       
-      const creator = await Creator.findOne({ 
-        username,
-        isActive: true,
-        'visibility.public': true
-      }).select('-password -email -phoneNumber -earnings -paymentInfo');
+      // Check if identifier is an ObjectId (24 character hex string)
+      const isObjectId = /^[0-9a-fA-F]{24}$/.test(identifier);
+      
+      let query;
+      if (isObjectId) {
+        // If it's an ObjectId, find by _id for backwards compatibility
+        query = { 
+          _id: identifier,
+          isPaused: { $ne: true }, // Not paused
+          isVerified: true // Only verified creators visible publicly
+        };
+      } else {
+        // If it's not an ObjectId, assume it's a username
+        query = { 
+          username: identifier,
+          isPaused: { $ne: true }, // Not paused
+          isVerified: true // Only verified creators visible publicly
+        };
+      }
+      
+      const creator = await Creator.findOne(query)
+        .select('-password -email -phoneNumber -earnings -paymentInfo');
       
       if (!creator) {
         return res.status(404).json({

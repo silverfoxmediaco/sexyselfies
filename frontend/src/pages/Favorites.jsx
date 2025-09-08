@@ -236,8 +236,8 @@ const Favorites = () => {
   };
 
   // Handle creator card click
-  const handleCreatorClick = (creatorId) => {
-    navigate(`/creator/${creatorId}`);
+  const handleCreatorClick = (creator) => {
+    navigate(`/creator/${creator.username}`);
   };
 
   // Handle unfavorite creator
@@ -541,7 +541,7 @@ const Favorites = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                onClick={() => handleCreatorClick(creator._id)}
+                onClick={() => handleCreatorClick(creator)}
               >
                 <div className="creator-image">
                   <img

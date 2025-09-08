@@ -681,6 +681,65 @@ async function predictContentPerformance(profile, recentContent) {
   };
 }
 
+// Get public creator profile by username (for member viewing)
+exports.getProfileByUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+    
+    // Find creator by username
+    const creator = await Creator.findOne({ username })
+      .populate('user', 'email username')
+      .select('-verificationDocuments -payoutDetails'); // Exclude private fields
+    
+    if (!creator) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Creator not found' 
+      });
+    }
+
+    // Get creator's content (sample for preview)
+    const content = await Content.find({ 
+      creator: creator._id, 
+      isActive: true 
+    }).limit(20).select('type price thumbnails createdAt views likes');
+    
+    // Format public profile data
+    const publicProfile = {
+      _id: creator._id,
+      username: creator.username,
+      displayName: creator.displayName,
+      age: creator.age,
+      bio: creator.bio,
+      profileImage: creator.profileImage,
+      coverImage: creator.coverImage,
+      location: creator.location?.country ? { country: creator.location.country } : null,
+      isVerified: creator.isVerified,
+      stats: {
+        totalLikes: creator.stats?.totalLikes || 0,
+        rating: creator.stats?.rating || 0,
+        ratingCount: creator.stats?.ratingCount || 0,
+        contentCount: content.length
+      },
+      contentPrice: creator.contentPrice,
+      isPaused: creator.isPaused || false,
+      content: content
+    };
+    
+    res.json({ 
+      success: true, 
+      data: publicProfile 
+    });
+    
+  } catch (error) {
+    console.error('Get profile by username error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error fetching creator profile' 
+    });
+  }
+};
+
 function hasAchievement(profile, achievementId) {
   return profile.gamification.achievements.some(a => a.id === achievementId);
 }
