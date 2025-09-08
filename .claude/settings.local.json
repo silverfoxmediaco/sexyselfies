@@ -5,7 +5,10 @@
       "Bash(grep:*)",
       "Bash(git commit:*)",
       "Bash(node:*)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "Bash(npm audit:*)",
+      "Bash(rm:*)",
+      "Bash(npm install)"
     ],
     "deny": [],
     "ask": []

@@ -4,6 +4,8 @@
 Fixed authentication flow issues, creator verification redirects, and updated CreatorContentUpload page with unique CSS class naming to prevent styling conflicts.
 
 ## Latest Updates (Current Session)
+80. **CRITICAL: Fixed Deployment Crash - Express Version Rollback** - Downgraded Express from v5.1.0 to v4.21.1 to fix path-to-regexp PathError causing deployment failure, updated morgan from v1.3.2 to v1.10.0, socket.io-client from v0.9.17 to v4.8.1, nodemon from v1.4.1 to v3.1.7 to address 64 security vulnerabilities
+81. **Updated Frontend Socket.io Client** - Updated frontend package.json socket.io-client from v0.9.17 to v4.8.1 for compatibility and security
 40. **Fixed Creator Authentication API Endpoints** - Updated auth.service.js to use correct `/auth/me` endpoint instead of `/auth/creator/me` and fixed token access from response structure
 41. **Enhanced AuthContext Response Handling** - Updated AuthContext to pass through all backend response fields (redirectTo, isVerified, profileComplete, needsIdVerification)
 42. **Fixed Creator Login Redirect Logic** - Updated CreatorLogin.jsx to respect backend's redirectTo field instead of hardcoded dashboard navigation
