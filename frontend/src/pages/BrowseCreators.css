@@ -60,6 +60,7 @@
     max-height: none; /* Remove height restriction */
     max-width: 450px;
     margin-top: 50px; /* Add 50px top margin for desktop only */
+    margin-bottom: 50px; /* Add 50px bottom margin for desktop only */
   }
 }
 
