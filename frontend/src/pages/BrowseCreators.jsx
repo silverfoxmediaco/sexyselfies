@@ -46,7 +46,6 @@ const BrowseCreators = () => {
   // Load data after authentication is confirmed
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('📱 User authenticated, loading data...');
       loadFilters();
       loadCreators();
       loadExistingConnections();
@@ -60,22 +59,17 @@ const BrowseCreators = () => {
 
   // Check if user is authenticated
   const checkAuthentication = () => {
-    console.log('🔐 Checking authentication...');
     
     // Check for token in localStorage
     const token = localStorage.getItem('token') || 
                   localStorage.getItem('memberToken');
     const userRole = localStorage.getItem('userRole');
     
-    console.log('🔑 Token found:', !!token);
-    console.log('👤 User role:', userRole);
     
     if (!token) {
-      console.log('❌ No token found, redirecting to login...');
       // For development, set mock authentication
       if (import.meta.env.DEV || 
           window.location.hostname.includes('onrender.com')) {
-        console.log('🔧 Development mode: Setting mock authentication');
         localStorage.setItem('token', 'dev-token-' + Date.now());
         localStorage.setItem('userRole', 'member');
         setIsAuthenticated(true);
@@ -83,10 +77,8 @@ const BrowseCreators = () => {
         navigate('/member/login');
       }
     } else if (userRole !== 'member') {
-      console.log('❌ Wrong user role:', userRole);
       navigate('/member/login');
     } else {
-      console.log('✅ Authentication confirmed');
       setIsAuthenticated(true);
     }
   };
@@ -124,16 +116,11 @@ const BrowseCreators = () => {
     setLoadingError(null);
     
     try {
-      // Add auth header debugging
-      const token = localStorage.getItem('token') || localStorage.getItem('memberToken');
-      console.log('🔑 Using token for API call:', token ? token.substring(0, 20) + '...' : 'NO TOKEN');
       
       const response = await memberService.getSwipeStack();
-      console.log('📦 API Response:', response);
 
       if (response && (response.success || response.data || response.creators)) {
         const creatorsData = response.data || response.creators || [];
-        console.log(`✅ Found ${creatorsData.length} creators`);
         
         // Transform creator data to match expected structure
         const transformedCreators = creatorsData.map(creator => ({
@@ -193,10 +180,8 @@ const BrowseCreators = () => {
 
   // Load existing connections and messages
   const loadExistingConnections = async () => {
-    console.log('🔗 Loading existing connections...');
     try {
       const response = await api.get('/connections');
-      console.log('🔗 Connections response:', response);
 
       if (response.success) {
         // Process connections into lookup objects

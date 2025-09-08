@@ -70,7 +70,6 @@ const CreatorLogin = () => {
       return;
     }
     
-    console.log('Form validation passed, using AuthContext...');
     setIsLoading(true);
     
     try {

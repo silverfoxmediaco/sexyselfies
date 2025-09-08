@@ -58,10 +58,7 @@ const fixPassword = async () => {
     console.log('\n✅ Password verification:', isMatch ? 'SUCCESS' : 'FAILED');
     
     if (isMatch) {
-      console.log('\n✅ Password has been fixed!');
-      console.log('📧 Email: admin@sexyselfies.com');
-      console.log('🔑 Password: AdminPass123!');
-      console.log('\nYou should now be able to login!');
+      console.log('✅ Password has been fixed!');
     } else {
       console.log('\n❌ Password verification failed');
       console.log('There may be an issue with the Admin model');

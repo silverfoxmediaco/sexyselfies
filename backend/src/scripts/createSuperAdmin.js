@@ -48,9 +48,6 @@ const createSuperAdmin = async () => {
       await existingAdmin.save();
       
       console.log('✅ Password reset successfully!');
-      console.log('📧 Email: admin@sexyselfies.com');
-      console.log('🔑 Password: AdminPass123!');
-      console.log('⚠️  IMPORTANT: Change this password after first login!');
       
     } else {
       // Create new super admin
@@ -69,12 +66,6 @@ const createSuperAdmin = async () => {
       await admin.save();
       
       console.log('✅ Super Admin created successfully!');
-      console.log('📧 Email: admin@sexyselfies.com');
-      console.log('🔑 Password: AdminPass123!');
-      console.log('👤 Name: Super Admin');
-      console.log('🛡️ Role: superAdmin');
-      console.log('✨ All permissions granted');
-      console.log('\n⚠️  IMPORTANT: Change this password after first login!');
     }
     
     // Also create a moderator and verification staff for testing
@@ -93,9 +84,7 @@ const createSuperAdmin = async () => {
       moderator.setRolePermissions();
       await moderator.save();
       
-      console.log('\n✅ Moderator account also created:');
-      console.log('📧 Email: moderator@sexyselfies.com');
-      console.log('🔑 Password: ModPass123!');
+      console.log('✅ Moderator account created');
     }
     
     const verifierExists = await Admin.findOne({ email: 'verifier@sexyselfies.com' });
@@ -113,9 +102,7 @@ const createSuperAdmin = async () => {
       verifier.setRolePermissions();
       await verifier.save();
       
-      console.log('\n✅ Verification Staff account also created:');
-      console.log('📧 Email: verifier@sexyselfies.com');
-      console.log('🔑 Password: VerifyPass123!');
+      console.log('✅ Verification Staff account created');
     }
     
   } catch (error) {

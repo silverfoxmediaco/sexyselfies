@@ -42,9 +42,6 @@ const MemberProfilePage = () => {
     setLoading(true);
     try {
       const userData = await api.get('/auth/me');
-      console.log('Full user data from /auth/me:', userData);
-      console.log('Username specifically:', userData.username);
-      console.log('DisplayName specifically:', userData.displayName);
       
       // Calculate stats from real data
       const stats = {

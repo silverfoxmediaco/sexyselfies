@@ -32,7 +32,6 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      console.log('Admin login - making API call to /admin/auth/login');
       
       const response = await api.post('/admin/auth/login', formData);
 

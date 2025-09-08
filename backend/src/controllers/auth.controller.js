@@ -14,11 +14,6 @@ exports.register = async (req, res, next) => {
   session.startTransaction();
   
   try {
-    console.log('Registration request received:', {
-      body: req.body,
-      headers: req.headers,
-      path: req.path
-    });
     
     const { email, password, username, displayName, phone, birthDate, agreeToTerms } = req.body;
 
@@ -127,7 +122,6 @@ exports.creatorRegister = async (req, res, next) => {
   
   try {
     console.log('=== CREATOR REGISTRATION REQUEST ===');
-    console.log('Request body:', req.body);
     console.log('Headers:', req.headers);
     
     const { 
@@ -481,30 +475,22 @@ exports.login = async (req, res, next) => {
 // @access  Public
 exports.creatorLogin = async (req, res, next) => {
   try {
-    console.log('=== CREATOR LOGIN REQUEST START ===');
-    console.log('Request body:', req.body);
-    console.log('NODE_ENV:', process.env.NODE_ENV);
-    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
-    console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
     
     const { email, password } = req.body;
 
     // Validate email & password
     if (!email || !password) {
-      console.log('ERROR: Missing email or password');
       return res.status(400).json({
         success: false,
         error: 'Please provide an email and password'
       });
     }
 
-    console.log('Looking for creator user with email:', email);
     
     // Check for user with creator role
     const user = await User.findOne({ email, role: 'creator' }).select('+password');
     
     if (!user) {
-      console.log('ERROR: No creator user found with email:', email);
       return res.status(401).json({
         success: false,
         error: 'Invalid creator credentials'
@@ -517,25 +503,21 @@ exports.creatorLogin = async (req, res, next) => {
     const isMatch = await user.matchPassword(password);
     
     if (!isMatch) {
-      console.log('ERROR: Password does not match');
       return res.status(401).json({
         success: false,
         error: 'Invalid credentials'
       });
     }
 
-    console.log('Password matches, checking user status...');
 
     // Check if user is active
     if (user.isActive === false) {
-      console.log('ERROR: User account is deactivated');
       return res.status(401).json({
         success: false,
         error: 'Account is deactivated. Please contact support.'
       });
     }
 
-    console.log('User is active, looking for creator profile...');
 
     // Check creator profile
     let creator = await Creator.findOne({ user: user._id });
@@ -620,11 +602,6 @@ exports.creatorLogin = async (req, res, next) => {
     user.isEmailVerified = true;
     await user.save();
 
-    console.log('✅ CREATOR LOGIN SUCCESS - About to send response');
-    console.log('User ID:', user._id);
-    console.log('Creator ID:', creator._id);
-    console.log('Display Name:', creator.displayName);
-    console.log('About to call sendTokenResponse...');
     
     // Use the existing sendTokenResponse helper to avoid JWT/cookie issues
     const additionalData = {
@@ -647,8 +624,6 @@ exports.creatorLogin = async (req, res, next) => {
           : '/creator/dashboard'
     };
     
-    console.log('Calling sendTokenResponse with additionalData:', Object.keys(additionalData));
-    console.log('sendTokenResponse function exists:', typeof sendTokenResponse);
     
     if (typeof sendTokenResponse !== 'function') {
       console.error('❌ sendTokenResponse is not a function!');
@@ -659,7 +634,6 @@ exports.creatorLogin = async (req, res, next) => {
     }
     
     sendTokenResponse(user, 200, res, additionalData);
-    console.log('✅ sendTokenResponse call completed');
 
   } catch (error) {
     console.error('=== CREATOR LOGIN ERROR ===');
@@ -903,13 +877,9 @@ exports.updatePassword = async (req, res, next) => {
 
 // Helper function to get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
-  console.log('📝 sendTokenResponse: Starting...');
-  
   try {
     // Create token
-    console.log('📝 sendTokenResponse: Creating JWT token...');
     const token = user.getSignedJwtToken();
-    console.log('📝 sendTokenResponse: JWT token created successfully');
 
     const options = {
       expires: new Date(
@@ -922,7 +892,6 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
       options.secure = true;
     }
 
-    console.log('📝 sendTokenResponse: Preparing response data...');
     const responseData = {
       success: true,
       token,
@@ -934,13 +903,11 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
       ...additionalData
     };
 
-    console.log('📝 sendTokenResponse: Sending response...');
     res
       .status(statusCode)
       .cookie('token', token, options)
       .json(responseData);
     
-    console.log('📝 sendTokenResponse: Response sent successfully!');
   } catch (error) {
     console.error('❌ sendTokenResponse error:', error);
     throw error;

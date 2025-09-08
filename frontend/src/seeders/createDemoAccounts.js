@@ -289,19 +289,7 @@ const createDemoAccounts = async () => {
       console.error('Error creating demo admin:', error.message);
     }
     
-    console.log('\n' + '='.repeat(60));
-    console.log('            DEMO ACCOUNTS CREATED SUCCESSFULLY!');
-    console.log('='.repeat(60));
-    console.log('\n📧 MEMBER LOGIN:');
-    console.log('   Email: demo@sexyselfies.com');
-    console.log('   Password: demo123');
-    console.log('\n🎨 CREATOR LOGIN:');
-    console.log('   Email: demo.creator@sexyselfies.com');
-    console.log('   Password: demo123');
-    console.log('\n🛡️  ADMIN LOGIN:');
-    console.log('   Email: demo.admin@sexyselfies.com');
-    console.log('   Password: demoadmin123');
-    console.log('\n' + '='.repeat(60) + '\n');
+    console.log('✅ Demo accounts created successfully!');
     
     process.exit(0);
   } catch (error) {
