@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
+import api from '../services/api.config';
 import CreatorProfilePreview from './CreatorProfilePreview';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
@@ -130,12 +130,14 @@ const CreatorProfileSetup = () => {
   const checkExistingProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/creator/profile/status', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
       
-      if (response.data.profileComplete) {
+      // Try to get existing profile data
+      const response = await api.get('/creator/profile');
+      
+      // If profile exists and is complete, redirect
+      if (response.success && response.data?.profileComplete) {
         navigate('/creator/dashboard');
+        return;
       }
       
       // Pre-populate displayName and username from registration data
@@ -150,12 +152,23 @@ const CreatorProfileSetup = () => {
         }));
       }
       
-      // Pre-fill any existing data
-      if (response.data.existingData) {
-        setFormData(prev => ({ ...prev, ...response.data.existingData }));
+      // Pre-fill any existing profile data
+      if (response.success && response.data) {
+        const existingData = response.data;
+        setFormData(prev => ({ 
+          ...prev, 
+          ...existingData,
+          // Don't overwrite displayName/username from localStorage
+          displayName: storedDisplayName || existingData.displayName || prev.displayName,
+          username: storedUsername || existingData.username || prev.username
+        }));
       }
     } catch (error) {
       console.error('Error checking profile:', error);
+      // If profile doesn't exist yet, that's okay - continue with setup
+      if (error.response?.status !== 404) {
+        console.error('Unexpected error:', error);
+      }
     }
   };
   
@@ -200,7 +213,9 @@ const CreatorProfileSetup = () => {
       
       case 5:
         if (!formData.agreeToTerms) newErrors.terms = 'You must agree to the terms';
+        if (!formData.agreeToContentPolicy) newErrors.contentPolicy = 'You must agree to the content policy';
         if (!formData.confirmAge) newErrors.age = 'You must confirm you are 18+';
+        if (!formData.confirmOwnership) newErrors.ownership = 'You must confirm content ownership';
         break;
     }
     
@@ -249,18 +264,10 @@ const CreatorProfileSetup = () => {
       
       formDataToSend.append('data', JSON.stringify(dataWithoutFiles));
       
-      const response = await axios.post(
-        '/api/creator/profile/setup',
-        formDataToSend,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      );
+      // Don't set Content-Type header - let browser handle it for multipart data
+      const response = await api.post('/creator/profile/setup', formDataToSend);
       
-      if (response.data.success) {
+      if (response.success) {
         setShowSuccess(true);
         setTimeout(() => {
           navigate('/creator/dashboard');
@@ -1178,7 +1185,9 @@ const StepFive = ({ formData, setFormData, errors, onPreview }) => {
       </div>
       
       {errors.terms && <span className="error-message">{errors.terms}</span>}
+      {errors.contentPolicy && <span className="error-message">{errors.contentPolicy}</span>}
       {errors.age && <span className="error-message">{errors.age}</span>}
+      {errors.ownership && <span className="error-message">{errors.ownership}</span>}
       
     </div>
   );
