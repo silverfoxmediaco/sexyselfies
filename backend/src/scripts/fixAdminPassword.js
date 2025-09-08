@@ -55,7 +55,6 @@ const fixPassword = async () => {
     const updatedAdmin = await Admin.findOne({ email: 'admin@sexyselfies.com' }).select('+password');
     const isMatch = await bcrypt.compare(testPassword, updatedAdmin.password);
     
-    console.log('\n✅ Password verification:', isMatch ? 'SUCCESS' : 'FAILED');
     
     if (isMatch) {
       console.log('✅ Password has been fixed!');

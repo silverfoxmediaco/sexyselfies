@@ -29,8 +29,6 @@ const testPassword = async () => {
     
     console.log('\n📧 Admin found:', admin.email);
     console.log('🔐 Has password field:', !!admin.password);
-    console.log('📝 Password hash length:', admin.password ? admin.password.length : 0);
-    console.log('🔒 Password hash:', admin.password ? admin.password.substring(0, 20) + '...' : 'No password');
     
     // Test password directly with bcrypt
     const testPassword = 'AdminPass123!';
@@ -43,10 +41,8 @@ const testPassword = async () => {
     // Method 2: Using model method if it exists
     if (admin.matchPassword) {
       const isMatch2 = await admin.matchPassword(testPassword);
-      console.log('✅ Model matchPassword result:', isMatch2);
     } else if (admin.comparePassword) {
       const isMatch2 = await admin.comparePassword(testPassword);
-      console.log('✅ Model comparePassword result:', isMatch2);
     } else {
       console.log('⚠️  No password comparison method on model');
     }
