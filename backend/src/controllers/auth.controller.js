@@ -121,8 +121,6 @@ exports.creatorRegister = async (req, res, next) => {
   session.startTransaction();
   
   try {
-    console.log('=== CREATOR REGISTRATION REQUEST ===');
-    console.log('Headers:', req.headers);
     
     const { 
       email, 
@@ -137,18 +135,6 @@ exports.creatorRegister = async (req, res, next) => {
       taxInfoConsent 
     } = req.body;
     
-    console.log('Extracted fields:', {
-      email, 
-      username, 
-      displayName, 
-      birthDate, 
-      country,
-      agreeToTerms,
-      agreeToContentPolicy,
-      over18Confirmation,
-      taxInfoConsent,
-      passwordLength: password ? password.length : 'undefined'
-    });
 
     // Validate required fields for creators
     if (!email || !password || !displayName || !birthDate || 
@@ -497,7 +483,6 @@ exports.creatorLogin = async (req, res, next) => {
       });
     }
 
-    console.log('Found creator user:', user.email, 'Role:', user.role);
 
     // Check if password matches
     const isMatch = await user.matchPassword(password);
@@ -527,9 +512,7 @@ exports.creatorLogin = async (req, res, next) => {
     let needsIdVerification = true;
     
     if (!creator) {
-      console.log('No creator profile found, creating one...');
       const defaultDisplayName = user.email.split('@')[0];
-      console.log('Creating creator with displayName:', defaultDisplayName);
       
       // Create creator profile if it doesn't exist
       try {
@@ -575,26 +558,16 @@ exports.creatorLogin = async (req, res, next) => {
           lastActive: new Date(),
           isPaused: false
         });
-        console.log('Created new creator profile:', creator._id);
       } catch (createError) {
         console.error('Error creating creator profile:', createError);
         throw createError;
       }
     } else {
-      console.log('Found existing creator profile:', creator._id);
       profileComplete = creator.profileComplete || false;
       isVerified = creator.isVerified || false;
       // Use main verification fields as source of truth, ignore nested verification.status
       needsIdVerification = !creator.isVerified || creator.verificationStatus !== 'approved';
       
-      console.log('Creator status:', { 
-        profileComplete, 
-        isVerified, 
-        needsIdVerification, 
-        verificationSubmittedAt: creator.verificationSubmittedAt,
-        verificationStatus: creator.verificationStatus,
-        verificationNestedStatus: creator.verification?.status 
-      });
     }
 
     // Update last login and email verification
