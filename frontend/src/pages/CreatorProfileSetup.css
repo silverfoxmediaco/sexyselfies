@@ -1013,13 +1013,7 @@
   text-align: center;
 }
 
-.checkbox-label:hover {
-  border-color: var(--primary-300);
-  background: rgba(23, 210, 194, 0.05);
-  color: var(--text-primary);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(23, 210, 194, 0.15);
-}
+/* Hover effects removed as requested */
 
 .checkbox-label:active {
   transform: translateY(0);
@@ -1037,21 +1031,17 @@
   display: none; /* Hide the custom checkbox since we're using button style */
 }
 
-/* Checked state - modern button style */
+/* Checked state - solid teal with white text */
 .checkbox-label input[type="checkbox"]:checked + .checkbox-custom + span,
 .checkbox-label:has(input[type="checkbox"]:checked) {
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary) 50%, var(--primary-300) 100%);
+  background: var(--primary);
   border-color: var(--primary);
-  color: var(--bg-900);
+  color: white;
   font-weight: 600;
-  box-shadow: 0 4px 16px rgba(23, 210, 194, 0.3);
+  box-shadow: none;
 }
 
-.checkbox-label:has(input[type="checkbox"]:checked):hover {
-  background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-600) 50%, var(--primary) 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(23, 210, 194, 0.4);
-}
+/* Hover effects removed as requested */
 
 /* Focus styles for accessibility */
 .checkbox-label input[type="checkbox"]:focus + .checkbox-custom + span,
@@ -2044,13 +2034,7 @@
   text-align: center;
 }
 
-.checkbox-label:hover {
-  border-color: var(--primary-300);
-  background: rgba(23, 210, 194, 0.05);
-  color: var(--text-primary);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(23, 210, 194, 0.15);
-}
+/* Hover effects removed as requested */
 
 .checkbox-label:active {
   transform: translateY(0);
@@ -2068,21 +2052,17 @@
   display: none; /* Hide the custom checkbox since we're using button style */
 }
 
-/* Checked state - modern button style */
+/* Checked state - solid teal with white text */
 .checkbox-label input[type="checkbox"]:checked + .checkbox-custom + span,
 .checkbox-label:has(input[type="checkbox"]:checked) {
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary) 50%, var(--primary-300) 100%);
+  background: var(--primary);
   border-color: var(--primary);
-  color: var(--bg-900);
+  color: white;
   font-weight: 600;
-  box-shadow: 0 4px 16px rgba(23, 210, 194, 0.3);
+  box-shadow: none;
 }
 
-.checkbox-label:has(input[type="checkbox"]:checked):hover {
-  background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-600) 50%, var(--primary) 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(23, 210, 194, 0.4);
-}
+/* Hover effects removed as requested */
 
 /* Focus styles for accessibility */
 .checkbox-label input[type="checkbox"]:focus + .checkbox-custom + span,

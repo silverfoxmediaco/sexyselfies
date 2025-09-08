@@ -100,8 +100,8 @@ const CreatorProfileSetup = () => {
     // Step 4: Smart Features
     automation: {
       welcomeMessage: {
-        enabled: true,
-        text: "Hey! Thanks for matching with me 💕 Check out my exclusive content!"
+        enabled: true, // Always enabled since there's no toggle
+        text: "Hey! Thanks for connecting with me 💕 Check out my exclusive content!"
       },
       autoMatch: 'verified' // all, verified, manual
     },
@@ -928,46 +928,25 @@ const StepFour = ({ formData, setFormData, errors }) => {
       <div className="form-group">
         <label className="form-label">
           <MessageCircle size={18} />
-          Welcome Message (Auto-sent to new matches)
+          Welcome Message (Auto-sent to new connections)
         </label>
         <div className="automation-card">
-          <label className="switch-label">
-            <input
-              type="checkbox"
-              checked={formData.automation.welcomeMessage.enabled}
-              onChange={(e) => setFormData(prev => ({
-                ...prev,
-                automation: {
-                  ...prev.automation,
-                  welcomeMessage: {
-                    ...prev.automation.welcomeMessage,
-                    enabled: e.target.checked
-                  }
+          <textarea
+            className="form-input"
+            placeholder="Hi! Thanks for connecting..."
+            value={formData.automation.welcomeMessage.text}
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              automation: {
+                ...prev.automation,
+                welcomeMessage: {
+                  ...prev.automation.welcomeMessage,
+                  text: e.target.value
                 }
-              }))}
-            />
-            <span className="switch"></span>
-            <span>Enable welcome message</span>
-          </label>
-          
-          {formData.automation.welcomeMessage.enabled && (
-            <textarea
-              className="form-input"
-              placeholder="Hi! Thanks for matching..."
-              value={formData.automation.welcomeMessage.text}
-              onChange={(e) => setFormData(prev => ({
-                ...prev,
-                automation: {
-                  ...prev.automation,
-                  welcomeMessage: {
-                    ...prev.automation.welcomeMessage,
-                    text: e.target.value
-                  }
-                }
-              }))}
-              rows="3"
-            />
-          )}
+              }
+            }))}
+            rows="3"
+          />
         </div>
       </div>
       
