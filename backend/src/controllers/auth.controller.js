@@ -461,18 +461,7 @@ exports.login = async (req, res, next) => {
 // @access  Public
 exports.creatorLogin = async (req, res, next) => {
   console.log('🔍 1. Creator login started at:', new Date().toISOString());
-  
-  // Set reasonable timeout for this specific request
-  req.setTimeout(60000, () => {
-    console.error('⏰ creatorLogin timeout after 60s');
-    if (!res.headersSent) {
-      return res.status(408).json({
-        success: false,
-        error: 'Login timeout - please try again',
-        code: 'AUTH_TIMEOUT'
-      });
-    }
-  });
+  console.log('🔧 Using server-level timeout (120s keepAlive) for Render Starter instance');
   
   try {
     const { email, password } = req.body;

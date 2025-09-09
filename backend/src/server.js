@@ -41,19 +41,25 @@ const app = express();
 // Trust proxy - important for deployment behind reverse proxies
 app.set('trust proxy', 1);
 
-// Render.com specific optimizations
+// Render.com specific optimizations for Starter instance
 app.use((req, res, next) => {
-  // Set response timeout to 90 seconds (well under Render's 100min limit)
-  res.setTimeout(90000, () => {
-    console.error('⏰ Response timeout after 90s for:', req.method, req.originalUrl);
-    if (!res.headersSent) {
-      return res.status(408).json({
-        success: false,
-        error: 'Request timeout - please try again',
-        code: 'TIMEOUT'
-      });
-    }
-  });
+  // Disable response timeout for auth endpoints, let server handle it
+  if (req.url.includes('/auth/')) {
+    // No res.setTimeout for auth routes - let server keepAliveTimeout handle it
+    console.log('🔧 Auth route detected, using server timeout settings');
+  } else {
+    // Set reasonable timeout for non-auth routes
+    res.setTimeout(90000, () => {
+      console.error('⏰ Response timeout after 90s for:', req.method, req.originalUrl);
+      if (!res.headersSent) {
+        return res.status(408).json({
+          success: false,
+          error: 'Request timeout - please try again',
+          code: 'TIMEOUT'
+        });
+      }
+    });
+  }
   
   // Add keep-alive headers for better connection management (per Render docs)
   res.setHeader('Connection', 'keep-alive');
@@ -507,6 +513,10 @@ server.timeout = 0; // Disable server timeout, let Render handle it (100min max)
 server.keepAliveTimeout = 120000; // 120 seconds as recommended by Render
 server.headersTimeout = 120000; // 120 seconds as recommended by Render
 
+// Additional Render Starter instance optimizations
+server.maxConnections = 100; // Limit concurrent connections for Starter plan
+server.maxRequestsPerSocket = 100; // Limit requests per connection
+
 // Force immediate response transmission
 server.on('request', (req, res) => {
   // Disable response buffering for auth endpoints
@@ -563,6 +573,13 @@ server.listen(PORT, () => {
   if (process.env.NODE_ENV === 'production') {
     console.log(`📱 Frontend: Serving PWA from /frontend/dist`);
   }
+  console.log('========================================');
+  console.log('⏱️ RENDER TIMEOUT CONFIGURATION:');
+  console.log(`   server.timeout: ${server.timeout}ms (0 = disabled)`);
+  console.log(`   server.keepAliveTimeout: ${server.keepAliveTimeout}ms`);
+  console.log(`   server.headersTimeout: ${server.headersTimeout}ms`);
+  console.log(`   server.maxConnections: ${server.maxConnections}`);
+  console.log('   🎯 Optimized for Render Starter instance');
   console.log('========================================');
   console.log('📋 Available endpoints:');
   console.log('  Auth: /api/v1/auth');
