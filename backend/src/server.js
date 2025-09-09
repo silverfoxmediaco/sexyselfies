@@ -550,6 +550,34 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('🔥 UNHANDLED PROMISE REJECTION!');
+  console.error('Error name:', err.name);
+  console.error('Error message:', err.message);
+  console.error('Error stack:', err.stack);
+  // Don't exit in production, just log the error
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('💥 Shutting down due to unhandled promise rejection...');
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('🔥 UNCAUGHT EXCEPTION!');
+  console.error('Error name:', err.name);
+  console.error('Error message:', err.message);
+  console.error('Error stack:', err.stack);
+  // Don't exit in production, just log the error
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('💥 Shutting down due to uncaught exception...');
+    process.exit(1);
+  }
+});
+
 // Graceful shutdown on SIGTERM
 process.on('SIGTERM', () => {
   console.log('📴 SIGTERM RECEIVED. Shutting down gracefully');
