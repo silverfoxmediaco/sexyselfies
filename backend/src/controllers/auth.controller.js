@@ -259,7 +259,7 @@ exports.creatorRegister = async (req, res, next) => {
     };
 
     // Send token response (logs them in immediately)
-    sendTokenResponse(user[0], 201, res, additionalData);
+    return sendTokenResponse(user[0], 201, res, additionalData);
     
   } catch (error) {
     await session.abortTransaction();
@@ -293,11 +293,13 @@ exports.creatorRegister = async (req, res, next) => {
     
     console.error('Sending error response:', { statusCode, errorMessage });
     
-    res.status(statusCode).json({
-      success: false,
-      error: errorMessage,
-      ...(process.env.NODE_ENV === 'development' && { details: error.message })
-    });
+    if (!res.headersSent) {
+      return res.status(statusCode).json({
+        success: false,
+        error: errorMessage,
+        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+      });
+    }
   }
 };
 
@@ -446,13 +448,15 @@ exports.login = async (req, res, next) => {
       additionalData.redirectTo = '/admin';
     }
 
-    sendTokenResponse(user, 200, res, additionalData);
+    return sendTokenResponse(user, 200, res, additionalData);
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
   }
 };
 
@@ -727,10 +731,12 @@ exports.getMe = async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
   }
 };
 
@@ -869,10 +875,12 @@ exports.updateProfile = async (req, res, next) => {
 
   } catch (error) {
     console.error('Profile update error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Profile update failed'
-    });
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        error: error.message || 'Profile update failed'
+      });
+    }
   }
 };
 
@@ -894,13 +902,15 @@ exports.updatePassword = async (req, res, next) => {
     user.password = req.body.newPassword;
     await user.save();
 
-    sendTokenResponse(user, 200, res);
+    return sendTokenResponse(user, 200, res);
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
   }
 };
 
@@ -912,7 +922,7 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
     // Check if response already sent
     if (res.headersSent) {
       console.log('🔍 📝 Headers already sent, aborting sendTokenResponse');
-      return;
+      return { success: false, error: 'Headers already sent' };
     }
     
     // Create token using Mongoose method
@@ -962,18 +972,22 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
       }
       
       console.log(`🔍 📝 G. Response sent in ${Date.now() - startResponse}ms at:`, new Date().toISOString());
+      return { success: true, sent: true };
     } else {
       console.log('🔍 📝 G. Headers already sent, response aborted');
+      return { success: false, error: 'Headers already sent during send' };
     }
     
   } catch (error) {
     console.error('❌ sendTokenResponse error:', error);
     if (!res.headersSent) {
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         error: 'Token generation failed. Please try again.',
         ...(process.env.NODE_ENV === 'development' && { details: error.message })
       });
+      return { success: false, error: error.message };
     }
+    return { success: false, error: 'Headers already sent during error' };
   }
 };
