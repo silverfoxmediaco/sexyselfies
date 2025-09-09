@@ -316,8 +316,8 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Check for user
-    const user = await User.findOne({ email }).select('+password');
+    // Check for user with lean query for performance
+    const user = await User.findOne({ email }).select('+password').lean();
 
     if (!user) {
       return res.status(401).json({
@@ -326,8 +326,23 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Check if password matches
-    const isMatch = await user.matchPassword(password);
+    // Check if password matches (direct bcrypt with timeout protection)
+    const bcrypt = require('bcryptjs');
+    const comparePromise = bcrypt.compare(password, user.password);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Password comparison timeout')), 5000)
+    );
+    
+    let isMatch;
+    try {
+      isMatch = await Promise.race([comparePromise, timeoutPromise]);
+    } catch (error) {
+      console.error('Password comparison error:', error.message);
+      return res.status(500).json({
+        success: false,
+        error: 'Authentication timeout. Please try again.'
+      });
+    }
 
     if (!isMatch) {
       return res.status(401).json({
@@ -344,16 +359,20 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Update last login and mark email as verified
-    user.lastLogin = Date.now();
-    user.isEmailVerified = true;
-    await user.save();
+    // Update last login and mark email as verified (using updateOne since we used .lean())
+    await User.updateOne(
+      { _id: user._id },
+      { 
+        lastLogin: Date.now(),
+        isEmailVerified: true
+      }
+    );
 
     // For creators, check profile completion and verification status
     let additionalData = {};
     
     if (user.role === 'creator') {
-      const creator = await Creator.findOne({ user: user._id });
+      const creator = await Creator.findOne({ user: user._id }).lean();
       
       if (creator) {
         additionalData.profileComplete = creator.profileComplete || false;
@@ -361,7 +380,7 @@ exports.login = async (req, res, next) => {
         additionalData.needsIdVerification = !creator.idVerificationSubmitted;
         
         // Check if CreatorProfile exists for more detailed completion status
-        const creatorProfile = await CreatorProfile.findOne({ creator: creator._id });
+        const creatorProfile = await CreatorProfile.findOne({ creator: creator._id }).lean();
         if (!creatorProfile && creator.isVerified) {
           additionalData.profileComplete = false;
         }
@@ -473,8 +492,8 @@ exports.creatorLogin = async (req, res, next) => {
     }
 
     
-    // Check for user with creator role
-    const user = await User.findOne({ email, role: 'creator' }).select('+password');
+    // Check for user with creator role (optimized with lean)
+    const user = await User.findOne({ email, role: 'creator' }).select('+password').lean();
     
     if (!user) {
       return res.status(401).json({
@@ -484,8 +503,23 @@ exports.creatorLogin = async (req, res, next) => {
     }
 
 
-    // Check if password matches
-    const isMatch = await user.matchPassword(password);
+    // Check if password matches (direct bcrypt with timeout protection)
+    const bcrypt = require('bcryptjs');
+    const comparePromise = bcrypt.compare(password, user.password);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Password comparison timeout')), 5000)
+    );
+    
+    let isMatch;
+    try {
+      isMatch = await Promise.race([comparePromise, timeoutPromise]);
+    } catch (error) {
+      console.error('Creator password comparison error:', error.message);
+      return res.status(500).json({
+        success: false,
+        error: 'Authentication timeout. Please try again.'
+      });
+    }
     
     if (!isMatch) {
       return res.status(401).json({
@@ -570,10 +604,14 @@ exports.creatorLogin = async (req, res, next) => {
       
     }
 
-    // Update last login and email verification
-    user.lastLogin = Date.now();
-    user.isEmailVerified = true;
-    await user.save();
+    // Update last login and email verification (using updateOne since we used .lean())
+    await User.updateOne(
+      { _id: user._id },
+      { 
+        lastLogin: Date.now(),
+        isEmailVerified: true
+      }
+    );
 
     
     // Use the existing sendTokenResponse helper to avoid JWT/cookie issues
