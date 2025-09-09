@@ -501,21 +501,10 @@ exports.creatorLogin = async (req, res, next) => {
     }
     console.log('🔍 6b. User found at:', new Date().toISOString());
 
-    // Check password
+    // Check password using User model method (already has timeout protection)
     console.log('🔍 7. About to check password at:', new Date().toISOString());
     const startBcrypt = Date.now();
-    
-    // Add timeout to bcrypt
-    const bcrypt = require('bcryptjs');
-    const isMatch = await Promise.race([
-      bcrypt.compare(password, user.password),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Bcrypt timeout')), 5000)
-      )
-    ]).catch(err => {
-      console.log('🔍 8a. Bcrypt error:', err.message, 'at:', new Date().toISOString());
-      return false;
-    });
+    const isMatch = await user.matchPassword(password);
     
     console.log(`🔍 8b. Password check complete in ${Date.now() - startBcrypt}ms at:`, new Date().toISOString());
     
