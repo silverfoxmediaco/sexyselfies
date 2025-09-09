@@ -13,10 +13,6 @@ services:
         value: 10000
       - key: CLIENT_URL
         value: https://sexyselfies-frontend.onrender.com
-      - key: HTTP_TIMEOUT
-        value: 30000
-      - key: KEEP_ALIVE_TIMEOUT
-        value: 65000
     healthCheckPath: /health
     # Render-specific optimizations
     maxmemory: 512MB

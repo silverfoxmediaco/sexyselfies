@@ -43,11 +43,11 @@ app.set('trust proxy', 1);
 
 // Render.com specific optimizations
 app.use((req, res, next) => {
-  // Set response timeout to 30 seconds (Render limit is 60s)
-  res.setTimeout(30000, () => {
-    console.error('⏰ Response timeout after 30s for:', req.method, req.originalUrl);
+  // Set response timeout to 90 seconds (well under Render's 100min limit)
+  res.setTimeout(90000, () => {
+    console.error('⏰ Response timeout after 90s for:', req.method, req.originalUrl);
     if (!res.headersSent) {
-      res.status(408).json({
+      return res.status(408).json({
         success: false,
         error: 'Request timeout - please try again',
         code: 'TIMEOUT'
@@ -55,9 +55,9 @@ app.use((req, res, next) => {
     }
   });
   
-  // Add keep-alive headers for better connection management
+  // Add keep-alive headers for better connection management (per Render docs)
   res.setHeader('Connection', 'keep-alive');
-  res.setHeader('Keep-Alive', 'timeout=30, max=100');
+  res.setHeader('Keep-Alive', 'timeout=120, max=100');
   
   // Disable Nagle's algorithm for faster response
   if (req.socket && req.socket.setNoDelay) {
@@ -502,10 +502,10 @@ const PORT = process.env.PORT || 5002;
 // Create HTTP server with optimizations for Render
 const server = createServer(app);
 
-// HTTP server optimizations for Render.com
-server.timeout = parseInt(process.env.HTTP_TIMEOUT) || 30000; // 30 second timeout
-server.keepAliveTimeout = parseInt(process.env.KEEP_ALIVE_TIMEOUT) || 65000; // Keep alive longer than load balancer
-server.headersTimeout = server.keepAliveTimeout + 1000; // Headers timeout slightly longer
+// HTTP server optimizations for Render.com (per Render docs)
+server.timeout = 0; // Disable server timeout, let Render handle it (100min max)
+server.keepAliveTimeout = 120000; // 120 seconds as recommended by Render
+server.headersTimeout = 120000; // 120 seconds as recommended by Render
 
 // Force immediate response transmission
 server.on('request', (req, res) => {

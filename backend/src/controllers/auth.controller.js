@@ -462,11 +462,11 @@ exports.login = async (req, res, next) => {
 exports.creatorLogin = async (req, res, next) => {
   console.log('🔍 1. Creator login started at:', new Date().toISOString());
   
-  // Set aggressive timeout for this specific request
-  req.setTimeout(25000, () => {
-    console.error('⏰ creatorLogin timeout after 25s');
+  // Set reasonable timeout for this specific request
+  req.setTimeout(60000, () => {
+    console.error('⏰ creatorLogin timeout after 60s');
     if (!res.headersSent) {
-      res.status(408).json({
+      return res.status(408).json({
         success: false,
         error: 'Login timeout - please try again',
         code: 'AUTH_TIMEOUT'
@@ -481,10 +481,13 @@ exports.creatorLogin = async (req, res, next) => {
     // Validate email & password
     if (!email || !password) {
       console.log('🔍 3a. Missing email/password at:', new Date().toISOString());
-      return res.status(400).json({
-        success: false,
-        error: 'Please provide an email and password'
-      });
+      if (!res.headersSent) {
+        return res.status(400).json({
+          success: false,
+          error: 'Please provide an email and password'
+        });
+      }
+      return;
     }
     console.log('🔍 3b. Email/password validation passed at:', new Date().toISOString());
 
@@ -495,10 +498,13 @@ exports.creatorLogin = async (req, res, next) => {
     
     if (!user) {
       console.log('🔍 6a. No user found at:', new Date().toISOString());
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid creator credentials'
-      });
+      if (!res.headersSent) {
+        return res.status(401).json({
+          success: false,
+          error: 'Invalid creator credentials'
+        });
+      }
+      return;
     }
     console.log('🔍 6b. User found at:', new Date().toISOString());
 
@@ -522,10 +528,13 @@ exports.creatorLogin = async (req, res, next) => {
     
     if (!isMatch) {
       console.log('🔍 9a. Password incorrect at:', new Date().toISOString());
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid credentials'
-      });
+      if (!res.headersSent) {
+        return res.status(401).json({
+          success: false,
+          error: 'Invalid credentials'
+        });
+      }
+      return;
     }
     console.log('🔍 9b. Password correct at:', new Date().toISOString());
 
@@ -533,10 +542,13 @@ exports.creatorLogin = async (req, res, next) => {
     console.log('🔍 10. Checking user active status at:', new Date().toISOString());
     if (user.isActive === false) {
       console.log('🔍 11a. User inactive at:', new Date().toISOString());
-      return res.status(401).json({
-        success: false,
-        error: 'Account is deactivated. Please contact support.'
-      });
+      if (!res.headersSent) {
+        return res.status(401).json({
+          success: false,
+          error: 'Account is deactivated. Please contact support.'
+        });
+      }
+      return;
     }
     console.log('🔍 11b. User is active at:', new Date().toISOString());
 
@@ -643,16 +655,23 @@ exports.creatorLogin = async (req, res, next) => {
     console.log('🔍 19. Checking sendTokenResponse function at:', new Date().toISOString());
     if (typeof sendTokenResponse !== 'function') {
       console.error('❌ sendTokenResponse is not a function!');
-      return res.status(500).json({
-        success: false,
-        error: 'Internal server error - sendTokenResponse not found'
-      });
+      if (!res.headersSent) {
+        return res.status(500).json({
+          success: false,
+          error: 'Internal server error - sendTokenResponse not found'
+        });
+      }
+      return;
     }
     
     console.log('🔍 20. About to call sendTokenResponse at:', new Date().toISOString());
-    const startTokenResponse = Date.now();
-    sendTokenResponse(user, 200, res, additionalData);
-    console.log(`🔍 21. sendTokenResponse called in ${Date.now() - startTokenResponse}ms at:`, new Date().toISOString());
+    if (!res.headersSent) {
+      const startTokenResponse = Date.now();
+      sendTokenResponse(user, 200, res, additionalData);
+      console.log(`🔍 21. sendTokenResponse called in ${Date.now() - startTokenResponse}ms at:`, new Date().toISOString());
+    } else {
+      console.log('🔍 21. Headers already sent, skipping sendTokenResponse');
+    }
 
   } catch (error) {
     console.error('=== CREATOR LOGIN ERROR ===');
@@ -660,11 +679,13 @@ exports.creatorLogin = async (req, res, next) => {
     console.error('Error message:', error.message);
     console.error('Error stack:', error.stack);
     
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Login failed. Please try again.',
-      ...(process.env.NODE_ENV === 'development' && { details: error.stack })
-    });
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Login failed. Please try again.',
+        ...(process.env.NODE_ENV === 'development' && { details: error.stack })
+      });
+    }
   }
 };
 
@@ -899,6 +920,12 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
   try {
     console.log('🔍 📝 A. sendTokenResponse started at:', new Date().toISOString());
     
+    // Check if response already sent
+    if (res.headersSent) {
+      console.log('🔍 📝 Headers already sent, aborting sendTokenResponse');
+      return;
+    }
+    
     // Create token using Mongoose method
     console.log('🔍 📝 B. About to generate JWT token at:', new Date().toISOString());
     const startJWT = Date.now();
@@ -932,25 +959,32 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
     console.log('🔍 📝 F. About to send response at:', new Date().toISOString());
     const startResponse = Date.now();
     
-    // Force immediate response flush for Render.com
-    res
-      .status(statusCode)
-      .cookie('token', token, options)
-      .json(responseData);
+    // Double-check headers not sent before sending response
+    if (!res.headersSent) {
+      // Force immediate response flush for Render.com
+      res
+        .status(statusCode)
+        .cookie('token', token, options)
+        .json(responseData);
+        
+      // Ensure response is flushed immediately
+      if (res.flush) {
+        res.flush();
+      }
       
-    // Ensure response is flushed immediately
-    if (res.flush) {
-      res.flush();
+      console.log(`🔍 📝 G. Response sent in ${Date.now() - startResponse}ms at:`, new Date().toISOString());
+    } else {
+      console.log('🔍 📝 G. Headers already sent, response aborted');
     }
-    
-    console.log(`🔍 📝 G. Response sent in ${Date.now() - startResponse}ms at:`, new Date().toISOString());
     
   } catch (error) {
     console.error('❌ sendTokenResponse error:', error);
-    return res.status(500).json({
-      success: false,
-      error: 'Token generation failed. Please try again.',
-      ...(process.env.NODE_ENV === 'development' && { details: error.message })
-    });
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        error: 'Token generation failed. Please try again.',
+        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+      });
+    }
   }
 };
