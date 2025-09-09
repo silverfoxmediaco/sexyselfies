@@ -61,9 +61,10 @@ app.use((req, res, next) => {
     });
   }
   
-  // Add keep-alive headers for better connection management (per Render docs)
-  res.setHeader('Connection', 'keep-alive');
-  res.setHeader('Keep-Alive', 'timeout=120, max=100');
+  // Add keep-alive headers for better connection management (per Render docs) 
+  res.setHeader('Connection', 'close'); // Force connection close to prevent hanging
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
   
   // Disable Nagle's algorithm for faster response
   if (req.socket && req.socket.setNoDelay) {
@@ -339,10 +340,11 @@ app.get(`${API_V1}/health`, async (req, res) => {
 
 // Apply rate limiting BEFORE routes
 app.use('/api/', defaultLimiter);
-app.use('/api/v1/auth/register', authLimiter);
-app.use('/api/v1/auth/login', authLimiter);
-app.use('/api/v1/auth/creator/register', authLimiter);
-app.use('/api/v1/auth/creator/login', authLimiter);
+// Temporarily disabled auth rate limiting to debug timeout issue
+// app.use('/api/v1/auth/register', authLimiter);
+// app.use('/api/v1/auth/login', authLimiter);
+// app.use('/api/v1/auth/creator/register', authLimiter);
+// app.use('/api/v1/auth/creator/login', authLimiter);
 app.use('/api/v1/upload/', uploadLimiter);
 
 // Apply database check to critical auth routes
@@ -510,8 +512,8 @@ const server = createServer(app);
 
 // HTTP server optimizations for Render.com (per Render docs)
 server.timeout = 0; // Disable server timeout, let Render handle it (100min max)
-server.keepAliveTimeout = 120000; // 120 seconds as recommended by Render
-server.headersTimeout = 120000; // 120 seconds as recommended by Render
+server.keepAliveTimeout = 61000; // Shorter than Render's 60s timeout to force reconnect
+server.headersTimeout = 62000; // Slightly longer than keepAlive
 
 // Additional Render Starter instance optimizations
 server.maxConnections = 100; // Limit concurrent connections for Starter plan

@@ -466,6 +466,13 @@ exports.login = async (req, res, next) => {
 exports.creatorLogin = async (req, res, next) => {
   console.log('🔍 1. Creator login started at:', new Date().toISOString());
   console.log('🔧 Using server-level timeout (120s keepAlive) for Render Starter instance');
+  console.log('🔍 REQUEST INFO:', {
+    method: req.method,
+    url: req.originalUrl,
+    headers: Object.keys(req.headers),
+    bodySize: JSON.stringify(req.body).length,
+    userAgent: req.headers['user-agent']
+  });
   
   try {
     const { email, password } = req.body;
