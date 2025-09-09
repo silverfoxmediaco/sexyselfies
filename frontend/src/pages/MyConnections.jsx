@@ -46,12 +46,12 @@ const MyConnections = () => {
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
-      // Use mock data as fallback
+      // Use zeros for new members - real stats will appear when they make connections
       setStats({
-        total: 24,
-        active: 18,
-        pending: 4,
-        expired: 2
+        total: 0,
+        active: 0,
+        pending: 0,
+        expired: 0
       });
     }
   };
@@ -100,105 +100,13 @@ const MyConnections = () => {
       setConnections(transformedConnections);
     } catch (error) {
       console.error('Error fetching connections:', error);
-      // Fallback to mock data
-      setConnections(getMockConnections(activeTab));
+      // Empty array for new members - real connections will appear when they connect with creators
+      setConnections([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const getMockConnections = (tab) => {
-    const baseConnections = [
-      {
-        id: 1,
-        creatorName: 'Luna Rose',
-        creatorUsername: '@lunarose',
-        avatar: '/placeholders/beautifulbrunette2.png',
-        connectionType: 'premium',
-        status: 'active',
-        lastMessage: 'Hey babe! Check out my new content 💋',
-        lastMessageTime: '2 min ago',
-        unreadCount: 3,
-        isOnline: true,
-        isPinned: true,
-        subscriptionAmount: 49.99,
-        totalSpent: 250.00,
-        connectedSince: '2024-01-15',
-        messageCount: 156,
-        contentUnlocked: 45,
-        specialOffers: 2
-      },
-      {
-        id: 2,
-        creatorName: 'Sophia Sweet',
-        creatorUsername: '@sophiasweet',
-        avatar: '/placeholders/cuteblondeselfie1.png',
-        connectionType: 'verified',
-        status: 'active',
-        lastMessage: 'Thanks for the tip! 😘',
-        lastMessageTime: '1 hour ago',
-        unreadCount: 0,
-        isOnline: true,
-        isPinned: false,
-        subscriptionAmount: 29.99,
-        totalSpent: 180.00,
-        connectedSince: '2024-02-01',
-        messageCount: 89,
-        contentUnlocked: 23,
-        specialOffers: 0
-      },
-      {
-        id: 3,
-        creatorName: 'Mia Diamond',
-        creatorUsername: '@miadiamond',
-        avatar: '/placeholders/beautifulbrunette4.png',
-        connectionType: 'basic',
-        status: 'active',
-        lastMessage: 'You liked my photo',
-        lastMessageTime: '3 hours ago',
-        unreadCount: 1,
-        isOnline: false,
-        isPinned: false,
-        subscriptionAmount: 0,
-        totalSpent: 15.00,
-        connectedSince: '2024-03-10',
-        messageCount: 12,
-        contentUnlocked: 3,
-        specialOffers: 1
-      },
-      {
-        id: 4,
-        creatorName: 'Ashley Fire',
-        creatorUsername: '@ashleyfire',
-        avatar: '/placeholders/cuteblondeselfie2.png',
-        connectionType: 'verified',
-        status: 'pending',
-        lastMessage: 'Sent you a connection request',
-        lastMessageTime: '5 hours ago',
-        unreadCount: 0,
-        isOnline: true,
-        isPinned: false,
-        subscriptionAmount: 0,
-        totalSpent: 0,
-        connectedSince: null,
-        messageCount: 0,
-        contentUnlocked: 0,
-        specialOffers: 0
-      }
-    ];
-
-    // Filter based on active tab
-    switch(tab) {
-      case 'active':
-        return baseConnections.filter(c => c.status === 'active');
-      case 'pending':
-        return baseConnections.filter(c => c.status === 'pending');
-      case 'expired':
-        return baseConnections.filter(c => c.status === 'expired');
-      default:
-        return baseConnections;
-    }
-  };
 
   const handleConnectionClick = (connection) => {
     if (connection.status === 'active') {

@@ -67,15 +67,7 @@ const BrowseCreators = () => {
     
     
     if (!token) {
-      // For development, set mock authentication
-      if (import.meta.env.DEV || 
-          window.location.hostname.includes('onrender.com')) {
-        localStorage.setItem('token', 'dev-token-' + Date.now());
-        localStorage.setItem('userRole', 'member');
-        setIsAuthenticated(true);
-      } else {
-        navigate('/member/login');
-      }
+      navigate('/member/login');
     } else if (userRole !== 'member') {
       navigate('/member/login');
     } else {
@@ -165,7 +157,8 @@ const BrowseCreators = () => {
       
       // Check if it's an auth error
       if (error.response?.status === 401 || error.code === 'UNAUTHORIZED') {
-        console.log('🔐 Authentication error, using mock data');
+        console.log('🔐 Authentication error, redirecting to login');
+        navigate('/member/login');
       }
       
       setLoadingError(error.message || 'Failed to load creators');

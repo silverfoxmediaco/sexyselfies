@@ -44,115 +44,37 @@ const CreatorConnections = () => {
   const loadConnections = async () => {
     setLoading(true);
     try {
-      const isDevelopment = import.meta.env.DEV || localStorage.getItem('token') === 'dev-token-12345';
-      
-      if (isDevelopment) {
-        // Mock data for connections
-        const mockStats = {
-          totalMatches: 847,
-          activeChats: 23,
-          totalEarnings: 2450.75,
-          avgResponse: 12
-        };
-
-        const mockConnections = [
-          {
-            id: 1,
-            name: 'Sarah Williams',
-            avatar: null,
-            age: 28,
-            location: 'New York, NY',
-            lastMessage: 'Hey! I loved your latest photo set!',
-            lastMessageTime: '2 min ago',
-            isOnline: true,
-            hasUnread: true,
-            unreadCount: 3,
-            totalSpent: 245.50,
-            matchedAt: '2024-01-15',
-            isPremium: true,
-            rating: 5,
-            status: 'active'
-          },
-          {
-            id: 2,
-            name: 'Michael Chen',
-            avatar: null,
-            age: 32,
-            location: 'Los Angeles, CA',
-            lastMessage: 'Would love to see more content like this!',
-            lastMessageTime: '1 hour ago',
-            isOnline: false,
-            hasUnread: false,
-            unreadCount: 0,
-            totalSpent: 189.25,
-            matchedAt: '2024-01-12',
-            isPremium: false,
-            rating: 4,
-            status: 'active'
-          },
-          {
-            id: 3,
-            name: 'Jessica Taylor',
-            avatar: null,
-            age: 26,
-            location: 'Chicago, IL',
-            lastMessage: 'Thank you for the custom content!',
-            lastMessageTime: '3 hours ago',
-            isOnline: true,
-            hasUnread: true,
-            unreadCount: 1,
-            totalSpent: 567.00,
-            matchedAt: '2024-01-10',
-            isPremium: true,
-            rating: 5,
-            status: 'favorite'
-          },
-          {
-            id: 4,
-            name: 'David Rodriguez',
-            avatar: null,
-            age: 35,
-            location: 'Miami, FL',
-            lastMessage: 'Looking forward to your next video!',
-            lastMessageTime: '1 day ago',
-            isOnline: false,
-            hasUnread: false,
-            unreadCount: 0,
-            totalSpent: 98.75,
-            matchedAt: '2024-01-08',
-            isPremium: false,
-            rating: 4,
-            status: 'recent'
-          },
-          {
-            id: 5,
-            name: 'Emma Johnson',
-            avatar: null,
-            age: 29,
-            location: 'Seattle, WA',
-            lastMessage: 'Just sent you a tip! Keep up the amazing work',
-            lastMessageTime: '2 days ago',
-            isOnline: true,
-            hasUnread: false,
-            unreadCount: 0,
-            totalSpent: 345.25,
-            matchedAt: '2024-01-05',
-            isPremium: true,
-            rating: 5,
-            status: 'active'
-          }
-        ];
-
-        setTimeout(() => {
-          setStats(mockStats);
-          setConnections(mockConnections);
-          setLoading(false);
-          console.log('DEV MODE: Using mock connections data');
-        }, 800);
-      } else {
+      try {
         const response = await api.get('/creator/connections');
-        setStats(response.stats);
-        setConnections(response.connections);
+        if (response.success) {
+          setStats(response.stats || {
+            totalMatches: 0,
+            activeChats: 0,
+            totalEarnings: 0,
+            avgResponse: 0
+          });
+          setConnections(response.connections || []);
+        } else {
+          // Handle API error - set empty state
+          setStats({
+            totalMatches: 0,
+            activeChats: 0,
+            totalEarnings: 0,
+            avgResponse: 0
+          });
+          setConnections([]);
+        }
+      } catch (error) {
+        console.error('Error loading connections:', error);
+        // Set empty state on error
+        setStats({
+          totalMatches: 0,
+          activeChats: 0,
+          totalEarnings: 0,
+          avgResponse: 0
+        });
+        setConnections([]);
+      } finally {
         setLoading(false);
       }
     } catch (error) {

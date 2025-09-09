@@ -53,61 +53,9 @@ const CreatorEarnings = () => {
       // Check if in development mode
       const isDevelopment = import.meta.env.DEV || localStorage.getItem('token') === 'dev-token-12345';
       
-      if (isDevelopment) {
-        // Use mock data in development
-        const mockData = {
-          overview: {
-            totalEarnings: 3847.92,
-            earningsChange: 15.7,
-            pendingPayout: 892.45,
-            payoutChange: 8.3,
-            thisMonthEarnings: 1285.50,
-            monthChange: 22.1,
-            avgDailyEarnings: 42.75,
-            dailyChange: 5.2
-          },
-          breakdown: {
-            photos: { amount: 2156.80, percentage: 56, count: 142 },
-            videos: { amount: 978.45, percentage: 25, count: 43 },
-            messages: { amount: 387.20, percentage: 10, count: 89 },
-            tips: { amount: 325.47, percentage: 9, count: 67 }
-          },
-          recentTransactions: [
-            { id: 1, type: 'photo', user: 'Sarah M.', amount: 12.99, date: '2 hours ago', status: 'completed' },
-            { id: 2, type: 'tip', user: 'Mike R.', amount: 25.00, date: '4 hours ago', status: 'completed' },
-            { id: 3, type: 'video', user: 'Emma L.', amount: 8.99, date: '6 hours ago', status: 'completed' },
-            { id: 4, type: 'message', user: 'David P.', amount: 3.99, date: '8 hours ago', status: 'completed' },
-            { id: 5, type: 'photo', user: 'Jessica K.', amount: 15.99, date: '1 day ago', status: 'completed' }
-          ],
-          topEarners: [
-            { id: 1, title: 'Sunset Collection', type: 'photo', earnings: 245.70, sales: 19 },
-            { id: 2, title: 'Morning Workout', type: 'video', earnings: 189.55, sales: 21 },
-            { id: 3, title: 'Coffee Chat', type: 'message', earnings: 156.80, sales: 41 },
-            { id: 4, title: 'Weekend Vibes', type: 'photo', earnings: 134.25, sales: 15 }
-          ],
-          payoutHistory: [
-            { id: 1, amount: 1250.00, date: 'Dec 15, 2024', status: 'paid', method: 'Bank Transfer' },
-            { id: 2, amount: 985.50, date: 'Dec 8, 2024', status: 'paid', method: 'PayPal' },
-            { id: 3, amount: 1105.25, date: 'Dec 1, 2024', status: 'paid', method: 'Bank Transfer' },
-            { id: 4, amount: 892.45, date: 'Pending', status: 'pending', method: 'Bank Transfer' }
-          ],
-          goals: {
-            monthlyTarget: 4000,
-            currentProgress: 3847.92,
-            daysLeft: 8,
-            dailyAvgNeeded: 19.01
-          }
-        };
-
-        setTimeout(() => {
-          setEarningsData(mockData);
-          setLoading(false);
-          console.log('DEV MODE: Using mock earnings data');
-        }, 800);
-      } else {
+      try {
         const data = await creatorService.getEarnings(selectedPeriod);
         setEarningsData(data);
-        setLoading(false);
       }
     } catch (error) {
       console.error('Error loading earnings:', error);

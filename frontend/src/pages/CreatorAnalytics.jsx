@@ -38,64 +38,9 @@ const CreatorAnalytics = () => {
       // Check if in development mode
       const isDevelopment = import.meta.env.DEV || localStorage.getItem('token') === 'dev-token-12345';
       
-      if (isDevelopment) {
-        // Use mock data in development
-        const mockData = {
-          overview: {
-            totalEarnings: 2847.50,
-            earningsChange: 12.5,
-            totalViews: 15420,
-            viewsChange: 8.3,
-            totalMatches: 342,
-            matchesChange: -2.1,
-            conversionRate: 4.2,
-            conversionChange: 1.8
-          },
-          revenue: {
-            photos: 1650.00,
-            videos: 890.50,
-            messages: 307.00
-          },
-          topContent: [
-            { id: 1, type: 'photo', title: 'Sunset Beach', earnings: 124.50, views: 892, engagement: 87 },
-            { id: 2, type: 'video', title: 'Morning Routine', earnings: 98.75, views: 654, engagement: 92 },
-            { id: 3, type: 'photo', title: 'Coffee Vibes', earnings: 87.25, views: 743, engagement: 76 }
-          ],
-          demographics: {
-            ageGroups: [
-              { range: '18-24', percentage: 28, count: 96 },
-              { range: '25-34', percentage: 45, count: 154 },
-              { range: '35-44', percentage: 18, count: 62 },
-              { range: '45+', percentage: 9, count: 30 }
-            ],
-            topLocations: [
-              { country: 'United States', percentage: 42, count: 144 },
-              { country: 'Canada', percentage: 23, count: 79 },
-              { country: 'United Kingdom', percentage: 15, count: 51 },
-              { country: 'Australia', percentage: 10, count: 34 },
-              { country: 'Germany', percentage: 10, count: 34 }
-            ]
-          },
-          engagement: {
-            dailyViews: [120, 145, 98, 167, 189, 134, 156],
-            dailyEarnings: [45.50, 67.25, 32.75, 89.50, 92.25, 58.75, 78.50]
-          },
-          goals: {
-            monthlyEarnings: { current: 2847.50, target: 3500, progress: 81 },
-            weeklyViews: { current: 1089, target: 1200, progress: 91 },
-            conversionRate: { current: 4.2, target: 5.0, progress: 84 }
-          }
-        };
-
-        setTimeout(() => {
-          setAnalyticsData(mockData);
-          setLoading(false);
-          console.log('DEV MODE: Using mock analytics data');
-        }, 800);
-      } else {
+      try {
         const response = await api.get(`/creator/analytics?period=${selectedPeriod}&compare=false`);
         setAnalyticsData(response);
-        setLoading(false);
       }
     } catch (error) {
       console.error('Error loading analytics:', error);

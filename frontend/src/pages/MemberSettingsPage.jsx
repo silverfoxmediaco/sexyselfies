@@ -408,29 +408,7 @@ const MemberSettingsPage = () => {
             />
           </div>
 
-          <div className="member-setting-item">
-            <label>Bio</label>
-            <textarea
-              value={settings.bio}
-              onChange={(e) => updateSetting(null, 'bio', e.target.value)}
-              className="member-setting-textarea"
-              placeholder="Tell creators about yourself"
-              rows={3}
-            />
-          </div>
 
-          <div className="member-setting-item">
-            <label>Theme</label>
-            <select
-              value={settings.theme}
-              onChange={(e) => updateSetting(null, 'theme', e.target.value)}
-              className="member-setting-select"
-            >
-              <option value="dark">Dark Theme</option>
-              <option value="light">Light Theme</option>
-              <option value="auto">Auto (System)</option>
-            </select>
-          </div>
         </div>
       </div>
     </div>

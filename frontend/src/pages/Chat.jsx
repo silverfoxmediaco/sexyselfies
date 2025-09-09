@@ -157,19 +157,17 @@ const Chat = () => {
       });
     } catch (error) {
       console.error('Error fetching creator info:', error);
-      setCreator(getMockCreator());
+      setCreator({
+        id: 'unknown',
+        name: 'Unknown Creator',
+        username: '@unknown',
+        avatar: '/placeholders/default-avatar.png',
+        isOnline: false,
+        lastSeen: new Date(),
+        connectionType: 'basic'
+      });
     }
   };
-  
-  const getMockCreator = () => ({
-    id: 'creator-1',
-    name: 'Luna Rose',
-    username: '@lunarose',
-    avatar: '/placeholders/beautifulbrunette2.png',
-    isOnline: true,
-    lastSeen: new Date(),
-    connectionType: 'premium'
-  });
   
   const fetchMessages = async () => {
     setIsLoading(true);
@@ -192,68 +190,11 @@ const Chat = () => {
         })));
     } catch (error) {
       console.error('Error fetching messages:', error);
-      setMessages(getMockMessages());
+      setMessages([]);
     } finally {
       setIsLoading(false);
     }
   };
-  
-  const getMockMessages = () => [
-    {
-      id: '1',
-      text: 'Hey there! Thanks for connecting with me 😊',
-      type: 'text',
-      senderId: 'creator-1',
-      senderName: 'Luna Rose',
-      timestamp: new Date(Date.now() - 3600000),
-      status: 'read',
-      canDelete: false
-    },
-    {
-      id: '2',
-      text: 'Hi Luna! Love your content!',
-      type: 'text',
-      senderId: 'member-1',
-      senderName: 'You',
-      timestamp: new Date(Date.now() - 3500000),
-      status: 'read',
-      canDelete: true
-    },
-    {
-      id: '3',
-      text: 'Thank you so much! I just posted some new photos you might like 📸',
-      type: 'text',
-      senderId: 'creator-1',
-      senderName: 'Luna Rose',
-      timestamp: new Date(Date.now() - 3400000),
-      status: 'read',
-      canDelete: false
-    },
-    {
-      id: '4',
-      text: 'Check out this exclusive content just for you 💕',
-      type: 'image',
-      mediaUrl: '/placeholders/beautifulbrunette2.png',
-      thumbnail: '/placeholders/beautifulbrunette2.png',
-      isLocked: true,
-      price: 9.99,
-      senderId: 'creator-1',
-      senderName: 'Luna Rose',
-      timestamp: new Date(Date.now() - 3300000),
-      status: 'read',
-      canDelete: false
-    },
-    {
-      id: '5',
-      text: 'Wow, that looks amazing!',
-      type: 'text',
-      senderId: 'member-1',
-      senderName: 'You',
-      timestamp: new Date(Date.now() - 3200000),
-      status: 'delivered',
-      canDelete: true
-    }
-  ];
   
   const markMessagesAsRead = async () => {
     try {
