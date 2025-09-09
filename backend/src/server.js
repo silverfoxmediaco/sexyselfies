@@ -519,10 +519,14 @@ server.maxRequestsPerSocket = 100; // Limit requests per connection
 
 // Force immediate response transmission
 server.on('request', (req, res) => {
-  // Disable response buffering for auth endpoints
-  if (req.url.includes('/auth/')) {
-    res.setHeader('X-Accel-Buffering', 'no');  // Nginx
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  // Only set headers if not already sent
+  if (req.url && req.url.includes('/auth/') && !res.headersSent) {
+    try {
+      res.setHeader('X-Accel-Buffering', 'no');  // Nginx
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    } catch (err) {
+      // Silently ignore if headers already sent
+    }
   }
 });
 const io = new Server(server, {

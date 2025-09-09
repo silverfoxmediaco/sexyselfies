@@ -933,14 +933,14 @@ exports.updatePassword = async (req, res, next) => {
 
 // Helper function to get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
+  // Early safety check - must be first
+  if (res.headersSent) {
+    console.log('Headers already sent, skipping response');
+    return;
+  }
+  
   try {
     console.log('🔍 📝 A. sendTokenResponse started at:', new Date().toISOString());
-    
-    // Check if response already sent
-    if (res.headersSent) {
-      console.log('🔍 📝 Headers already sent, aborting sendTokenResponse');
-      return { success: false, error: 'Headers already sent' };
-    }
     
     // Create token using Mongoose method
     console.log('🔍 📝 B. About to generate JWT token at:', new Date().toISOString());
