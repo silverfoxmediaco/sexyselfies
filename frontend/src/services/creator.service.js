@@ -653,22 +653,10 @@ class CreatorService {
       });
       return response;
     } catch (error) {
-      console.warn('Content performance API unavailable, using empty data for new creator');
+      console.warn('Content performance API unavailable, returning empty array for new creator');
       return {
         success: true,
-        data: {
-          content: [], // Empty for new creator
-          totalViews: 0,
-          totalEarnings: 0,
-          topPerforming: [],
-          recentUploads: []
-        },
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 0,
-          hasMore: false
-        }
+        data: [] // Empty array - new creators have no content performance yet
       };
     }
   }
@@ -695,31 +683,27 @@ class CreatorService {
       });
       return response;
     } catch (error) {
-      // Return realistic mock data for new creators if API fails
-      console.warn('Analytics API unavailable, using mock data for new creator:', error.message);
+      // Return zeros for new creators - they'll have real data once they get connections
+      console.warn('Analytics API unavailable, returning zeros for new creator');
       return {
         success: true,
-        data: {
-          // Realistic numbers for a new creator
-          totalViews: 0,
-          totalConnections: 0, 
-          totalEarnings: 0.00,
-          currentSubscribers: 0,
-          
-          // Today's activity (minimal for new creator)
-          todayViews: 0,
-          todayConnections: 0,
-          todayEarnings: 0.00,
-          
-          // Trends (neutral for new creator)
-          viewsTrend: { change: 0, direction: 'neutral' },
-          connectionsTrend: { change: 0, direction: 'neutral' },
-          earningsTrend: { change: 0, direction: 'neutral' },
-          
-          // Charts data (empty for new creator)
-          viewsChart: [],
-          earningsChart: [],
-          connectionsChart: []
+        dashboard: {
+          traffic: {
+            overview: { totalVisits: 0 },
+            trends: { change: 0 }
+          },
+          audience: {
+            total: 0,
+            new: 0
+          },
+          revenue: {
+            total: 0,
+            change: 0
+          },
+          engagement: {
+            rating: 0,
+            ratingChange: 0
+          }
         }
       };
     }
@@ -768,15 +752,8 @@ class CreatorService {
       console.warn('Recent activity API unavailable, using empty data for new creator');
       return {
         success: true,
-        data: {
-          recentActivity: [], // Empty for new creator
-          notifications: [],
-          messages: [],
-          connections: [],
-          earnings: []
-        },
-        hasMore: false,
-        total: 0
+        data: [], // Dashboard expects array directly, not wrapped in object
+        error: false // Ensure error flag is false so dashboard uses the data
       };
     }
   }
