@@ -653,10 +653,22 @@ class CreatorService {
       });
       return response;
     } catch (error) {
-      console.warn('Content performance API unavailable, using mock data');
+      console.warn('Content performance API unavailable, using empty data for new creator');
       return {
         success: true,
-        data: []  // Empty array will trigger mock data in dashboard
+        data: {
+          content: [], // Empty for new creator
+          totalViews: 0,
+          totalEarnings: 0,
+          topPerforming: [],
+          recentUploads: []
+        },
+        pagination: {
+          page: 1,
+          limit: 20,
+          total: 0,
+          hasMore: false
+        }
       };
     }
   }
@@ -683,27 +695,31 @@ class CreatorService {
       });
       return response;
     } catch (error) {
-      // Return mock data if API fails instead of throwing error
-      console.warn('Analytics API unavailable, using mock data:', error.message);
+      // Return realistic mock data for new creators if API fails
+      console.warn('Analytics API unavailable, using mock data for new creator:', error.message);
       return {
         success: true,
-        dashboard: {
-          traffic: {
-            overview: { totalVisits: Math.floor(Math.random() * 5000) + 8000 },
-            trends: { change: Math.random() * 20 + 5 }
-          },
-          audience: {
-            total: Math.floor(Math.random() * 500) + 800,
-            new: Math.random() * 15 + 2
-          },
-          revenue: {
-            total: Math.random() * 2000 + 1500,
-            change: Math.random() * 25 + 8
-          },
-          engagement: {
-            rating: 4.6 + Math.random() * 0.4,
-            ratingChange: Math.random() * 0.4 - 0.2
-          }
+        data: {
+          // Realistic numbers for a new creator
+          totalViews: 0,
+          totalConnections: 0, 
+          totalEarnings: 0.00,
+          currentSubscribers: 0,
+          
+          // Today's activity (minimal for new creator)
+          todayViews: 0,
+          todayConnections: 0,
+          todayEarnings: 0.00,
+          
+          // Trends (neutral for new creator)
+          viewsTrend: { change: 0, direction: 'neutral' },
+          connectionsTrend: { change: 0, direction: 'neutral' },
+          earningsTrend: { change: 0, direction: 'neutral' },
+          
+          // Charts data (empty for new creator)
+          viewsChart: [],
+          earningsChart: [],
+          connectionsChart: []
         }
       };
     }
@@ -722,6 +738,24 @@ class CreatorService {
   }
 
   /**
+   * Export analytics data
+   */
+  async exportAnalyticsData(options = {}) {
+    try {
+      const response = await api.get('/creator/analytics/export', {
+        params: {
+          format: options.format || 'json',
+          period: options.period || '30d',
+          sections: options.sections || 'all'
+        }
+      });
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
    * Get recent dashboard activity
    */
   async getRecentActivity(limit = 10) {
@@ -731,10 +765,18 @@ class CreatorService {
       });
       return response;
     } catch (error) {
-      console.warn('Recent activity API unavailable, using mock data');
+      console.warn('Recent activity API unavailable, using empty data for new creator');
       return {
         success: true,
-        data: []  // Empty array will trigger mock data in dashboard
+        data: {
+          recentActivity: [], // Empty for new creator
+          notifications: [],
+          messages: [],
+          connections: [],
+          earnings: []
+        },
+        hasMore: false,
+        total: 0
       };
     }
   }

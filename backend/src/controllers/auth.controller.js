@@ -464,23 +464,12 @@ exports.login = async (req, res, next) => {
 // @route   POST /api/auth/creator/login
 // @access  Public
 exports.creatorLogin = async (req, res, next) => {
-  console.log('🔍 1. Creator login started at:', new Date().toISOString());
-  console.log('🔧 Using server-level timeout (120s keepAlive) for Render Starter instance');
-  console.log('🔍 REQUEST INFO:', {
-    method: req.method,
-    url: req.originalUrl,
-    headers: Object.keys(req.headers),
-    bodySize: JSON.stringify(req.body).length,
-    userAgent: req.headers['user-agent']
-  });
   
   try {
     const { email, password } = req.body;
-    console.log('🔍 2. Got email/password from body at:', new Date().toISOString());
     
     // Validate email & password
     if (!email || !password) {
-      console.log('🔍 3a. Missing email/password at:', new Date().toISOString());
       if (!res.headersSent) {
         return res.status(400).json({
           success: false,
@@ -489,15 +478,11 @@ exports.creatorLogin = async (req, res, next) => {
       }
       return;
     }
-    console.log('🔍 3b. Email/password validation passed at:', new Date().toISOString());
 
     // Find user
-    console.log('🔍 4. About to query database at:', new Date().toISOString());
     const user = await User.findOne({ email, role: 'creator' }).select('+password');
-    console.log('🔍 5. Database query complete at:', new Date().toISOString());
     
     if (!user) {
-      console.log('🔍 6a. No user found at:', new Date().toISOString());
       if (!res.headersSent) {
         return res.status(401).json({
           success: false,
@@ -506,17 +491,11 @@ exports.creatorLogin = async (req, res, next) => {
       }
       return;
     }
-    console.log('🔍 6b. User found at:', new Date().toISOString());
 
-    // Check password using User model method (already has timeout protection)
-    console.log('🔍 7. About to check password at:', new Date().toISOString());
-    const startBcrypt = Date.now();
+    // Check password using User model method
     const isMatch = await user.matchPassword(password);
     
-    console.log(`🔍 8b. Password check complete in ${Date.now() - startBcrypt}ms at:`, new Date().toISOString());
-    
     if (!isMatch) {
-      console.log('🔍 9a. Password incorrect at:', new Date().toISOString());
       if (!res.headersSent) {
         return res.status(401).json({
           success: false,
@@ -525,12 +504,9 @@ exports.creatorLogin = async (req, res, next) => {
       }
       return;
     }
-    console.log('🔍 9b. Password correct at:', new Date().toISOString());
 
     // Check if user is active
-    console.log('🔍 10. Checking user active status at:', new Date().toISOString());
     if (user.isActive === false) {
-      console.log('🔍 11a. User inactive at:', new Date().toISOString());
       if (!res.headersSent) {
         return res.status(401).json({
           success: false,
@@ -539,12 +515,9 @@ exports.creatorLogin = async (req, res, next) => {
       }
       return;
     }
-    console.log('🔍 11b. User is active at:', new Date().toISOString());
 
     // Check creator profile
-    console.log('🔍 12. About to find creator profile at:', new Date().toISOString());
     let creator = await Creator.findOne({ user: user._id });
-    console.log('🔍 13. Creator profile query complete at:', new Date().toISOString());
     
     let profileComplete = false;
     let isVerified = false;
@@ -610,21 +583,16 @@ exports.creatorLogin = async (req, res, next) => {
     }
 
     // Update last login and email verification
-    console.log('🔍 14. About to update user.lastLogin at:', new Date().toISOString());
     user.lastLogin = Date.now();
     user.isEmailVerified = true;
-    console.log('🔍 15. About to save user at:', new Date().toISOString());
-    const startSave = Date.now();
     
     try {
       await user.save();
-      console.log(`🔍 16. User.save() completed in ${Date.now() - startSave}ms at:`, new Date().toISOString());
     } catch (saveError) {
-      console.error('🔍 16. User.save() failed:', saveError);
+      console.error('User.save() failed:', saveError);
       // Continue without saving - login still works
     }
 
-    console.log('🔍 17. Building response data at:', new Date().toISOString());
     // Use the existing sendTokenResponse helper to avoid JWT/cookie issues
     const additionalData = {
       creator: {
@@ -645,29 +613,13 @@ exports.creatorLogin = async (req, res, next) => {
           ? '/creator/verification-pending'
           : '/creator/dashboard'
     };
-    console.log('🔍 18. Response data built at:', new Date().toISOString());
     
-    console.log('🔍 19. Checking sendTokenResponse function at:', new Date().toISOString());
-    if (typeof sendTokenResponse !== 'function') {
-      console.error('❌ sendTokenResponse is not a function!');
-      if (!res.headersSent) {
-        return res.status(500).json({
-          success: false,
-          error: 'Internal server error - sendTokenResponse not found'
-        });
-      }
-      return;
-    }
-    
-    console.log('🔍 20. About to call sendTokenResponse at:', new Date().toISOString());
     if (!res.headersSent) {
       try {
-        const startTokenResponse = Date.now();
         const result = sendTokenResponse(user, 200, res, additionalData);
-        console.log(`🔍 21. sendTokenResponse called in ${Date.now() - startTokenResponse}ms at:`, new Date().toISOString());
         return result;
       } catch (tokenError) {
-        console.error('🔍 21. sendTokenResponse error:', tokenError);
+        console.error('sendTokenResponse error:', tokenError);
         if (!res.headersSent) {
           return res.status(500).json({
             success: false,
@@ -675,8 +627,6 @@ exports.creatorLogin = async (req, res, next) => {
           });
         }
       }
-    } else {
-      console.log('🔍 21. Headers already sent, skipping sendTokenResponse');
     }
 
   } catch (error) {
@@ -936,15 +886,8 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
   }
   
   try {
-    console.log('🔍 📝 A. sendTokenResponse started at:', new Date().toISOString());
-    
     // Create token using Mongoose method
-    console.log('🔍 📝 B. About to generate JWT token at:', new Date().toISOString());
-    const startJWT = Date.now();
     const token = user.getSignedJwtToken();
-    console.log(`🔍 📝 C. JWT token generated in ${Date.now() - startJWT}ms at:`, new Date().toISOString());
-
-    console.log('🔍 📝 D. Setting cookie options at:', new Date().toISOString());
     const options = {
       expires: new Date(
         Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
@@ -956,7 +899,6 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
       options.secure = true;
     }
 
-    console.log('🔍 📝 E. Building response data at:', new Date().toISOString());
     const responseData = {
       success: true,
       token,
@@ -968,9 +910,6 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
       ...additionalData
     };
 
-    console.log('🔍 📝 F. About to send response at:', new Date().toISOString());
-    const startResponse = Date.now();
-    
     // Double-check headers not sent before sending response
     if (!res.headersSent) {
       // Force immediate response flush for Render.com
@@ -984,10 +923,8 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
         res.flush();
       }
       
-      console.log(`🔍 📝 G. Response sent in ${Date.now() - startResponse}ms at:`, new Date().toISOString());
       return { success: true, sent: true };
     } else {
-      console.log('🔍 📝 G. Headers already sent, response aborted');
       return { success: false, error: 'Headers already sent during send' };
     }
     

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Settings, User, Shield, Bell, DollarSign, BarChart3, Palette,
+  Settings, User, Shield, Bell, BarChart3, Palette,
   ChevronRight, ChevronLeft, Save, Check, X, AlertTriangle,
   Download, Trash2, Menu, Eye, EyeOff
 } from 'lucide-react';
@@ -9,6 +9,8 @@ import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import authService from '../services/auth.service';
+import creatorService from '../services/creator.service';
 import './CreatorSettingsPage.css';
 
 const CreatorSettingsPage = () => {
@@ -18,18 +20,16 @@ const CreatorSettingsPage = () => {
   const [activeSection, setActiveSection] = useState(null); // null = main menu on mobile
   const [settings, setSettings] = useState({
     // Account & Security
-    email: 'creator@example.com',
-    username: 'creator_username',
-    twoFactorEnabled: false,
+    email: '',
+    username: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
     
     // Profile & Branding
-    displayName: 'Creator Name',
-    bio: 'Professional content creator',
-    accentColor: '#FF1B6B',
-    theme: 'dark',
+    displayName: '',
+    bio: '',
+    accentColor: '#17D2C2', // Use app's primary color
     
     // Privacy & Safety
     profileVisibility: 'public',
@@ -55,11 +55,6 @@ const CreatorSettingsPage = () => {
       liveStreams: true
     },
     
-    // Content & Monetization
-    defaultPhotoPrice: 9.99,
-    defaultVideoPrice: 19.99,
-    subscriptionPrice: 29.99,
-    allowCustomRequests: true,
     
     // Analytics & Insights
     analyticsEnabled: true,
@@ -70,6 +65,7 @@ const CreatorSettingsPage = () => {
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const settingSections = [
     {
@@ -84,9 +80,9 @@ const CreatorSettingsPage = () => {
       id: 'profile',
       title: 'Profile & Branding',
       icon: Palette,
-      description: 'Display name, bio, theme',
+      description: 'Display name, bio, branding',
       priority: 'medium',
-      items: 3
+      items: 2
     },
     {
       id: 'privacy',
@@ -105,14 +101,6 @@ const CreatorSettingsPage = () => {
       items: 8
     },
     {
-      id: 'monetization',
-      title: 'Monetization',
-      icon: DollarSign,
-      description: 'Pricing & revenue settings',
-      priority: 'high',
-      items: 4
-    },
-    {
       id: 'analytics',
       title: 'Analytics & Data',
       icon: BarChart3,
@@ -121,6 +109,103 @@ const CreatorSettingsPage = () => {
       items: 3
     }
   ];
+
+  // Load creator data on component mount
+  useEffect(() => {
+    loadCreatorData();
+  }, []);
+
+  const loadCreatorData = async () => {
+    try {
+      setLoading(true);
+      
+      // Get current user data (email, role, etc.)
+      const userData = await authService.getCurrentUser();
+      
+      // Get creator profile data (displayName, bio, etc.)
+      const profileData = await creatorService.getProfile();
+      
+      // Debug: Log the API responses to understand structure
+      console.log('Auth API Response:', userData);
+      console.log('Profile API Response:', profileData);
+      
+      // Handle different possible response structures
+      const userEmail = userData.user?.email || userData.data?.user?.email || '';
+      const profile = profileData.profile || profileData.data || profileData;
+      
+      // Update settings with real data
+      setSettings(prevSettings => ({
+        ...prevSettings,
+        // From user data (auth API response)
+        email: userEmail,
+        
+        // From creator profile (creator profile API response)
+        username: profile?.username || profile?.user?.username || '',
+        displayName: profile?.displayName || '',
+        bio: profile?.bio || '',
+        
+        // Load notification preferences from localStorage (temporary until backend ready)
+        ...(() => {
+          try {
+            const savedPrefs = localStorage.getItem('creatorNotificationPrefs');
+            if (savedPrefs) {
+              const prefs = JSON.parse(savedPrefs);
+              return {
+                emailNotifications: prefs.emailNotifications || prevSettings.emailNotifications,
+                pushNotifications: prefs.pushNotifications || prevSettings.pushNotifications
+              };
+            }
+          } catch (error) {
+            console.warn('Failed to load notification preferences from localStorage:', error);
+          }
+          // Fallback to defaults
+          return {
+            emailNotifications: {
+              ...prevSettings.emailNotifications,
+              newSubscribers: true,
+              purchases: true,
+              messages: true,
+              tips: true,
+              analytics: false,
+              marketing: false
+            },
+            pushNotifications: {
+              ...prevSettings.pushNotifications,
+              newSubscribers: true,
+              purchases: true,
+              messages: true,
+              tips: false,
+              liveStreams: true
+            }
+          };
+        })(),
+        
+        // Load analytics preferences from localStorage (temporary until backend ready)
+        ...(() => {
+          try {
+            const savedAnalytics = localStorage.getItem('creatorAnalyticsPrefs');
+            if (savedAnalytics) {
+              const prefs = JSON.parse(savedAnalytics);
+              return {
+                analyticsEnabled: prefs.analyticsEnabled ?? prevSettings.analyticsEnabled,
+                performanceTracking: prefs.performanceTracking ?? prevSettings.performanceTracking,
+                dataExport: prefs.dataExport ?? prevSettings.dataExport
+              };
+            }
+          } catch (error) {
+            console.warn('Failed to load analytics preferences from localStorage:', error);
+          }
+          // Fallback to defaults (already set in initial state)
+          return {};
+        })()
+      }));
+    } catch (error) {
+      console.error('Failed to load creator data:', error);
+      // Keep default values if API fails
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const updateSetting = (section, key, value) => {
     if (section) {
@@ -143,12 +228,49 @@ const CreatorSettingsPage = () => {
   const saveSettings = async () => {
     setSaveStatus('saving');
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Save profile updates
+      const profileUpdates = {
+        displayName: settings.displayName,
+        bio: settings.bio
+      };
+      
+      await creatorService.updateProfile(profileUpdates);
+      
+      // Save notification preferences to localStorage temporarily
+      // (will be moved to backend when /creator/settings/notifications is implemented)
+      const notificationPrefs = {
+        emailNotifications: settings.emailNotifications,
+        pushNotifications: settings.pushNotifications,
+        lastUpdated: new Date().toISOString()
+      };
+      localStorage.setItem('creatorNotificationPrefs', JSON.stringify(notificationPrefs));
+      
+      // Save analytics preferences to localStorage temporarily
+      const analyticsPrefs = {
+        analyticsEnabled: settings.analyticsEnabled,
+        performanceTracking: settings.performanceTracking,
+        dataExport: settings.dataExport,
+        lastUpdated: new Date().toISOString()
+      };
+      localStorage.setItem('creatorAnalyticsPrefs', JSON.stringify(analyticsPrefs));
+      
+      // TODO: Future settings updates (when backend endpoints are implemented)
+      // - Email changes need to be handled separately (usually requires verification) 
+      // - Username changes need special validation
+      // - Notification preferences (save to backend via /creator/settings/notifications)
+      // - Privacy settings (endpoints return 501 - not implemented yet)
+      // - Two-factor authentication (not implemented)
+      // - Delete account (not implemented)
+      
+      console.log('Settings saved successfully:', { profileUpdates, notificationPrefs });
+      
       setSaveStatus('saved');
       setUnsavedChanges(false);
       setTimeout(() => setSaveStatus('idle'), 2000);
     } catch (error) {
+      console.error('Failed to save settings:', error);
       setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 2000);
     }
   };
 
@@ -215,6 +337,7 @@ const CreatorSettingsPage = () => {
                 value={settings.username}
                 onChange={(e) => updateSetting(null, 'username', e.target.value)}
                 className="mobile-input"
+                placeholder="Loading..."
               />
             </div>
           </div>
@@ -227,13 +350,13 @@ const CreatorSettingsPage = () => {
                   <Shield size={20} />
                   <span>Two-Factor Authentication</span>
                 </div>
-                <p>Add extra security to your account</p>
+                <p>Add extra security to your account (Coming Soon)</p>
               </div>
               <label className="mobile-toggle">
                 <input
                   type="checkbox"
-                  checked={settings.twoFactorEnabled}
-                  onChange={(e) => updateSetting(null, 'twoFactorEnabled', e.target.checked)}
+                  checked={false}
+                  disabled={true}
                 />
                 <span className="toggle-slider"></span>
               </label>
@@ -244,12 +367,13 @@ const CreatorSettingsPage = () => {
             <h4>Danger Zone</h4>
             <button 
               className="mobile-danger-btn"
-              onClick={() => setShowDeleteDialog(true)}
+              disabled={true}
+              onClick={() => {}}
             >
               <Trash2 size={18} />
-              Delete Account
+              Delete Account (Coming Soon)
             </button>
-            <p className="danger-warning">This action cannot be undone</p>
+            <p className="danger-warning">Account deletion feature coming soon</p>
           </div>
         </div>
       );
@@ -277,6 +401,7 @@ const CreatorSettingsPage = () => {
                 value={settings.username}
                 onChange={(e) => updateSetting(null, 'username', e.target.value)}
                 className="desktop-input"
+                placeholder="Loading..."
               />
             </div>
           </div>
@@ -398,6 +523,10 @@ const CreatorSettingsPage = () => {
 
   const renderNotificationsSection = () => (
     <div className="settings-mobile-section">
+      <div className="notification-disclaimer">
+        <p><strong>Note:</strong> Notification preferences are saved locally and will be fully functional when backend integration is completed.</p>
+      </div>
+      
       <div className="mobile-settings-group">
         <h4>Email Notifications</h4>
         {Object.entries(settings.emailNotifications).map(([key, value]) => (
@@ -438,46 +567,6 @@ const CreatorSettingsPage = () => {
     </div>
   );
 
-  const renderMonetizationSection = () => (
-    <div className="settings-mobile-section">
-      <div className="mobile-settings-group">
-        <h4>Default Pricing</h4>
-        <div className="mobile-setting-item">
-          <label>Photo Price ($)</label>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={settings.defaultPhotoPrice}
-            onChange={(e) => updateSetting(null, 'defaultPhotoPrice', parseFloat(e.target.value))}
-            className="mobile-input"
-          />
-        </div>
-        <div className="mobile-setting-item">
-          <label>Video Price ($)</label>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={settings.defaultVideoPrice}
-            onChange={(e) => updateSetting(null, 'defaultVideoPrice', parseFloat(e.target.value))}
-            className="mobile-input"
-          />
-        </div>
-        <div className="mobile-setting-item">
-          <label>Subscription Price ($)</label>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={settings.subscriptionPrice}
-            onChange={(e) => updateSetting(null, 'subscriptionPrice', parseFloat(e.target.value))}
-            className="mobile-input"
-          />
-        </div>
-      </div>
-    </div>
-  );
 
   const renderProfileSection = () => (
     <div className="settings-mobile-section">
@@ -503,24 +592,52 @@ const CreatorSettingsPage = () => {
           />
           <small>{settings.bio.length}/500 characters</small>
         </div>
-        <div className="mobile-setting-item">
-          <label>Theme</label>
-          <select
-            value={settings.theme}
-            onChange={(e) => updateSetting(null, 'theme', e.target.value)}
-            className="mobile-select"
-          >
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
-            <option value="auto">Auto</option>
-          </select>
-        </div>
       </div>
     </div>
   );
 
+  // Handle data export
+  const handleDataExport = async () => {
+    try {
+      setSaveStatus('saving');
+      
+      // Call the actual data export API
+      const response = await creatorService.exportAnalyticsData({
+        format: 'json',
+        period: '30d',
+        sections: 'all'
+      });
+      
+      // Create downloadable file
+      const blob = new Blob([JSON.stringify(response, null, 2)], {
+        type: 'application/json'
+      });
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `creator-analytics-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2000);
+      
+    } catch (error) {
+      console.error('Data export failed:', error);
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 2000);
+    }
+  };
+
   const renderAnalyticsSection = () => (
     <div className="settings-mobile-section">
+      <div className="notification-disclaimer">
+        <p><strong>Note:</strong> Analytics preferences are saved locally. Data export downloads your actual analytics data from the server.</p>
+      </div>
+      
       <div className="mobile-settings-group">
         <h4>Data Collection</h4>
         <div className="mobile-toggle-item">
@@ -529,7 +646,7 @@ const CreatorSettingsPage = () => {
               <BarChart3 size={20} />
               <span>Enable analytics</span>
             </div>
-            <p>Collect data to improve performance</p>
+            <p>Collect data to improve performance (Local Setting)</p>
           </div>
           <label className="mobile-toggle">
             <input
@@ -544,10 +661,15 @@ const CreatorSettingsPage = () => {
       
       <div className="mobile-settings-group">
         <h4>Data Export</h4>
-        <button className="mobile-action-btn">
+        <button 
+          className="mobile-action-btn"
+          onClick={handleDataExport}
+          disabled={saveStatus === 'saving'}
+        >
           <Download size={18} />
-          Export My Data
+          {saveStatus === 'saving' ? 'Exporting...' : 'Export My Data'}
         </button>
+        <p className="action-description">Download your analytics data as JSON</p>
       </div>
     </div>
   );
@@ -563,7 +685,6 @@ const CreatorSettingsPage = () => {
       case 'profile': return renderProfileSection();
       case 'privacy': return renderPrivacySection();
       case 'notifications': return renderNotificationsSection();
-      case 'monetization': return renderMonetizationSection();
       case 'analytics': return renderAnalyticsSection();
       default: return renderMainMenu();
     }
@@ -576,6 +697,12 @@ const CreatorSettingsPage = () => {
 
       {/* Main Content Wrapper */}
       <div className={`creator-settings ${isMobile ? 'mobile' : 'desktop'}`}>
+        {loading ? (
+          <div className="settings-loading">
+            <div className="loading-spinner"></div>
+            <p>Loading your settings...</p>
+          </div>
+        ) : (
         {isMobile ? (
           // Mobile Layout
           <>

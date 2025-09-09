@@ -18,6 +18,67 @@
   --settings-text: #FFFFFF;
   --settings-text-secondary: #9CA3AF;
   --settings-text-muted: #6B7280;
+}
+
+/* ==========================================
+   LOADING STATE
+   ========================================== */
+.settings-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1rem;
+  color: var(--settings-text-secondary);
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--settings-border);
+  border-top: 3px solid var(--settings-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ==========================================
+   NOTIFICATION DISCLAIMER
+   ========================================== */
+.notification-disclaimer {
+  background: var(--settings-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-left: 3px solid var(--settings-primary);
+}
+
+.notification-disclaimer p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--settings-text-secondary);
+}
+
+.notification-disclaimer strong {
+  color: var(--settings-text);
+}
+
+/* ==========================================
+   ACTION DESCRIPTIONS
+   ========================================== */
+.action-description {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: var(--settings-text-muted);
+  font-style: italic;
+}
+
+.creator-settings {
   --settings-success: #10B981;
   --settings-warning: #F59E0B;
   --settings-error: #EF4444;
