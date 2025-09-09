@@ -23,10 +23,15 @@ const errorHandler = (err, req, res, next) => {
     error = { message, statusCode: 400 };
   }
 
-  res.status(error.statusCode || 500).json({
-    success: false,
-    error: error.message || 'Server Error'
-  });
+  // Check if response already sent
+  if (!res.headersSent) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      error: error.message || 'Server Error'
+    });
+  } else {
+    console.error('❌ Attempted to send error response but headers already sent:', error.message);
+  }
 };
 
 module.exports = errorHandler;

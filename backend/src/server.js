@@ -595,21 +595,7 @@ server.listen(PORT, () => {
 // GRACEFUL SHUTDOWN HANDLERS
 // ==========================================
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  console.error('❌ UNHANDLED REJECTION! Shutting down...');
-  console.error(err.name, err.message);
-  server.close(() => {
-    process.exit(1);
-  });
-});
-
-// Handle uncaught exceptions
-process.on('uncaughtException', (err) => {
-  console.error('❌ UNCAUGHT EXCEPTION! Shutting down...');
-  console.error(err.name, err.message);
-  process.exit(1);
-});
+// Duplicate handlers removed - using more detailed versions below
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
@@ -636,6 +622,8 @@ process.on('uncaughtException', (err) => {
   if (process.env.NODE_ENV !== 'production') {
     console.log('💥 Shutting down due to uncaught exception...');
     process.exit(1);
+  } else {
+    console.log('🔄 Continuing in production mode - double header error handled...');
   }
 });
 

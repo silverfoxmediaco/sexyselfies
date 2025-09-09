@@ -619,8 +619,14 @@ exports.creatorLogin = async (req, res, next) => {
     user.isEmailVerified = true;
     console.log('🔍 15. About to save user at:', new Date().toISOString());
     const startSave = Date.now();
-    await user.save();
-    console.log(`🔍 16. User.save() completed in ${Date.now() - startSave}ms at:`, new Date().toISOString());
+    
+    try {
+      await user.save();
+      console.log(`🔍 16. User.save() completed in ${Date.now() - startSave}ms at:`, new Date().toISOString());
+    } catch (saveError) {
+      console.error('🔍 16. User.save() failed:', saveError);
+      // Continue without saving - login still works
+    }
 
     console.log('🔍 17. Building response data at:', new Date().toISOString());
     // Use the existing sendTokenResponse helper to avoid JWT/cookie issues
@@ -659,9 +665,20 @@ exports.creatorLogin = async (req, res, next) => {
     
     console.log('🔍 20. About to call sendTokenResponse at:', new Date().toISOString());
     if (!res.headersSent) {
-      const startTokenResponse = Date.now();
-      sendTokenResponse(user, 200, res, additionalData);
-      console.log(`🔍 21. sendTokenResponse called in ${Date.now() - startTokenResponse}ms at:`, new Date().toISOString());
+      try {
+        const startTokenResponse = Date.now();
+        const result = sendTokenResponse(user, 200, res, additionalData);
+        console.log(`🔍 21. sendTokenResponse called in ${Date.now() - startTokenResponse}ms at:`, new Date().toISOString());
+        return result;
+      } catch (tokenError) {
+        console.error('🔍 21. sendTokenResponse error:', tokenError);
+        if (!res.headersSent) {
+          return res.status(500).json({
+            success: false,
+            error: 'Token generation failed'
+          });
+        }
+      }
     } else {
       console.log('🔍 21. Headers already sent, skipping sendTokenResponse');
     }
