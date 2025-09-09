@@ -316,8 +316,8 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Check for user with lean query for performance
-    const user = await User.findOne({ email }).select('+password').lean();
+    // Check for user
+    const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
       return res.status(401).json({
@@ -326,23 +326,8 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Check if password matches (direct bcrypt with timeout protection)
-    const bcrypt = require('bcryptjs');
-    const comparePromise = bcrypt.compare(password, user.password);
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Password comparison timeout')), 5000)
-    );
-    
-    let isMatch;
-    try {
-      isMatch = await Promise.race([comparePromise, timeoutPromise]);
-    } catch (error) {
-      console.error('Password comparison error:', error.message);
-      return res.status(500).json({
-        success: false,
-        error: 'Authentication timeout. Please try again.'
-      });
-    }
+    // Check if password matches
+    const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
       return res.status(401).json({
@@ -359,14 +344,10 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Update last login and mark email as verified (using updateOne since we used .lean())
-    await User.updateOne(
-      { _id: user._id },
-      { 
-        lastLogin: Date.now(),
-        isEmailVerified: true
-      }
-    );
+    // Update last login and mark email as verified
+    user.lastLogin = Date.now();
+    user.isEmailVerified = true;
+    await user.save();
 
     // For creators, check profile completion and verification status
     let additionalData = {};
@@ -492,8 +473,8 @@ exports.creatorLogin = async (req, res, next) => {
     }
 
     
-    // Check for user with creator role (optimized with lean)
-    const user = await User.findOne({ email, role: 'creator' }).select('+password').lean();
+    // Check for user with creator role
+    const user = await User.findOne({ email, role: 'creator' }).select('+password');
     
     if (!user) {
       return res.status(401).json({
@@ -503,23 +484,8 @@ exports.creatorLogin = async (req, res, next) => {
     }
 
 
-    // Check if password matches (direct bcrypt with timeout protection)
-    const bcrypt = require('bcryptjs');
-    const comparePromise = bcrypt.compare(password, user.password);
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Password comparison timeout')), 5000)
-    );
-    
-    let isMatch;
-    try {
-      isMatch = await Promise.race([comparePromise, timeoutPromise]);
-    } catch (error) {
-      console.error('Creator password comparison error:', error.message);
-      return res.status(500).json({
-        success: false,
-        error: 'Authentication timeout. Please try again.'
-      });
-    }
+    // Check if password matches
+    const isMatch = await user.matchPassword(password);
     
     if (!isMatch) {
       return res.status(401).json({
@@ -604,14 +570,10 @@ exports.creatorLogin = async (req, res, next) => {
       
     }
 
-    // Update last login and email verification (using updateOne since we used .lean())
-    await User.updateOne(
-      { _id: user._id },
-      { 
-        lastLogin: Date.now(),
-        isEmailVerified: true
-      }
-    );
+    // Update last login and email verification
+    user.lastLogin = Date.now();
+    user.isEmailVerified = true;
+    await user.save();
 
     
     // Use the existing sendTokenResponse helper to avoid JWT/cookie issues
@@ -889,13 +851,8 @@ exports.updatePassword = async (req, res, next) => {
 // Helper function to get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
   try {
-    // Create token (direct JWT since user might be lean object)
-    const jwt = require('jsonwebtoken');
-    const token = jwt.sign(
-      { id: user._id, role: user.role }, 
-      process.env.JWT_SECRET, 
-      { expiresIn: process.env.JWT_EXPIRE || '7d' }
-    );
+    // Create token using Mongoose method
+    const token = user.getSignedJwtToken();
 
     const options = {
       expires: new Date(
