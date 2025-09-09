@@ -889,8 +889,13 @@ exports.updatePassword = async (req, res, next) => {
 // Helper function to get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
   try {
-    // Create token
-    const token = user.getSignedJwtToken();
+    // Create token (direct JWT since user might be lean object)
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign(
+      { id: user._id, role: user.role }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: process.env.JWT_EXPIRE || '7d' }
+    );
 
     const options = {
       expires: new Date(
