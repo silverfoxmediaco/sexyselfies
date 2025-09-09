@@ -703,7 +703,7 @@ const CreatorSettingsPage = () => {
             <p>Loading your settings...</p>
           </div>
         ) : (
-        {isMobile ? (
+          isMobile ? (
           // Mobile Layout
           <>
             {/* Mobile Header */}
@@ -814,6 +814,7 @@ const CreatorSettingsPage = () => {
               </div>
             )}
           </div>
+        )
         )}
 
         {/* Delete Dialog */}
