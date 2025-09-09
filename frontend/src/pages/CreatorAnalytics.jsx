@@ -38,10 +38,8 @@ const CreatorAnalytics = () => {
       // Check if in development mode
       const isDevelopment = import.meta.env.DEV || localStorage.getItem('token') === 'dev-token-12345';
       
-      try {
-        const response = await api.get(`/creator/analytics?period=${selectedPeriod}&compare=false`);
-        setAnalyticsData(response);
-      }
+      const response = await api.get(`/creator/analytics?period=${selectedPeriod}&compare=false`);
+      setAnalyticsData(response);
     } catch (error) {
       console.error('Error loading analytics:', error);
       // Fallback to empty state with basic structure
@@ -66,6 +64,7 @@ const CreatorAnalytics = () => {
           topContentType: 'photos'
         }
       });
+    } finally {
       setLoading(false);
     }
   };
