@@ -462,6 +462,18 @@ exports.login = async (req, res, next) => {
 exports.creatorLogin = async (req, res, next) => {
   console.log('🔍 1. Creator login started at:', new Date().toISOString());
   
+  // Set aggressive timeout for this specific request
+  req.setTimeout(25000, () => {
+    console.error('⏰ creatorLogin timeout after 25s');
+    if (!res.headersSent) {
+      res.status(408).json({
+        success: false,
+        error: 'Login timeout - please try again',
+        code: 'AUTH_TIMEOUT'
+      });
+    }
+  });
+  
   try {
     const { email, password } = req.body;
     console.log('🔍 2. Got email/password from body at:', new Date().toISOString());
@@ -919,10 +931,18 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
 
     console.log('🔍 📝 F. About to send response at:', new Date().toISOString());
     const startResponse = Date.now();
+    
+    // Force immediate response flush for Render.com
     res
       .status(statusCode)
       .cookie('token', token, options)
       .json(responseData);
+      
+    // Ensure response is flushed immediately
+    if (res.flush) {
+      res.flush();
+    }
+    
     console.log(`🔍 📝 G. Response sent in ${Date.now() - startResponse}ms at:`, new Date().toISOString());
     
   } catch (error) {

@@ -41,6 +41,32 @@ const app = express();
 // Trust proxy - important for deployment behind reverse proxies
 app.set('trust proxy', 1);
 
+// Render.com specific optimizations
+app.use((req, res, next) => {
+  // Set response timeout to 30 seconds (Render limit is 60s)
+  res.setTimeout(30000, () => {
+    console.error('⏰ Response timeout after 30s for:', req.method, req.originalUrl);
+    if (!res.headersSent) {
+      res.status(408).json({
+        success: false,
+        error: 'Request timeout - please try again',
+        code: 'TIMEOUT'
+      });
+    }
+  });
+  
+  // Add keep-alive headers for better connection management
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Keep-Alive', 'timeout=30, max=100');
+  
+  // Disable Nagle's algorithm for faster response
+  if (req.socket && req.socket.setNoDelay) {
+    req.socket.setNoDelay(true);
+  }
+  
+  next();
+});
+
 // MongoDB Connection with enhanced error handling
 const connectDB = async () => {
   let connectionRetries = 0;
@@ -205,8 +231,12 @@ app.use(hpp({
   whitelist: ['sort', 'fields', 'page', 'limit']
 }));
 
-// Compression middleware
-app.use(compression());
+// Compression middleware with immediate response
+app.use(compression({
+  threshold: 0,  // Compress all responses
+  level: 1,      // Fast compression level
+  flush: require('zlib').constants.Z_SYNC_FLUSH  // Immediate flush
+}));
 
 // ==========================================
 // LOGGING
@@ -469,8 +499,22 @@ app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5002;
 
-// Create HTTP server and initialize Socket.io
+// Create HTTP server with optimizations for Render
 const server = createServer(app);
+
+// HTTP server optimizations for Render.com
+server.timeout = parseInt(process.env.HTTP_TIMEOUT) || 30000; // 30 second timeout
+server.keepAliveTimeout = parseInt(process.env.KEEP_ALIVE_TIMEOUT) || 65000; // Keep alive longer than load balancer
+server.headersTimeout = server.keepAliveTimeout + 1000; // Headers timeout slightly longer
+
+// Force immediate response transmission
+server.on('request', (req, res) => {
+  // Disable response buffering for auth endpoints
+  if (req.url.includes('/auth/')) {
+    res.setHeader('X-Accel-Buffering', 'no');  // Nginx
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  }
+});
 const io = new Server(server, {
   cors: corsOptions, // Use same CORS config
   transports: ['websocket', 'polling'],

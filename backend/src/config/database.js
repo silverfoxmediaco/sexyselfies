@@ -18,8 +18,13 @@ class DatabaseConnection {
       const options = {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 5000,
-        socketTimeoutMS: 45000,
+        serverSelectionTimeoutMS: 10000, // Increased for Render
+        socketTimeoutMS: 30000, // Reduced for faster timeout
+        connectTimeoutMS: 10000,
+        maxPoolSize: 10, // Limit connection pool
+        minPoolSize: 2,  // Maintain minimum connections
+        maxIdleTimeMS: 30000,
+        bufferMaxEntries: 0, // Disable buffering
         family: 4 // Force IPv4
       };
 
