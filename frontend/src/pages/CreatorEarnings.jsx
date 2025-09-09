@@ -53,10 +53,8 @@ const CreatorEarnings = () => {
       // Check if in development mode
       const isDevelopment = import.meta.env.DEV || localStorage.getItem('token') === 'dev-token-12345';
       
-      try {
-        const data = await creatorService.getEarnings(selectedPeriod);
-        setEarningsData(data);
-      }
+      const data = await creatorService.getEarnings(selectedPeriod);
+      setEarningsData(data);
     } catch (error) {
       console.error('Error loading earnings:', error);
       // Fallback to empty state with basic structure
