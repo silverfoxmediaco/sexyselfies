@@ -43,7 +43,7 @@ app.set('trust proxy', 1);
 
 // Render.com specific optimizations for Starter instance
 app.use((req, res, next) => {
-  // Disable response timeout for auth endpoints, let server handle it
+  // Disable response timeout for auth endpoints, let server handle it  
   if (req.url.includes('/auth/')) {
     // No res.setTimeout for auth routes - let server keepAliveTimeout handle it
     console.log('🔧 Auth route detected, using server timeout settings');
@@ -61,14 +61,24 @@ app.use((req, res, next) => {
     });
   }
   
-  // Add keep-alive headers for better connection management (per Render docs) 
-  res.setHeader('Connection', 'close'); // Force connection close to prevent hanging
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
+  // Add headers safely
+  try {
+    if (!res.headersSent) {
+      res.setHeader('Connection', 'close'); // Force connection close to prevent hanging
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+    }
+  } catch (headerError) {
+    console.error('Header setting error:', headerError);
+  }
   
   // Disable Nagle's algorithm for faster response
-  if (req.socket && req.socket.setNoDelay) {
-    req.socket.setNoDelay(true);
+  try {
+    if (req.socket && req.socket.setNoDelay) {
+      req.socket.setNoDelay(true);
+    }
+  } catch (socketError) {
+    console.error('Socket optimization error:', socketError);
   }
   
   next();
@@ -205,14 +215,18 @@ const defaultLimiter = rateLimit({
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10, // Increased from 5 to 10 for testing
-  message: 'Too many authentication attempts, please try again later.',
+  message: { error: 'Too many authentication attempts, please try again later.' },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   skipSuccessfulRequests: true,
 });
 
 const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  message: 'Too many uploads, please try again later.',
+  message: { error: 'Too many uploads, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 // ==========================================
@@ -340,22 +354,28 @@ app.get(`${API_V1}/health`, async (req, res) => {
 
 // Apply rate limiting BEFORE routes
 app.use('/api/', defaultLimiter);
-// Temporarily disabled auth rate limiting to debug timeout issue
-// app.use('/api/v1/auth/register', authLimiter);
-// app.use('/api/v1/auth/login', authLimiter);
-// app.use('/api/v1/auth/creator/register', authLimiter);
-// app.use('/api/v1/auth/creator/login', authLimiter);
+app.use('/api/v1/auth/register', authLimiter);
+app.use('/api/v1/auth/login', authLimiter);
+app.use('/api/v1/auth/creator/register', authLimiter);
+app.use('/api/v1/auth/creator/login', authLimiter);
 app.use('/api/v1/upload/', uploadLimiter);
 
 // Apply database check to critical auth routes
 console.log('🔧 Configuring database checks for auth routes...');
-app.use(`${API_V1}/auth/register`, checkDatabaseConnection);
-app.use(`${API_V1}/auth/login`, checkDatabaseConnection);
-app.use(`${API_V1}/auth/creator/register`, checkDatabaseConnection);
-app.use(`${API_V1}/auth/creator/login`, checkDatabaseConnection);
+// Temporarily disabled database checks to debug timeout issue
+// app.use(`${API_V1}/auth/register`, checkDatabaseConnection);
+// app.use(`${API_V1}/auth/login`, checkDatabaseConnection);  
+// app.use(`${API_V1}/auth/creator/register`, checkDatabaseConnection);
+// app.use(`${API_V1}/auth/creator/login`, checkDatabaseConnection);
 
 // Mount routes with API versioning
 console.log('🚀 Mounting API routes...');
+
+// Add a test endpoint to verify routing works
+app.post(`${API_V1}/auth/test`, (req, res) => {
+  console.log('✅ Test endpoint hit successfully');
+  res.json({ success: true, message: 'Test endpoint working', timestamp: new Date().toISOString() });
+});
 
 // Core routes
 app.use(`${API_V1}/auth`, authRoutes);
