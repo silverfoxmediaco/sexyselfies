@@ -25,9 +25,8 @@ router.get('/trending',
       
       // Build query
       const query = {
-        isActive: true,
-        isVerified: true,
-        'visibility.public': true
+        isPaused: { $ne: true }, // Not paused
+        isVerified: true
       };
       
       if (category) query.category = category;
@@ -99,9 +98,8 @@ router.get('/creator',
       
       // Build query
       const query = {
-        isActive: true,
-        isVerified: true,
-        'visibility.public': true
+        isPaused: { $ne: true }, // Not paused
+        isVerified: true
       };
       
       if (category) query.category = category;
