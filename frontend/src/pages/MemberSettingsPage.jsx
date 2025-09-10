@@ -618,7 +618,7 @@ const MemberSettingsPage = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              {renderMainMenu()}
+              {activeSection ? renderCurrentSection() : renderMainMenu()}
             </motion.div>
           </AnimatePresence>
         </div>
