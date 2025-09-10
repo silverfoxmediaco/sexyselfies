@@ -610,61 +610,38 @@ const MemberSettingsPage = () => {
     <>
       {isDesktop && <MainHeader />}
       <div className="member-settings-desktop">
-        <div className="member-settings-container">
-          {/* Sidebar */}
-          <div className="member-settings-sidebar">
-            <div className="member-settings-sidebar-header">
-              <h2>Settings</h2>
-            </div>
-
-            <nav className="member-settings-nav">
-              {settingSections.map((section) => (
-                <button
-                  key={section.id}
-                  className={`member-settings-nav-item ${activeSection === section.id ? 'active' : ''}`}
-                  onClick={() => setActiveSection(section.id)}
-                >
-                  <section.icon size={20} />
-                  <span>{section.title}</span>
-                </button>
-              ))}
-            </nav>
-
-            {/* Save Button */}
-            {unsavedChanges && (
-              <div className="member-settings-sidebar-save">
-                <button
-                  className="member-settings-save-btn"
-                  onClick={saveSettings}
-                  disabled={saveStatus === 'saving'}
-                >
-                  {saveStatus === 'saving' && <div className="member-settings-spinner" />}
-                  {saveStatus === 'saved' && <Check size={18} />}
-                  {saveStatus === 'error' && <X size={18} />}
-                  <span>
-                    {saveStatus === 'saving' ? 'Saving...' : 
-                     saveStatus === 'saved' ? 'Saved!' : 
-                     saveStatus === 'error' ? 'Failed' : 'Save Changes'}
-                  </span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Main Content */}
-          <div className="member-settings-content">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeSection}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
-                {activeSection ? renderCurrentSection() : renderMainMenu()}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+        <div className="member-settings-content">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              {renderMainMenu()}
+            </motion.div>
+          </AnimatePresence>
         </div>
+
+        {/* Save Button */}
+        {unsavedChanges && (
+          <div className="member-settings-desktop-save">
+            <button
+              className="member-settings-save-btn"
+              onClick={saveSettings}
+              disabled={saveStatus === 'saving'}
+            >
+              {saveStatus === 'saving' && <div className="member-settings-spinner" />}
+              {saveStatus === 'saved' && <Check size={18} />}
+              {saveStatus === 'error' && <X size={18} />}
+              <span>
+                {saveStatus === 'saving' ? 'Saving...' : 
+                 saveStatus === 'saved' ? 'Saved!' : 
+                 saveStatus === 'error' ? 'Failed' : 'Save Changes'}
+              </span>
+            </button>
+          </div>
+        )}
       </div>
       {isDesktop && <MainFooter />}
     </>

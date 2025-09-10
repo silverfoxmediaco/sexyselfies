@@ -42,68 +42,11 @@
   min-height: 100vh;
 }
 
-.member-settings-container {
-  display: flex;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 100vh;
-}
-
-.member-settings-sidebar {
-  width: 300px;
-  background: var(--settings-surface);
-  border-right: 1px solid var(--settings-border);
-  padding: 32px 24px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-}
-
-.member-settings-sidebar-header h2 {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 24px 0;
-  color: var(--settings-text);
-}
-
-.member-settings-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.member-settings-nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background: transparent;
-  border: none;
-  border-radius: 12px;
-  color: var(--settings-text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-  font-size: 16px;
-  font-weight: 500;
-  width: 100%;
-}
-
-.member-settings-nav-item:hover {
-  background: var(--settings-surface-hover);
-  color: var(--settings-text);
-}
-
-.member-settings-nav-item.active {
-  background: var(--settings-primary);
-  color: white;
-}
-
 .member-settings-content {
-  flex: 1;
-  padding: 32px;
-  max-width: 800px;
+  width: 100%;
+  max-width: none;
+  margin: 20px;
+  padding: 0;
 }
 
 /* Main Menu */
@@ -450,11 +393,11 @@
 }
 
 /* Desktop Save Button */
-.member-settings-sidebar-save {
-  position: sticky;
-  bottom: 0;
-  margin-top: auto;
-  padding-top: 24px;
+.member-settings-desktop-save {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 200;
 }
 
 /* Spinner */
