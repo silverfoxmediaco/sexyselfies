@@ -36,7 +36,7 @@ const MyConnections = () => {
 
   const fetchStats = async () => {
     try {
-      const data = await api.get('/v1/connections/stats');
+      const data = await api.get('/connections/stats');
       
       setStats(data.data || {
         total: 0,
@@ -173,7 +173,7 @@ const MyConnections = () => {
 
   const handleBulkAction = async (action) => {
     try {
-      await api.post('/v1/connections/bulk', {
+      await api.post('/connections/bulk', {
         connectionIds: selectedConnections,
         action
       });

@@ -14,6 +14,529 @@ import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection
 import { uploadApi } from '../services/api.config';
 import './CreatorContentUpload.css';
 
+// Step Components - Moved outside to prevent recreation on every render
+const UploadStep = ({ 
+  uploads, 
+  isDragging, 
+  errors, 
+  fileInputRef, 
+  handleDragEnter, 
+  handleDragOver, 
+  handleDragLeave, 
+  handleDrop, 
+  handleFileSelect,
+  removeFile, 
+  updateFilePrice, 
+  handleThumbnailUpload, 
+  removeThumbnail, 
+  uploadProgress 
+}) => (
+  <motion.div
+    initial={{ opacity: 0, x: 20 }}
+    animate={{ opacity: 1, x: 0 }}
+    className="creator-content-upload-step"
+  >
+    <div className="creator-content-upload-step-header">
+      <h2>Upload Your Content</h2>
+      <p>Share your exclusive photos and videos with your fans</p>
+    </div>
+
+    {/* Drop Zone */}
+    <div
+      className={`creator-content-upload-drop-zone ${isDragging ? 'creator-content-upload-dragging' : ''} ${uploads.length > 0 ? 'creator-content-upload-has-files' : ''}`}
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onClick={() => fileInputRef.current?.click()}
+    >
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        accept="image/*,video/*"
+        onChange={handleFileSelect}
+        style={{ display: 'none' }}
+      />
+      
+      {uploads.length === 0 ? (
+        <div className="creator-content-upload-drop-zone-content">
+          <Upload size={48} className="creator-content-upload-drop-icon" />
+          <h3>Drag & drop your files here</h3>
+          <p>or click to browse</p>
+          <div className="creator-content-upload-file-types">
+            <span className="creator-content-upload-file-type">
+              <Image size={16} />
+              Images
+            </span>
+            <span className="creator-content-upload-file-type">
+              <Video size={16} />
+              Videos
+            </span>
+          </div>
+          <p className="creator-content-upload-file-limit">Max 100MB per file</p>
+        </div>
+      ) : (
+        <div className="creator-content-upload-add-more">
+          <Plus size={24} />
+          <span>Add more files</span>
+        </div>
+      )}
+    </div>
+
+    {errors.file && (
+      <div className="creator-content-upload-error-message">
+        <AlertCircle size={16} />
+        {errors.file}
+      </div>
+    )}
+
+    {/* File Preview Grid */}
+    {uploads.length > 0 && (
+      <div className="creator-content-upload-file-preview-grid">
+        <AnimatePresence>
+          {uploads.map((upload) => (
+            <motion.div
+              key={upload.id}
+              className="creator-content-upload-file-preview-card"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              layout
+            >
+              <div className="creator-content-upload-preview-container">
+                {upload.type === 'image' ? (
+                  <img src={upload.preview} alt={upload.name} />
+                ) : (
+                  <div className="creator-content-upload-video-preview">
+                    {upload.customThumbnail ? (
+                      <img 
+                        src={upload.customThumbnail} 
+                        alt="Custom thumbnail" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <>
+                        <Video size={32} />
+                        <span>Video</span>
+                      </>
+                    )}
+                  </div>
+                )}
+                
+                {/* Upload Progress */}
+                {upload.status === 'uploading' && (
+                  <div className="creator-content-upload-progress-overlay">
+                    <div className="creator-content-upload-progress-circle">
+                      <Loader className="creator-content-upload-spinning" size={24} />
+                      <span>{upload.progress}%</span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Success Indicator */}
+                {upload.status === 'complete' && (
+                  <div className="creator-content-upload-success-overlay">
+                    <CheckCircle size={32} />
+                    {upload.contentId && (
+                      <small style={{ fontSize: '10px', marginTop: '4px', color: 'white' }}>
+                        ID: {String(upload.contentId).slice(-8)}
+                      </small>
+                    )}
+                  </div>
+                )}
+                
+                {/* Remove Button */}
+                {upload.status === 'pending' && (
+                  <button
+                    className="creator-content-upload-remove-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFile(upload.id);
+                    }}
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+              
+              <div className="creator-content-upload-file-info">
+                <p className="creator-content-upload-file-name">{upload.name}</p>
+                
+                {/* Custom Thumbnail Upload for Videos */}
+                {upload.type === 'video' && upload.status === 'pending' && (
+                  <div className="creator-content-upload-thumbnail-section">
+                    <label className="creator-content-upload-thumbnail-label">
+                      Custom Thumbnail (Optional)
+                    </label>
+                    <div className="creator-content-upload-thumbnail-controls">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) handleThumbnailUpload(upload.id, file);
+                        }}
+                        style={{ display: 'none' }}
+                        id={`thumbnail-${upload.id}`}
+                      />
+                      <label 
+                        htmlFor={`thumbnail-${upload.id}`}
+                        className="creator-content-upload-thumbnail-btn"
+                      >
+                        <Image size={14} />
+                        {upload.customThumbnail ? 'Change' : 'Upload'}
+                      </label>
+                      {upload.customThumbnail && (
+                        <button
+                          type="button"
+                          onClick={() => removeThumbnail(upload.id)}
+                          className="creator-content-upload-thumbnail-remove"
+                        >
+                          <X size={14} />
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="creator-content-upload-file-meta">
+                  <span className="creator-content-upload-file-size">
+                    {(upload.size / 1024 / 1024).toFixed(2)} MB
+                  </span>
+                  <div className="creator-content-upload-price-controls">
+                    <label className="creator-content-upload-free-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={upload.price === 0}
+                        onChange={(e) => updateFilePrice(upload.id, e.target.checked ? 0 : 2.99)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <span>Free</span>
+                    </label>
+                    {upload.price > 0 && (
+                      <div className="creator-content-upload-price-input">
+                        <DollarSign size={14} />
+                        <input
+                          type="number"
+                          min="0.99"
+                          max="99.99"
+                          step="0.01"
+                          value={upload.price}
+                          onChange={(e) => updateFilePrice(upload.id, e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    )}
+
+  </motion.div>
+);
+
+const DetailsStep = ({ contentDetails, setContentDetails, toggleTag, addCustomTag, errors }) => (
+  <motion.div
+    initial={{ opacity: 0, x: 20 }}
+    animate={{ opacity: 1, x: 0 }}
+    className="creator-content-upload-details-step"
+  >
+    <div className="creator-content-upload-step-header">
+      <h2>Add Details</h2>
+      <p>Help your fans discover your content</p>
+    </div>
+
+    {/* Title */}
+    <div className="creator-content-upload-form-group">
+      <label className="creator-content-upload-form-label">
+        <FileText size={16} />
+        Title (Optional)
+      </label>
+      <input
+        type="text"
+        className="creator-content-upload-form-input"
+        placeholder="Give your content a catchy title..."
+        value={contentDetails.title}
+        onChange={(e) => setContentDetails(prev => ({ ...prev, title: e.target.value }))}
+      />
+    </div>
+
+    {/* Description */}
+    <div className="creator-content-upload-form-group">
+      <label className="creator-content-upload-form-label">
+        <FileText size={16} />
+        Description (Optional)
+      </label>
+      <textarea
+        className="creator-content-upload-form-textarea"
+        placeholder="Tell your fans what makes this content special..."
+        rows="3"
+        value={contentDetails.description}
+        onChange={(e) => setContentDetails(prev => ({ ...prev, description: e.target.value }))}
+      />
+    </div>
+
+    {/* Categories */}
+    <div className="creator-content-upload-form-group">
+      <label className="creator-content-upload-form-label">
+        <Tag size={16} />
+        Category
+        <span className="creator-content-upload-required">*</span>
+      </label>
+      <div className="creator-content-upload-category-grid">
+        {[
+          { id: 'photos', label: 'Photos', icon: Camera, color: 'blue' },
+          { id: 'videos', label: 'Videos', icon: Film, color: 'purple' }
+        ].map(category => (
+          <motion.button
+            key={category.id}
+            className={`creator-content-upload-category-btn ${contentDetails.category === category.id ? 'creator-content-upload-selected' : ''} creator-content-upload-${category.color}`}
+            onClick={() => setContentDetails(prev => ({ ...prev, category: category.id }))}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <category.icon size={20} />
+            <span>{category.label}</span>
+          </motion.button>
+        ))}
+      </div>
+      {errors.category && (
+        <span className="creator-content-upload-error-text">{errors.category}</span>
+      )}
+    </div>
+
+    {/* Tags */}
+    <div className="creator-content-upload-form-group">
+      <label className="creator-content-upload-form-label">
+        <Hash size={16} />
+        Tags (Max 5)
+        <span className="creator-content-upload-required">*</span>
+      </label>
+      <div className="creator-content-upload-tags-section">
+        <div className="creator-content-upload-popular-tags">
+          {[
+            'exclusive', 'behind-the-scenes', 'daily', 'premium',
+            'natural', 'glamour', 'casual', 'professional'
+          ].map(tag => (
+            <button
+              key={tag}
+              className={`creator-content-upload-tag-btn ${contentDetails.tags.includes(tag) ? 'creator-content-upload-selected' : ''}`}
+              onClick={() => toggleTag(tag)}
+              disabled={!contentDetails.tags.includes(tag) && contentDetails.tags.length >= 5}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+        <input
+          type="text"
+          className="creator-content-upload-tag-input"
+          placeholder="Add custom tag and press Enter..."
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              addCustomTag(e);
+            }
+          }}
+          disabled={contentDetails.tags.length >= 5}
+        />
+        <div className="creator-content-upload-selected-tags">
+          {contentDetails.tags.map(tag => (
+            <span key={tag} className="creator-content-upload-selected-tag">
+              #{tag}
+              <button onClick={() => toggleTag(tag)}>
+                <X size={14} />
+              </button>
+            </span>
+          ))}
+        </div>
+      </div>
+      {errors.tags && (
+        <span className="creator-content-upload-error-text">{errors.tags}</span>
+      )}
+    </div>
+
+    {/* Advanced Settings */}
+    <div className="creator-content-upload-advanced-settings">
+      <h3>Advanced Settings</h3>
+      
+      <div className="creator-content-upload-settings-grid">
+        
+        
+        <label className="creator-content-upload-setting-item">
+          <input
+            type="checkbox"
+            checked={contentDetails.allowTips}
+            onChange={(e) => setContentDetails(prev => ({ ...prev, allowTips: e.target.checked }))}
+          />
+          <span className="creator-content-upload-setting-label">
+            <DollarSign size={16} />
+            Accept tips
+          </span>
+        </label>
+      </div>
+    </div>
+
+  </motion.div>
+);
+
+const ReviewStep = ({ uploads, contentDetails, errors }) => (
+  <motion.div
+    initial={{ opacity: 0, x: 20 }}
+    animate={{ opacity: 1, x: 0 }}
+    className="creator-content-upload-review-step"
+  >
+    <div className="creator-content-upload-step-header">
+      <h2>Review & Publish</h2>
+      <p>Make sure everything looks perfect</p>
+    </div>
+
+    {/* Content Summary */}
+    <div className="creator-content-upload-review-card">
+      <h3>Content Summary</h3>
+      <div className="creator-content-upload-summary-grid">
+        <div className="creator-content-upload-summary-item">
+          <span className="creator-content-upload-label">Files:</span>
+          <span className="creator-content-upload-value">{uploads.length} items</span>
+        </div>
+        <div className="creator-content-upload-summary-item">
+          <span className="creator-content-upload-label">Category:</span>
+          <span className="creator-content-upload-value">{contentDetails.category}</span>
+        </div>
+        <div className="creator-content-upload-summary-item">
+          <span className="creator-content-upload-label">Tags:</span>
+          <span className="creator-content-upload-value">{contentDetails.tags.join(', ')}</span>
+        </div>
+        <div className="creator-content-upload-summary-item">
+          <span className="creator-content-upload-label">Total Size:</span>
+          <span className="creator-content-upload-value">
+            {(uploads.reduce((acc, u) => acc + u.size, 0) / 1024 / 1024).toFixed(2)} MB
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* Pricing Summary */}
+    <div className="creator-content-upload-review-card">
+      <h3>Pricing</h3>
+      <div className="creator-content-upload-pricing-list">
+        {uploads.map(upload => (
+          <div key={upload.id} className="creator-content-upload-pricing-item">
+            <span className="creator-content-upload-file-name">{upload.name}</span>
+            <span className="creator-content-upload-price">${upload.price}</span>
+          </div>
+        ))}
+        <div className="creator-content-upload-pricing-total">
+          <span>Average Price:</span>
+          <span className="creator-content-upload-total">
+            ${(uploads.reduce((acc, u) => acc + u.price, 0) / uploads.length).toFixed(2)}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* Visibility Options */}
+    <div className="creator-content-upload-visibility-options">
+      <h3>Visibility</h3>
+      <div className="creator-content-upload-visibility-grid">
+        <label className="creator-content-upload-visibility-option">
+          <input
+            type="radio"
+            name="visibility"
+            value="free"
+            checked={contentDetails.visibility === 'free'}
+            onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
+          />
+          <div className="creator-content-upload-option-content">
+            <Gift size={20} />
+            <span className="creator-content-upload-option-title">Free</span>
+            <span className="creator-content-upload-option-desc">Free sample for everyone</span>
+          </div>
+        </label>
+        
+        <label className="creator-content-upload-visibility-option">
+          <input
+            type="radio"
+            name="visibility"
+            value="public"
+            checked={contentDetails.visibility === 'public'}
+            onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
+          />
+          <div className="creator-content-upload-option-content">
+            <Unlock size={20} />
+            <span className="creator-content-upload-option-title">Public</span>
+            <span className="creator-content-upload-option-desc">Available to all connections</span>
+          </div>
+        </label>
+        
+        <label className="creator-content-upload-visibility-option">
+          <input
+            type="radio"
+            name="visibility"
+            value="private"
+            checked={contentDetails.visibility === 'private'}
+            onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
+          />
+          <div className="creator-content-upload-option-content">
+            <Lock size={20} />
+            <span className="creator-content-upload-option-title">Private</span>
+            <span className="creator-content-upload-option-desc">Only for selected connections</span>
+          </div>
+        </label>
+        
+        <label className="creator-content-upload-visibility-option">
+          <input
+            type="radio"
+            name="visibility"
+            value="scheduled"
+            checked={contentDetails.visibility === 'scheduled'}
+            onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
+          />
+          <div className="creator-content-upload-option-content">
+            <Calendar size={20} />
+            <span className="creator-content-upload-option-title">Schedule</span>
+            <span className="creator-content-upload-option-desc">Post at optimal time</span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    {/* Estimated Earnings */}
+    <div className="creator-content-upload-earnings-preview">
+      <div className="creator-content-upload-earnings-header">
+        <TrendingUp size={20} />
+        <span>Estimated Earnings</span>
+      </div>
+      <div className="creator-content-upload-earnings-content">
+        <div className="creator-content-upload-earnings-stat">
+          <span className="creator-content-upload-stat-label">Per View:</span>
+          <span className="creator-content-upload-stat-value">
+            ${(uploads.reduce((acc, u) => acc + u.price, 0) / uploads.length).toFixed(2)}
+          </span>
+        </div>
+        <div className="creator-content-upload-earnings-stat">
+          <span className="creator-content-upload-stat-label">Potential (100 views):</span>
+          <span className="creator-content-upload-stat-value creator-content-upload-highlight">
+            ${(uploads.reduce((acc, u) => acc + u.price, 0) / uploads.length * 100).toFixed(2)}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {errors.submit && (
+      <div className="creator-content-upload-error-message">
+        <AlertCircle size={16} />
+        {errors.submit}
+      </div>
+    )}
+  </motion.div>
+);
+
 const CreatorContentUpload = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -320,510 +843,6 @@ const CreatorContentUpload = () => {
     }
   };
 
-  // Step 1: File Upload
-  const UploadStep = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      className="creator-content-upload-step"
-    >
-      <div className="creator-content-upload-step-header">
-        <h2>Upload Your Content</h2>
-        <p>Share your exclusive photos and videos with your fans</p>
-      </div>
-
-      {/* Drop Zone */}
-      <div
-        className={`creator-content-upload-drop-zone ${isDragging ? 'creator-content-upload-dragging' : ''} ${uploads.length > 0 ? 'creator-content-upload-has-files' : ''}`}
-        onDragEnter={handleDragEnter}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept="image/*,video/*"
-          onChange={handleFileSelect}
-          style={{ display: 'none' }}
-        />
-        
-        {uploads.length === 0 ? (
-          <div className="creator-content-upload-drop-zone-content">
-            <Upload size={48} className="creator-content-upload-drop-icon" />
-            <h3>Drag & drop your files here</h3>
-            <p>or click to browse</p>
-            <div className="creator-content-upload-file-types">
-              <span className="creator-content-upload-file-type">
-                <Image size={16} />
-                Images
-              </span>
-              <span className="creator-content-upload-file-type">
-                <Video size={16} />
-                Videos
-              </span>
-            </div>
-            <p className="creator-content-upload-file-limit">Max 100MB per file</p>
-          </div>
-        ) : (
-          <div className="creator-content-upload-add-more">
-            <Plus size={24} />
-            <span>Add more files</span>
-          </div>
-        )}
-      </div>
-
-      {errors.file && (
-        <div className="creator-content-upload-error-message">
-          <AlertCircle size={16} />
-          {errors.file}
-        </div>
-      )}
-
-      {/* File Preview Grid */}
-      {uploads.length > 0 && (
-        <div className="creator-content-upload-file-preview-grid">
-          <AnimatePresence>
-            {uploads.map((upload) => (
-              <motion.div
-                key={upload.id}
-                className="creator-content-upload-file-preview-card"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                layout
-              >
-                <div className="creator-content-upload-preview-container">
-                  {upload.type === 'image' ? (
-                    <img src={upload.preview} alt={upload.name} />
-                  ) : (
-                    <div className="creator-content-upload-video-preview">
-                      {upload.customThumbnail ? (
-                        <img 
-                          src={upload.customThumbnail} 
-                          alt="Custom thumbnail" 
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                      ) : (
-                        <>
-                          <Video size={32} />
-                          <span>Video</span>
-                        </>
-                      )}
-                    </div>
-                  )}
-                  
-                  {/* Upload Progress */}
-                  {upload.status === 'uploading' && (
-                    <div className="creator-content-upload-progress-overlay">
-                      <div className="creator-content-upload-progress-circle">
-                        <Loader className="creator-content-upload-spinning" size={24} />
-                        <span>{upload.progress}%</span>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Success Indicator */}
-                  {upload.status === 'complete' && (
-                    <div className="creator-content-upload-success-overlay">
-                      <CheckCircle size={32} />
-                      {upload.contentId && (
-                        <small style={{ fontSize: '10px', marginTop: '4px', color: 'white' }}>
-                          ID: {String(upload.contentId).slice(-8)}
-                        </small>
-                      )}
-                    </div>
-                  )}
-                  
-                  {/* Remove Button */}
-                  {upload.status === 'pending' && (
-                    <button
-                      className="creator-content-upload-remove-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeFile(upload.id);
-                      }}
-                    >
-                      <X size={16} />
-                    </button>
-                  )}
-                </div>
-                
-                <div className="creator-content-upload-file-info">
-                  <p className="creator-content-upload-file-name">{upload.name}</p>
-                  
-                  {/* Custom Thumbnail Upload for Videos */}
-                  {upload.type === 'video' && upload.status === 'pending' && (
-                    <div className="creator-content-upload-thumbnail-section">
-                      <label className="creator-content-upload-thumbnail-label">
-                        Custom Thumbnail (Optional)
-                      </label>
-                      <div className="creator-content-upload-thumbnail-controls">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) handleThumbnailUpload(upload.id, file);
-                          }}
-                          style={{ display: 'none' }}
-                          id={`thumbnail-${upload.id}`}
-                        />
-                        <label 
-                          htmlFor={`thumbnail-${upload.id}`}
-                          className="creator-content-upload-thumbnail-btn"
-                        >
-                          <Image size={14} />
-                          {upload.customThumbnail ? 'Change' : 'Upload'}
-                        </label>
-                        {upload.customThumbnail && (
-                          <button
-                            type="button"
-                            onClick={() => removeThumbnail(upload.id)}
-                            className="creator-content-upload-thumbnail-remove"
-                          >
-                            <X size={14} />
-                            Remove
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="creator-content-upload-file-meta">
-                    <span className="creator-content-upload-file-size">
-                      {(upload.size / 1024 / 1024).toFixed(2)} MB
-                    </span>
-                    <div className="creator-content-upload-price-controls">
-                      <label className="creator-content-upload-free-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={upload.price === 0}
-                          onChange={(e) => updateFilePrice(upload.id, e.target.checked ? 0 : 2.99)}
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                        <span>Free</span>
-                      </label>
-                      {upload.price > 0 && (
-                        <div className="creator-content-upload-price-input">
-                          <DollarSign size={14} />
-                          <input
-                            type="number"
-                            min="0.99"
-                            max="99.99"
-                            step="0.01"
-                            value={upload.price}
-                            onChange={(e) => updateFilePrice(upload.id, e.target.value)}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      )}
-
-    </motion.div>
-  );
-
-  // Step 2: Content Details
-  const DetailsStep = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      className="creator-content-upload-details-step"
-    >
-      <div className="creator-content-upload-step-header">
-        <h2>Add Details</h2>
-        <p>Help your fans discover your content</p>
-      </div>
-
-      {/* Title */}
-      <div className="creator-content-upload-form-group">
-        <label className="creator-content-upload-form-label">
-          <FileText size={16} />
-          Title (Optional)
-        </label>
-        <input
-          type="text"
-          className="creator-content-upload-form-input"
-          placeholder="Give your content a catchy title..."
-          value={contentDetails.title}
-          onChange={(e) => setContentDetails(prev => ({ ...prev, title: e.target.value }))}
-        />
-      </div>
-
-      {/* Description */}
-      <div className="creator-content-upload-form-group">
-        <label className="creator-content-upload-form-label">
-          <FileText size={16} />
-          Description (Optional)
-        </label>
-        <textarea
-          className="creator-content-upload-form-textarea"
-          placeholder="Tell your fans what makes this content special..."
-          rows="3"
-          value={contentDetails.description}
-          onChange={(e) => setContentDetails(prev => ({ ...prev, description: e.target.value }))}
-        />
-      </div>
-
-      {/* Categories */}
-      <div className="creator-content-upload-form-group">
-        <label className="creator-content-upload-form-label">
-          <Tag size={16} />
-          Category
-          <span className="creator-content-upload-required">*</span>
-        </label>
-        <div className="creator-content-upload-category-grid">
-          {contentTypes.map(category => (
-            <motion.button
-              key={category.id}
-              className={`creator-content-upload-category-btn ${contentDetails.category === category.id ? 'creator-content-upload-selected' : ''} creator-content-upload-${category.color}`}
-              onClick={() => setContentDetails(prev => ({ ...prev, category: category.id }))}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <category.icon size={20} />
-              <span>{category.label}</span>
-            </motion.button>
-          ))}
-        </div>
-        {errors.category && (
-          <span className="creator-content-upload-error-text">{errors.category}</span>
-        )}
-      </div>
-
-      {/* Tags */}
-      <div className="creator-content-upload-form-group">
-        <label className="creator-content-upload-form-label">
-          <Hash size={16} />
-          Tags (Max 5)
-          <span className="creator-content-upload-required">*</span>
-        </label>
-        <div className="creator-content-upload-tags-section">
-          <div className="creator-content-upload-popular-tags">
-            {popularTags.map(tag => (
-              <button
-                key={tag}
-                className={`creator-content-upload-tag-btn ${contentDetails.tags.includes(tag) ? 'creator-content-upload-selected' : ''}`}
-                onClick={() => toggleTag(tag)}
-                disabled={!contentDetails.tags.includes(tag) && contentDetails.tags.length >= 5}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-          <input
-            type="text"
-            className="creator-content-upload-tag-input"
-            placeholder="Add custom tag and press Enter..."
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                addCustomTag(e);
-              }
-            }}
-            disabled={contentDetails.tags.length >= 5}
-          />
-          <div className="creator-content-upload-selected-tags">
-            {contentDetails.tags.map(tag => (
-              <span key={tag} className="creator-content-upload-selected-tag">
-                #{tag}
-                <button onClick={() => toggleTag(tag)}>
-                  <X size={14} />
-                </button>
-              </span>
-            ))}
-          </div>
-        </div>
-        {errors.tags && (
-          <span className="creator-content-upload-error-text">{errors.tags}</span>
-        )}
-      </div>
-
-      {/* Advanced Settings */}
-      <div className="creator-content-upload-advanced-settings">
-        <h3>Advanced Settings</h3>
-        
-        <div className="creator-content-upload-settings-grid">
-          
-          
-          <label className="creator-content-upload-setting-item">
-            <input
-              type="checkbox"
-              checked={contentDetails.allowTips}
-              onChange={(e) => setContentDetails(prev => ({ ...prev, allowTips: e.target.checked }))}
-            />
-            <span className="creator-content-upload-setting-label">
-              <DollarSign size={16} />
-              Accept tips
-            </span>
-          </label>
-        </div>
-      </div>
-
-    </motion.div>
-  );
-
-  // Step 3: Review & Publish
-  const ReviewStep = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      className="creator-content-upload-review-step"
-    >
-      <div className="creator-content-upload-step-header">
-        <h2>Review & Publish</h2>
-        <p>Make sure everything looks perfect</p>
-      </div>
-
-      {/* Content Summary */}
-      <div className="creator-content-upload-review-card">
-        <h3>Content Summary</h3>
-        <div className="creator-content-upload-summary-grid">
-          <div className="creator-content-upload-summary-item">
-            <span className="creator-content-upload-label">Files:</span>
-            <span className="creator-content-upload-value">{uploads.length} items</span>
-          </div>
-          <div className="creator-content-upload-summary-item">
-            <span className="creator-content-upload-label">Category:</span>
-            <span className="creator-content-upload-value">{contentDetails.category}</span>
-          </div>
-          <div className="creator-content-upload-summary-item">
-            <span className="creator-content-upload-label">Tags:</span>
-            <span className="creator-content-upload-value">{contentDetails.tags.join(', ')}</span>
-          </div>
-          <div className="creator-content-upload-summary-item">
-            <span className="creator-content-upload-label">Total Size:</span>
-            <span className="creator-content-upload-value">
-              {(uploads.reduce((acc, u) => acc + u.size, 0) / 1024 / 1024).toFixed(2)} MB
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Pricing Summary */}
-      <div className="creator-content-upload-review-card">
-        <h3>Pricing</h3>
-        <div className="creator-content-upload-pricing-list">
-          {uploads.map(upload => (
-            <div key={upload.id} className="creator-content-upload-pricing-item">
-              <span className="creator-content-upload-file-name">{upload.name}</span>
-              <span className="creator-content-upload-price">${upload.price}</span>
-            </div>
-          ))}
-          <div className="creator-content-upload-pricing-total">
-            <span>Average Price:</span>
-            <span className="creator-content-upload-total">
-              ${(uploads.reduce((acc, u) => acc + u.price, 0) / uploads.length).toFixed(2)}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Visibility Options */}
-      <div className="creator-content-upload-visibility-options">
-        <h3>Visibility</h3>
-        <div className="creator-content-upload-visibility-grid">
-          <label className="creator-content-upload-visibility-option">
-            <input
-              type="radio"
-              name="visibility"
-              value="free"
-              checked={contentDetails.visibility === 'free'}
-              onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
-            />
-            <div className="creator-content-upload-option-content">
-              <Gift size={20} />
-              <span className="creator-content-upload-option-title">Free</span>
-              <span className="creator-content-upload-option-desc">Free sample for everyone</span>
-            </div>
-          </label>
-          
-          <label className="creator-content-upload-visibility-option">
-            <input
-              type="radio"
-              name="visibility"
-              value="public"
-              checked={contentDetails.visibility === 'public'}
-              onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
-            />
-            <div className="creator-content-upload-option-content">
-              <Unlock size={20} />
-              <span className="creator-content-upload-option-title">Public</span>
-              <span className="creator-content-upload-option-desc">Available to all connections</span>
-            </div>
-          </label>
-          
-          <label className="creator-content-upload-visibility-option">
-            <input
-              type="radio"
-              name="visibility"
-              value="private"
-              checked={contentDetails.visibility === 'private'}
-              onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
-            />
-            <div className="creator-content-upload-option-content">
-              <Lock size={20} />
-              <span className="creator-content-upload-option-title">Private</span>
-              <span className="creator-content-upload-option-desc">Only for selected connections</span>
-            </div>
-          </label>
-          
-          <label className="creator-content-upload-visibility-option">
-            <input
-              type="radio"
-              name="visibility"
-              value="scheduled"
-              checked={contentDetails.visibility === 'scheduled'}
-              onChange={(e) => setContentDetails(prev => ({ ...prev, visibility: e.target.value }))}
-            />
-            <div className="creator-content-upload-option-content">
-              <Calendar size={20} />
-              <span className="creator-content-upload-option-title">Schedule</span>
-              <span className="creator-content-upload-option-desc">Post at optimal time</span>
-            </div>
-          </label>
-        </div>
-      </div>
-
-      {/* Estimated Earnings */}
-      <div className="creator-content-upload-earnings-preview">
-        <div className="creator-content-upload-earnings-header">
-          <TrendingUp size={20} />
-          <span>Estimated Earnings</span>
-        </div>
-        <div className="creator-content-upload-earnings-content">
-          <div className="creator-content-upload-earnings-stat">
-            <span className="creator-content-upload-stat-label">Per View:</span>
-            <span className="creator-content-upload-stat-value">
-              ${(uploads.reduce((acc, u) => acc + u.price, 0) / uploads.length).toFixed(2)}
-            </span>
-          </div>
-          <div className="creator-content-upload-earnings-stat">
-            <span className="creator-content-upload-stat-label">Potential (100 views):</span>
-            <span className="creator-content-upload-stat-value creator-content-upload-highlight">
-              ${(uploads.reduce((acc, u) => acc + u.price, 0) / uploads.length * 100).toFixed(2)}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {errors.submit && (
-        <div className="creator-content-upload-error-message">
-          <AlertCircle size={16} />
-          {errors.submit}
-        </div>
-      )}
-    </motion.div>
-  );
-
   return (
     <div className="creator-content-upload-page">
       {/* Desktop Header */}
@@ -880,9 +899,44 @@ const CreatorContentUpload = () => {
         {/* Step Content */}
         <div className="creator-content-upload-step-content">
           <AnimatePresence mode="wait">
-            {currentStep === 1 && <UploadStep key="upload" />}
-            {currentStep === 2 && <DetailsStep key="details" />}
-            {currentStep === 3 && <ReviewStep key="review" />}
+            {currentStep === 1 && (
+              <UploadStep 
+                key="upload" 
+                uploads={uploads}
+                fileInputRef={fileInputRef}
+                isDragging={isDragging}
+                handleDragEnter={handleDragEnter}
+                handleDragLeave={handleDragLeave}
+                handleDragOver={handleDragOver}
+                handleDrop={handleDrop}
+                handleFileSelect={handleFileSelect}
+                removeFile={removeFile}
+                updateFilePrice={updateFilePrice}
+                uploadProgress={uploadProgress}
+                handleThumbnailUpload={handleThumbnailUpload}
+                removeThumbnail={removeThumbnail}
+                videoThumbnails={videoThumbnails}
+                errors={errors}
+              />
+            )}
+            {currentStep === 2 && (
+              <DetailsStep 
+                key="details" 
+                contentDetails={contentDetails}
+                setContentDetails={setContentDetails}
+                toggleTag={toggleTag}
+                addCustomTag={addCustomTag}
+                errors={errors}
+              />
+            )}
+            {currentStep === 3 && (
+              <ReviewStep 
+                key="review" 
+                uploads={uploads}
+                contentDetails={contentDetails}
+                errors={errors}
+              />
+            )}
           </AnimatePresence>
         </div>
 

@@ -101,13 +101,13 @@ const MemberSettingsPage = () => {
     setLoadingSettings(true);
     try {
       console.log('Loading user settings...');
-      const userData = await api.get('/v1/auth/me');
+      const userData = await api.get('/auth/me');
       console.log('Loaded user data for settings:', userData);
       
       // Try to load preferences, but don't fail if it doesn't exist
       let preferences = {};
       try {
-        preferences = await api.get('/v1/members/preferences');
+        preferences = await api.get('/members/preferences');
       } catch (prefError) {
         console.log('No preferences found, using defaults:', prefError.message);
       }
@@ -148,7 +148,7 @@ const MemberSettingsPage = () => {
       
       // If API fails completely, at least try to get basic user data
       try {
-        const basicUserData = await api.get('/v1/auth/me');
+        const basicUserData = await api.get('/auth/me');
         setSettings(prev => ({
           ...prev,
           email: basicUserData.email || prev.email,
@@ -186,13 +186,13 @@ const MemberSettingsPage = () => {
     setSaveStatus('saving');
     try {
       // Save basic profile settings
-      await api.put('/v1/auth/profile', {
+      await api.put('/auth/profile', {
         username: settings.username,
         displayName: settings.displayName
       });
       
       // Save preferences
-      await api.put('/v1/members/preferences', {
+      await api.put('/members/preferences', {
         profileVisibility: settings.profileVisibility,
         allowMessages: settings.allowMessages,
         showOnlineStatus: settings.showOnlineStatus,
@@ -212,7 +212,7 @@ const MemberSettingsPage = () => {
           throw new Error('New password must be at least 6 characters');
         }
 
-        await api.put('/v1/auth/updatepassword', {
+        await api.put('/auth/updatepassword', {
           currentPassword: settings.currentPassword,
           newPassword: settings.newPassword
         });

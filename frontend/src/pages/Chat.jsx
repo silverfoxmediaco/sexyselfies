@@ -349,7 +349,7 @@ const Chat = () => {
     
     try {
       // First upload the file using uploadApi from api.config
-      const uploadData = await api.post('/v1/upload', formData, {
+      const uploadData = await api.post('/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
         
