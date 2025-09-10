@@ -27,66 +27,16 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const endpoint = filter === 'suspended' || filter === 'banned' 
-        ? '/admin/moderation/users/search'
-        : '/users';
+      const endpoint = '/admin/moderation/users/search';
       
       const response = await api.get(endpoint, {
         params: filter !== 'all' ? { role: filter } : {}
       });
       
-      // Set dummy data if no users exist
-      if (!response.data || response.data.length === 0) {
-        setUsers([
-          {
-            _id: '1',
-            email: 'john.creator@example.com',
-            role: 'creator',
-            isVerified: true,
-            createdAt: new Date().toISOString(),
-            status: 'active',
-            strikes: 0,
-            earnings: 1250.00,
-            contentCount: 45
-          },
-          {
-            _id: '2',
-            email: 'jane.member@example.com',
-            role: 'member',
-            createdAt: new Date().toISOString(),
-            status: 'active',
-            strikes: 0,
-            spent: 89.99
-          }
-        ]);
-      } else {
-        setUsers(response.data);
-      }
+      setUsers(response.data || []);
     } catch (error) {
       console.error('Failed to fetch users:', error);
-      // Set dummy data on error
-      setUsers([
-        {
-          _id: '1',
-          email: 'john.creator@example.com',
-          role: 'creator',
-          isVerified: true,
-          createdAt: new Date().toISOString(),
-          status: 'active',
-          strikes: 0,
-          earnings: 1250.00,
-          contentCount: 45
-        },
-        {
-          _id: '2',
-          email: 'jane.member@example.com',
-          role: 'member',
-          createdAt: new Date().toISOString(),
-          status: 'active',
-          strikes: 0,
-          spent: 89.99
-        }
-      ]);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -97,7 +47,7 @@ const AdminUsers = () => {
     
     setProcessing(true);
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = localStorage.getItem('token');
       let endpoint = '';
       let payload = {
         userId: selectedUser._id,
@@ -106,21 +56,21 @@ const AdminUsers = () => {
 
       switch(actionType) {
         case 'ban':
-          endpoint = '/api/v1/admin/moderation/users/ban';
+          endpoint = `/admin/moderation/users/${selectedUser._id}/ban`;
           break;
         case 'unban':
-          endpoint = '/api/v1/admin/moderation/users/unban';
+          endpoint = `/admin/moderation/users/${selectedUser._id}/unban`;
           break;
         case 'suspend':
-          endpoint = '/api/v1/admin/moderation/users/suspend';
+          endpoint = `/admin/moderation/users/${selectedUser._id}/suspend`;
           payload.duration = suspensionDays;
           break;
         case 'remove_suspension':
-          endpoint = '/api/v1/admin/moderation/users/remove-suspension';
+          endpoint = `/admin/moderation/users/${selectedUser._id}/lift-suspension`;
           break;
         case 'freeze_payouts':
-          endpoint = '/api/v1/admin/payouts/freeze';
-          payload.duration = suspensionDays;
+          endpoint = `/admin/moderation/users/${selectedUser._id}/freeze-payouts`;
+          payload.days = suspensionDays;
           break;
         default:
           return;
