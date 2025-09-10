@@ -225,15 +225,17 @@ const AdminHeader = () => {
         )}
       </nav>
 
-      {/* Page Header */}
-      <div className="admin-header-page-header">
-        <h1>{getPageTitle()}</h1>
-        <p className="admin-header-page-subtitle">
-          {location.pathname === '/admin' 
-            ? `Welcome back, ${adminData?.name || 'Admin'}` 
-            : 'Manage and monitor platform activities'}
-        </p>
-      </div>
+      {/* Page Header - Hide on pages that have their own headers */}
+      {location.pathname !== '/admin/users' && (
+        <div className="admin-header-page-header">
+          <h1>{getPageTitle()}</h1>
+          <p className="admin-header-page-subtitle">
+            {location.pathname === '/admin' 
+              ? `Welcome back, ${adminData?.name || 'Admin'}` 
+              : 'Manage and monitor platform activities'}
+          </p>
+        </div>
+      )}
     </>
   );
 };

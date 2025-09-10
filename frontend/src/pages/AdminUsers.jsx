@@ -47,7 +47,6 @@ const AdminUsers = () => {
     
     setProcessing(true);
     try {
-      const token = localStorage.getItem('token');
       let endpoint = '';
       let payload = {
         userId: selectedUser._id,

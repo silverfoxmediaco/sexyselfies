@@ -403,6 +403,7 @@ app.use(`${API_V1}/connections`, connectionRoutes);
 app.use(`${API_V1}/transactions`, transactionRoutes);
 app.use(`${API_V1}/upload`, uploadRoutes);
 app.use(`${API_V1}/admin`, adminRoutes);
+console.log('✅ Admin routes mounted at:', `${API_V1}/admin`);
 app.use(`${API_V1}/notifications`, notificationRoutes);
 app.use(`${API_V1}/verification`, verificationRoutes);
 app.use(`${API_V1}/payments`, paymentRoutes);
