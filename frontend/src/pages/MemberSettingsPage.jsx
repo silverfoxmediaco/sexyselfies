@@ -407,8 +407,38 @@ const MemberSettingsPage = () => {
               disabled={loadingSettings}
             />
           </div>
+        </div>
 
+        <div className="member-settings-group">
+          <h3>Preferences</h3>
+          
+          <div className="member-setting-item">
+            <div className="member-setting-toggle">
+              <div>
+                <strong>Show Online Status</strong>
+                <p>Let creators see when you're online</p>
+              </div>
+              <button
+                className={`member-toggle-switch ${settings.showOnlineStatus ? 'active' : ''}`}
+                onClick={() => updateSetting(null, 'showOnlineStatus', !settings.showOnlineStatus)}
+              >
+                <div className="member-toggle-handle"></div>
+              </button>
+            </div>
+          </div>
 
+          <div className="member-setting-item">
+            <label>Content Filtering</label>
+            <select
+              value={settings.contentFiltering}
+              onChange={(e) => updateSetting(null, 'contentFiltering', e.target.value)}
+              className="member-setting-select"
+            >
+              <option value="none">Show All Content</option>
+              <option value="mild">Filter Mild Content</option>
+              <option value="strict">Strict Filtering</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>

@@ -241,7 +241,13 @@ const UploadStep = ({
   </motion.div>
 );
 
-const DetailsStep = ({ contentDetails, setContentDetails, toggleTag, addCustomTag, errors }) => (
+const DetailsStep = ({ contentDetails, setContentDetails, toggleTag, addCustomTag, errors }) => {
+  // Debug: Ensure setContentDetails is passed as prop
+  if (!setContentDetails) {
+    console.error('setContentDetails prop is missing in DetailsStep');
+  }
+  
+  return (
   <motion.div
     initial={{ opacity: 0, x: 20 }}
     animate={{ opacity: 1, x: 0 }}
@@ -535,7 +541,8 @@ const ReviewStep = ({ uploads, contentDetails, errors }) => (
       </div>
     )}
   </motion.div>
-);
+  );
+};
 
 const CreatorContentUpload = () => {
   const navigate = useNavigate();
