@@ -18,7 +18,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Check if admin is logged in
-    const token = localStorage.getItem('adminToken');
+    const token = localStorage.getItem('token');
     
     if (!token) {
       navigate('/admin/login');
@@ -50,7 +50,7 @@ const AdminDashboard = () => {
       {/* Main Dashboard Content */}
       <main className="admin-main-content">
         {/* Dashboard Content - Stats Overview */}
-        {location.pathname === '/admin' && !loading && (
+        {(location.pathname === '/admin' || location.pathname === '/admin/dashboard') && !loading && (
           <div className="dashboard-content">
             {/* Stats Grid */}
             <div className="stats-grid">
@@ -168,7 +168,7 @@ const AdminDashboard = () => {
         )}
 
         {/* Outlet for nested routes */}
-        {location.pathname !== '/admin' && <Outlet />}
+        {location.pathname !== '/admin' && location.pathname !== '/admin/dashboard' && <Outlet />}
       </main>
       
       {/* Desktop Footer */}
