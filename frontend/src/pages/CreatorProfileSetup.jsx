@@ -786,8 +786,24 @@ const StepThree = ({ formData, setFormData, errors }) => {
   return (
     <div className="step-three">
       <div className="step-header">
-        <h2>Set Your Content & Pricing</h2>
-        <p>Choose what you'll share and how much you'll earn</p>
+        <h2>Set Your Default Pricing & Content Types</h2>
+        <p>Save time on future uploads with smart defaults</p>
+      </div>
+      
+      {/* Context explanation */}
+      <div className="pricing-context">
+        <p className="context-intro">
+          📝 Hi! Although you can set individual pricing on each upload, having defaults will:
+        </p>
+        <ul className="context-benefits">
+          <li>• Speed up your content publishing process</li>
+          <li>• Help maintain consistent pricing strategy</li>
+          <li>• Show potential fans your typical price ranges</li>
+          <li>• Reduce decision fatigue when uploading multiple items</li>
+        </ul>
+        <p className="context-note">
+          You can always override these prices for specific content pieces during upload.
+        </p>
       </div>
       
       {/* Content types */}
@@ -843,6 +859,7 @@ const StepThree = ({ formData, setFormData, errors }) => {
           <label className="form-label">
             PHOTO PRICE
           </label>
+          <p className="field-helper">💡 This will auto-fill when uploading photos (you can still change it per photo)</p>
           <div className="pricing-input-wrapper">
             <span className="currency-symbol">$</span>
             <input
@@ -871,6 +888,7 @@ const StepThree = ({ formData, setFormData, errors }) => {
           <label className="form-label">
             VIDEO PRICE
           </label>
+          <p className="field-helper">💡 Your go-to video price - saves time on bulk uploads</p>
           <div className="pricing-input-wrapper">
             <span className="currency-symbol">$</span>
             <input
@@ -898,6 +916,7 @@ const StepThree = ({ formData, setFormData, errors }) => {
           <label className="form-label">
             MESSAGE PRICE
           </label>
+          <p className="field-helper">💡 Default for sending exclusive content via DMs</p>
           <div className="pricing-input-wrapper">
             <span className="currency-symbol">$</span>
             <input
@@ -918,6 +937,11 @@ const StepThree = ({ formData, setFormData, errors }) => {
           </div>
         </div>
       )}
+      
+      {/* Pro tip */}
+      <div className="pricing-pro-tip">
+        <p>⚡ <strong>Pro Tip:</strong> Set prices slightly higher than your minimum - you can always discount individual items, but raising prices later feels awkward to fans.</p>
+      </div>
     </div>
   );
 };

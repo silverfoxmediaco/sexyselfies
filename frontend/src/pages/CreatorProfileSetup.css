@@ -1277,6 +1277,64 @@
   }
 }
 
+/* Pricing context and helper styles */
+.pricing-context {
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 12px;
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.context-intro {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.context-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.context-benefits li {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 4px 0;
+}
+
+.context-note {
+  color: var(--muted);
+  font-size: 14px;
+  font-style: italic;
+  margin: 0;
+}
+
+.field-helper {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 4px 0 var(--space-sm) 0;
+  font-style: italic;
+}
+
+.pricing-pro-tip {
+  background: linear-gradient(135deg, var(--primary-100), var(--primary-300));
+  border: 1px solid var(--primary-600);
+  border-radius: 8px;
+  padding: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.pricing-pro-tip p {
+  color: var(--text-primary);
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* Success overlay */
 .success-overlay {
   position: fixed;
@@ -2296,4 +2354,62 @@
     font-size: 14px;
     min-height: 44px;
   }
+}
+
+/* Pricing context and helper styles */
+.pricing-context {
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 12px;
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.context-intro {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.context-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.context-benefits li {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 4px 0;
+}
+
+.context-note {
+  color: var(--muted);
+  font-size: 14px;
+  font-style: italic;
+  margin: 0;
+}
+
+.field-helper {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 4px 0 var(--space-sm) 0;
+  font-style: italic;
+}
+
+.pricing-pro-tip {
+  background: linear-gradient(135deg, var(--primary-100), var(--primary-300));
+  border: 1px solid var(--primary-600);
+  border-radius: 8px;
+  padding: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.pricing-pro-tip p {
+  color: var(--text-primary);
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
 }
