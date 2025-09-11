@@ -143,6 +143,14 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Debug logging for error structure
+    console.log('[API] Error details:', {
+      hasResponse: !!error.response,
+      status: error.response?.status,
+      url: originalRequest?.url,
+      method: originalRequest?.method
+    });
+
     // Handle network errors / offline
     if (!error.response) {
       // Check if we have cached data for GET requests
