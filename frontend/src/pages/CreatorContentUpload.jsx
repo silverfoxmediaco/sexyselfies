@@ -541,8 +541,7 @@ const ReviewStep = ({ uploads, contentDetails, setContentDetails, errors }) => (
       </div>
     )}
   </motion.div>
-  );
-};
+);
 
 const CreatorContentUpload = () => {
   const navigate = useNavigate();
