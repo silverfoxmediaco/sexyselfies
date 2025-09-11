@@ -391,7 +391,7 @@ const DetailsStep = ({ contentDetails, setContentDetails, toggleTag, addCustomTa
   </motion.div>
 );
 
-const ReviewStep = ({ uploads, contentDetails, errors }) => (
+const ReviewStep = ({ uploads, contentDetails, setContentDetails, errors }) => (
   <motion.div
     initial={{ opacity: 0, x: 20 }}
     animate={{ opacity: 1, x: 0 }}
@@ -941,6 +941,7 @@ const CreatorContentUpload = () => {
                 key="review" 
                 uploads={uploads}
                 contentDetails={contentDetails}
+                setContentDetails={setContentDetails}
                 errors={errors}
               />
             )}
