@@ -305,12 +305,25 @@ exports.getConnections = async (req, res, next) => {
       .populate('lastMessage')
       .sort(sort);
 
+    // Filter out connections with deleted creators/members (null populate results)
+    connections = connections.filter(conn => {
+      if (userRole === 'member' && !conn.creator) {
+        console.log(`⚠️ Skipping connection with deleted creator: ${conn._id}`);
+        return false;
+      }
+      if (userRole === 'creator' && !conn.member) {
+        console.log(`⚠️ Skipping connection with deleted member: ${conn._id}`);
+        return false;
+      }
+      return true;
+    });
+
     // Apply search filter if provided
     if (search) {
       connections = connections.filter(conn => {
         const searchTarget = userRole === 'member' ? conn.creator : conn.member;
-        return searchTarget.displayName?.toLowerCase().includes(search.toLowerCase()) ||
-               searchTarget.username?.toLowerCase().includes(search.toLowerCase());
+        return searchTarget?.displayName?.toLowerCase().includes(search.toLowerCase()) ||
+               searchTarget?.username?.toLowerCase().includes(search.toLowerCase());
       });
     }
 
