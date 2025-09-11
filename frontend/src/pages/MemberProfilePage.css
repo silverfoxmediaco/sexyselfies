@@ -1118,3 +1118,124 @@ body {
     max-width: 1280px;
   }
 }
+
+/* ========================================
+   CONNECTIONS GRID STYLES
+   ======================================== */
+.mpp-connections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.mpp-connection-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-md);
+  background: var(--bg-800);
+  border-radius: 12px;
+  border: 1px solid var(--border-600);
+  transition: all 0.2s ease;
+}
+
+.mpp-connection-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(23, 210, 194, 0.1);
+}
+
+.mpp-connection-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: var(--space-sm);
+  border: 2px solid var(--border-600);
+}
+
+.mpp-connection-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mpp-connection-info h5 {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 0 var(--space-xs) 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.mpp-connection-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mpp-connection-btn:hover {
+  background: var(--primary-600);
+  transform: scale(1.05);
+}
+
+.mpp-connection-more {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-sm);
+}
+
+.mpp-view-all-btn {
+  background: var(--surface-700);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-600);
+  border-radius: 8px;
+  padding: var(--space-sm) var(--space-lg);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mpp-view-all-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--bg-800);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .mpp-connections-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+  }
+  
+  .mpp-connection-item {
+    padding: var(--space-sm);
+  }
+  
+  .mpp-connection-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .mpp-connection-info h5 {
+    font-size: 12px;
+  }
+  
+  .mpp-connection-btn {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+}

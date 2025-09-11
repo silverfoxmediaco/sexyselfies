@@ -8,6 +8,7 @@ import {
   AlertCircle, X, Save, Sliders
 } from 'lucide-react';
 import authService from '../services/auth.service';
+import memberService from '../services/member.service';
 import api from '../services/api.config';
 import BottomNavigation from '../components/BottomNavigation';
 import MainHeader from '../components/MainHeader';
@@ -33,6 +34,9 @@ const MemberProfilePage = () => {
     specialOffers: true,
     tips: false
   });
+  const [favorites, setFavorites] = useState([]);
+  const [connections, setConnections] = useState([]);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
 
   useEffect(() => {
     fetchMemberData();
@@ -159,6 +163,45 @@ const MemberProfilePage = () => {
       window.location.href = '/member/login';
     }
   };
+
+  const fetchFavorites = async () => {
+    setFavoritesLoading(true);
+    try {
+      const favoritesResponse = await memberService.getFavorites();
+      if (favoritesResponse.success) {
+        setFavorites(favoritesResponse.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch favorites:', error);
+      setFavorites([]);
+    } finally {
+      setFavoritesLoading(false);
+    }
+  };
+
+  const fetchConnections = async () => {
+    try {
+      const connectionsResponse = await memberService.getMatches();
+      if (connectionsResponse.success) {
+        setConnections(connectionsResponse.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch connections:', error);
+      setConnections([]);
+    }
+  };
+
+  const handleViewCreator = (creatorId) => {
+    navigate(`/creator/${creatorId}`);
+  };
+
+  // Fetch favorites when favorites tab is opened
+  useEffect(() => {
+    if (activeTab === 'favorites') {
+      fetchFavorites();
+      fetchConnections();
+    }
+  }, [activeTab]);
 
   if (loading) {
     return (
@@ -365,37 +408,74 @@ const MemberProfilePage = () => {
                   Favorite Creators
                 </h3>
                 <div className="mpp-favorites-list">
-                  <div className="mpp-favorite-item">
-                    <div className="mpp-favorite-info">
-                      <h4>AlexisStyles</h4>
-                      <p className="mpp-favorite-category">Fashion & Lifestyle</p>
+                  {favoritesLoading ? (
+                    <div className="mpp-loading-container">
+                      <div className="mpp-loading-spinner"></div>
+                      <p>Loading favorites...</p>
                     </div>
-                    <button className="mpp-view-creator-btn">View Profile</button>
-                  </div>
-                  <div className="mpp-favorite-item">
-                    <div className="mpp-favorite-info">
-                      <h4>FitnessQueen</h4>
-                      <p className="mpp-favorite-category">Health & Fitness</p>
-                    </div>
-                    <button className="mpp-view-creator-btn">View Profile</button>
-                  </div>
-                  <div className="mpp-favorite-item">
-                    <div className="mpp-favorite-info">
-                      <h4>TravelDreams</h4>
-                      <p className="mpp-favorite-category">Travel & Adventure</p>
-                    </div>
-                    <button className="mpp-view-creator-btn">View Profile</button>
-                  </div>
+                  ) : favorites.length > 0 ? (
+                    favorites.map((favorite) => (
+                      <div key={favorite._id || favorite.id} className="mpp-favorite-item">
+                        <div className="mpp-favorite-info">
+                          <h4>{favorite.displayName || favorite.username}</h4>
+                          <p className="mpp-favorite-category">{favorite.category || 'Content Creator'}</p>
+                        </div>
+                        <button 
+                          className="mpp-view-creator-btn"
+                          onClick={() => handleViewCreator(favorite._id || favorite.id)}
+                        >
+                          View Profile
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="mpp-empty-state">No favorite creators yet. Start exploring and add your favorites!</p>
+                  )}
                 </div>
               </div>
 
               <div className="mpp-section-card">
                 <h3 className="mpp-section-title">
-                  <Bookmark size={18} />
-                  Saved Content
+                  <Heart size={18} />
+                  My Connections
                 </h3>
                 <div className="mpp-saved-content">
-                  <p className="mpp-empty-state">No saved content yet. Start exploring and save your favorites!</p>
+                  {connections.length > 0 ? (
+                    <div className="mpp-connections-grid">
+                      {connections.slice(0, 6).map((connection) => (
+                        <div key={connection._id || connection.id} className="mpp-connection-item">
+                          <div className="mpp-connection-avatar">
+                            <img 
+                              src={connection.profileImage || '/placeholders/default-avatar.jpg'} 
+                              alt={connection.displayName || connection.username}
+                              onError={(e) => { e.target.src = '/placeholders/default-avatar.jpg'; }}
+                            />
+                          </div>
+                          <div className="mpp-connection-info">
+                            <h5>{connection.displayName || connection.username}</h5>
+                            <button 
+                              className="mpp-connection-btn"
+                              onClick={() => handleViewCreator(connection._id || connection.id)}
+                            >
+                              View
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      {connections.length > 6 && (
+                        <div className="mpp-connection-more">
+                          <button 
+                            className="mpp-view-all-btn"
+                            onClick={() => navigate('/member/connections')}
+                          >
+                            View All ({connections.length})
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="mpp-empty-state">No connections yet. Start swiping to make connections!</p>
+                  )}
                 </div>
               </div>
             </div>
