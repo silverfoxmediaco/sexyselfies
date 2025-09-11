@@ -36,7 +36,7 @@ const MyConnections = () => {
 
   const fetchStats = async () => {
     try {
-      const data = await api.get('/api/v1/connections/stats');
+      const data = await api.get('/connections/stats');
       
       setStats(data.data || {
         total: 0,
@@ -74,7 +74,7 @@ const MyConnections = () => {
       }
       params.append('sort', sortBy);
       
-      const data = await api.get(`/api/v1/connections?${params}`);
+      const data = await api.get(`/connections?${params}`);
         
       // Transform API response to match component structure
       const transformedConnections = data.data.map(conn => ({
@@ -120,7 +120,7 @@ const MyConnections = () => {
   const handleAcceptConnection = async (connectionId, event) => {
     event.stopPropagation();
     try {
-      await api.post(`/api/v1/connections/${connectionId}/accept`);
+      await api.post(`/connections/${connectionId}/accept`);
       
       // Refresh connections list
       fetchConnections();
@@ -133,7 +133,7 @@ const MyConnections = () => {
   const handleDeclineConnection = async (connectionId, event) => {
     event.stopPropagation();
     try {
-      await api.post(`/api/v1/connections/${connectionId}/decline`);
+      await api.post(`/connections/${connectionId}/decline`);
       
       // Refresh connections list
       fetchConnections();
@@ -146,7 +146,7 @@ const MyConnections = () => {
   const handlePinConnection = async (connectionId, event) => {
     event.stopPropagation();
     try {
-      await api.put(`/api/v1/connections/${connectionId}/pin`);
+      await api.put(`/connections/${connectionId}/pin`);
       
       // Refresh connections list
       fetchConnections();
@@ -173,7 +173,7 @@ const MyConnections = () => {
 
   const handleBulkAction = async (action) => {
     try {
-      await api.post('/api/v1/connections/bulk', {
+      await api.post('/connections/bulk', {
         connectionIds: selectedConnections,
         action
       });
