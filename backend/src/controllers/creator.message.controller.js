@@ -415,6 +415,40 @@ exports.getMessageAnalytics = async (req, res) => {
     const creatorId = req.user.id;
     const { period = '7d' } = req.query;
     
+    // Check if creator has any messages or connections
+    const hasMessages = await CreatorMessage.countDocuments({ creator: creatorId }) > 0;
+    const hasConnections = await CreatorConnection.countDocuments({ creator: creatorId }) > 0;
+    
+    // Return default analytics for new creators
+    if (!hasMessages && !hasConnections) {
+      return res.json({
+        success: true,
+        data: {
+          totalMessages: 0,
+          paidMessages: 0,
+          purchasedMessages: 0,
+          revenue: 0,
+          averagePrice: 0,
+          responseRate: 0,
+          conversionRate: 0,
+          topPerforming: [],
+          recent: [],
+          trends: {
+            messages: [],
+            revenue: [],
+            purchases: []
+          },
+          insights: [
+            {
+              type: 'getting_started',
+              message: 'Connect with members to start messaging',
+              action: 'Browse members to connect with'
+            }
+          ]
+        }
+      });
+    }
+    
     const startDate = getStartDate(period);
     
     // Get message stats

@@ -2173,3 +2173,40 @@ Critical Issues Resolved: 51 (admin authentication + dashboard + user management
 - ✅ 401 interceptor only handles actual token expiration, not login failures
 - ✅ No more unwanted navigation events during login error handling
 
+
+## Backend Analytics Controllers - New Creator Logic Fix - Sep 11, 2025
+
+**Issue**: New creators were getting 500 Internal Server Errors when accessing analytics endpoints because the controllers assumed existing data.
+
+**Root Cause**: 
+- Analytics queries failed when no content, connections, or earnings existed
+- Database aggregation operations on empty collections threw errors
+- Complex real-time metric calculations assumed existing data
+
+**Files Fixed**:
+
+1. **backend/src/controllers/creator.analytics.controller.js**:
+   - Added new creator detection logic checking for content, connections, and earnings
+   - Created comprehensive getNewCreatorAnalytics() helper function 
+   - Returns proper zero/default analytics structure for new creators
+   - Includes helpful recommendations for new creators (upload content, complete profile)
+   - Prevents complex analytics calculations for creators with no data
+
+2. **backend/src/controllers/creator.message.controller.js**:
+   - Added new creator detection for message analytics endpoint
+   - Returns appropriate zero analytics when no messages or connections exist
+   - Includes helpful insights for getting started with messaging
+   - Prevents aggregation queries on empty message collections
+
+**New Creator Analytics Response**:
+- Zero values for all metrics (earnings, views, connections, etc.)
+- Empty arrays/objects for data that requires existing activity
+- Helpful recommendations and getting started tips
+- Proper data structure matching expected frontend format
+
+**Result**:
+- Eliminates 500 errors for new creators
+- Better user experience with helpful guidance
+- Graceful handling of edge cases
+- Maintains data structure consistency for frontend
+- Analytics endpoints now work immediately after creator registration

@@ -12,6 +12,19 @@ exports.getAnalyticsDashboard = async (req, res) => {
     const creatorId = req.user.id;
     const { period = '30d', compare = false } = req.query;
     
+    // Check if creator has any activity data
+    const hasContent = await Content.countDocuments({ creator: creatorId }) > 0;
+    const hasConnections = await CreatorConnection.countDocuments({ creator: creatorId }) > 0;
+    const hasEarnings = await CreatorEarnings.countDocuments({ creator: creatorId }) > 0;
+    
+    // Return default analytics for new creators
+    if (!hasContent && !hasConnections && !hasEarnings) {
+      return res.json({
+        success: true,
+        data: getNewCreatorAnalytics(period, compare)
+      });
+    }
+    
     let analytics = await CreatorAnalytics.findOne({ creator: creatorId });
     
     if (!analytics) {
@@ -931,6 +944,102 @@ async function updatePredictions(analytics, creatorId) {
   // This would use ML models in production
   analytics.predictions.revenue.nextWeek.amount = Math.floor(Math.random() * 3000) + 1000;
   analytics.predictions.revenue.nextWeek.confidence = Math.floor(Math.random() * 20) + 80;
+}
+
+// Helper function to return default analytics for new creators
+function getNewCreatorAnalytics(period, compare) {
+  return {
+    realTime: {
+      viewers: {
+        current: 0,
+        devices: {},
+        locations: {},
+        trend: 0
+      },
+      earnings: {
+        last5Min: 0,
+        last15Min: 0,
+        lastHour: 0,
+        today: 0
+      },
+      trending: {
+        status: false,
+        score: 0,
+        category: null,
+        position: null
+      }
+    },
+    overview: {
+      totalEarnings: 0,
+      totalViews: 0,
+      totalConnections: 0,
+      totalContent: 0,
+      conversionRate: 0,
+      averagePrice: 0,
+      topPerformer: null
+    },
+    period: {
+      earnings: 0,
+      views: 0,
+      connections: 0,
+      messages: 0,
+      content: 0,
+      growth: {
+        earnings: 0,
+        views: 0,
+        connections: 0
+      }
+    },
+    traffic: {
+      sources: {},
+      devices: {},
+      locations: {},
+      referrers: {}
+    },
+    content: {
+      performance: [],
+      categories: {},
+      engagement: {
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        saves: 0
+      }
+    },
+    audience: {
+      demographics: {
+        ageGroups: {},
+        genderSplit: {},
+        locations: {}
+      },
+      behavior: {
+        averageSessionTime: 0,
+        bounceRate: 0,
+        returnVisitorRate: 0
+      }
+    },
+    compare: compare ? {
+      earnings: { current: 0, previous: 0, change: 0 },
+      views: { current: 0, previous: 0, change: 0 },
+      connections: { current: 0, previous: 0, change: 0 }
+    } : null,
+    recommendations: [
+      {
+        type: 'content',
+        title: 'Upload your first content',
+        description: 'Start by uploading some engaging content to attract viewers',
+        action: 'Upload Content',
+        priority: 'high'
+      },
+      {
+        type: 'profile',
+        title: 'Complete your profile',
+        description: 'Add a bio, profile picture, and cover image to improve your visibility',
+        action: 'Edit Profile',
+        priority: 'medium'
+      }
+    ]
+  };
 }
 
 // Additional helper functions would go here...
