@@ -112,8 +112,9 @@ const MyConnections = () => {
     if (connection.status === 'active') {
       navigate(`/member/chat/${connection.id}`);
     } else if (connection.status === 'pending') {
-      // Don't navigate, handle inline
-      return;
+      // For pending connections, navigate to creator profile to view details
+      const creatorUsername = connection.connectionData.creatorUsername.replace('@', '');
+      navigate(`/creator/${creatorUsername}`);
     }
   };
 

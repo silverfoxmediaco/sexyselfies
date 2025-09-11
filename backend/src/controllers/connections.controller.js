@@ -328,31 +328,49 @@ exports.getConnections = async (req, res, next) => {
     }
 
     // Format for frontend
-    const formattedConnections = connections.map(conn => ({
-      id: conn._id,
-      connectionData: userRole === 'member' ? {
-        creatorName: conn.creator.displayName,
-        creatorUsername: `@${conn.creator.username || conn.creator.displayName}`,
-        avatar: conn.creator.profileImage,
-        isOnline: conn.creator.isOnline
-      } : {
-        memberName: conn.member.username,
-        memberUsername: `@${conn.member.username}`,
-        avatar: conn.member.profileImage
-      },
-      connectionType: conn.connectionType,
-      status: conn.status,
-      lastMessage: conn.lastMessagePreview?.content || 'No messages yet',
-      lastMessageTime: formatTime(conn.lastMessagePreview?.createdAt || conn.lastInteraction),
-      unreadCount: userRole === 'member' ? conn.unreadCount.member : conn.unreadCount.creator,
-      isPinned: conn.isPinned,
-      subscriptionAmount: conn.subscriptionAmount,
-      totalSpent: conn.totalSpent,
-      connectedSince: conn.connectedAt,
-      messageCount: conn.messageCount,
-      contentUnlocked: conn.contentUnlocked,
-      specialOffers: conn.specialOffers
-    }));
+    const formattedConnections = connections.map(conn => {
+      // Fix profile image URL for creators (same logic as getSwipeStack)
+      let creatorAvatarUrl = conn.creator?.profileImage;
+      if (userRole === 'member' && conn.creator) {
+        if (creatorAvatarUrl === 'default-avatar.jpg' || !creatorAvatarUrl || !creatorAvatarUrl.startsWith('http')) {
+          creatorAvatarUrl = '/placeholders/beaufitulbrunette1.png';
+        }
+      }
+
+      // Fix profile image URL for members
+      let memberAvatarUrl = conn.member?.profileImage;
+      if (userRole === 'creator' && conn.member) {
+        if (memberAvatarUrl === 'default-avatar.jpg' || !memberAvatarUrl || !memberAvatarUrl.startsWith('http')) {
+          memberAvatarUrl = '/placeholders/member-default.png';
+        }
+      }
+
+      return {
+        id: conn._id,
+        connectionData: userRole === 'member' ? {
+          creatorName: conn.creator.displayName,
+          creatorUsername: `@${conn.creator.username || conn.creator.displayName}`,
+          avatar: creatorAvatarUrl,
+          isOnline: conn.creator.isOnline
+        } : {
+          memberName: conn.member.username,
+          memberUsername: `@${conn.member.username}`,
+          avatar: memberAvatarUrl
+        },
+        connectionType: conn.connectionType,
+        status: conn.status,
+        lastMessage: conn.lastMessagePreview?.content || 'No messages yet',
+        lastMessageTime: formatTime(conn.lastMessagePreview?.createdAt || conn.lastInteraction),
+        unreadCount: userRole === 'member' ? conn.unreadCount.member : conn.unreadCount.creator,
+        isPinned: conn.isPinned,
+        subscriptionAmount: conn.subscriptionAmount,
+        totalSpent: conn.totalSpent,
+        connectedSince: conn.connectedAt,
+        messageCount: conn.messageCount,
+        contentUnlocked: conn.contentUnlocked,
+        specialOffers: conn.specialOffers
+      };
+    });
 
     res.status(200).json({
       success: true,
