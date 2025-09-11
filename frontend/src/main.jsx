@@ -75,6 +75,7 @@ import BrowseFilters from './pages/BrowseFilters';
 import SearchCreators from './pages/SearchCreators';
 import TrendingCreators from './pages/TrendingCreators';
 import Favorites from './pages/Favorites';
+import PurchasedContent from './pages/PurchasedContent';
 
 // Import Member Components
 import Library from './components/Library';
@@ -466,7 +467,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               path="purchased" 
               element={
                 <ProtectedMemberRoute>
-                  <ComingSoon title="Purchased Content" />
+                  <PurchasedContent />
                 </ProtectedMemberRoute>
               } 
             />
