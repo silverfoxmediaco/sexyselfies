@@ -226,7 +226,11 @@ const AdminHeader = () => {
       </nav>
 
       {/* Page Header - Hide on pages that have their own headers */}
-      {location.pathname !== '/admin/users' && (
+      {location.pathname !== '/admin/users' && 
+       location.pathname !== '/admin/reports' && 
+       location.pathname !== '/admin/payouts' && 
+       location.pathname !== '/admin/content' && 
+       location.pathname !== '/admin/verifications' && (
         <div className="admin-header-page-header">
           <h1>{getPageTitle()}</h1>
           <p className="admin-header-page-subtitle">

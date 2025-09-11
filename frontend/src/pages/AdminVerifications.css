@@ -1,7 +1,7 @@
 /* AdminVerifications.css */
 
 .admin-verifications {
-  height: calc(100vh - 88px); /* Subtract header height */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: #0A0A0A;
