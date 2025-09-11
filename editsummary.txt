@@ -2157,3 +2157,19 @@ Critical Issues Resolved: 51 (admin authentication + dashboard + user management
 - Error handling is more user-friendly and stable
 - Auth state remains intact for retry attempts
 
+
+
+**ADDITIONAL FIX - Root Cause Found:**
+
+**The Real Issue**: The 401 response interceptor in api.config.js was triggering automatic logout on login failures.
+
+3. **frontend/src/services/api.config.js**:
+   - Added check to skip 401 auto-logout for login/register endpoints
+   - Prevents handleLogout() from being called on expected login failures
+   - Login endpoints now properly return errors to components instead of triggering redirects
+
+**Final Result**: 
+- ✅ Creator login errors now display persistently without page flashing/reloading
+- ✅ 401 interceptor only handles actual token expiration, not login failures
+- ✅ No more unwanted navigation events during login error handling
+

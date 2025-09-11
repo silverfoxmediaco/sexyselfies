@@ -177,7 +177,11 @@ api.interceptors.response.use(
     }
 
     // Handle 401 Unauthorized - Token expired
-    if (error.response.status === 401 && !originalRequest._retry) {
+    // Skip auto-logout for login endpoints - let the component handle these errors
+    const isLoginEndpoint = originalRequest.url?.includes('/auth/') && 
+                           (originalRequest.url.includes('/login') || originalRequest.url.includes('/register'));
+    
+    if (error.response.status === 401 && !originalRequest._retry && !isLoginEndpoint) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
