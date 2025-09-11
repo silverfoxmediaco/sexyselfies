@@ -389,7 +389,8 @@ const DetailsStep = ({ contentDetails, setContentDetails, toggleTag, addCustomTa
     </div>
 
   </motion.div>
-);
+  );
+};
 
 const ReviewStep = ({ uploads, contentDetails, setContentDetails, errors }) => (
   <motion.div
