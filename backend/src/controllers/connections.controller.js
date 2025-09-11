@@ -63,9 +63,37 @@ exports.getSwipeStack = async (req, res, next) => {
       .lean();
 
     console.log('Found creators:', creators.length);
+    
+    // Get Content model for populating creator content
+    const Content = require('../models/Content');
+    
+    // Get content for each creator (mix of free and paid for browse display)
+    const creatorsWithContent = await Promise.all(creators.map(async (creator) => {
+      // Get recent content for this creator (limit to 5 for swipe display)
+      const creatorContent = await Content.find({ 
+        creator: creator._id,
+        status: 'approved' // Only show approved content
+      })
+      .select('thumbnail media price isFree type title')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean();
+      
+      // Transform content for frontend - free content shows actual images, paid shows thumbnails for blur effect
+      const photos = creatorContent.map(content => ({
+        url: content.isFree ? (content.media[0]?.url || content.thumbnail) : content.thumbnail,
+        price: content.price,
+        isFree: content.isFree,
+        isPaid: !content.isFree,
+        type: content.type,
+        title: content.title || ''
+      }));
+      
+      return { ...creator, photos };
+    }));
 
     // Transform creators to match frontend expectations
-    const transformedCreators = creators.map(creator => {
+    const transformedCreators = creatorsWithContent.map(creator => {
       // Handle location data
       let location = { city: 'Unknown', state: '', distance: 0 };
       if (creator.location) {
@@ -99,7 +127,9 @@ exports.getSwipeStack = async (req, res, next) => {
         // Additional fields for UI
         age: calculateAge(creator.birthDate) || 25,
         gender: creator.gender || 'female',
-        verified: creator.isVerified || false
+        verified: creator.isVerified || false,
+        // Include creator content for swipe display
+        photos: creator.photos || []
       };
     });
 

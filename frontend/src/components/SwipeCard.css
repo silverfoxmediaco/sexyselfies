@@ -427,3 +427,95 @@
     max-height: 500px;
   }
 }
+
+/* ===== PAID CONTENT BLUR & OVERLAY STYLES ===== */
+
+/* Blur effect for paid content */
+.swipecard-photo-blurred {
+  filter: blur(10px);
+  transform: scale(1.05); /* Slight scale to hide blur edges */
+}
+
+/* Paid content overlay */
+.swipecard-paid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.swipecard-paid-overlay:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Unlock icon */
+.swipecard-unlock-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--swipecard-spacing-md);
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* Price display */
+.swipecard-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--swipecard-text-primary);
+  margin-bottom: var(--swipecard-spacing-sm);
+  background: var(--swipecard-gradient);
+  padding: var(--swipecard-spacing-sm) var(--swipecard-spacing-md);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(23, 210, 194, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Unlock text */
+.swipecard-unlock-text {
+  font-size: 0.9rem;
+  color: var(--swipecard-text-secondary);
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  opacity: 0.8;
+}
+
+/* Mobile optimizations for paid overlay */
+@media (max-width: 768px) {
+  .swipecard-unlock-icon {
+    font-size: 2rem;
+    margin-bottom: var(--swipecard-spacing-sm);
+  }
+  
+  .swipecard-price {
+    font-size: 1.25rem;
+    padding: var(--swipecard-spacing-xs) var(--swipecard-spacing-sm);
+  }
+  
+  .swipecard-unlock-text {
+    font-size: 0.8rem;
+  }
+}
+
+/* Animation for paid overlay appearance */
+@keyframes swipecard-paid-overlay-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.swipecard-paid-overlay {
+  animation: swipecard-paid-overlay-fade-in 0.3s ease-out;
+}

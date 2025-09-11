@@ -34,8 +34,12 @@ const SwipeCard = ({
   const swipeThreshold = 100;
   const swipeVelocityThreshold = 500;
   
-  // Get all photos (profile photo + additional photos)
-  const allPhotos = [creator.profileImage, ...(creator.photos || [])];
+  // Get all photos (profile photo + additional photos with metadata)
+  const profilePhoto = { url: creator.profileImage, isFree: true, isPaid: false, price: 0 };
+  const contentPhotos = (creator.photos || []).map(photo => 
+    typeof photo === 'string' ? { url: photo, isFree: true, isPaid: false, price: 0 } : photo
+  );
+  const allPhotos = [profilePhoto, ...contentPhotos];
   
   // Handle drag end
   const handleDragEnd = (event, info) => {
@@ -149,11 +153,20 @@ const SwipeCard = ({
       <div className="swipecard-photo-container" onClick={!minimalView ? handleCardTouch : undefined}>
         {/* Main Photo */}
         <img 
-          src={allPhotos[currentPhotoIndex] || creator.profileImage} 
+          src={allPhotos[currentPhotoIndex]?.url || creator.profileImage} 
           alt={creator.displayName || ''}
-          className="swipecard-photo"
+          className={`swipecard-photo ${allPhotos[currentPhotoIndex]?.isPaid ? 'swipecard-photo-blurred' : ''}`}
           draggable="false"
         />
+        
+        {/* Paid Content Overlay */}
+        {!minimalView && allPhotos[currentPhotoIndex]?.isPaid && (
+          <div className="swipecard-paid-overlay">
+            <div className="swipecard-unlock-icon">🔒</div>
+            <div className="swipecard-price">${allPhotos[currentPhotoIndex]?.price?.toFixed(2)}</div>
+            <div className="swipecard-unlock-text">Tap to unlock</div>
+          </div>
+        )}
         
         {/* Photo Indicators - NOT in minimal view */}
         {!minimalView && allPhotos.length > 1 && (
