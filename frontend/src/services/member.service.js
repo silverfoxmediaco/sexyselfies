@@ -93,7 +93,7 @@ class MemberService {
    */
   async getSwipeStack(params = {}) {
     try {
-      const response = await api.get('/connections/stack', {
+      const response = await api.get('/api/v1/connections/stack', {
         params
       });
       return response;
@@ -115,7 +115,7 @@ class MemberService {
    */
   async swipeAction(creatorId, action) {
     try {
-      const response = await api.post('/connections/swipe', {
+      const response = await api.post('/api/v1/connections/swipe', {
         creatorId,
         action // 'like', 'pass', 'superlike'
       });

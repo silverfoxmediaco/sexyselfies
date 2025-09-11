@@ -174,7 +174,7 @@ const BrowseCreators = () => {
   // Load existing connections and messages
   const loadExistingConnections = async () => {
     try {
-      const response = await api.get('/connections');
+      const response = await api.get('/api/v1/connections');
 
       if (response.success) {
         // Process connections into lookup objects
