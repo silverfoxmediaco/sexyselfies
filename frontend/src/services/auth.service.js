@@ -659,7 +659,7 @@ class AuthService {
     
     return { 
       error: true, 
-      message: error.message || 'Network error. Please check your connection.'
+      message: error.message || 'Invalid email or password. Please check your credentials and try again.'
     };
   }
 
