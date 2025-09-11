@@ -166,4 +166,73 @@ const creatorSchema = new mongoose.Schema({
 // Index for search
 creatorSchema.index({ displayName: 'text', bio: 'text' });
 
+// Cascade deletion hooks - Clean up related data when creator is deleted
+creatorSchema.pre('findOneAndDelete', async function() {
+  const creatorId = this.getQuery()._id;
+  if (creatorId) {
+    console.log(`🧹 Cleaning up data for deleted creator: ${creatorId}`);
+    
+    // Import models (avoid circular dependency by requiring here)
+    const Connection = require('./Connections');
+    const Message = require('./Message');
+    const Content = require('./Content');
+    
+    try {
+      // Delete all connections where this creator is involved
+      const deletedConnections = await Connection.deleteMany({ creator: creatorId });
+      console.log(`🗑️ Deleted ${deletedConnections.deletedCount} connections for creator ${creatorId}`);
+      
+      // Delete all messages where this creator is sender or recipient  
+      const deletedMessages = await Message.deleteMany({
+        $or: [
+          { sender: creatorId },
+          { recipient: creatorId }
+        ]
+      });
+      console.log(`🗑️ Deleted ${deletedMessages.deletedCount} messages for creator ${creatorId}`);
+      
+      // Delete all content uploaded by this creator
+      const deletedContent = await Content.deleteMany({ creator: creatorId });
+      console.log(`🗑️ Deleted ${deletedContent.deletedCount} content items for creator ${creatorId}`);
+      
+    } catch (error) {
+      console.error(`❌ Error during cascade deletion for creator ${creatorId}:`, error);
+    }
+  }
+});
+
+creatorSchema.pre('deleteOne', async function() {
+  const creatorId = this.getQuery()._id;
+  if (creatorId) {
+    console.log(`🧹 Cleaning up data for deleted creator: ${creatorId}`);
+    
+    // Import models
+    const Connection = require('./Connections');
+    const Message = require('./Message');
+    const Content = require('./Content');
+    
+    try {
+      // Delete all connections where this creator is involved
+      const deletedConnections = await Connection.deleteMany({ creator: creatorId });
+      console.log(`🗑️ Deleted ${deletedConnections.deletedCount} connections for creator ${creatorId}`);
+      
+      // Delete all messages where this creator is sender or recipient  
+      const deletedMessages = await Message.deleteMany({
+        $or: [
+          { sender: creatorId },
+          { recipient: creatorId }
+        ]
+      });
+      console.log(`🗑️ Deleted ${deletedMessages.deletedCount} messages for creator ${creatorId}`);
+      
+      // Delete all content uploaded by this creator
+      const deletedContent = await Content.deleteMany({ creator: creatorId });
+      console.log(`🗑️ Deleted ${deletedContent.deletedCount} content items for creator ${creatorId}`);
+      
+    } catch (error) {
+      console.error(`❌ Error during cascade deletion for creator ${creatorId}:`, error);
+    }
+  }
+});
+
 module.exports = mongoose.model('Creator', creatorSchema);

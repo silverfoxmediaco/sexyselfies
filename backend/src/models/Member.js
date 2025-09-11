@@ -134,4 +134,63 @@ const memberSchema = new mongoose.Schema({
 // Index for location-based queries
 memberSchema.index({ location: '2dsphere' });
 
+// Cascade deletion hooks - Clean up related data when member is deleted
+memberSchema.pre('findOneAndDelete', async function() {
+  const memberId = this.getQuery()._id;
+  if (memberId) {
+    console.log(`🧹 Cleaning up data for deleted member: ${memberId}`);
+    
+    // Import models (avoid circular dependency by requiring here)
+    const Connection = require('./Connections');
+    const Message = require('./Message');
+    
+    try {
+      // Delete all connections where this member is involved
+      const deletedConnections = await Connection.deleteMany({ member: memberId });
+      console.log(`🗑️ Deleted ${deletedConnections.deletedCount} connections for member ${memberId}`);
+      
+      // Delete all messages where this member is sender or recipient  
+      const deletedMessages = await Message.deleteMany({
+        $or: [
+          { sender: memberId },
+          { recipient: memberId }
+        ]
+      });
+      console.log(`🗑️ Deleted ${deletedMessages.deletedCount} messages for member ${memberId}`);
+      
+    } catch (error) {
+      console.error(`❌ Error during cascade deletion for member ${memberId}:`, error);
+    }
+  }
+});
+
+memberSchema.pre('deleteOne', async function() {
+  const memberId = this.getQuery()._id;
+  if (memberId) {
+    console.log(`🧹 Cleaning up data for deleted member: ${memberId}`);
+    
+    // Import models
+    const Connection = require('./Connections');
+    const Message = require('./Message');
+    
+    try {
+      // Delete all connections where this member is involved
+      const deletedConnections = await Connection.deleteMany({ member: memberId });
+      console.log(`🗑️ Deleted ${deletedConnections.deletedCount} connections for member ${memberId}`);
+      
+      // Delete all messages where this member is sender or recipient  
+      const deletedMessages = await Message.deleteMany({
+        $or: [
+          { sender: memberId },
+          { recipient: memberId }
+        ]
+      });
+      console.log(`🗑️ Deleted ${deletedMessages.deletedCount} messages for member ${memberId}`);
+      
+    } catch (error) {
+      console.error(`❌ Error during cascade deletion for member ${memberId}:`, error);
+    }
+  }
+});
+
 module.exports = mongoose.model('Member', memberSchema);

@@ -400,6 +400,7 @@ console.log('✅ Member Privacy routes mounted at:', `${API_V1}/member/privacy`)
 // Additional routes
 app.use(`${API_V1}/content`, contentRoutes);
 app.use(`${API_V1}/connections`, connectionRoutes);
+console.log('✅ Connections routes mounted at:', `${API_V1}/connections`);
 app.use(`${API_V1}/transactions`, transactionRoutes);
 app.use(`${API_V1}/upload`, uploadRoutes);
 app.use(`${API_V1}/admin`, adminRoutes);

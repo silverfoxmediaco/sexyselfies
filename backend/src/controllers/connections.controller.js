@@ -300,11 +300,7 @@ exports.getConnections = async (req, res, next) => {
       .populate('member', 'username profileImage')
       .populate({
         path: 'creator',
-        select: 'displayName profileImage bio isOnline',
-        populate: {
-          path: 'profile',
-          select: 'tagline subscriptionPrice'
-        }
+        select: 'displayName profileImage bio isOnline contentPrice'
       })
       .populate('lastMessage')
       .sort(sort);
