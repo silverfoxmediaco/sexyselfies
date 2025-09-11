@@ -73,11 +73,9 @@ function authReducer(state, action) {
     case actionTypes.AUTH_ERROR:
       return {
         ...state,
-        status: AUTH_STATES.ERROR,
-        error: action.payload.error,
-        user: null,
-        role: null,
-        token: null
+        status: AUTH_STATES.UNAUTHENTICATED,
+        error: action.payload.error
+        // Don't reset user/role/token - let them remain for retry attempts
       };
 
     case actionTypes.USER_UPDATE:
@@ -189,10 +187,9 @@ export const AuthProvider = ({ children }) => {
         throw new Error('Invalid login response');
       }
     } catch (error) {
-      dispatch({
-        type: actionTypes.AUTH_ERROR,
-        payload: { error: error.message }
-      });
+      // Don't dispatch AUTH_ERROR for login attempts - just return the error
+      // This prevents clearing auth state and page resets
+      console.error('Login error:', error);
       return { success: false, error: error.message };
     }
   };

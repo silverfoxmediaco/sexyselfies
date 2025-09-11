@@ -2129,3 +2129,31 @@ adminSchema.methods.getSignedJwtToken = function() {
 
 ADMIN SYSTEM FULLY FUNCTIONAL ✅
 Critical Issues Resolved: 51 (admin authentication + dashboard + user management)
+## Creator Login Page Reset Issue Fix - Sep 11, 2025
+
+**Issue**: When entering invalid credentials on the creator login page, error messages flashed briefly and then the page reset instead of showing persistent error messages.
+
+**Root Cause Analysis**:
+1. AuthContext AUTH_ERROR action was too aggressive, clearing entire auth state (user, role, token) on login failures
+2. This state reset triggered component re-renders and initialization effects
+3. Login function in AuthContext was dispatching AUTH_ERROR for credential failures
+4. Auth service error handling was returning complex error objects instead of simple error messages
+
+**Files Modified**:
+
+1. **frontend/src/contexts/AuthContext.jsx**:
+   - Fixed AUTH_ERROR reducer to only set status to UNAUTHENTICATED and error message
+   - Removed clearing of user/role/token state to prevent page resets
+   - Modified login function to not dispatch AUTH_ERROR for login attempts
+   - Added comment explaining the fix
+
+2. **frontend/src/services/auth.service.js**:
+   - Modified creatorLogin function error handling to throw simple Error objects
+   - Ensures handleAuthError output is converted to simple error messages for login failures
+
+**Result**: 
+- Creator login now properly displays persistent error messages for invalid credentials
+- Page no longer resets when login fails
+- Error handling is more user-friendly and stable
+- Auth state remains intact for retry attempts
+

@@ -189,7 +189,12 @@ class AuthService {
 
       return response;
     } catch (error) {
-      throw this.handleAuthError(error);
+      const handledError = this.handleAuthError(error);
+      // For login errors, throw a simple error message instead of the complex object
+      if (handledError.error && handledError.message) {
+        throw new Error(handledError.message);
+      }
+      throw handledError;
     }
   }
 
