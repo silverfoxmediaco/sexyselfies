@@ -34,7 +34,7 @@ class AuthService {
 
       // For new registration flow, no token is returned
       // User must verify email and login separately
-      if (response.data.token) {
+      if (response.data && response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('memberToken', response.data.token);
         localStorage.setItem('refreshToken', response.data.refreshToken);
@@ -43,7 +43,7 @@ class AuthService {
         apiHelpers.setAuthToken(response.data.token);
       }
 
-      return response;
+      return response.data || response;
     } catch (error) {
       throw this.handleAuthError(error);
     }
