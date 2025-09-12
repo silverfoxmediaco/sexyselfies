@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 import { AuthProvider } from './contexts/AuthContext';
 import './index.css';
 
-console.log('🚀 SexySelfies App Starting...');
+console.log('SexySelfies App Starting...');
 
 // Handle redirects from 404.html
 function RedirectHandler() {
@@ -88,7 +88,7 @@ import LandingPageV2 from './pages/LandingPageV2';
 import ContentView from './pages/ContentView';
 
 
-console.log('🎯 Mounting React App to root element...');
+console.log('Mounting React App to root element...');
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>

@@ -49,8 +49,8 @@ const CreatorAnalytics = () => {
           earningsChange: 0,
           totalViews: 0,
           viewsChange: 0,
-          totalMatches: 0,
-          matchesChange: 0,
+          totalConnections: 0,
+          connectionsChange: 0,
           conversionRate: 0,
           conversionChange: 0
         },
@@ -212,10 +212,10 @@ const CreatorAnalytics = () => {
               <span className="card-title">New Matches</span>
             </div>
             <div className="card-value">
-              {formatNumber(analyticsData.overview.totalMatches)}
+              {formatNumber(analyticsData.overview.totalConnections)}
             </div>
             <div className="card-change">
-              {renderChangeIndicator(analyticsData.overview.matchesChange)}
+              {renderChangeIndicator(analyticsData.overview.connectionsChange)}
               <span className="change-label">vs last period</span>
             </div>
           </motion.div>

@@ -223,7 +223,8 @@ exports.creatorRegister = async (req, res, next) => {
       stats: {
         totalEarnings: 0,
         monthlyEarnings: 0,
-        totalMatches: 0,
+        totalConnections: 0,
+        totalContent: 0,
         totalLikes: 0,
         rating: 0,
         ratingCount: 0
@@ -401,7 +402,8 @@ exports.login = async (req, res, next) => {
           stats: {
             totalEarnings: 0,
             monthlyEarnings: 0,
-            totalMatches: 0,
+            totalConnections: 0,
+        totalContent: 0,
             totalLikes: 0,
             rating: 0,
             ratingCount: 0
@@ -549,7 +551,8 @@ exports.creatorLogin = async (req, res, next) => {
           stats: {
             totalEarnings: 0,
             monthlyEarnings: 0,
-            totalMatches: 0,
+            totalConnections: 0,
+        totalContent: 0,
             totalLikes: 0,
             rating: 0,
             ratingCount: 0

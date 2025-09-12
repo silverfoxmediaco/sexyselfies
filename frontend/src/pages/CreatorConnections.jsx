@@ -23,7 +23,7 @@ const CreatorConnections = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [connections, setConnections] = useState([]);
   const [stats, setStats] = useState({
-    totalMatches: 0,
+    totalConnections: 0,
     activeChats: 0,
     totalEarnings: 0,
     avgResponse: 0
@@ -48,7 +48,7 @@ const CreatorConnections = () => {
         const response = await api.get('/creator/connections');
         if (response.success) {
           setStats(response.stats || {
-            totalMatches: 0,
+            totalConnections: 0,
             activeChats: 0,
             totalEarnings: 0,
             avgResponse: 0
@@ -57,7 +57,7 @@ const CreatorConnections = () => {
         } else {
           // Handle API error - set empty state
           setStats({
-            totalMatches: 0,
+            totalConnections: 0,
             activeChats: 0,
             totalEarnings: 0,
             avgResponse: 0
@@ -68,7 +68,7 @@ const CreatorConnections = () => {
         console.error('Error loading connections:', error);
         // Set empty state on error
         setStats({
-          totalMatches: 0,
+          totalConnections: 0,
           activeChats: 0,
           totalEarnings: 0,
           avgResponse: 0
@@ -82,7 +82,7 @@ const CreatorConnections = () => {
       // Fallback to empty state
       setConnections([]);
       setStats({
-        totalMatches: 0,
+        totalConnections: 0,
         activeChats: 0,
         totalEarnings: 0,
         avgResponse: 0
@@ -164,7 +164,7 @@ const CreatorConnections = () => {
               <Users size={20} />
             </div>
             <div className="connections-stat-content">
-              <span className="connections-stat-value">{stats.totalMatches}</span>
+              <span className="connections-stat-value">{stats.totalConnections}</span>
               <span className="connections-stat-label">Total Matches</span>
             </div>
           </motion.div>

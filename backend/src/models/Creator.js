@@ -96,7 +96,11 @@ const creatorSchema = new mongoose.Schema({
       type: Number,
       default: 0
     },
-    totalMatches: {
+    totalConnections: {
+      type: Number,
+      default: 0
+    },
+    totalContent: {
       type: Number,
       default: 0
     },

@@ -161,15 +161,16 @@ const CreatorProfile = () => {
 
   // Filter content
   const getFilteredContent = () => {
+    const safeContent = content || [];
     switch (contentFilter) {
       case 'photos':
-        return content.filter(item => item.type === 'photo');
+        return safeContent.filter(item => item.type === 'photo');
       case 'videos':
-        return content.filter(item => item.type === 'video');
+        return safeContent.filter(item => item.type === 'video');
       case 'locked':
-        return content.filter(item => item.isLocked && !item.isPurchased);
+        return safeContent.filter(item => item.isLocked && !item.isPurchased);
       default:
-        return content;
+        return safeContent;
     }
   };
 
@@ -334,34 +335,29 @@ const CreatorProfile = () => {
               
               <p className="profile-bio">{creator.bio}</p>
               
-              <div className="profile-tags">
-                {creator.tags.map((tag, index) => (
-                  <span key={index} className="profile-tag">{tag}</span>
-                ))}
-              </div>
             </div>
           </div>
           
           {/* Stats Bar */}
           <div className="profile-stats">
             <div className="stat-item">
-              <span className="stat-value">{creator.stats.totalContent}</span>
+              <span className="stat-value">{content?.length || 0}</span>
               <span className="stat-label">Content</span>
             </div>
             <div className="stat-item">
               <span className="stat-value">
-                {creator.stats.subscribers > 1000 
-                  ? `${(creator.stats.subscribers / 1000).toFixed(1)}k`
-                  : creator.stats.subscribers
+                {(creator.stats?.totalConnections || 0) > 1000 
+                  ? `${((creator.stats?.totalConnections || 0) / 1000).toFixed(1)}k`
+                  : creator.stats?.totalConnections || 0
                 }
               </span>
-              <span className="stat-label">Subscribers</span>
+              <span className="stat-label">Connections</span>
             </div>
             <div className="stat-item">
               <span className="stat-value">
-                {creator.stats.likes > 1000 
-                  ? `${(creator.stats.likes / 1000).toFixed(1)}k`
-                  : creator.stats.likes
+                {(creator.stats?.totalLikes || 0) > 1000 
+                  ? `${((creator.stats?.totalLikes || 0) / 1000).toFixed(1)}k`
+                  : creator.stats?.totalLikes || 0
                 }
               </span>
               <span className="stat-label">Likes</span>
@@ -369,7 +365,7 @@ const CreatorProfile = () => {
             <div className="stat-item">
               <span className="stat-value">
                 <Star size={14} />
-                {creator.stats.rating}
+                {creator.stats?.rating?.toFixed(1) || '0.0'}
               </span>
               <span className="stat-label">Rating</span>
             </div>
@@ -538,36 +534,16 @@ const CreatorProfile = () => {
                 </div>
               </div>
               
-              <div className="about-group">
-                <h3>Interests</h3>
-                <div className="interest-tags">
-                  {creator.interests.map((interest, index) => (
-                    <span key={index} className="interest-tag">
-                      {interest}
-                    </span>
-                  ))}
-                </div>
-              </div>
               
               <div className="about-group">
-                <h3>Languages</h3>
-                <div className="language-list">
-                  {creator.languages.map((lang, index) => (
-                    <span key={index} className="language-item">
-                      {lang}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="about-group">
-                <h3>Response Time</h3>
-                <div className="response-info">
-                  <span className="response-rate">
-                    {creator.stats.responseRate}% response rate
-                  </span>
-                  <span className="response-time">
-                    Usually responds {creator.stats.responseTime}
+                <h3>Activity</h3>
+                <div className="activity-info">
+                  <span className="online-status">
+                    {creator.isOnline ? (
+                      <>🟢 Online now</>
+                    ) : (
+                      <>⚫ Last online: {creator.lastActive ? getTimeAgo(new Date(creator.lastActive)) : 'Unknown'}</>
+                    )}
                   </span>
                 </div>
               </div>
@@ -578,13 +554,13 @@ const CreatorProfile = () => {
             <div className="reviews-section">
               <div className="reviews-header">
                 <div className="overall-rating">
-                  <span className="rating-value">{creator.stats.rating}</span>
+                  <span className="rating-value">{creator.stats?.rating?.toFixed(1) || '0.0'}</span>
                   <div className="rating-stars">
                     {[...Array(5)].map((_, i) => (
                       <Star 
                         key={i} 
                         size={20} 
-                        fill={i < Math.floor(creator.stats.rating) ? 'currentColor' : 'none'}
+                        fill={i < Math.floor(creator.stats?.rating || 0) ? 'currentColor' : 'none'}
                       />
                     ))}
                   </div>

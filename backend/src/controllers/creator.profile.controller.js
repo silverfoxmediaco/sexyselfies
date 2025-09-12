@@ -37,7 +37,8 @@ exports.getProfile = async (req, res) => {
       stats: creator.stats || {
         totalEarnings: 0,
         monthlyEarnings: 0,
-        totalMatches: 0,
+        totalConnections: 0,
+        totalContent: 0,
         totalLikes: 0,
         rating: 0,
         ratingCount: 0
@@ -52,8 +53,8 @@ exports.getProfile = async (req, res) => {
       success: true,
       profile,
       stats: {
-        totalViews: profile.stats.totalMatches,
-        matches: profile.stats.totalMatches,
+        totalViews: profile.stats.totalConnections,
+        connections: profile.stats.totalConnections,
         earnings: profile.stats.totalEarnings,
         rating: profile.stats.rating
       }

@@ -1061,7 +1061,8 @@ async function createCreator(creatorData) {
       stats: {
         totalEarnings: Math.floor(Math.random() * 10000),
         monthlyEarnings: Math.floor(Math.random() * 3000),
-        totalMatches: Math.floor(Math.random() * 500),
+        totalConnections: Math.floor(Math.random() * 500),
+        totalContent: Math.floor(Math.random() * 100),
         totalLikes: Math.floor(Math.random() * 1000),
         rating: 4.0 + Math.random(),
         ratingCount: Math.floor(Math.random() * 100)

@@ -50,7 +50,7 @@ app.use((req, res, next) => {
   } else {
     // Set reasonable timeout for non-auth routes
     res.setTimeout(90000, () => {
-      console.error('⏰ Response timeout after 90s for:', req.method, req.originalUrl);
+      console.error('Response timeout after 90s for:', req.method, req.originalUrl);
       if (!res.headersSent) {
         return res.status(408).json({
           success: false,
@@ -97,33 +97,33 @@ const connectDB = async () => {
         socketTimeoutMS: 45000,
       });
       
-      console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-      console.log(`📦 Database Name: ${conn.connection.name}`);
+      console.log(`MongoDB Connected: ${conn.connection.host}`);
+      console.log(`Database Name: ${conn.connection.name}`);
       
       // Reset retry counter on successful connection
       connectionRetries = 0;
       
       // Set up connection event handlers
       mongoose.connection.on('error', (err) => {
-        console.error('❌ MongoDB connection error:', err);
+        console.error('MongoDB connection error:', err);
       });
       
       mongoose.connection.on('disconnected', () => {
-        console.log('⚠️ MongoDB disconnected. Attempting to reconnect...');
+        console.log('MongoDB disconnected. Attempting to reconnect...');
         setTimeout(attemptConnection, retryDelay);
       });
       
       return true;
     } catch (error) {
-      console.error(`❌ MongoDB connection attempt ${connectionRetries + 1} failed:`, error.message);
+      console.error(`MongoDB connection attempt ${connectionRetries + 1} failed:`, error.message);
       connectionRetries++;
       
       if (connectionRetries >= maxRetries) {
-        console.error('❌ Max MongoDB connection retries reached. Server will continue but database operations will fail.');
+        console.error('Max MongoDB connection retries reached. Server will continue but database operations will fail.');
         return false;
       }
       
-      console.log(`🔄 Retrying MongoDB connection in ${retryDelay / 1000} seconds...`);
+      console.log(`Retrying MongoDB connection in ${retryDelay / 1000} seconds...`);
       await new Promise(resolve => setTimeout(resolve, retryDelay));
       return attemptConnection();
     }
@@ -137,10 +137,10 @@ connectDB();
 
 // Database health check middleware
 const checkDatabaseConnection = (req, res, next) => {
-  console.log('🔍 DATABASE CHECK for:', req.originalUrl);
+  console.log('DATABASE CHECK for:', req.originalUrl);
   
   if (mongoose.connection.readyState !== 1) {
-    console.log('❌ DATABASE CHECK FAILED - Connection not ready');
+    console.log('DATABASE CHECK FAILED - Connection not ready');
     return res.status(503).json({
       success: false,
       error: 'Database service temporarily unavailable. Please try again later.',
@@ -148,7 +148,7 @@ const checkDatabaseConnection = (req, res, next) => {
     });
   }
   
-  console.log('✅ DATABASE CHECK PASSED');
+  console.log('DATABASE CHECK PASSED');
   next();
 };
 
@@ -192,7 +192,7 @@ const corsOptions = {
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      console.warn(`⚠️ CORS blocked origin: ${origin}`);
+      console.warn(`CORS blocked origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -276,7 +276,7 @@ app.use(requestLogger);
 // Debug middleware for development
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
-    console.log('📨 Request:', {
+    console.log('Request:', {
       method: req.method,
       url: req.url,
       body: req.body,
@@ -361,7 +361,7 @@ app.use('/api/v1/auth/creator/login', authLimiter);
 app.use('/api/v1/upload/', uploadLimiter);
 
 // Apply database check to critical auth routes
-console.log('🔧 Configuring database checks for auth routes...');
+console.log('Configuring database checks for auth routes...');
 // Temporarily disabled database checks to debug timeout issue
 // app.use(`${API_V1}/auth/register`, checkDatabaseConnection);
 // app.use(`${API_V1}/auth/login`, checkDatabaseConnection);  
@@ -369,55 +369,55 @@ console.log('🔧 Configuring database checks for auth routes...');
 // app.use(`${API_V1}/auth/creator/login`, checkDatabaseConnection);
 
 // Mount routes with API versioning
-console.log('🚀 Mounting API routes...');
+console.log('Mounting API routes...');
 
 // Add a test endpoint to verify routing works
 app.post(`${API_V1}/auth/test`, (req, res) => {
-  console.log('✅ Test endpoint hit successfully');
+  console.log('Test endpoint hit successfully');
   res.json({ success: true, message: 'Test endpoint working', timestamp: new Date().toISOString() });
 });
 
 // Core routes
 app.use(`${API_V1}/auth`, authRoutes);
-console.log('✅ Auth routes mounted at:', `${API_V1}/auth`);
+console.log('Auth routes mounted at:', `${API_V1}/auth`);
 
 app.use(`${API_V1}/creator`, creatorRoutes);
-console.log('✅ Creator routes mounted at:', `${API_V1}/creator`);
+console.log('Creator routes mounted at:', `${API_V1}/creator`);
 
 app.use(`${API_V1}/members`, memberRoutes);
-console.log('✅ Member routes mounted at:', `${API_V1}/members`);
+console.log('Member routes mounted at:', `${API_V1}/members`);
 
 // Creator Active Sales System routes
 app.use(`${API_V1}/creator/sales`, creatorSalesRoutes);
-console.log('✅ Creator Sales routes mounted at:', `${API_V1}/creator/sales`);
+console.log('Creator Sales routes mounted at:', `${API_V1}/creator/sales`);
 
 app.use(`${API_V1}/creator/members`, memberProfileRoutes);
-console.log('✅ Member Profile routes mounted at:', `${API_V1}/creator/members`);
+console.log('Member Profile routes mounted at:', `${API_V1}/creator/members`);
 
 app.use(`${API_V1}/member/privacy`, memberPrivacyRoutes);
-console.log('✅ Member Privacy routes mounted at:', `${API_V1}/member/privacy`);
+console.log('Member Privacy routes mounted at:', `${API_V1}/member/privacy`);
 
 // Additional routes
 app.use(`${API_V1}/content`, contentRoutes);
 app.use(`${API_V1}/connections`, connectionRoutes);
-console.log('✅ Connections routes mounted at:', `${API_V1}/connections`);
+console.log('Connections routes mounted at:', `${API_V1}/connections`);
 app.use(`${API_V1}/transactions`, transactionRoutes);
 app.use(`${API_V1}/upload`, uploadRoutes);
 app.use(`${API_V1}/admin`, adminRoutes);
-console.log('✅ Admin routes mounted at:', `${API_V1}/admin`);
+console.log('Admin routes mounted at:', `${API_V1}/admin`);
 app.use(`${API_V1}/notifications`, notificationRoutes);
 app.use(`${API_V1}/verification`, verificationRoutes);
 app.use(`${API_V1}/payments`, paymentRoutes);
 app.use(`${API_V1}/public`, publicRoutes);
 app.use(`${API_V1}/payouts`, payoutRoutes);
 
-console.log('✅ All API routes mounted successfully');
+console.log('All API routes mounted successfully');
 
 // Development-only seeding endpoint
 if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
   app.post(`${API_V1}/dev/seed-data`, async (req, res) => {
     try {
-      console.log('🌱 Seeding endpoint called...');
+      console.log(' Seeding endpoint called...');
       const { seedCreators } = require('./scripts/seedCreators');
       const result = await seedCreators();
       
@@ -428,7 +428,7 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
         ...result
       });
     } catch (error) {
-      console.error('❌ Seeding error:', error);
+      console.error('Seeding error:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to seed database',
@@ -477,7 +477,7 @@ app.use('/api', (req, res, next) => {
 if (process.env.NODE_ENV === 'production') {
   const frontendBuildPath = path.join(__dirname, '..', '..', 'frontend', 'dist');
   
-  console.log('📁 Serving frontend from:', frontendBuildPath);
+  console.log('Serving frontend from:', frontendBuildPath);
   
   // Serve static files
   app.use(express.static(frontendBuildPath, {
@@ -574,42 +574,42 @@ try {
   initializeMemberActivitySockets(io);
   initializeMessagingSockets(io);
   
-  console.log('✅ WebSocket handlers initialized');
+  console.log('WebSocket handlers initialized');
 } catch (error) {
-  console.warn('⚠️ WebSocket initialization error:', error.message);
-  console.log('📝 WebSockets will be unavailable');
+  console.warn('WebSocket initialization error:', error.message);
+  console.log('WebSockets will be unavailable');
 }
 
 // Import and initialize scheduled jobs
 try {
   const { initializeScheduledJobs } = require('./jobs');
   initializeScheduledJobs();
-  console.log('✅ Scheduled jobs initialized');
+  console.log('Scheduled jobs initialized');
 } catch (error) {
-  console.warn('⚠️ Scheduled jobs initialization error:', error.message);
+  console.warn('Scheduled jobs initialization error:', error.message);
 }
 
 // Start the server
 server.listen(PORT, () => {
   console.log('========================================');
-  console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode`);
-  console.log(`📍 Port: ${PORT}`);
-  console.log(`🌐 URL: ${process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : `http://localhost:${PORT}`}`);
-  console.log(`💚 Health Check: /health`);
-  console.log(`📡 API Base: /api/v1`);
-  console.log(`🔌 Socket.io: Enabled with real-time messaging`);
+  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode`);
+  console.log(`Port: ${PORT}`);
+  console.log(`URL: ${process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : `http://localhost:${PORT}`}`);
+  console.log(`Health Check: /health`);
+  console.log(`API Base: /api/v1`);
+  console.log(`Socket.io: Enabled with real-time messaging`);
   if (process.env.NODE_ENV === 'production') {
-    console.log(`📱 Frontend: Serving PWA from /frontend/dist`);
+    console.log(`Frontend: Serving PWA from /frontend/dist`);
   }
   console.log('========================================');
-  console.log('⏱️ RENDER TIMEOUT CONFIGURATION:');
+  console.log('RENDER TIMEOUT CONFIGURATION:');
   console.log(`   server.timeout: ${server.timeout}ms (0 = disabled)`);
   console.log(`   server.keepAliveTimeout: ${server.keepAliveTimeout}ms`);
   console.log(`   server.headersTimeout: ${server.headersTimeout}ms`);
   console.log(`   server.maxConnections: ${server.maxConnections}`);
-  console.log('   🎯 Optimized for Render Starter instance');
+  console.log('   Optimized for Render Starter instance');
   console.log('========================================');
-  console.log('📋 Available endpoints:');
+  console.log(' Available endpoints:');
   console.log('  Auth: /api/v1/auth');
   console.log('  Creator: /api/v1/creator');
   console.log('  Members: /api/v1/members');
@@ -627,13 +627,13 @@ server.listen(PORT, () => {
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
-  console.error('🔥 UNHANDLED PROMISE REJECTION!');
+  console.error('UNHANDLED PROMISE REJECTION!');
   console.error('Error name:', err.name);
   console.error('Error message:', err.message);
   console.error('Error stack:', err.stack);
   // Don't exit in production, just log the error
   if (process.env.NODE_ENV !== 'production') {
-    console.log('💥 Shutting down due to unhandled promise rejection...');
+    console.log('Shutting down due to unhandled promise rejection...');
     server.close(() => {
       process.exit(1);
     });
@@ -642,22 +642,22 @@ process.on('unhandledRejection', (err) => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  console.error('🔥 UNCAUGHT EXCEPTION!');
+  console.error('UNCAUGHT EXCEPTION!');
   console.error('Error name:', err.name);
   console.error('Error message:', err.message);
   console.error('Error stack:', err.stack);
   // Don't exit in production, just log the error
   if (process.env.NODE_ENV !== 'production') {
-    console.log('💥 Shutting down due to uncaught exception...');
+    console.log('Shutting down due to uncaught exception...');
     process.exit(1);
   } else {
-    console.log('🔄 Continuing in production mode - double header error handled...');
+    console.log('Continuing in production mode - double header error handled...');
   }
 });
 
 // Graceful shutdown on SIGTERM
 process.on('SIGTERM', () => {
-  console.log('📴 SIGTERM RECEIVED. Shutting down gracefully');
+  console.log('SIGTERM RECEIVED. Shutting down gracefully');
   server.close(() => {
     mongoose.connection.close(false, () => {
       console.log('Process terminated');
@@ -667,7 +667,7 @@ process.on('SIGTERM', () => {
 
 // Graceful shutdown on SIGINT (Ctrl+C)
 process.on('SIGINT', () => {
-  console.log('📴 SIGINT RECEIVED. Shutting down gracefully');
+  console.log('SIGINT RECEIVED. Shutting down gracefully');
   server.close(() => {
     mongoose.connection.close(false, () => {
       console.log('Process terminated');
