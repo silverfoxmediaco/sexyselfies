@@ -20,6 +20,11 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState(null);
 
+  // Debug logging to see what data is being passed
+  console.log('🔍 CreatorProfilePreview received profileData:', profileData);
+  console.log('📷 Profile photo preview:', profileData?.profilePhotoPreview);
+  console.log('🖼️ Cover image preview:', profileData?.coverImagePreview);
+
   // Mock sample content for preview
   const sampleContent = [
     { id: 1, type: 'photo', price: profileData?.pricing?.photos || 2.99, locked: true, blur: true },

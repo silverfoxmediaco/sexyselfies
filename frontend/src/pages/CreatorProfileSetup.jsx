@@ -293,7 +293,12 @@ const CreatorProfileSetup = () => {
       case 4:
         return <StepFour formData={formData} setFormData={setFormData} errors={errors} />;
       case 5:
-        return <StepFive formData={formData} setFormData={setFormData} errors={errors} onPreview={() => setShowPreview(true)} />;
+        return <StepFive formData={formData} setFormData={setFormData} errors={errors} onPreview={() => {
+          console.log('🔍 Opening preview with formData:', formData);
+          console.log('📷 Profile photo in formData:', formData.profilePhotoPreview);
+          console.log('🖼️ Cover image in formData:', formData.coverImagePreview);
+          setShowPreview(true);
+        }} />;
       default:
         return null;
     }
