@@ -160,8 +160,10 @@ const PurchasedContent = () => {
     navigate(`/content/${contentId}`);
   };
 
-  const handleCreatorView = (creatorId) => {
-    navigate(`/creator/${creatorId}`);
+  const handleCreatorView = (creator) => {
+    // Use hybrid approach: prefer username, fallback to ID
+    const identifier = creator?.username || creator?._id || creator?.id || creator;
+    navigate(`/creator/${identifier}`);
   };
 
   const formatDate = (dateString) => {
@@ -406,7 +408,7 @@ const PurchasedContent = () => {
                     <div className="purchased-content-creator">
                       <button 
                         className="purchased-content-creator-link"
-                        onClick={() => handleCreatorView(item.creator?._id || item.creator?.id)}
+                        onClick={() => handleCreatorView(item.creator)}
                       >
                         {item.creator?.displayName || item.creator?.username || 'Unknown Creator'}
                       </button>

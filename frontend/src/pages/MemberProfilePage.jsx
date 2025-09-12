@@ -191,8 +191,10 @@ const MemberProfilePage = () => {
     }
   };
 
-  const handleViewCreator = (creatorId) => {
-    navigate(`/creator/${creatorId}`);
+  const handleViewCreator = (creator) => {
+    // Use hybrid approach: prefer username, fallback to ID
+    const identifier = creator?.username || creator?._id || creator?.id || creator;
+    navigate(`/creator/${identifier}`);
   };
 
   // Fetch favorites when favorites tab is opened
@@ -422,7 +424,7 @@ const MemberProfilePage = () => {
                         </div>
                         <button 
                           className="mpp-view-creator-btn"
-                          onClick={() => handleViewCreator(favorite._id || favorite.id)}
+                          onClick={() => handleViewCreator(favorite)}
                         >
                           View Profile
                         </button>
@@ -455,7 +457,7 @@ const MemberProfilePage = () => {
                             <h5>{connection.displayName || connection.username}</h5>
                             <button 
                               className="mpp-connection-btn"
-                              onClick={() => handleViewCreator(connection._id || connection.id)}
+                              onClick={() => handleViewCreator(connection)}
                             >
                               View
                             </button>

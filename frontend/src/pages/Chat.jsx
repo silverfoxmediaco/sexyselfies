@@ -537,7 +537,7 @@ const Chat = () => {
       {/* Action Menu */}
       {showActions && (
         <div className="chat-actions">
-          <button onClick={() => navigate(`/creator/${creator?.id}`)}>
+          <button onClick={() => navigate(`/creator/${creator?.username || creator?._id || creator?.id}`)}>
             View Profile
           </button>
           <button onClick={() => console.log('Send tip')}>
