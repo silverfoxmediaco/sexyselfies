@@ -425,6 +425,15 @@
 .memberreg-checkbox-option:hover {
   background: rgba(255, 255, 255, 0.04);
   border-color: var(--memberreg-accent-tertiary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Selected checkbox option - highlight the entire container */
+.memberreg-checkbox-option:has(input:checked) {
+  background: rgba(23, 210, 194, 0.1);
+  border-color: var(--memberreg-accent-primary);
+  box-shadow: 0 0 0 1px rgba(23, 210, 194, 0.3);
 }
 
 .memberreg-radio-option.large,
@@ -478,21 +487,24 @@
   border-color: var(--memberreg-accent-primary);
   background: var(--memberreg-accent-primary);
   position: relative;
-  transform: scale(1.1);
-  box-shadow: 0 0 0 2px rgba(23, 210, 194, 0.3);
-  transition: all 0.2s ease;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.5), 0 0 20px rgba(23, 210, 194, 0.3);
+  transition: all 0.3s ease;
+  animation: memberregCheckboxPulse 0.6s ease-out;
 }
 
 .memberreg-checkbox-option input:checked + .checkbox-custom::after {
   content: '✓';
   position: absolute;
   color: #001310;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 900;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  animation: memberregCheckmarkAppear 0.3s ease-out 0.2s both;
 }
 
 .memberreg-radio-option span:last-child,
@@ -879,4 +891,37 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}/* Deployment trigger - Thu Sep 11 20:00:50 CDT 2025 */
+}
+
+/* Enhanced checkbox animations */
+@keyframes memberregCheckboxPulse {
+  0% { 
+    transform: scale(1); 
+    box-shadow: 0 0 0 0px rgba(23, 210, 194, 0.5); 
+  }
+  50% { 
+    transform: scale(1.2); 
+    box-shadow: 0 0 0 5px rgba(23, 210, 194, 0.3); 
+  }
+  100% { 
+    transform: scale(1.15); 
+    box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.5), 0 0 20px rgba(23, 210, 194, 0.3); 
+  }
+}
+
+@keyframes memberregCheckmarkAppear {
+  0% { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(0); 
+  }
+  70% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1.2); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1); 
+  }
+}
+
+/* Deployment trigger - Enhanced checkbox styling - Thu Sep 11 20:01 CDT 2025 */
