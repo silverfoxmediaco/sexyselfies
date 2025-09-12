@@ -686,7 +686,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
       {/* Gender */}
       <div className="form-group">
         <label className="form-label">
-          I identify as
+          I am
           <span className="required">*</span>
         </label>
         <div className="radio-group">

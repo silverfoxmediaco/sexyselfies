@@ -115,10 +115,7 @@ class MemberService {
    */
   async swipeAction(creatorId, action) {
     try {
-      const response = await api.post('/connections/swipe', {
-        creatorId,
-        action // 'like', 'pass', 'superlike'
-      });
+      const response = await api.post(`/members/swipe/${action}/${creatorId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);

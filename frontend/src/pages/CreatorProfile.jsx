@@ -133,10 +133,20 @@ const CreatorProfile = () => {
   // Handle follow/unfollow
   const handleFollow = async () => {
     try {
-      setIsFollowing(!isFollowing);
-      // API call to follow/unfollow
+      console.log('🔗 Creating connection with creator:', creator.id);
+      
+      // Call the swipe/like API to create connection
+      const response = await memberService.swipeAction(creator.id, 'like');
+      
+      if (response.success) {
+        setIsFollowing(true);
+        console.log('✅ Connection created successfully');
+      } else {
+        console.error('❌ Failed to create connection:', response.message);
+      }
     } catch (err) {
-      console.error('Failed to follow/unfollow:', err);
+      console.error('❌ Failed to follow/create connection:', err);
+      // Don't change the UI state if API call failed
     }
   };
 

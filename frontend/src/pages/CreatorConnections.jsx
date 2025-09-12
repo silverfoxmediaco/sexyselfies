@@ -31,7 +31,7 @@ const CreatorConnections = () => {
   const [loading, setLoading] = useState(true);
 
   const tabs = [
-    { id: 'all', label: 'All Matches', icon: Users },
+    { id: 'all', label: 'All Connections', icon: Users },
     { id: 'active', label: 'Active Chats', icon: MessageCircle },
     { id: 'favorites', label: 'Favorites', icon: Heart },
     { id: 'recent', label: 'Recent', icon: Clock }
@@ -165,7 +165,7 @@ const CreatorConnections = () => {
             </div>
             <div className="connections-stat-content">
               <span className="connections-stat-value">{stats.totalConnections}</span>
-              <span className="connections-stat-label">Total Matches</span>
+              <span className="connections-stat-label">Total Connections</span>
             </div>
           </motion.div>
 
