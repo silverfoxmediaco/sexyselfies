@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -7,8 +8,7 @@ import api from '../services/api.config';
 import './MyConnections.css';
 
 const MyConnections = () => {
-  // Replace with your navigation method
-  const navigate = (path) => window.location.href = path;
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
@@ -113,8 +113,11 @@ const MyConnections = () => {
       navigate(`/member/chat/${connection.id}`);
     } else if (connection.status === 'pending') {
       // For pending connections, navigate to creator profile to view details
-      const creatorUsername = connection.connectionData.creatorUsername.replace('@', '');
-      navigate(`/creator/${creatorUsername}`);
+      // Use hybrid approach: prefer username, fallback to creator name or ID
+      const identifier = connection.creatorUsername || connection.creatorName || connection.id;
+      // Remove @ symbol if present
+      const cleanIdentifier = identifier.replace('@', '');
+      navigate(`/creator/${cleanIdentifier}`);
     }
   };
 
