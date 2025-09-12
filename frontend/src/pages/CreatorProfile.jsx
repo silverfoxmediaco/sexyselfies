@@ -232,7 +232,7 @@ const CreatorProfile = () => {
           {/* Cover Photo */}
           <div className="cover-photo-container">
             <img 
-              src={creator.coverPhoto} 
+              src={creator.coverImage} 
               alt="Cover" 
               className="cover-photo"
             />
@@ -266,7 +266,7 @@ const CreatorProfile = () => {
             <div className="profile-avatar-section">
               <div className="profile-avatar">
                 <img 
-                  src={creator.profilePhoto} 
+                  src={creator.profileImage} 
                   alt={creator.displayName}
                 />
                 {creator.isOnline && <span className="online-indicator"></span>}
@@ -329,7 +329,7 @@ const CreatorProfile = () => {
                 </span>
                 <span className="meta-item">
                   <Calendar size={14} />
-                  Joined {new Date(creator.joinedDate).toLocaleDateString()}
+                  Joined {new Date(creator.createdAt).toLocaleDateString()}
                 </span>
               </div>
               
