@@ -368,12 +368,13 @@ const MemberRegistration = () => {
             
             {/* Email Field */}
             <div className="memberreg-form-group">
-              <label className="memberreg-label">
+              <label className="memberreg-label" htmlFor="email">
                 <Mail size={18} />
                 <span>Email Address</span>
               </label>
               <input
                 type="email"
+                id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
@@ -391,13 +392,14 @@ const MemberRegistration = () => {
             
             {/* Username Field */}
             <div className="memberreg-form-group">
-              <label className="memberreg-label">
+              <label className="memberreg-label" htmlFor="username">
                 <User size={18} />
                 <span>Username</span>
               </label>
               <div className="memberreg-input-wrapper">
                 <input
                   type="text"
+                  id="username"
                   name="username"
                   value={formData.username}
                   onChange={handleInputChange}
@@ -431,13 +433,14 @@ const MemberRegistration = () => {
             
             {/* Password Field */}
             <div className="memberreg-form-group">
-              <label className="memberreg-label">
+              <label className="memberreg-label" htmlFor="password">
                 <Lock size={18} />
                 <span>Password</span>
               </label>
               <div className="memberreg-input-wrapper">
                 <input
                   type={showPassword ? 'text' : 'password'}
+                  id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
@@ -493,13 +496,14 @@ const MemberRegistration = () => {
             
             {/* Confirm Password Field */}
             <div className="memberreg-form-group">
-              <label className="memberreg-label">
+              <label className="memberreg-label" htmlFor="confirm-password">
                 <Lock size={18} />
                 <span>Confirm Password</span>
               </label>
               <div className="memberreg-input-wrapper">
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
+                  id="confirm-password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
@@ -539,17 +543,19 @@ const MemberRegistration = () => {
             {/* Name Fields */}
             <div className="memberreg-form-row">
               <div className="memberreg-form-group">
-                <label className="memberreg-label">
+                <label className="memberreg-label" htmlFor="first-name">
                   <User size={18} />
                   <span>First Name</span>
                 </label>
                 <input
                   type="text"
+                  id="first-name"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
                   placeholder="John"
                   className={`memberreg-input ${errors.firstName ? 'error' : ''}`}
+                  autoComplete="given-name"
                 />
                 {errors.firstName && (
                   <span className="memberreg-error-text">
@@ -560,17 +566,19 @@ const MemberRegistration = () => {
               </div>
               
               <div className="memberreg-form-group">
-                <label className="memberreg-label">
+                <label className="memberreg-label" htmlFor="last-name">
                   <User size={18} />
                   <span>Last Name</span>
                 </label>
                 <input
                   type="text"
+                  id="last-name"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
                   placeholder="Doe"
                   className={`memberreg-input ${errors.lastName ? 'error' : ''}`}
+                  autoComplete="family-name"
                 />
                 {errors.lastName && (
                   <span className="memberreg-error-text">
@@ -583,17 +591,19 @@ const MemberRegistration = () => {
             
             {/* Date of Birth */}
             <div className="memberreg-form-group">
-              <label className="memberreg-label">
+              <label className="memberreg-label" htmlFor="date-of-birth">
                 <Calendar size={18} />
                 <span>Date of Birth</span>
               </label>
               <input
                 type="date"
+                id="date-of-birth"
                 name="dateOfBirth"
                 value={formData.dateOfBirth}
                 onChange={handleInputChange}
                 max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
                 className={`memberreg-input ${errors.dateOfBirth ? 'error' : ''}`}
+                autoComplete="bday"
               />
               {errors.dateOfBirth && (
                 <span className="memberreg-error-text">
@@ -605,17 +615,19 @@ const MemberRegistration = () => {
             
             {/* Phone Number */}
             <div className="memberreg-form-group">
-              <label className="memberreg-label">
+              <label className="memberreg-label" htmlFor="phone">
                 <Phone size={18} />
                 <span>Phone Number (Optional)</span>
               </label>
               <input
                 type="tel"
+                id="phone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
                 placeholder="+1 (555) 123-4567"
                 className="memberreg-input"
+                autoComplete="tel"
               />
             </div>
             
@@ -626,9 +638,10 @@ const MemberRegistration = () => {
                 <span>Gender</span>
               </label>
               <div className="memberreg-radio-group">
-                <label className="memberreg-radio-option">
+                <label className="memberreg-radio-option" htmlFor="gender-male">
                   <input
                     type="radio"
+                    id="gender-male"
                     name="gender"
                     value="male"
                     checked={formData.gender === 'male'}
@@ -638,9 +651,10 @@ const MemberRegistration = () => {
                   <span>Male</span>
                 </label>
                 
-                <label className="memberreg-radio-option">
+                <label className="memberreg-radio-option" htmlFor="gender-female">
                   <input
                     type="radio"
+                    id="gender-female"
                     name="gender"
                     value="female"
                     checked={formData.gender === 'female'}
@@ -700,9 +714,12 @@ const MemberRegistration = () => {
                 <span>Interested In</span>
               </label>
               <div className="memberreg-checkbox-group">
-                <label className="memberreg-checkbox-option">
+                <label className="memberreg-checkbox-option" htmlFor="interested-male">
                   <input
                     type="checkbox"
+                    id="interested-male"
+                    name="interestedIn"
+                    value="male"
                     checked={formData.interestedIn.includes('male')}
                     onChange={() => handleInterestToggle('male')}
                   />
@@ -710,9 +727,12 @@ const MemberRegistration = () => {
                   <span>Men</span>
                 </label>
                 
-                <label className="memberreg-checkbox-option">
+                <label className="memberreg-checkbox-option" htmlFor="interested-female">
                   <input
                     type="checkbox"
+                    id="interested-female"
+                    name="interestedIn"
+                    value="female"
                     checked={formData.interestedIn.includes('female')}
                     onChange={() => handleInterestToggle('female')}
                   />
@@ -720,9 +740,12 @@ const MemberRegistration = () => {
                   <span>Women</span>
                 </label>
                 
-                <label className="memberreg-checkbox-option">
+                <label className="memberreg-checkbox-option" htmlFor="interested-all">
                   <input
                     type="checkbox"
+                    id="interested-all"
+                    name="interestedIn"
+                    value="all"
                     checked={formData.interestedIn.includes('all')}
                     onChange={() => handleInterestToggle('all')}
                   />
@@ -786,9 +809,10 @@ const MemberRegistration = () => {
             
             {/* Terms and Conditions */}
             <div className="memberreg-agreements">
-              <label className="memberreg-checkbox-option large">
+              <label className="memberreg-checkbox-option large" htmlFor="agree-terms">
                 <input
                   type="checkbox"
+                  id="agree-terms"
                   name="agreedToTerms"
                   checked={formData.agreedToTerms}
                   onChange={handleInputChange}
@@ -805,9 +829,10 @@ const MemberRegistration = () => {
                 </span>
               )}
               
-              <label className="memberreg-checkbox-option large">
+              <label className="memberreg-checkbox-option large" htmlFor="agree-age">
                 <input
                   type="checkbox"
+                  id="agree-age"
                   name="agreedToAge"
                   checked={formData.agreedToAge}
                   onChange={handleInputChange}
@@ -822,9 +847,10 @@ const MemberRegistration = () => {
                 </span>
               )}
               
-              <label className="memberreg-checkbox-option large">
+              <label className="memberreg-checkbox-option large" htmlFor="enable-notifications">
                 <input
                   type="checkbox"
+                  id="enable-notifications"
                   name="enableNotifications"
                   checked={formData.enableNotifications}
                   onChange={handleInputChange}
