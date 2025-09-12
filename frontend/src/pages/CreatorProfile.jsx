@@ -321,7 +321,7 @@ const CreatorProfile = () => {
               <div className="profile-meta">
                 <span className="meta-item">
                   <MapPin size={14} />
-                  {creator.location} • {creator.distance}km away
+                  {creator.location?.country || 'Location not specified'}
                 </span>
                 <span className="meta-item">
                   <Clock size={14} />
