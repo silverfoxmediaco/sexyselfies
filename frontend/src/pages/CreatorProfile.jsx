@@ -10,7 +10,7 @@ import {
   Grid3x3, Play, Image, Film, Music, FileText, Download, User,
   CheckCircle, XCircle, AlertCircle, Zap, Crown, Diamond, X
 } from 'lucide-react';
-import axios from 'axios';
+import memberService from '../services/member.service.js';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -59,17 +59,20 @@ const CreatorProfile = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/member/creator/${username}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token') || localStorage.getItem('memberToken')}`
-          }
-        });
+        console.log('🔍 Fetching creator profile for username:', username);
+        const response = await memberService.getCreatorProfile(username);
         
-        if (response.data.success) {
-          setCreator(response.data.data.creator);
-          setContent(response.data.data.content || []);
+        if (response.success && response.data?.creator) {
+          const creatorData = response.data.creator;
+          console.log('✅ Creator profile loaded:', creatorData.username || creatorData.displayName);
+          setCreator(creatorData);
+          
+          // Set content if available
+          if (response.data.content) {
+            setContent(response.data.content);
+          }
         } else {
-          throw new Error(response.data.message || 'Creator not found');
+          throw new Error('Creator not found');
         }
       } catch (err) {
         console.error('Failed to load creator profile:', err);
