@@ -155,11 +155,30 @@ class MemberService {
   }
 
   /**
-   * Get creator profile details
+   * Resolve creator username to ID (hybrid system support)
    */
-  async getCreatorProfile(username) {
+  async resolveCreatorId(identifier) {
     try {
-      const response = await api.get(`/members/creator/${username}`);
+      // If identifier looks like MongoDB ObjectId, return as-is
+      if (typeof identifier === 'string' && /^[0-9a-fA-F]{24}$/.test(identifier)) {
+        return identifier;
+      }
+      
+      // Otherwise, resolve username to ID via profile lookup
+      const response = await api.get(`/members/creator/${identifier}`);
+      return response.id || response._id;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Get creator profile details (hybrid: accepts username or ID)
+   */
+  async getCreatorProfile(identifier) {
+    try {
+      // Always use username for the API call (backend handles both username and displayName)
+      const response = await api.get(`/members/creator/${identifier}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -167,11 +186,11 @@ class MemberService {
   }
 
   /**
-   * Get creator's public content preview
+   * Get creator's public content preview (hybrid: accepts username or ID)
    */
-  async getCreatorContent(username, params = {}) {
+  async getCreatorContent(identifier, params = {}) {
     try {
-      const response = await api.get(`/members/creator/${username}/content`, {
+      const response = await api.get(`/members/creator/${identifier}/content`, {
         params: {
           type: params.type, // 'photos', 'videos', 'all'
           page: params.page || 1,
@@ -199,6 +218,30 @@ class MemberService {
     } catch (error) {
       throw this.handleError(error);
     }
+  }
+
+  // ==========================================
+  // HYBRID IDENTIFIER UTILITIES
+  // ==========================================
+  
+  /**
+   * Determine if identifier is a MongoDB ObjectId vs username
+   */
+  isObjectId(identifier) {
+    return typeof identifier === 'string' && /^[0-9a-fA-F]{24}$/.test(identifier);
+  }
+
+  /**
+   * Get the appropriate identifier for different operations
+   * - Profile/content operations: Use username (user-friendly URLs)
+   * - Internal operations: Use ID (database efficiency)
+   */
+  getProfileIdentifier(creator) {
+    return creator.username || creator._id;
+  }
+
+  getInternalIdentifier(creator) {
+    return creator._id || creator.id;
   }
 
   // ==========================================
