@@ -157,9 +157,9 @@ class MemberService {
   /**
    * Get creator profile details
    */
-  async getCreatorProfile(creatorId) {
+  async getCreatorProfile(username) {
     try {
-      const response = await api.get(`/member/creator/${creatorId}`);
+      const response = await api.get(`/members/creator/${username}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -169,9 +169,9 @@ class MemberService {
   /**
    * Get creator's public content preview
    */
-  async getCreatorContent(creatorId, params = {}) {
+  async getCreatorContent(username, params = {}) {
     try {
-      const response = await api.get(`/member/creator/${creatorId}/content`, {
+      const response = await api.get(`/members/creator/${username}/content`, {
         params: {
           type: params.type, // 'photos', 'videos', 'all'
           page: params.page || 1,
