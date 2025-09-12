@@ -14,14 +14,21 @@ class AuthService {
    */
   async memberRegister(data) {
     try {
+      // Ensure birthDate is properly formatted
+      let formattedBirthDate = data.birthDate;
+      if (data.birthDate) {
+        const date = new Date(data.birthDate);
+        // Format as YYYY-MM-DD for backend
+        formattedBirthDate = date.toISOString().split('T')[0];
+      }
+
       const response = await api.post('/auth/register', {
         email: data.email,
         password: data.password,
-        role: 'member',
         username: data.username,
         displayName: data.displayName || data.username,
         phone: data.phone || undefined,
-        birthDate: data.birthDate, // ESSENTIAL: Age verification
+        birthDate: formattedBirthDate, // ESSENTIAL: Age verification  
         agreeToTerms: data.agreeToTerms
       });
 
