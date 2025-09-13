@@ -560,12 +560,22 @@ router.post(
         });
       }
       
-      // Update verification status
+      // Update verification status in Creator
       creator.isVerified = true;
       creator.verificationStatus = 'approved';
       creator.verificationApprovedAt = new Date();
       creator.verificationApprovedBy = req.admin.id;
       await creator.save();
+
+      // CRITICAL FIX: Also update User model verification status
+      if (creator.user) {
+        const User = require('../models/User');
+        await User.findByIdAndUpdate(creator.user._id, {
+          isVerified: true,
+          verificationStatus: 'approved',
+          verificationApprovedAt: new Date()
+        });
+      }
       
       // Send approval email
       await approveVerification({ body: { userId: creator.user._id } }, res);
@@ -599,13 +609,22 @@ router.post(
         });
       }
       
-      // Update verification status
+      // Update verification status in Creator
       creator.isVerified = false;
       creator.verificationStatus = 'rejected';
       creator.verificationRejectedAt = new Date();
-      creator.verificationRejectedBy = req.admin.id;
       creator.verificationRejectionReason = req.body.reason;
       await creator.save();
+
+      // CRITICAL FIX: Also update User model verification status
+      if (creator.user) {
+        const User = require('../models/User');
+        await User.findByIdAndUpdate(creator.user._id, {
+          isVerified: false,
+          verificationStatus: 'rejected',
+          verificationRejectedAt: new Date()
+        });
+      }
       
       // Send rejection email
       await rejectVerification({ 

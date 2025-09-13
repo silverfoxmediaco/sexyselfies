@@ -198,11 +198,18 @@ exports.approveVerification = async (req, res) => {
       });
     }
 
-    // Update verification status
+    // Update verification status in Creator
     creator.isVerified = true;
     creator.verificationStatus = 'approved';
     creator.verificationApprovedAt = new Date();
     await creator.save();
+
+    // CRITICAL FIX: Also update User model verification status
+    const user = await User.findByIdAndUpdate(userId, {
+      isVerified: true,
+      verificationStatus: 'approved',
+      verificationApprovedAt: new Date()
+    });
 
     // Send approval notification
     const { approveVerification } = require('./notification.controller');
@@ -250,12 +257,19 @@ exports.rejectVerification = async (req, res) => {
       });
     }
 
-    // Update verification status
+    // Update verification status in Creator
     creator.isVerified = false;
     creator.verificationStatus = 'rejected';
     creator.verificationRejectedAt = new Date();
     creator.verificationRejectionReason = reason;
     await creator.save();
+
+    // CRITICAL FIX: Also update User model verification status
+    await User.findByIdAndUpdate(userId, {
+      isVerified: false,
+      verificationStatus: 'rejected',
+      verificationRejectedAt: new Date()
+    });
 
     // Send rejection notification
     const { rejectVerification } = require('./notification.controller');
