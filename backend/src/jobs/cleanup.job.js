@@ -2,6 +2,7 @@
 // Scheduled jobs for system cleanup and maintenance
 
 const cron = require('node-cron');
+const mongoose = require('mongoose');
 const SpecialOffer = require('../models/SpecialOffer');
 const MemberInteraction = require('../models/MemberInteraction');
 const MemberAnalytics = require('../models/MemberAnalytics');
@@ -255,29 +256,39 @@ function scheduleAbandonedSessionsCleanup() {
       let sessionsCleared = 0;
       let cartsRecovered = 0;
       
-      // Clear Redis sessions older than 24 hours
-      const redis = require('redis');
-      const redisClient = redis.createClient({
-        host: process.env.REDIS_HOST || 'localhost',
-        port: process.env.REDIS_PORT || 6379
-      });
-      
-      // Pattern for session keys
-      const sessionPattern = 'sess:*';
-      const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
-      
-      // Get all session keys
-      redisClient.keys(sessionPattern, async (err, keys) => {
-        if (err) {
-          console.error('Redis error:', err);
-          return;
-        }
+      // Clear Redis sessions older than 24 hours (with graceful degradation)
+      try {
+        const redis = require('redis');
+        const redisClient = redis.createClient({
+          host: process.env.REDIS_HOST || 'localhost',
+          port: process.env.REDIS_PORT || 6379,
+          socket: {
+            connectTimeout: 5000 // 5 second timeout
+          }
+        });
         
-        for (const key of keys) {
-          redisClient.get(key, (err, session) => {
-            if (err) return;
-            
+        // Add error handler
+        redisClient.on('error', (err) => {
+          console.log('Redis not available for session cleanup:', err.message);
+          redisClient.disconnect();
+        });
+        
+        // Only proceed if Redis is available
+        await redisClient.connect();
+        
+        // Pattern for session keys
+        const sessionPattern = 'sess:*';
+        const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+        
+        // Get all session keys
+        try {
+          const keys = await redisClient.keys(sessionPattern);
+          
+          for (const key of keys) {
             try {
+              const session = await redisClient.get(key);
+              if (!session) continue;
+              
               const sessionData = JSON.parse(session);
               const lastActivity = sessionData.lastActivity || sessionData.cookie?.expires;
               
@@ -290,21 +301,29 @@ function scheduleAbandonedSessionsCleanup() {
                 }
                 
                 // Delete expired session
-                redisClient.del(key);
+                await redisClient.del(key);
                 sessionsCleared++;
               }
             } catch (parseError) {
               // Invalid session data, delete it
-              redisClient.del(key);
+              await redisClient.del(key);
               sessionsCleared++;
             }
-          });
+          }
+          
+          await redisClient.disconnect();
+        } catch (keysError) {
+          console.log('Redis keys operation failed, skipping Redis cleanup:', keysError.message);
+          await redisClient.disconnect();
         }
-      });
+        
+      } catch (redisError) {
+        console.log('Redis not available for cleanup, skipping Redis session cleanup:', redisError.message);
+      }
       
       // Clean up database sessions
-      const Session = require('../models/Session');
-      const dbResult = await Session.deleteMany({
+      const UserSession = require('../models/UserSession');
+      const dbResult = await UserSession.deleteMany({
         expires: { $lt: new Date() }
       });
       
@@ -594,31 +613,48 @@ async function sendAbandonedCartNotification(sessionData) {
  * Reset stuck daily limits
  */
 async function resetStuckDailyLimits() {
-  const redis = require('redis');
-  const redisClient = redis.createClient({
-    host: process.env.REDIS_HOST || 'localhost',
-    port: process.env.REDIS_PORT || 6379
-  });
-  
-  // Get yesterday's date string
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayString = `${yesterday.getFullYear()}-${yesterday.getMonth() + 1}-${yesterday.getDate()}`;
-  
-  // Delete all limit keys from yesterday
-  const pattern = `limit:*:*:${yesterdayString}`;
-  
-  redisClient.keys(pattern, (err, keys) => {
-    if (err) return;
+  try {
+    const redis = require('redis');
+    const redisClient = redis.createClient({
+      host: process.env.REDIS_HOST || 'localhost',
+      port: process.env.REDIS_PORT || 6379,
+      socket: {
+        connectTimeout: 5000 // 5 second timeout
+      }
+    });
     
-    if (keys.length > 0) {
-      redisClient.del(keys, (err, numDeleted) => {
-        if (!err) {
-          console.log(`  Cleared ${numDeleted} stuck daily limits`);
-        }
-      });
+    // Add error handler
+    redisClient.on('error', (err) => {
+      console.log('Redis not available for daily limits cleanup:', err.message);
+    });
+    
+    // Only proceed if Redis is available
+    await redisClient.connect();
+    
+    // Get yesterday's date string
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayString = `${yesterday.getFullYear()}-${yesterday.getMonth() + 1}-${yesterday.getDate()}`;
+    
+    // Delete all limit keys from yesterday
+    const pattern = `limit:*:*:${yesterdayString}`;
+    
+    try {
+      const keys = await redisClient.keys(pattern);
+      
+      if (keys.length > 0) {
+        const numDeleted = await redisClient.del(keys);
+        console.log(`  Cleared ${numDeleted} stuck daily limits`);
+      }
+    } catch (keysError) {
+      console.log('Redis daily limits cleanup failed:', keysError.message);
     }
-  });
+    
+    await redisClient.disconnect();
+    
+  } catch (redisError) {
+    console.log('Redis not available for daily limits cleanup, skipping:', redisError.message);
+  }
 }
 
 /**
@@ -708,18 +744,24 @@ async function aggregateDailyStatistics() {
     }
   ]);
   
-  // Store in DailyStatistics collection
-  const DailyStatistics = require('../models/DailyStatistics');
+  // Store in AnalyticsEvent collection as daily stats
+  const AnalyticsEvent = require('../models/AnalyticsEvent');
   
   if (transactionStats.length > 0) {
-    await DailyStatistics.create({
-      date: yesterday,
-      transactions: {
+    await AnalyticsEvent.create({
+      category: 'daily_statistics',
+      action: 'transaction_summary',
+      label: yesterday.toISOString().split('T')[0], // YYYY-MM-DD format
+      value: transactionStats[0].totalRevenue,
+      userId: new mongoose.Types.ObjectId(), // System generated
+      userType: 'admin',
+      metadata: {
         total: transactionStats[0].totalTransactions,
         revenue: transactionStats[0].totalRevenue,
         avgValue: transactionStats[0].avgTransactionValue,
         uniqueMembers: transactionStats[0].uniqueMembers.length,
-        uniqueCreators: transactionStats[0].uniqueCreators.length
+        uniqueCreators: transactionStats[0].uniqueCreators.length,
+        date: yesterday
       }
     });
   }
