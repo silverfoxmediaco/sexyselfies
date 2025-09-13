@@ -1,11 +1,14 @@
 // CCBill-based webhook controller (no Stripe)
 const crypto = require('crypto');
 
-// Stub model imports - create these as needed
+// Model imports
 const Transaction = require('../models/Transaction');
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
 const CreatorEarnings = require('../models/CreatorEarnings');
+
+// Services
+const { updateMemberPurchaseAnalytics } = require('../services/memberAnalytics.service');
 
 // Stub utility functions
 const sendNotification = async (userId, notification) => {
@@ -201,6 +204,17 @@ async function handleNewSale(data) {
           transaction.member,
           transaction.referenceId
         );
+      }
+      
+      // 🚀 UPDATE MEMBER ANALYTICS - Critical for Creator Active Sales System
+      if (transaction.member) {
+        await updateMemberPurchaseAnalytics(
+          transaction.member,
+          amount,
+          transaction.type,
+          transaction.creator
+        );
+        console.log(`📊 Analytics updated for member ${transaction.member} - $${amount} ${transaction.type}`);
       }
       
       // Send success notification to member

@@ -68,16 +68,34 @@ const BrowseMembers = () => {
     setError(null);
 
     try {
-      const response = await api.get('/creator/members');
+      // Use the discover endpoint which returns high-value members
+      console.log('🔍 Fetching members from /creator/members/discover');
+      const response = await api.get('/creator/members/discover');
       
-      if (response.data.success) {
-        setMembers(response.data.data);
-        setFilteredMembers(response.data.data);
-        calculateAnalytics(response.data.data);
+      console.log('📊 API Response:', response);
+      console.log('✅ Success:', response.success);
+      console.log('👥 Members:', response.members);
+      
+      if (response.success) {
+        const membersData = response.members || [];
+        console.log(`📈 Found ${membersData.length} members`);
+        setMembers(membersData);
+        setFilteredMembers(membersData);
+        calculateAnalytics(membersData);
       }
     } catch (err) {
       console.error('Error fetching members:', err);
-      setError('Failed to load members. Please try again.');
+      console.log('Error details:', err.response?.data);
+      
+      // Provide more specific error messages
+      if (err.response?.status === 403) {
+        setError('Creator verification required to browse members.');
+      } else if (err.response?.status === 404) {
+        setError('Members endpoint not found. Please check API configuration.');
+      } else {
+        setError('Failed to load members. Please try again.');
+      }
+      
       setMembers([]);
       setFilteredMembers([]);
     } finally {

@@ -16,8 +16,14 @@ const { trackAnalytics } = require('../services/analytics.service');
 // ============================================
 
 /**
- * Get high-value members for discovery
+ * Get high-value members for discovery with dynamic sorting
  * @route GET /api/creator/members/discover
+ * @param {string} spendingTier - Filter by spending tier (all, new, standard, high, whale, vip)
+ * @param {string} activityLevel - Filter by activity level (all, new, low, medium, high, very_high)
+ * @param {number} limit - Number of members per page (default: 20)
+ * @param {number} page - Page number (default: 1)
+ * @param {string} sortBy - Sort field: valueScore, spending, activity, lastActive, engagement (default: valueScore)
+ * @param {string} sortOrder - Sort order: asc, desc (default: desc)
  */
 exports.getHighValueMembers = async (req, res) => {
   try {
@@ -27,7 +33,6 @@ exports.getHighValueMembers = async (req, res) => {
       activityLevel = 'all',
       limit = 20,
       page = 1,
-      sortBy = 'value', // value, activity, recent
       category = 'all'
     } = req.query;
     
@@ -77,21 +82,131 @@ exports.getHighValueMembers = async (req, res) => {
     // Calculate skip for pagination
     const skip = (page - 1) * limit;
     
-    // Get members with analytics
-    const memberAnalytics = await MemberAnalytics.find(query)
-      .populate({
-        path: 'member',
-        select: 'username avatar lastActive joinDate'
-      })
-      .sort(sort)
-      .limit(parseInt(limit))
-      .skip(skip);
+    // Get all members, then LEFT JOIN with their analytics data
+    const memberQuery = {
+      role: 'member',
+      isActive: true,
+      // Exclude blocked creators
+      'privacy.blockedCreators': { $ne: creatorId }
+    };
+    
+    // Get all members first (no initial sort - we'll sort after analytics calculation)
+    const allMembers = await Member.find(memberQuery)
+      .select('username avatar lastActive joinDate preferences spending');
+    
+    console.log(`👥 Found ${allMembers.length} members in database`);
     
     // Get total count for pagination
-    const total = await MemberAnalytics.countDocuments(query);
+    const total = await Member.countDocuments(memberQuery);
+    
+    // For each member, get their analytics data if it exists
+    let membersWithAnalytics = 0;
+    let newMembers = 0;
+    
+    const memberAnalytics = await Promise.all(
+      allMembers.map(async (member) => {
+        // Try to find analytics for this member
+        const analytics = await MemberAnalytics.findOne({ member: member._id });
+        
+        if (analytics) {
+          membersWithAnalytics++;
+          // Use existing analytics data
+          return {
+            member: member,
+            activity: analytics.activity,
+            spending: analytics.spending,
+            engagement: analytics.engagement,
+            metadata: analytics.metadata,
+            preferences: analytics.preferences,
+            scoring: analytics.scoring
+          };
+        } else {
+          newMembers++;
+          // Create default analytics for new members
+          return {
+            member: member,
+            activity: {
+              lastActive: member.lastActive || new Date(),
+              level: 'new' // Mark as new member
+            },
+            spending: {
+              last30Days: member.spending?.last30Days || 0,
+              tier: member.spending?.tier || 'new',
+              lifetime: member.spending?.lifetime || 0,
+              averagePurchase: member.spending?.averagePurchase || 0
+            },
+            engagement: {
+              messageResponseRate: 0 // New members have no response history
+            },
+            metadata: {
+              totalPurchases: member.spending?.totalPurchases || 0
+            },
+            preferences: {
+              topCategories: member.preferences?.contentTypes ? 
+                Object.keys(member.preferences.contentTypes).filter(key => member.preferences.contentTypes[key]).map(cat => ({category: cat})) :
+                [{category: 'photos'}]
+            },
+            scoring: {
+              valueScore: 25 // Lower score for new members
+            }
+          };
+        }
+      })
+    );
+    
+    console.log(`📊 Analytics: ${membersWithAnalytics} with analytics, ${newMembers} new members`);
+    
+    // 🎯 DYNAMIC SORTING LOGIC - Sort by valueScore for optimal creator targeting
+    const sortBy = req.query.sortBy || 'valueScore'; // default to valueScore
+    const sortOrder = req.query.sortOrder || 'desc'; // desc = high value first
+    
+    console.log(`🔄 Sorting ${memberAnalytics.length} members by ${sortBy} (${sortOrder})`);
+    
+    memberAnalytics.sort((a, b) => {
+      let valueA, valueB;
+      
+      switch (sortBy) {
+        case 'valueScore':
+          valueA = a.scoring.valueScore;
+          valueB = b.scoring.valueScore;
+          break;
+        case 'spending':
+          valueA = a.spending.last30Days;
+          valueB = b.spending.last30Days;
+          break;
+        case 'activity':
+          // Convert activity level to numeric for sorting
+          const activityLevels = { 'new': 0, 'low': 1, 'medium': 2, 'high': 3, 'very_high': 4 };
+          valueA = activityLevels[a.activity.level] || 0;
+          valueB = activityLevels[b.activity.level] || 0;
+          break;
+        case 'lastActive':
+          valueA = new Date(a.activity.lastActive);
+          valueB = new Date(b.activity.lastActive);
+          break;
+        case 'engagement':
+          valueA = a.engagement.messageResponseRate;
+          valueB = b.engagement.messageResponseRate;
+          break;
+        default:
+          // Fallback to valueScore
+          valueA = a.scoring.valueScore;
+          valueB = b.scoring.valueScore;
+      }
+      
+      if (sortOrder === 'desc') {
+        return valueB - valueA; // High to low
+      } else {
+        return valueA - valueB; // Low to high
+      }
+    });
+    
+    // Apply pagination AFTER sorting
+    const paginatedMembers = memberAnalytics.slice(skip, skip + parseInt(limit));
+    console.log(`📄 Returning ${paginatedMembers.length} members after pagination (${skip}-${skip + parseInt(limit)})`);
     
     // Format response with anonymized data
-    const members = await Promise.all(memberAnalytics.map(async (analytics) => {
+    const members = await Promise.all(paginatedMembers.map(async (analytics) => {
       // Check previous interactions
       const previousInteraction = await MemberInteraction.findOne({
         creator: creatorId,
@@ -106,6 +221,7 @@ exports.getHighValueMembers = async (req, res) => {
         isOnline: isOnlineNow(analytics.activity.lastActive),
         stats: {
           last30DaySpend: analytics.spending.last30Days,
+          lifetimeSpend: analytics.spending.lifetime,
           spendingTier: analytics.spending.tier,
           activityLevel: analytics.activity.level,
           responseRate: analytics.engagement.messageResponseRate,
@@ -134,8 +250,13 @@ exports.getHighValueMembers = async (req, res) => {
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
+        total: memberAnalytics.length,
+        pages: Math.ceil(memberAnalytics.length / limit)
+      },
+      sorting: {
+        sortBy,
+        sortOrder,
+        message: `Members sorted by ${sortBy} in ${sortOrder}ending order`
       }
     });
     

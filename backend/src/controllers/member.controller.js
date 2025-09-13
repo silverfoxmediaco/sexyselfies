@@ -4,6 +4,9 @@ const Connection = require('../models/Connections');
 const Content = require('../models/Content');
 const Transaction = require('../models/Transaction');
 
+// Services
+const { updateMemberActivity } = require('../services/memberAnalytics.service');
+
 // @desc    Get member profile
 // @route   GET /api/members/profile
 // @access  Private (Member only)
@@ -326,6 +329,9 @@ exports.likeCreator = async (req, res, next) => {
       await connection.save();
     }
 
+    // 📊 Track member activity for analytics
+    await updateMemberActivity(member._id, 'swipe_like');
+    
     res.status(200).json({
       success: true,
       isConnected: connection.isConnected,
@@ -349,6 +355,9 @@ exports.passCreator = async (req, res, next) => {
     // Add to passes
     member.passes.push({ creator: req.params.creatorId });
     await member.save();
+    
+    // 📊 Track member activity for analytics
+    await updateMemberActivity(member._id, 'swipe_pass');
 
     res.status(200).json({
       success: true,
@@ -418,6 +427,9 @@ exports.superLikeCreator = async (req, res, next) => {
 
     // Notify creator about super like
     // TODO: Send notification
+    
+    // 📊 Track member activity for analytics
+    await updateMemberActivity(member._id, 'swipe_superlike');
 
     res.status(200).json({
       success: true,
