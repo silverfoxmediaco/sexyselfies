@@ -88,7 +88,7 @@ router.post('/profile/avatar', profileImageUpload, (req, res) => {
 });
 
 // Profile photo upload (alias for avatar)
-router.post('/profile/photo', profileImageUpload, creatorProfileController.updateProfilePhoto);
+router.post('/profile/photo', protect, profileImageUpload, creatorProfileController.updateProfilePhoto);
 
 // Cover image upload (using same profile image middleware)
 router.post('/profile/cover', profileImageUpload, (req, res) => {

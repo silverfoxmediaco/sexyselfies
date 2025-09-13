@@ -744,6 +744,12 @@ exports.getProfileByUsername = async (req, res) => {
 // Update profile photo
 exports.updateProfilePhoto = async (req, res) => {
   try {
+    console.log('🔧 Profile photo upload request received');
+    console.log('User ID:', req.user?.id);
+    console.log('Files:', req.files);
+    console.log('File:', req.file);
+    console.log('Body:', req.body);
+
     const creatorId = req.user.id;
 
     // Check if file was uploaded (handle both single file and fields middleware)
@@ -788,9 +794,12 @@ exports.updateProfilePhoto = async (req, res) => {
 
   } catch (error) {
     console.error('Update profile photo error:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
-      message: 'Error updating profile photo'
+      message: 'Error updating profile photo',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 };

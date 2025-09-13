@@ -52,9 +52,9 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
     >
       {/* Card Images */}
       <div className="card-image-container">
-        {profileData?.profileImage ? (
+        {profileData?.profileImage && profileData.profileImage !== 'default-avatar.jpg' && profileData.profileImage.startsWith('http') ? (
           <img
-            src={profileData.profileImage} 
+            src={profileData.profileImage}
             alt={profileData.displayName}
             className="card-main-image"
           />
@@ -198,9 +198,9 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
           <div className="profile-info">
             <div className="profile-avatar-section">
               <div className="profile-avatar">
-                {profileData?.profileImage ? (
+                {profileData?.profileImage && profileData.profileImage !== 'default-avatar.jpg' && profileData.profileImage.startsWith('http') ? (
                   <img
-                    src={profileData.profileImage} 
+                    src={profileData.profileImage}
                     alt={profileData.displayName}
                   />
                 ) : (
