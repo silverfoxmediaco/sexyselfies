@@ -746,8 +746,9 @@ exports.updateProfilePhoto = async (req, res) => {
   try {
     const creatorId = req.user.id;
 
-    // Check if file was uploaded
-    if (!req.file) {
+    // Check if file was uploaded (handle both single file and fields middleware)
+    const file = req.file || (req.files && req.files.profilePhoto && req.files.profilePhoto[0]);
+    if (!file) {
       return res.status(400).json({
         success: false,
         message: 'No file uploaded'
@@ -764,7 +765,7 @@ exports.updateProfilePhoto = async (req, res) => {
     }
 
     // Upload to Cloudinary
-    const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+    const uploadResult = await cloudinary.uploader.upload(file.path, {
       folder: `sexyselfies/creators/${creatorId}`,
       public_id: `profile_${Date.now()}`,
       transformation: [
