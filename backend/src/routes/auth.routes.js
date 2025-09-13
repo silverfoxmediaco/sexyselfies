@@ -63,4 +63,31 @@ router.put('/profile', protect, updateProfile);
 router.post('/logout', protect, logout);
 router.put('/updatepassword', protect, updatePassword);
 
+// Push notification routes
+router.get('/push/public-key', (req, res) => {
+  try {
+    const publicKey = process.env.VAPID_PUBLIC_KEY;
+
+    if (!publicKey) {
+      return res.status(503).json({
+        success: false,
+        error: 'Push notifications not configured'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        publicKey
+      }
+    });
+  } catch (error) {
+    console.error('Error getting VAPID public key:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
+  }
+});
+
 module.exports = router;

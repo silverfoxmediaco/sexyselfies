@@ -741,6 +741,59 @@ exports.getProfileByUsername = async (req, res) => {
   }
 };
 
+// Update profile photo
+exports.updateProfilePhoto = async (req, res) => {
+  try {
+    const creatorId = req.user.id;
+
+    // Check if file was uploaded
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded'
+      });
+    }
+
+    // Find creator
+    const creator = await Creator.findOne({ user: creatorId });
+    if (!creator) {
+      return res.status(404).json({
+        success: false,
+        message: 'Creator not found'
+      });
+    }
+
+    // Upload to Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+      folder: `sexyselfies/creators/${creatorId}`,
+      public_id: `profile_${Date.now()}`,
+      transformation: [
+        { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+        { quality: 'auto', fetch_format: 'auto' }
+      ]
+    });
+
+    // Update creator profile image
+    creator.profileImage = uploadResult.secure_url;
+    await creator.save();
+
+    res.json({
+      success: true,
+      message: 'Profile photo updated successfully',
+      data: {
+        profileImage: uploadResult.secure_url
+      }
+    });
+
+  } catch (error) {
+    console.error('Update profile photo error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating profile photo'
+    });
+  }
+};
+
 function hasAchievement(profile, achievementId) {
   return profile.gamification.achievements.some(a => a.id === achievementId);
 }

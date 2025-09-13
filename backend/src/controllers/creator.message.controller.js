@@ -459,14 +459,14 @@ exports.getMessageAnalytics = async (req, res) => {
     
     const paidMessages = await CreatorMessage.countDocuments({
       creator: creatorId,
-      type: 'paid',
+      'pricing.isPaid': true,
       createdAt: { $gte: startDate }
     });
     
     const purchasedMessages = await CreatorMessage.countDocuments({
       creator: creatorId,
-      type: 'paid',
-      'purchase.isPurchased': true,
+      'pricing.isPaid': true,
+      'purchase.status': 'unlocked',
       createdAt: { $gte: startDate }
     });
     
@@ -475,8 +475,8 @@ exports.getMessageAnalytics = async (req, res) => {
       {
         $match: {
           creator: mongoose.Types.ObjectId(creatorId),
-          type: 'paid',
-          'purchase.isPurchased': true,
+          'pricing.isPaid': true,
+          'purchase.status': 'unlocked',
           createdAt: { $gte: startDate }
         }
       },
