@@ -108,7 +108,7 @@ const CreatorProfilePage = () => {
         // Update profile data with new photo
         setProfileData(prev => ({
           ...prev,
-          profilePhoto: response.data.imageUrl || response.data.profilePhoto
+          profileImage: response.data.profileImage || response.data.imageUrl
         }));
         
         // Clear the file input
@@ -216,12 +216,12 @@ const CreatorProfilePage = () => {
       <div className="profile-overview">
         <div className="profile-card">
           <div className="profile-avatar">
-            {profileData?.profilePhoto ? (
-              <div 
-                className={`avatar-container ${profileData?.isOwnProfile ? 'clickable' : ''}`} 
+            {profileData?.profileImage && profileData.profileImage !== 'default-avatar.jpg' ? (
+              <div
+                className={`avatar-container ${profileData?.isOwnProfile ? 'clickable' : ''}`}
                 onClick={handleAvatarClick}
               >
-                <img src={profileData.profilePhoto} alt={profileData.displayName} />
+                <img src={profileData.profileImage} alt={profileData.displayName} />
                 {profileData?.isOwnProfile && (
                   <div className="avatar-overlay">
                     {uploadingPhoto ? (

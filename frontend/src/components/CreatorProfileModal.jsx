@@ -26,7 +26,7 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
 
   // Mock multiple images
   const images = [
-    creator?.profilePhoto || '/api/placeholder/400/600',
+    creator?.profileImage || '/api/placeholder/400/600',
     '/api/placeholder/400/600',
     '/api/placeholder/400/600',
     '/api/placeholder/400/600'
