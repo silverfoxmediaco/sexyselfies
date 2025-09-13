@@ -22,8 +22,8 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
 
   // Debug logging to see what data is being passed
   console.log('🔍 CreatorProfilePreview received profileData:', profileData);
-  console.log('📷 Profile photo preview:', profileData?.profilePhotoPreview);
-  console.log('🖼️ Cover image preview:', profileData?.coverImagePreview);
+  console.log('📷 Profile photo preview:', profileData?.profileImage);
+  console.log('🖼️ Cover image preview:', profileData?.coverImage);
 
   // Mock sample content for preview
   const sampleContent = [
@@ -52,9 +52,9 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
     >
       {/* Card Images */}
       <div className="card-image-container">
-        {profileData?.profilePhotoPreview ? (
-          <img 
-            src={profileData.profilePhotoPreview} 
+        {profileData?.profileImage ? (
+          <img
+            src={profileData.profileImage} 
             alt={profileData.displayName}
             className="card-main-image"
           />
@@ -169,9 +169,9 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
         <div className="profile-header">
           {/* Cover Photo */}
           <div className="cover-photo-container">
-            {profileData?.coverImagePreview || profileData?.coverPhoto ? (
-              <img 
-                src={profileData?.coverImagePreview || profileData?.coverPhoto} 
+            {profileData?.coverImage || profileData?.coverPhoto ? (
+              <img
+                src={profileData?.coverImage || profileData?.coverPhoto} 
                 alt="Cover" 
                 className="cover-photo"
               />
@@ -198,9 +198,9 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
           <div className="profile-info">
             <div className="profile-avatar-section">
               <div className="profile-avatar">
-                {profileData?.profilePhotoPreview ? (
-                  <img 
-                    src={profileData.profilePhotoPreview} 
+                {profileData?.profileImage ? (
+                  <img
+                    src={profileData.profileImage} 
                     alt={profileData.displayName}
                   />
                 ) : (
