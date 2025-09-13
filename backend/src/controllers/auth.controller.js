@@ -5,6 +5,7 @@ const Member = require('../models/Member');
 const CreatorProfile = require('../models/CreatorProfile');
 const crypto = require('crypto');
 const { sendVerificationEmail } = require('../services/notification.service');
+const SessionService = require('../services/session.service');
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -260,7 +261,7 @@ exports.creatorRegister = async (req, res, next) => {
     };
 
     // Send token response (logs them in immediately)
-    return sendTokenResponse(user[0], 201, res, additionalData);
+    return await sendTokenResponse(user[0], 201, res, additionalData);
     
   } catch (error) {
     await session.abortTransaction();
@@ -450,7 +451,7 @@ exports.login = async (req, res, next) => {
       additionalData.redirectTo = '/admin';
     }
 
-    return sendTokenResponse(user, 200, res, additionalData);
+    return await sendTokenResponse(user, 200, res, additionalData);
   } catch (error) {
     console.error(error);
     if (!res.headersSent) {
@@ -619,7 +620,7 @@ exports.creatorLogin = async (req, res, next) => {
     
     if (!res.headersSent) {
       try {
-        const result = sendTokenResponse(user, 200, res, additionalData);
+        const result = await sendTokenResponse(user, 200, res, additionalData);
         return result;
       } catch (tokenError) {
         console.error('sendTokenResponse error:', tokenError);
@@ -868,7 +869,7 @@ exports.updatePassword = async (req, res, next) => {
     user.password = req.body.newPassword;
     await user.save();
 
-    return sendTokenResponse(user, 200, res);
+    return await sendTokenResponse(user, 200, res);
   } catch (error) {
     console.error(error);
     if (!res.headersSent) {
@@ -881,7 +882,7 @@ exports.updatePassword = async (req, res, next) => {
 };
 
 // Helper function to get token from model, create cookie and send response
-const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
+const sendTokenResponse = async (user, statusCode, res, additionalData = {}) => {
   // Early safety check - must be first
   if (res.headersSent) {
     console.log('Headers already sent, skipping response');
@@ -889,8 +890,20 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
   }
   
   try {
-    // Create token using Mongoose method
-    const token = user.getSignedJwtToken();
+    // Create session for comprehensive tracking
+    console.log(`🚀 Creating session for ${user.role} login: ${user._id}`);
+    
+    const sessionData = await SessionService.createSession(
+      user._id, 
+      user.role, 
+      res.req || {}, // Pass request object
+      168 // 7 days in hours
+    );
+    
+    console.log(`✅ Session created: ${sessionData.sessionId}`);
+    
+    // Create token using new session-aware method
+    const token = user.getSignedJwtTokenWithSession(sessionData.sessionId);
     const options = {
       expires: new Date(
         Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
@@ -909,6 +922,12 @@ const sendTokenResponse = (user, statusCode, res, additionalData = {}) => {
         id: user._id,
         email: user.email,
         role: user.role
+      },
+      session: {
+        sessionId: sessionData.sessionId,
+        expiresAt: sessionData.expiresAt,
+        deviceType: sessionData.deviceInfo?.deviceType,
+        location: sessionData.location
       },
       ...additionalData
     };

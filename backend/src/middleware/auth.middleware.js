@@ -2,8 +2,133 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Creator = require('../models/Creator');
 const Member = require('../models/Member');
+const SessionService = require('../services/session.service');
 
-// Protect routes - verify JWT token
+// Session-aware authentication - validates JWT + session
+exports.protectWithSession = async (req, res, next) => {
+  try {
+    let token;
+
+    // Check for token in header
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
+
+    // Make sure token exists
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        error: 'Not authorized to access this route'
+      });
+    }
+
+    try {
+      // Verify JWT token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Find user
+      const user = await User.findById(decoded.id).select('-password');
+
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          error: 'User not found'
+        });
+      }
+
+      // Check if user is active
+      if (user.status === 'suspended' || user.status === 'banned') {
+        return res.status(403).json({
+          success: false,
+          error: `Account ${user.status}`
+        });
+      }
+
+      // Validate session if sessionId exists in JWT
+      if (decoded.sessionId) {
+        console.log(`🔍 Validating session: ${decoded.sessionId} for user: ${user._id}`);
+        
+        const sessionValidation = await SessionService.validateSession(
+          decoded.sessionId, 
+          user._id, 
+          req
+        );
+
+        if (!sessionValidation.valid) {
+          console.log(`❌ Session validation failed: ${sessionValidation.reason}`);
+          
+          if (sessionValidation.requiresReauth) {
+            return res.status(401).json({
+              success: false,
+              error: 'Session expired. Please log in again.',
+              code: 'SESSION_EXPIRED'
+            });
+          }
+        }
+
+        // Attach session info to request
+        req.session = sessionValidation.session;
+        console.log(`✅ Session validated for ${user.role}: ${decoded.sessionId}`);
+      } else {
+        console.log(`⚠️ Legacy token without session ID for user: ${user._id}`);
+        // For backward compatibility, allow tokens without sessionId
+        req.session = null;
+      }
+
+      req.user = user;
+      next();
+    } catch (err) {
+      console.error('JWT verification error:', err.message);
+      return res.status(401).json({
+        success: false,
+        error: 'Not authorized to access this route'
+      });
+    }
+  } catch (error) {
+    console.error('Session auth middleware error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Server error'
+    });
+  }
+};
+
+// Activity tracking middleware (use after protectWithSession)
+exports.trackActivity = (activityType) => {
+  return async (req, res, next) => {
+    try {
+      if (req.session && req.session.sessionId) {
+        // Extract metadata from request
+        const metadata = {
+          endpoint: req.originalUrl,
+          method: req.method,
+          userAgent: req.headers['user-agent'],
+          timestamp: new Date()
+        };
+
+        // Add specific metadata based on activity type
+        if (activityType === 'content_purchase' && req.body.amount) {
+          metadata.amount = req.body.amount;
+        }
+        
+        if (activityType === 'browse_members' && req.query) {
+          metadata.filters = req.query;
+        }
+
+        await SessionService.trackActivity(req.session.sessionId, activityType, metadata);
+      }
+      next();
+    } catch (error) {
+      console.error('Activity tracking error:', error);
+      // Don't fail the request if activity tracking fails
+      next();
+    }
+  };
+};
+
+// Protect routes - verify JWT token (legacy - backward compatibility)
 exports.protect = async (req, res, next) => {
   try {
     let token;

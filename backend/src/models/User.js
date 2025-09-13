@@ -68,9 +68,20 @@ userSchema.methods.matchPassword = async function(enteredPassword) {
   }
 };
 
-// Generate JWT token
+// Generate JWT token (legacy - without session)
 userSchema.methods.getSignedJwtToken = function() {
   return jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE || '7d'
+  });
+};
+
+// Generate JWT token with session ID (new method)
+userSchema.methods.getSignedJwtTokenWithSession = function(sessionId) {
+  return jwt.sign({ 
+    id: this._id, 
+    role: this.role,
+    sessionId: sessionId
+  }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE || '7d'
   });
 };

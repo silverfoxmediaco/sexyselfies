@@ -14,6 +14,7 @@ const AdminDashboard = () => {
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
   const [stats, setStats] = useState(null);
+  const [sessionStats, setSessionStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,11 +31,24 @@ const AdminDashboard = () => {
 
   const fetchDashboardStats = async () => {
     try {
+      // Fetch regular dashboard stats
       const response = await api.get('/admin/dashboard/stats');
       
       if (response.success) {
         setStats(response.data);
       }
+
+      // Fetch session analytics
+      try {
+        const sessionResponse = await api.get('/sessions/admin/analytics?days=1');
+        if (sessionResponse.success) {
+          setSessionStats(sessionResponse.data);
+        }
+      } catch (sessionError) {
+        console.error('Failed to fetch session stats:', sessionError);
+        // Don't fail the entire dashboard if session stats fail
+      }
+      
     } catch (error) {
       console.error('Failed to fetch dashboard stats:', error);
     } finally {
@@ -120,6 +134,37 @@ const AdminDashboard = () => {
                   <span className="stat-meta">{stats?.financials?.last24Hours?.count || 0} transactions</span>
                 </div>
               </div>
+
+              <div className="stat-card">
+                <div className="stat-icon sessions">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm3.5 6L12 10.5 8.5 8 12 5.5 15.5 8zM12 13.5l3.5 2.5L12 18.5 8.5 16l3.5-2.5z"/>
+                  </svg>
+                </div>
+                <div className="stat-details">
+                  <h3>Active Sessions</h3>
+                  <p className="stat-number">{sessionStats?.activeSessions || 0}</p>
+                  <span className="stat-meta">{sessionStats?.totalSessions || 0} total today</span>
+                </div>
+              </div>
+
+              {sessionStats?.security?.totalSuspiciousActivities > 0 && (
+                <div className="stat-card alert-card">
+                  <div className="stat-icon security">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 6h2v2h-2V7zm0 4h2v6h-2v-6z"/>
+                    </svg>
+                    {sessionStats.security.totalSuspiciousActivities > 0 && (
+                      <span className="alert-badge">{sessionStats.security.totalSuspiciousActivities}</span>
+                    )}
+                  </div>
+                  <div className="stat-details">
+                    <h3>Security Alerts</h3>
+                    <p className="stat-number">{sessionStats.security.totalSuspiciousActivities}</p>
+                    <span className="stat-meta">Suspicious activities detected</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Quick Actions */}
@@ -146,6 +191,96 @@ const AdminDashboard = () => {
                 </Link>
               </div>
             </div>
+
+            {/* Session Analytics */}
+            {sessionStats && (
+              <div className="session-analytics">
+                <h2>Session Analytics (24h)</h2>
+                
+                {/* Platform Activity Overview */}
+                <div className="analytics-grid">
+                  <div className="analytics-card">
+                    <h3>Platform Activity</h3>
+                    <div className="analytics-metrics">
+                      <div className="metric-item">
+                        <span className="metric-label">Avg Session Duration</span>
+                        <span className="metric-value">{sessionStats.avgDurationMinutes?.toFixed(1) || 0} min</span>
+                      </div>
+                      <div className="metric-item">
+                        <span className="metric-label">Unique Users</span>
+                        <span className="metric-value">{sessionStats.uniqueUsers || 0}</span>
+                      </div>
+                      <div className="metric-item">
+                        <span className="metric-label">Total Activities</span>
+                        <span className="metric-value">{sessionStats.totalActivities || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="analytics-card">
+                    <h3>Device Breakdown</h3>
+                    <div className="device-stats">
+                      {sessionStats.deviceBreakdown?.map((device, index) => (
+                        <div key={index} className="device-item">
+                          <span className="device-type">{device._id || 'Unknown'}</span>
+                          <div className="device-bar">
+                            <div 
+                              className="device-fill" 
+                              style={{ width: `${(device.count / sessionStats.totalSessions * 100)}%` }}
+                            ></div>
+                            <span className="device-count">{device.count}</span>
+                          </div>
+                        </div>
+                      )) || (
+                        <div className="no-data">No device data available</div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="analytics-card">
+                    <h3>User Type Activity</h3>
+                    <div className="user-type-stats">
+                      {sessionStats.userTypeBreakdown?.map((userType, index) => (
+                        <div key={index} className="user-type-item">
+                          <div className="user-type-header">
+                            <span className="user-type-label">{userType._id}</span>
+                            <span className="user-type-count">{userType.count} sessions</span>
+                          </div>
+                          <div className="user-type-details">
+                            <span>Avg: {userType.avgDuration?.toFixed(1) || 0}min</span>
+                            {userType.totalRevenue && (
+                              <span>Revenue: ${userType.totalRevenue?.toFixed(2)}</span>
+                            )}
+                          </div>
+                        </div>
+                      )) || (
+                        <div className="no-data">No user type data available</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Peak Hours */}
+                {sessionStats.peakHours && sessionStats.peakHours.length > 0 && (
+                  <div className="peak-hours-section">
+                    <h3>Peak Activity Hours</h3>
+                    <div className="peak-hours-list">
+                      {sessionStats.peakHours.slice(0, 3).map((hour, index) => (
+                        <div key={index} className="peak-hour-item">
+                          <span className="hour-time">
+                            {hour._id === 0 ? '12 AM' : 
+                             hour._id === 12 ? '12 PM' : 
+                             hour._id > 12 ? `${hour._id - 12} PM` : `${hour._id} AM`}
+                          </span>
+                          <span className="hour-sessions">{hour.sessions} sessions</span>
+                          <span className="hour-duration">Avg: {hour.avgDuration?.toFixed(1) || 0}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* High Risk Users */}
             {stats?.moderation?.highRiskUsers?.length > 0 && (
