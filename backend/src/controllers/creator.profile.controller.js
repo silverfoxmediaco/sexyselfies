@@ -2,7 +2,7 @@ const CreatorProfile = require('../models/CreatorProfile');
 const Creator = require('../models/Creator');
 const Content = require('../models/Content');
 const CreatorEarnings = require('../models/CreatorEarnings');
-const cloudinary = require('../config/cloudinary');
+const { cloudinary } = require('../config/cloudinary');
 const mongoose = require('mongoose');
 
 // Get creator's complete profile with all intelligence data
