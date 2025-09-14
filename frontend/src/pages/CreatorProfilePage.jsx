@@ -13,6 +13,7 @@ import CreatorProfilePreview from './CreatorProfilePreview';
 import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
 import { useAuth } from '../contexts/AuthContext';
 import creatorService from '../services/creator.service';
+import defaultProfileImage from '../assets/cuteblonde.png';
 import './CreatorProfilePage.css';
 
 const CreatorProfilePage = () => {
@@ -49,7 +50,6 @@ const CreatorProfilePage = () => {
     setError(null);
 
     try {
-      // This page is for the creator's own profile only
       console.log('CreatorProfilePage: Calling creatorService.getProfile()');
       const response = await creatorService.getProfile();
       console.log('CreatorProfilePage: API response:', response);
@@ -57,7 +57,6 @@ const CreatorProfilePage = () => {
       if (response && response.success && response.profile) {
         console.log('CreatorProfilePage: Setting profile data:', response.profile);
         
-        // Process the profile image URL
         let processedProfile = {
           ...response.profile,
           isOwnProfile: true
@@ -103,13 +102,11 @@ const CreatorProfilePage = () => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       alert('Please select an image file.');
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert('File size must be less than 5MB.');
       return;
@@ -121,8 +118,7 @@ const CreatorProfilePage = () => {
       const response = await creatorService.updateProfilePhoto(file);
 
       if (response && response.success) {
-        // Process the new image URL
-        let newImageUrl = response.data.profileImage || response.data.imageUrl || response.profileImage;
+        let newImageUrl = response.data?.profileImage || response.data?.imageUrl || response.profileImage;
         
         // Ensure HTTPS for Cloudinary URLs
         if (newImageUrl && newImageUrl.includes('cloudinary')) {
@@ -133,13 +129,11 @@ const CreatorProfilePage = () => {
           newImageUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/${newImageUrl}`;
         }
         
-        // Update profile data with new photo
         setProfileData(prev => ({
           ...prev,
           profileImage: newImageUrl
         }));
         
-        // Clear the file input
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -165,14 +159,23 @@ const CreatorProfilePage = () => {
 
   // Helper function to check if we have a valid image URL
   const hasValidProfileImage = () => {
-    return profileData?.profileImage && 
-           profileData.profileImage !== '' &&
-           profileData.profileImage !== null &&
-           profileData.profileImage !== undefined &&
-           !profileData.profileImage.includes('default') &&
-           (profileData.profileImage.startsWith('http') || 
-            profileData.profileImage.startsWith('https') ||
-            profileData.profileImage.startsWith('/'));
+    const img = profileData?.profileImage;
+    return img && 
+           img !== '' &&
+           img !== null &&
+           img !== undefined &&
+           !img.includes('default') &&
+           (img.startsWith('http') || 
+            img.startsWith('https') ||
+            img.startsWith('/'));
+  };
+
+  // Get the display image - either the uploaded one or the default
+  const getDisplayImage = () => {
+    if (hasValidProfileImage()) {
+      return profileData.profileImage;
+    }
+    return defaultProfileImage;
   };
 
   // Show loading while auth is initializing or profile is loading
@@ -265,7 +268,6 @@ const CreatorProfilePage = () => {
                 alt={profileData?.displayName || 'Profile'} 
                 onError={(e) => {
                   console.error('Image failed to load:', e.target.src);
-                  // Fallback to default image if current image fails
                   if (e.target.src !== defaultProfileImage) {
                     e.target.src = defaultProfileImage;
                   }
