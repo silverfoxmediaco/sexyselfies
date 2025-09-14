@@ -112,6 +112,13 @@ const CreatorProfilePage = () => {
       return;
     }
 
+    console.log('Uploading file:', {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      sizeInMB: (file.size / (1024 * 1024)).toFixed(2) + 'MB'
+    });
+
     setUploadingPhoto(true);
 
     try {
@@ -119,6 +126,8 @@ const CreatorProfilePage = () => {
 
       if (response && response.success) {
         let newImageUrl = response.data?.profileImage || response.data?.imageUrl || response.profileImage;
+        
+        console.log('Upload successful, image URL:', newImageUrl);
         
         // Ensure HTTPS for Cloudinary URLs
         if (newImageUrl && newImageUrl.includes('cloudinary')) {
@@ -139,13 +148,33 @@ const CreatorProfilePage = () => {
         }
         
         console.log('Profile photo uploaded successfully:', newImageUrl);
+        alert('Profile photo updated successfully!');
       } else {
-        console.error('Upload response:', response);
-        alert('Failed to upload photo. Please try again.');
+        console.error('Upload failed - Response:', response);
+        const errorMsg = response?.message || 'Failed to upload photo. Please try again.';
+        alert(errorMsg);
       }
     } catch (error) {
-      console.error('Photo upload error:', error);
-      alert('Error uploading photo. Please try again.');
+      console.error('Photo upload error - Full details:', {
+        error: error,
+        message: error.message,
+        response: error.response,
+        data: error.response?.data
+      });
+      
+      // More specific error messages
+      let errorMessage = 'Error uploading photo. ';
+      if (error.response?.status === 500) {
+        errorMessage += 'Server error - this might be a Cloudinary configuration issue on the backend.';
+      } else if (error.response?.status === 413) {
+        errorMessage += 'File too large.';
+      } else if (error.response?.status === 415) {
+        errorMessage += 'Invalid file type.';
+      } else {
+        errorMessage += error.message || 'Please try again.';
+      }
+      
+      alert(errorMessage);
     } finally {
       setUploadingPhoto(false);
     }
