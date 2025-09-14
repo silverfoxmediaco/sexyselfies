@@ -744,7 +744,7 @@ exports.getProfileByUsername = async (req, res) => {
 // Update profile photo
 exports.updateProfilePhoto = async (req, res) => {
   try {
-    console.log('🔧 Profile photo upload request received - Production deployment fix');
+    console.log('Profile photo upload request received');
     console.log('User ID:', req.user?.id);
     console.log('Files:', req.files);
     console.log('File:', req.file);
@@ -783,6 +783,8 @@ exports.updateProfilePhoto = async (req, res) => {
     // Update creator profile image
     creator.profileImage = uploadResult.secure_url;
     await creator.save();
+
+    console.log('Profile photo updated successfully:', uploadResult.secure_url);
 
     res.json({
       success: true,

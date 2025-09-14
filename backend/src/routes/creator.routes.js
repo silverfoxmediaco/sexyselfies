@@ -87,8 +87,8 @@ router.post('/profile/avatar', profileImageUpload, (req, res) => {
   res.status(501).json({ message: 'Avatar upload coming soon' });
 });
 
-// Profile photo upload (alias for avatar)
-router.post('/profile/photo', protect, profileImageUpload, creatorProfileController.updateProfilePhoto);
+// Profile photo upload - FIXED: removed duplicate 'protect' middleware
+router.post('/profile/photo', profileImageUpload, creatorProfileController.updateProfilePhoto);
 
 // Cover image upload (using same profile image middleware)
 router.post('/profile/cover', profileImageUpload, (req, res) => {
