@@ -56,10 +56,26 @@ const CreatorProfilePage = () => {
       
       if (response && response.success && response.profile) {
         console.log('CreatorProfilePage: Setting profile data:', response.profile);
-        setProfileData({
+        
+        // Process the profile image URL
+        let processedProfile = {
           ...response.profile,
           isOwnProfile: true
-        });
+        };
+        
+        // Handle different possible image URL formats
+        if (response.profile.profileImage) {
+          // If it's a Cloudinary URL, ensure it's using HTTPS
+          if (response.profile.profileImage.includes('cloudinary')) {
+            processedProfile.profileImage = response.profile.profileImage.replace('http://', 'https://');
+          }
+          // If it's a relative URL, add the base URL
+          else if (!response.profile.profileImage.startsWith('http')) {
+            processedProfile.profileImage = `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/${response.profile.profileImage}`;
+          }
+        }
+        
+        setProfileData(processedProfile);
 
         // Use stats data from profile API response
         if (response.stats) {
@@ -105,10 +121,22 @@ const CreatorProfilePage = () => {
       const response = await creatorService.updateProfilePhoto(file);
 
       if (response && response.success) {
+        // Process the new image URL
+        let newImageUrl = response.data.profileImage || response.data.imageUrl || response.profileImage;
+        
+        // Ensure HTTPS for Cloudinary URLs
+        if (newImageUrl && newImageUrl.includes('cloudinary')) {
+          newImageUrl = newImageUrl.replace('http://', 'https://');
+        }
+        // Handle relative URLs
+        else if (newImageUrl && !newImageUrl.startsWith('http')) {
+          newImageUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/${newImageUrl}`;
+        }
+        
         // Update profile data with new photo
         setProfileData(prev => ({
           ...prev,
-          profileImage: response.data.profileImage || response.data.imageUrl
+          profileImage: newImageUrl
         }));
         
         // Clear the file input
@@ -116,7 +144,7 @@ const CreatorProfilePage = () => {
           fileInputRef.current.value = '';
         }
         
-        console.log('Profile photo uploaded successfully:', response.data);
+        console.log('Profile photo uploaded successfully:', newImageUrl);
       } else {
         console.error('Upload response:', response);
         alert('Failed to upload photo. Please try again.');
@@ -133,6 +161,14 @@ const CreatorProfilePage = () => {
     if (fileInputRef.current && !uploadingPhoto && profileData?.isOwnProfile) {
       fileInputRef.current.click();
     }
+  };
+
+  // Helper function to check if we have a valid image URL
+  const hasValidProfileImage = () => {
+    return profileData?.profileImage && 
+           profileData.profileImage !== 'default-avatar.jpg' &&
+           profileData.profileImage !== '' &&
+           profileData.profileImage !== null;
   };
 
   // Show loading while auth is initializing or profile is loading
@@ -216,12 +252,20 @@ const CreatorProfilePage = () => {
       <div className="profile-overview">
         <div className="profile-card">
           <div className="profile-avatar">
-            {profileData?.profileImage && profileData.profileImage !== 'default-avatar.jpg' ? (
+            {hasValidProfileImage() ? (
               <div
                 className={`avatar-container ${profileData?.isOwnProfile ? 'clickable' : ''}`}
                 onClick={handleAvatarClick}
               >
-                <img src={profileData.profileImage} alt={profileData.displayName} />
+                <img 
+                  src={profileData.profileImage} 
+                  alt={profileData.displayName || 'Profile'} 
+                  onError={(e) => {
+                    console.error('Image failed to load:', profileData.profileImage);
+                    // Hide the broken image and show the upload placeholder
+                    e.target.style.display = 'none';
+                  }}
+                />
                 {profileData?.isOwnProfile && (
                   <div className="avatar-overlay">
                     {uploadingPhoto ? (
