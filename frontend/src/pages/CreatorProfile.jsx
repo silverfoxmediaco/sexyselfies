@@ -237,148 +237,157 @@ const CreatorProfile = () => {
       <div className="creator-profile-page">
       
       <div className="profile-container">
-        {/* Profile Header */}
+        {/* Profile Header - FIXED: No duplicate header actions */}
         <div className="profile-header">
           {/* Cover Photo */}
           <div className="cover-photo-container">
-            <img 
-              src={creator.coverImage} 
-              alt="Cover" 
-              className="cover-photo"
-            />
+            {creator.coverImage ? (
+              <img 
+                src={creator.coverImage} 
+                alt="Cover" 
+                className="cover-photo"
+              />
+            ) : (
+              <div className="cover-photo placeholder-cover"></div>
+            )}
             <div className="cover-overlay"></div>
             
-            {/* Action Buttons */}
-            <div className="header-actions">
-              <button 
-                className="action-icon-btn"
-                onClick={() => navigate(-1)}
-              >
-                <img src="/src/assets/backicon.svg" alt="Back" width="20" height="20" />
-              </button>
-              <button 
-                className="action-icon-btn"
-                onClick={() => setShowShareMenu(!showShareMenu)}
-              >
-                <img src="/src/assets/shareicon.svg" alt="Share" width="20" height="20" />
-              </button>
-              <button 
-                className="action-icon-btn"
-                onClick={() => setShowMoreMenu(!showMoreMenu)}
-              >
-                <img src="/src/assets/moreicon.svg" alt="More" width="20" height="20" />
-              </button>
-            </div>
-          </div>
-          
-          {/* Profile Info */}
-          <div className="profile-info">
-            <div className="profile-avatar-section">
-              <div className="profile-avatar">
-                <img 
-                  src={creator.profileImage} 
-                  alt={creator.displayName}
-                />
-                {creator.isOnline && <span className="online-indicator"></span>}
+            {/* Floating Action Buttons - Mobile Only */}
+            {isMobile && (
+              <div className="floating-header-actions">
+                <button 
+                  className="floating-action-btn back-btn"
+                  onClick={() => navigate(-1)}
+                >
+                  <ArrowLeft size={20} />
+                </button>
+                <div className="floating-actions-right">
+                  <button 
+                    className="floating-action-btn"
+                    onClick={() => setShowShareMenu(!showShareMenu)}
+                  >
+                    <Share2 size={20} />
+                  </button>
+                  <button 
+                    className="floating-action-btn"
+                    onClick={() => setShowMoreMenu(!showMoreMenu)}
+                  >
+                    <MoreVertical size={20} />
+                  </button>
+                </div>
               </div>
-              
-              <div className="profile-actions">
-                <button 
-                  className={`follow-btn ${isFollowing ? 'following' : ''}`}
-                  onClick={handleFollow}
-                >
-                  {isFollowing ? (
-                    <>
-                      <CheckCircle size={18} />
-                      <span>Following</span>
-                    </>
-                  ) : (
-                    <>
-                      <Bell size={18} />
-                      <span>Follow</span>
-                    </>
-                  )}
-                </button>
-                
-                <button 
-                  className={`like-btn ${hasMatched ? 'matched' : ''}`}
-                  onClick={handleLike}
-                >
-                  <Heart size={18} fill={hasMatched ? 'currentColor' : 'none'} />
-                </button>
-                
-                <button 
-                  className="message-btn"
-                  onClick={handleMessage}
-                  disabled={!hasMatched}
-                >
-                  <MessageCircle size={18} />
-                </button>
-              </div>
-            </div>
+            )}
             
-            <div className="profile-details">
-              <div className="profile-name-section">
-                <h1 className="profile-name">
-                  {creator.displayName}
-                  {creator.verified && (
-                    <Shield className="verified-icon" size={20} />
+            {/* Profile Info Overlay - Moved to bottom of cover to save space */}
+            <div className="profile-info-overlay">
+              <div className="profile-avatar-section">
+                <div className="profile-avatar">
+                  <img 
+                    src={creator.profileImage} 
+                    alt={creator.displayName}
+                  />
+                  {creator.isOnline && <span className="online-indicator"></span>}
+                </div>
+                
+                <div className="profile-actions">
+                  <button 
+                    className={`follow-btn ${isFollowing ? 'following' : ''}`}
+                    onClick={handleFollow}
+                  >
+                    {isFollowing ? (
+                      <>
+                        <CheckCircle size={18} />
+                        <span>Following</span>
+                      </>
+                    ) : (
+                      <>
+                        <Bell size={18} />
+                        <span>Follow</span>
+                      </>
+                    )}
+                  </button>
+                  
+                  <button 
+                    className={`like-btn ${hasMatched ? 'matched' : ''}`}
+                    onClick={handleLike}
+                  >
+                    <Heart size={18} fill={hasMatched ? 'currentColor' : 'none'} />
+                  </button>
+                  
+                  <button 
+                    className="message-btn"
+                    onClick={handleMessage}
+                    disabled={!hasMatched}
+                  >
+                    <MessageCircle size={18} />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="profile-details">
+                <div className="profile-name-section">
+                  <h1 className="profile-name">
+                    {creator.displayName}
+                    {creator.verified && (
+                      <Shield className="verified-icon" size={20} />
+                    )}
+                  </h1>
+                  <span className="profile-username">@{creator.username}</span>
+                </div>
+                
+                <p className="profile-bio">{creator.bio}</p>
+                
+                <div className="profile-meta">
+                  <span className="meta-item">
+                    <MapPin size={14} />
+                    {creator.location?.country || 'Location not specified'}
+                  </span>
+                  <span className="meta-item">
+                    <Clock size={14} />
+                    {creator.isOnline ? 'Online now' : `Active ${getTimeAgo(creator.lastActive)}`}
+                  </span>
+                  {creator.createdAt && (
+                    <span className="meta-item">
+                      <Calendar size={14} />
+                      Joined {new Date(creator.createdAt).toLocaleDateString()}
+                    </span>
                   )}
-                </h1>
-                <span className="profile-username">{creator.username}</span>
+                </div>
               </div>
-              
-              <div className="profile-meta">
-                <span className="meta-item">
-                  <MapPin size={14} />
-                  {creator.location?.country || 'Location not specified'}
-                </span>
-                <span className="meta-item">
-                  <Clock size={14} />
-                  {creator.isOnline ? 'Online now' : `Active ${getTimeAgo(creator.lastActive)}`}
-                </span>
-                <span className="meta-item">
-                  <Calendar size={14} />
-                  Joined {new Date(creator.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-              
-              <p className="profile-bio">{creator.bio}</p>
-              
             </div>
           </div>
-          
-          {/* Stats Bar */}
-          <div className="profile-stats">
-            <div className="stat-item">
-              <span className="stat-value">{content?.length || 0}</span>
-              <span className="stat-label">Content</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-value">
-                {(creator.stats?.totalConnections || 0) > 1000 
-                  ? `${((creator.stats?.totalConnections || 0) / 1000).toFixed(1)}k`
-                  : creator.stats?.totalConnections || 0
-                }
-              </span>
-              <span className="stat-label">Connections</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-value">
-                {(creator.stats?.totalLikes || 0) > 1000 
-                  ? `${((creator.stats?.totalLikes || 0) / 1000).toFixed(1)}k`
-                  : creator.stats?.totalLikes || 0
-                }
-              </span>
-              <span className="stat-label">Likes</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-value">
-                <Star size={14} />
-                {creator.stats?.rating?.toFixed(1) || '0.0'}
-              </span>
-              <span className="stat-label">Rating</span>
-            </div>
+        </div>
+        
+        {/* Stats Bar - Now outside of profile-header */}
+        <div className="profile-stats">
+          <div className="stat-item">
+            <span className="stat-value">{content?.length || 0}</span>
+            <span className="stat-label">Content</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">
+              {(creator.stats?.totalConnections || 0) > 1000 
+                ? `${((creator.stats?.totalConnections || 0) / 1000).toFixed(1)}k`
+                : creator.stats?.totalConnections || 0
+              }
+            </span>
+            <span className="stat-label">Connections</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">
+              {(creator.stats?.totalLikes || 0) > 1000 
+                ? `${((creator.stats?.totalLikes || 0) / 1000).toFixed(1)}k`
+                : creator.stats?.totalLikes || 0
+              }
+            </span>
+            <span className="stat-label">Likes</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">
+              <Star size={14} />
+              {creator.stats?.rating?.toFixed(1) || '0.0'}
+            </span>
+            <span className="stat-label">Rating</span>
           </div>
         </div>
         
