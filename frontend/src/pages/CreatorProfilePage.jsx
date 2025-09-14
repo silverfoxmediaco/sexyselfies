@@ -6,7 +6,7 @@ import {
   Camera, Gift, Star, Award, Target, Zap
 } from 'lucide-react';
 import creatorService from '../services/creator.service';
-import CreatorProfilePreview from '../components/CreatorProfilePreview';
+import CreatorProfilePreview from './CreatorProfilePreview';
 import './CreatorProfile.css';
 
 const CreatorProfilePage = () => {
