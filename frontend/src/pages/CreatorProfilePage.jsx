@@ -166,9 +166,13 @@ const CreatorProfilePage = () => {
   // Helper function to check if we have a valid image URL
   const hasValidProfileImage = () => {
     return profileData?.profileImage && 
-           profileData.profileImage !== 'default-avatar.jpg' &&
            profileData.profileImage !== '' &&
-           profileData.profileImage !== null;
+           profileData.profileImage !== null &&
+           profileData.profileImage !== undefined &&
+           !profileData.profileImage.includes('default') &&
+           (profileData.profileImage.startsWith('http') || 
+            profileData.profileImage.startsWith('https') ||
+            profileData.profileImage.startsWith('/'));
   };
 
   // Show loading while auth is initializing or profile is loading
@@ -252,53 +256,36 @@ const CreatorProfilePage = () => {
       <div className="profile-overview">
         <div className="profile-card">
           <div className="profile-avatar">
-            {hasValidProfileImage() ? (
-              <div
-                className={`avatar-container ${profileData?.isOwnProfile ? 'clickable' : ''}`}
-                onClick={handleAvatarClick}
-              >
-                <img 
-                  src={profileData.profileImage} 
-                  alt={profileData.displayName || 'Profile'} 
-                  onError={(e) => {
-                    console.error('Image failed to load:', profileData.profileImage);
-                    // Hide the broken image and show the upload placeholder
-                    e.target.style.display = 'none';
-                  }}
-                />
-                {profileData?.isOwnProfile && (
-                  <div className="avatar-overlay">
-                    {uploadingPhoto ? (
-                      <div className="upload-spinner">
-                        <div className="spinner"></div>
-                      </div>
-                    ) : (
-                      <>
-                        <Camera size={24} />
-                        <span>Change Photo</span>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div 
-                className={`avatar-placeholder ${uploadingPhoto ? 'uploading' : ''} ${profileData?.isOwnProfile ? 'clickable' : ''}`}
-                onClick={handleAvatarClick}
-              >
-                {uploadingPhoto ? (
-                  <div className="upload-spinner">
-                    <div className="spinner"></div>
-                    <span>Uploading...</span>
-                  </div>
-                ) : (
-                  <>
-                    <Camera size={32} />
-                    <span>{profileData?.isOwnProfile ? 'Add Photo' : 'No Photo'}</span>
-                  </>
-                )}
-              </div>
-            )}
+            <div
+              className={`avatar-container ${profileData?.isOwnProfile ? 'clickable' : ''}`}
+              onClick={handleAvatarClick}
+            >
+              <img 
+                src={getDisplayImage()} 
+                alt={profileData?.displayName || 'Profile'} 
+                onError={(e) => {
+                  console.error('Image failed to load:', e.target.src);
+                  // Fallback to default image if current image fails
+                  if (e.target.src !== defaultProfileImage) {
+                    e.target.src = defaultProfileImage;
+                  }
+                }}
+              />
+              {profileData?.isOwnProfile && (
+                <div className="avatar-overlay">
+                  {uploadingPhoto ? (
+                    <div className="upload-spinner">
+                      <div className="spinner"></div>
+                    </div>
+                  ) : (
+                    <>
+                      <Camera size={24} />
+                      <span>{hasValidProfileImage() ? 'Change Photo' : 'Add Photo'}</span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
             {profileData?.isOnline && <div className="online-indicator"></div>}
             
             {/* Hidden file input - only for own profile */}
