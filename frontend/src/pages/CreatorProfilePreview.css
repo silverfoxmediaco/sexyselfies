@@ -6,8 +6,11 @@
 /* Override styles for preview context */
 .profile-preview-container .creator-profile-page {
   background: var(--bg-900, #0A0A0A);
-  min-height: 100vh;
+  min-height: auto;
+  height: 100%;
   position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .profile-preview-container .profile-container {
@@ -34,6 +37,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100vh;
 }
 
 /* Header */
@@ -47,6 +51,7 @@
   backdrop-filter: blur(10px);
   position: relative;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .back-btn {
@@ -108,11 +113,13 @@
 .preview-content {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 20px;
+  padding: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   background: linear-gradient(135deg, #0A0A0A 0%, #121212 100%);
+  height: calc(100vh - 80px); /* Subtract header height */
 }
 
 /* Swipe Card View */
@@ -785,6 +792,7 @@
   color: var(--brand, #17D2C2);
   font-size: 14px;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 /* Responsive */
@@ -823,19 +831,23 @@
 }
 
 /* Scrollbar styling */
-.full-profile::-webkit-scrollbar {
+.full-profile::-webkit-scrollbar,
+.preview-content::-webkit-scrollbar {
   width: 8px;
 }
 
-.full-profile::-webkit-scrollbar-track {
+.full-profile::-webkit-scrollbar-track,
+.preview-content::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.05);
 }
 
-.full-profile::-webkit-scrollbar-thumb {
+.full-profile::-webkit-scrollbar-thumb,
+.preview-content::-webkit-scrollbar-thumb {
   background: var(--brand, #17D2C2);
   border-radius: 4px;
 }
 
-.full-profile::-webkit-scrollbar-thumb:hover {
+.full-profile::-webkit-scrollbar-thumb:hover,
+.preview-content::-webkit-scrollbar-thumb:hover {
   background: var(--brand-600, #12B7AB);
 }
