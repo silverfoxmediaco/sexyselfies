@@ -340,7 +340,7 @@
 /* View Profile Button */
 .view-profile-btn {
   position: absolute;
-  bottom: 20px;
+  bottom: 100px; /* Increased from 20px for bottom navigation space */
   left: 20px;
   right: 20px;
   padding: 12px;
@@ -355,6 +355,13 @@
   gap: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+/* Desktop: reduce bottom spacing since no bottom navigation */
+@media (min-width: 1024px) {
+  .view-profile-btn {
+    bottom: 40px;
+  }
 }
 
 /* Full Profile View */
