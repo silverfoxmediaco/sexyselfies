@@ -282,45 +282,11 @@ const CreatorProfile = () => {
             <div className="profile-info-overlay">
               <div className="profile-avatar-section">
                 <div className="profile-avatar">
-                  <img 
-                    src={creator.profileImage} 
+                  <img
+                    src={creator.profileImage}
                     alt={creator.displayName}
                   />
                   {creator.isOnline && <span className="online-indicator"></span>}
-                </div>
-                
-                <div className="profile-actions">
-                  <button 
-                    className={`follow-btn ${isFollowing ? 'following' : ''}`}
-                    onClick={handleFollow}
-                  >
-                    {isFollowing ? (
-                      <>
-                        <CheckCircle size={18} />
-                        <span>Following</span>
-                      </>
-                    ) : (
-                      <>
-                        <Bell size={18} />
-                        <span>Follow</span>
-                      </>
-                    )}
-                  </button>
-                  
-                  <button 
-                    className={`like-btn ${hasMatched ? 'matched' : ''}`}
-                    onClick={handleLike}
-                  >
-                    <Heart size={18} fill={hasMatched ? 'currentColor' : 'none'} />
-                  </button>
-                  
-                  <button 
-                    className="message-btn"
-                    onClick={handleMessage}
-                    disabled={!hasMatched}
-                  >
-                    <MessageCircle size={18} />
-                  </button>
                 </div>
               </div>
               
@@ -354,6 +320,41 @@ const CreatorProfile = () => {
                   )}
                 </div>
               </div>
+
+              <div className="profile-actions">
+                <button
+                  className={`follow-btn ${isFollowing ? 'following' : ''}`}
+                  onClick={handleFollow}
+                >
+                  {isFollowing ? (
+                    <>
+                      <CheckCircle size={18} />
+                      <span>Following</span>
+                    </>
+                  ) : (
+                    <>
+                      <Bell size={18} />
+                      <span>Follow</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  className={`like-btn ${hasMatched ? 'matched' : ''}`}
+                  onClick={handleLike}
+                >
+                  <Heart size={18} fill={hasMatched ? 'currentColor' : 'none'} />
+                </button>
+
+                <button
+                  className="message-btn"
+                  onClick={handleMessage}
+                  disabled={!hasMatched}
+                >
+                  <MessageCircle size={18} />
+                </button>
+              </div>
+
             </div>
           </div>
         </div>
