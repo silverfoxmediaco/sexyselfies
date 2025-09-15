@@ -67,7 +67,6 @@ const creatorConnectionSchema = new mongoose.Schema({
       location: String, // Country-based location
       bodyTypes: [String],
       onlineOnly: Boolean,
-      verifiedOnly: Boolean,
       newMembersOnly: Boolean
     },
     

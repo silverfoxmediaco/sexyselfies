@@ -30,6 +30,13 @@ const {
   deleteMessage
 } = require('../controllers/connections.controller');
 
+// Debug middleware to see if routes are being hit
+router.use((req, res, next) => {
+  console.log('🔍 Connections route hit:', req.method, req.path);
+  console.log('🔍 Auth header present:', !!req.headers.authorization);
+  next();
+});
+
 router.use(protect); // All connection routes require authentication
 
 // ============================================

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, X, Star, RotateCcw, Info, Filter, Loader } from 'lucide-react';
+import axios from 'axios';
 import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
 import MainHeader from '../components/MainHeader';
@@ -211,85 +212,93 @@ const BrowseCreators = () => {
   // Apply filters to creators
   const applyFiltersToCreators = () => {
     console.log('🔍 Applying filters...');
+    console.log('🔍 Active filters:', activeFilters);
+
     if (!creators || creators.length === 0) {
+      console.log('🔍 No creators to filter');
       setFilteredCreators([]);
       return;
     }
 
     if (!activeFilters || Object.keys(activeFilters).length === 0) {
+      console.log('🔍 No filters active, showing all creators');
       setFilteredCreators(creators);
       return;
     }
 
+    let filteredOutCount = 0;
+    const filterReasons = {};
+
     const filtered = creators.filter(creator => {
-      // Age filter
-      if (activeFilters.ageRange) {
-        const { min, max } = activeFilters.ageRange;
+      let shouldInclude = true;
+      const reasons = [];
+
+      // Age range filter (object structure with min/max)
+      if (activeFilters.ageRange && (activeFilters.ageRange.min || activeFilters.ageRange.max)) {
+        const { min = 18, max = 99 } = activeFilters.ageRange;
         if (creator.age < min || creator.age > max) {
-          return false;
+          shouldInclude = false;
+          reasons.push(`age ${creator.age} not in range ${min}-${max}`);
         }
       }
 
-      // Distance filter
-      if (activeFilters.distanceEnabled && activeFilters.distance) {
-        if (creator.location?.distance > activeFilters.distance) {
-          return false;
+      // Location filter (country string)
+      if (activeFilters.location && activeFilters.location.trim() !== '') {
+        const creatorCountry = creator.location?.country || creator.location?.city || '';
+        if (!creatorCountry.toLowerCase().includes(activeFilters.location.toLowerCase())) {
+          shouldInclude = false;
+          reasons.push(`location "${creatorCountry}" doesn't match "${activeFilters.location}"`);
         }
       }
 
-      // Body type filter
+      // Body types filter (array)
       if (activeFilters.bodyTypes && activeFilters.bodyTypes.length > 0) {
         if (!activeFilters.bodyTypes.includes(creator.bodyType)) {
-          return false;
+          shouldInclude = false;
+          reasons.push(`bodyType "${creator.bodyType}" not in [${activeFilters.bodyTypes.join(', ')}]`);
         }
       }
 
-      // Height filter
-      if (activeFilters.height) {
-        const { min, max } = activeFilters.height;
-        if (min && creator.height < min) return false;
-        if (max && creator.height > max) return false;
-      }
-
-      // Ethnicity filter
-      if (activeFilters.ethnicities && activeFilters.ethnicities.length > 0) {
-        if (!activeFilters.ethnicities.includes(creator.ethnicity)) {
-          return false;
-        }
-      }
-
-      // Hair color filter
-      if (activeFilters.hairColors && activeFilters.hairColors.length > 0) {
-        if (!activeFilters.hairColors.includes(creator.hairColor)) {
-          return false;
-        }
-      }
-
-      // Online only filter
+      // Online only filter (boolean)
       if (activeFilters.onlineOnly && !creator.isOnline) {
-        return false;
+        shouldInclude = false;
+        reasons.push('not online');
       }
 
-      // Verified only filter
+      // Verified only filter (boolean)
       if (activeFilters.verifiedOnly && !creator.verified) {
-        return false;
+        shouldInclude = false;
+        reasons.push('not verified');
       }
 
-      // New members only filter
+      // New members only filter (boolean)
       if (activeFilters.newMembersOnly) {
         const thirtyDaysAgo = new Date(Date.now() - 86400000 * 30);
         const createdDate = new Date(creator.createdAt);
         if (createdDate < thirtyDaysAgo) {
-          return false;
+          shouldInclude = false;
+          reasons.push('not a new member (older than 30 days)');
         }
       }
 
-      return true;
+      // Log filtering decisions
+      if (!shouldInclude) {
+        filteredOutCount++;
+        filterReasons[creator.displayName] = reasons;
+        console.log(`🔍 Filtered out ${creator.displayName}:`, reasons.join(', '));
+      }
+
+      return shouldInclude;
     });
 
     console.log(`🔍 Filtered ${creators.length} creators to ${filtered.length}`);
+    console.log(`🔍 Filtered out ${filteredOutCount} creators`);
+    if (filteredOutCount > 0) {
+      console.log('🔍 Filter reasons:', filterReasons);
+    }
+
     setFilteredCreators(filtered);
-    
+
     // Reset current index if it's out of bounds
     if (currentIndex >= filtered.length && filtered.length > 0) {
       setCurrentIndex(0);
@@ -373,6 +382,50 @@ const BrowseCreators = () => {
     navigate(`/creator/${identifier}`);
   };
 
+  const handleResetFilters = async () => {
+    try {
+      // Define default filters (same as BrowseFilters.jsx)
+      const defaultFilters = {
+        ageRange: { min: 18, max: 99 },
+        location: '',
+        bodyTypes: [],
+        onlineOnly: false,
+        newMembersOnly: false
+      };
+
+      // Clear localStorage
+      localStorage.setItem('browseFilters', JSON.stringify(defaultFilters));
+
+      // Update local state
+      setActiveFilters(defaultFilters);
+      setHasActiveFilters(false);
+
+      // Clear filters on server
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          await axios.post('/api/v1/members/browse/preferences', defaultFilters, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+        } catch (apiError) {
+          console.warn('Failed to reset filters on server:', apiError);
+        }
+      }
+
+      // Reload creators with default filters
+      await loadCreators();
+
+    } catch (error) {
+      console.error('Error resetting filters:', error);
+      // Fallback: just clear local state
+      setActiveFilters({});
+      setHasActiveFilters(false);
+    }
+  };
+
   const currentCreator = filteredCreators?.[currentIndex];
 
   // Add visual indicators for creators who have already shown interest
@@ -442,7 +495,7 @@ const BrowseCreators = () => {
           <Filter size={60} />
           <h2>No creators match your preferences</h2>
           <p>Try adjusting your browse settings to see more profiles</p>
-          <button onClick={() => setActiveFilters({})} className="browse-reset-filters-btn">
+          <button onClick={handleResetFilters} className="browse-reset-filters-btn">
             Reset Filters
           </button>
         </div>

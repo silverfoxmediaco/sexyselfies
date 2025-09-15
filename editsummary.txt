@@ -8,6 +8,8 @@ Fixed authentication flow issues, creator verification redirects, and updated Cr
 81. **Updated Frontend Socket.io Client** - Updated frontend package.json socket.io-client from v0.9.17 to v4.8.1 for compatibility and security
 82. **Fixed Creator Profile Image Display in Swipe Cards** - Updated connections.controller.js to properly handle default-avatar.jpg by mapping it to placeholder images, ensuring creator profile images display correctly in browse interface
 83. **Added Username Field to Creator Swipe Data** - Enhanced creator data transformation in getSwipeStack to include username field for proper URL routing, fixing missing creator usernames in browse URLs
+84. **Fixed Reset Filters Button Redirect Issue** - Reset Filters button on BrowseCreators page was only clearing local state but not actually resetting saved filters or reloading creators. Added axios import, created new handleResetFilters() function that defines default filters, clears localStorage, updates state, sends reset request to server API, and reloads creators with default filters. Updated button to use new handler instead of setActiveFilters({})
+85. **Updated Default Filter Settings** - Removed redundant "Verified Only" filter since unverified creators cannot post content anyway. Changed default age range from 18-35 to 18-99 for more inclusivity. Updated both frontend (BrowseFilters.jsx, BrowseCreators.jsx) and backend (validation.middleware.js, CreatorConnection.js model) to remove verifiedOnly references. New default filters: age 18-99, any country, all body types, show offline/online creators, show all members (not just new)
 84. **RESOLVED: Login Timeout Issue - Dependency Update Fix** - Fixed 59-second login timeouts by updating express-rate-limit from v5.5.1 to v7.5.1, compression from v1.0.8 to v1.8.1, and fixing middleware configuration. Old express-rate-limit had memory store hanging bug. Updated rate limiter config for v7.x compatibility. Both member and creator login now work properly with ~400ms response times. Also fixed MongoDB URI encoding, User.js pre-save hook, and global middleware header setting issues.
 84. **Removed All Mock Data from Frontend** - Eliminated mock data from CreatorProfile.jsx and BrowseCreators.jsx, enabling real API calls for authentic creator data and profiles
 85. **Created Member Creator Profile API Endpoint** - Added GET /api/v1/member/creator/:username endpoint in member.routes.js to fetch creator profiles and content for authenticated members
@@ -2683,3 +2685,99 @@ async browseCreators(params = {}) {
 - **Ready for filtering** - works with simplified filter structure from previous changes
 
 This resolves the console 404 errors and establishes proper API communication for the BrowseCreators functionality.
+
+---
+
+## Edit Session: Simplified Filter Logic Update
+**Date**: September 15, 2025
+**File**: `/Users/jamesmcewen/Documents/sexy-selfies/frontend/src/pages/BrowseCreators.jsx`
+
+### Changes Made:
+
+#### Updated `applyFiltersToCreators` Function
+**Replaced complex filter logic with simplified structure**
+
+**Removed deprecated filters:**
+- `distanceEnabled`, `distance` - Distance filtering removed
+- `height` - Height filtering removed
+- `ethnicities` - Ethnicity filtering removed
+- `hairColors` - Hair color filtering removed
+
+**Implemented simplified filters:**
+- ✅ `ageRange.min/max` (object structure with min/max properties)
+- ✅ `location` (country string matching)
+- ✅ `bodyTypes` (array of body type strings)
+- ✅ `onlineOnly` (boolean for online status)
+- ✅ `verifiedOnly` (boolean for verification status)
+- ✅ `newMembersOnly` (boolean for members created within 30 days)
+
+**Added comprehensive debug logging:**
+- Active filters display
+- Individual creator filtering reasons
+- Total filtered out count
+- Detailed filter reasoning for each rejected creator
+
+### Technical Implementation:
+
+**Before:**
+```javascript
+// Distance filter
+if (activeFilters.distanceEnabled && activeFilters.distance) {
+  if (creator.location?.distance > activeFilters.distance) {
+    return false;
+  }
+}
+
+// Height filter
+if (activeFilters.height) {
+  const { min, max } = activeFilters.height;
+  if (min && creator.height < min) return false;
+  if (max && creator.height > max) return false;
+}
+```
+
+**After:**
+```javascript
+// Location filter (country string)
+if (activeFilters.location && activeFilters.location.trim() !== '') {
+  const creatorCountry = creator.location?.country || creator.location?.city || '';
+  if (!creatorCountry.toLowerCase().includes(activeFilters.location.toLowerCase())) {
+    shouldInclude = false;
+    reasons.push(`location "${creatorCountry}" doesn't match "${activeFilters.location}"`);
+  }
+}
+
+// Age range filter (object structure with min/max)
+if (activeFilters.ageRange && (activeFilters.ageRange.min || activeFilters.ageRange.max)) {
+  const { min = 18, max = 99 } = activeFilters.ageRange;
+  if (creator.age < min || creator.age > max) {
+    shouldInclude = false;
+    reasons.push(`age ${creator.age} not in range ${min}-${max}`);
+  }
+}
+```
+
+### Impact:
+
+#### ✅ **Simplified Filter Structure:**
+- Reduced filter complexity from 8 filters to 6 essential filters
+- Cleaner data structure alignment with backend expectations
+- More maintainable filtering logic
+
+#### ✅ **Enhanced Debugging:**
+- Console logs show exactly why each creator is filtered out
+- Aggregate statistics for filter performance
+- Clear visibility into filter application
+
+#### ✅ **Better User Experience:**
+- Faster filtering with fewer complex calculations
+- More reliable location matching
+- Consistent boolean filter behavior
+
+### Technical Notes:
+- **Preserved existing functionality** - all non-deprecated filters work as before
+- **Added fail-safe defaults** - age range defaults to 18-99 if not specified
+- **Improved location matching** - flexible matching against country or city
+- **Debug logging ready** - developers can easily troubleshoot filter issues
+
+This update aligns the BrowseCreators filter logic with the simplified filter structure and provides comprehensive debugging capabilities.

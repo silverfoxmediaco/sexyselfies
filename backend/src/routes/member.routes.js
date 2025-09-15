@@ -29,21 +29,37 @@ router.post('/complete-profile', completeProfile);
 // ==========================================
 // CREATOR DISCOVERY & PROFILES
 // ==========================================
-router.get('/creator/:username', async (req, res) => {
+router.get('/creator/:identifier', async (req, res) => {
   try {
-    const { username } = req.params;
-    
+    const { identifier } = req.params;
+    console.log('🔍 Looking for creator:', identifier);
+
     // Import Creator model
     const Creator = require('../models/Creator');
     const Content = require('../models/Content');
-    
-    // Find creator by username
-    const creator = await Creator.findOne({ 
-      $or: [
-        { username: username },
-        { displayName: username }
-      ]
-    }).populate('user', 'email lastLogin');
+    const mongoose = require('mongoose');
+
+    // Check if identifier is an ObjectId (24 character hex string)
+    const isObjectId = mongoose.Types.ObjectId.isValid(identifier) && identifier.length === 24;
+
+    let query;
+    if (isObjectId) {
+      // Search by ObjectId
+      query = { _id: identifier };
+      console.log('🔍 Searching by ObjectId:', identifier);
+    } else {
+      // Search by username or displayName
+      query = {
+        $or: [
+          { username: identifier },
+          { displayName: identifier }
+        ]
+      };
+      console.log('🔍 Searching by username/displayName:', identifier);
+    }
+
+    // Find creator
+    const creator = await Creator.findOne(query).populate('user', 'email lastLogin');
     
     if (!creator) {
       return res.status(404).json({

@@ -420,10 +420,6 @@ exports.validateFilters = [
     .optional()
     .isBoolean()
     .withMessage('Online only must be a boolean'),
-  body('verifiedOnly')
-    .optional()
-    .isBoolean()
-    .withMessage('Verified only must be a boolean'),
   body('newMembersOnly')
     .optional()
     .isBoolean()

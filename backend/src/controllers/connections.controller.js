@@ -13,7 +13,8 @@ const Message = require('../models/Message');
 // @access  Private
 exports.getSwipeStack = async (req, res, next) => {
   try {
-    console.log('GetSwipeStack called by user:', req.user.id);
+    console.log('🎯 GetSwipeStack called by user:', req.user.id);
+    console.log('🎯 Request query params:', req.query);
     
     // Get member document
     const member = await Member.findOne({ user: req.user.id });
@@ -288,6 +289,9 @@ exports.swipeAction = async (req, res, next) => {
 // @access  Private
 exports.getConnections = async (req, res, next) => {
   try {
+    console.log('🔗 GetConnections called by user:', req.user.id, 'role:', req.user.role);
+    console.log('🔗 Request query params:', req.query);
+
     const userRole = req.user.role;
     const { status, type, sort = '-lastInteraction', search } = req.query;
     

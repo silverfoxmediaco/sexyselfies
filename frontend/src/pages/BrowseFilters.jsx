@@ -23,11 +23,10 @@ const BrowseFilters = () => {
   
   // State for all filter options
   const [filters, setFilters] = useState({
-    ageRange: { min: 18, max: 35 },
+    ageRange: { min: 18, max: 99 },
     location: '', // Country
     bodyTypes: [],
     onlineOnly: false,
-    verifiedOnly: false,
     newMembersOnly: false
   });
 
@@ -95,7 +94,7 @@ const BrowseFilters = () => {
     let count = 0;
 
     // Check age range (not default)
-    if (filters.ageRange.min !== 18 || filters.ageRange.max !== 35) count++;
+    if (filters.ageRange.min !== 18 || filters.ageRange.max !== 99) count++;
 
     // Check location
     if (filters.location && filters.location !== '') count++;
@@ -105,7 +104,6 @@ const BrowseFilters = () => {
 
     // Check toggles
     if (filters.onlineOnly) count++;
-    if (filters.verifiedOnly) count++;
     if (filters.newMembersOnly) count++;
 
     setActiveFilterCount(count);
@@ -156,14 +154,13 @@ const BrowseFilters = () => {
 
   const resetAllFilters = () => {
     const defaultFilters = {
-      ageRange: { min: 18, max: 35 },
+      ageRange: { min: 18, max: 99 },
       location: '',
       bodyTypes: [],
       onlineOnly: false,
-      verifiedOnly: false,
       newMembersOnly: false
     };
-    
+
     setFilters(defaultFilters);
     setHasChanges(true);
   };
@@ -402,20 +399,6 @@ const BrowseFilters = () => {
                 className={`bf-toggle ${filters.onlineOnly ? 'bf-active' : ''}`}
                 onClick={() => toggleBooleanFilter('onlineOnly')}
                 aria-label="Toggle online only"
-              >
-                <div className="bf-toggle-handle"></div>
-              </button>
-            </div>
-
-            <div className="bf-toggle-item">
-              <div className="bf-toggle-info">
-                <span className="bf-toggle-label">Verified Only</span>
-                <span className="bf-toggle-description">Show only verified profiles</span>
-              </div>
-              <button
-                className={`bf-toggle ${filters.verifiedOnly ? 'bf-active' : ''}`}
-                onClick={() => toggleBooleanFilter('verifiedOnly')}
-                aria-label="Toggle verified only"
               >
                 <div className="bf-toggle-handle"></div>
               </button>
