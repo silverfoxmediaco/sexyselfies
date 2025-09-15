@@ -456,7 +456,7 @@
 /* Mobile-specific styles */
 @media (max-width: 767px) {
   .bf-apply-btn {
-    margin-bottom: 50px;
+    margin-bottom: 80px;
   }
 }
 
