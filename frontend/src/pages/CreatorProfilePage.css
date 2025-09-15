@@ -17,7 +17,7 @@
   min-height: 100vh;
   background: var(--profile-bg);
   color: var(--profile-text);
-  padding: 16px;
+  padding: 60px 16px 16px 16px; /* Extra top padding for mobile safe area */
 }
 
 /* Desktop layout adjustments */
