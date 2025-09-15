@@ -38,7 +38,6 @@
   background: var(--creator-profile-bg-primary);
   display: flex;
   flex-direction: column;
-  padding-top: 60px; /* Extra top padding for mobile safe area */
 }
 
 /* Loading State */
@@ -101,7 +100,7 @@
   display: flex;
   flex-direction: column;
   max-width: 100%;
-  margin: 0 auto;
+  margin: 50px auto 0 auto;
   background: var(--creator-profile-bg-secondary);
 }
 
@@ -155,13 +154,13 @@
 
 /* NEW: Floating action buttons for mobile only */
 .floating-header-actions {
-  position: absolute;
+  position: fixed;
   top: max(env(safe-area-inset-top), 16px);
   left: var(--creator-profile-spacing-md);
   right: var(--creator-profile-spacing-md);
   display: flex;
   justify-content: space-between;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .floating-actions-right {
@@ -198,6 +197,7 @@
   right: 0;
   padding: var(--creator-profile-spacing-md);
   background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.7) 50%, transparent);
+  z-index: 500; /* Below floating header actions (1000) but above other content */
 }
 
 .profile-info-overlay .profile-avatar-section {
@@ -1026,10 +1026,6 @@
 
 /* Desktop Styles - 1024px and up */
 @media (min-width: 1024px) {
-  .creator-profile-page {
-    padding-top: 90px; /* Account for fixed desktop header */
-  }
-
   .profile-container {
     max-width: 1024px;
     margin: var(--creator-profile-spacing-md) auto;
