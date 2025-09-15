@@ -38,6 +38,7 @@
   background: var(--creator-profile-bg-primary);
   display: flex;
   flex-direction: column;
+  padding-top: 60px; /* Extra top padding for mobile safe area */
 }
 
 /* Loading State */
@@ -1025,6 +1026,10 @@
 
 /* Desktop Styles - 1024px and up */
 @media (min-width: 1024px) {
+  .creator-profile-page {
+    padding-top: 90px; /* Account for fixed desktop header */
+  }
+
   .profile-container {
     max-width: 1024px;
     margin: var(--creator-profile-spacing-md) auto;
