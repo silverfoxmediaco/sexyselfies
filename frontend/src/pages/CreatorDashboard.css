@@ -1499,11 +1499,19 @@
   border-radius: 20px;
   padding: 24px;
   margin-top: 10px;
+  margin-bottom: 120px; /* Extra space for mobile bottom navigation */
   transition: all 0.3s ease;
 }
 
 .creator-dashboard-quick-actions:hover {
   border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Desktop: reduce bottom margin since no bottom navigation */
+@media (min-width: 1024px) {
+  .creator-dashboard-quick-actions {
+    margin-bottom: 40px;
+  }
 }
 
 .creator-dashboard-actions-grid {
