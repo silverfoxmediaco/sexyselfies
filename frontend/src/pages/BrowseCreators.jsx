@@ -448,6 +448,8 @@ const BrowseCreators = () => {
         </div>
         {/* Desktop Footer */}
         {isDesktop && <MainFooter />}
+        {/* Bottom Navigation - Mobile Only */}
+        {isMobile && <BottomNavigation userRole={userRole} />}
       </div>
     );
   }
