@@ -111,10 +111,27 @@ exports.getSwipeStack = async (req, res, next) => {
         profileImageUrl = '/placeholders/beaufitulbrunette1.png';
       }
 
+      // Generate username if missing - use displayName or fallback to creator ID
+      let username = creator.username;
+      if (!username) {
+        if (creator.displayName) {
+          // Convert display name to username format (lowercase, no spaces)
+          username = creator.displayName.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+        } else {
+          // Fallback to creator ID last 8 characters
+          username = `creator${creator._id.toString().slice(-8)}`;
+        }
+
+        // Update the creator with the generated username (fire-and-forget)
+        Creator.findByIdAndUpdate(creator._id, { username }, { new: true }).catch(err => {
+          console.warn('Failed to update creator username:', err);
+        });
+      }
+
       return {
         _id: creator._id,
         id: creator._id.toString(),
-        username: creator.username || creator.displayName?.toLowerCase() || 'user',
+        username: username,
         displayName: creator.displayName || 'Unknown',
         profileImage: profileImageUrl,
         bio: creator.bio || '',
@@ -141,6 +158,7 @@ exports.getSwipeStack = async (req, res, next) => {
         {
           _id: '507f1f77bcf86cd799439011',
           id: '507f1f77bcf86cd799439011',
+          username: 'democreator1',
           displayName: 'Demo Creator 1',
           profileImage: '/placeholders/beaufitulbrunette1.png',
           bio: 'This is a demo creator for testing',
@@ -157,6 +175,7 @@ exports.getSwipeStack = async (req, res, next) => {
         {
           _id: '507f1f77bcf86cd799439012',
           id: '507f1f77bcf86cd799439012',
+          username: 'democreator2',
           displayName: 'Demo Creator 2',
           profileImage: '/placeholders/beautifulbrunette2.png',
           bio: 'Another demo creator',
