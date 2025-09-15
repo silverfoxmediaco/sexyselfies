@@ -116,6 +116,7 @@
   width: 100%;
   height: 400px; /* Reduced from 500px for mobile */
   overflow: hidden;
+  margin: var(--creator-profile-spacing-lg) 0; /* Add top and bottom margin */
 }
 
 .cover-photo {
@@ -203,7 +204,7 @@
 .profile-info-overlay .profile-avatar-section {
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-start; /* Changed from space-between to flex-start */
   margin-bottom: var(--creator-profile-spacing-md);
 }
 
@@ -243,6 +244,12 @@
 .profile-actions {
   display: flex;
   gap: var(--creator-profile-spacing-sm);
+}
+
+/* Position profile actions below profile details in overlay */
+.profile-info-overlay .profile-actions {
+  margin-top: var(--creator-profile-spacing-md);
+  justify-content: flex-start; /* Left-align with the text content */
 }
 
 .follow-btn {
