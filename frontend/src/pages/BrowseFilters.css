@@ -456,7 +456,7 @@
 /* Mobile-specific styles */
 @media (max-width: 767px) {
   .bf-content {
-    padding-bottom: 180px; /* Extra space for fixed button */
+    padding-bottom: 240px; /* Extra space for fixed button */
   }
 
   .bf-apply-btn {
