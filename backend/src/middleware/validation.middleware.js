@@ -390,34 +390,44 @@ exports.validateSearch = [
 ];
 
 exports.validateFilters = [
-  body('orientation')
-    .optional()
-    .isIn(['straight', 'gay', 'lesbian', 'bisexual', 'all'])
-    .withMessage('Invalid orientation'),
-  body('gender')
-    .optional()
-    .isIn(['male', 'female', 'non-binary', 'trans', 'all'])
-    .withMessage('Invalid gender'),
   body('ageRange')
     .optional()
-    .isArray({ min: 2, max: 2 })
-    .withMessage('Age range must be [min, max]'),
-  body('ageRange.*')
+    .isObject()
+    .withMessage('Age range must be an object'),
+  body('ageRange.min')
     .optional()
-    .isInt({ min: 18, max: 100 })
-    .withMessage('Age must be between 18 and 100'),
-  body('distance')
+    .isInt({ min: 18, max: 99 })
+    .withMessage('Minimum age must be between 18 and 99'),
+  body('ageRange.max')
     .optional()
-    .isInt({ min: 1, max: 500 })
-    .withMessage('Distance must be between 1 and 500 miles'),
-  body('bodyType')
+    .isInt({ min: 18, max: 99 })
+    .withMessage('Maximum age must be between 18 and 99'),
+  body('location')
     .optional()
-    .isIn(['slim', 'athletic', 'average', 'curvy', 'bbw', 'all'])
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Location must be 1-100 characters')
+    .customSanitizer(sanitizeInput),
+  body('bodyTypes')
+    .optional()
+    .isArray()
+    .withMessage('Body types must be an array'),
+  body('bodyTypes.*')
+    .optional()
+    .isIn(['Slim', 'Slender', 'Athletic', 'Average', 'Curvy', 'Plus Size', 'BBW', 'Muscular', 'Dad Bod', 'Mom Bod'])
     .withMessage('Invalid body type'),
-  body('ethnicity')
+  body('onlineOnly')
     .optional()
-    .isIn(['white', 'black', 'asian', 'hispanic', 'middle-eastern', 'mixed', 'other', 'all'])
-    .withMessage('Invalid ethnicity'),
+    .isBoolean()
+    .withMessage('Online only must be a boolean'),
+  body('verifiedOnly')
+    .optional()
+    .isBoolean()
+    .withMessage('Verified only must be a boolean'),
+  body('newMembersOnly')
+    .optional()
+    .isBoolean()
+    .withMessage('New members only must be a boolean'),
   handleValidationErrors
 ];
 

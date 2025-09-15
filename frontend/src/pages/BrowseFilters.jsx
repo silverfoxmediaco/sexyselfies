@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  ChevronLeft, RotateCcw, Check, MapPin, Users, 
-  Heart, Ruler, Globe, Calendar, Shield, Eye,
-  Sliders, X, Plus, Minus, Sparkles
+import {
+  ChevronLeft, RotateCcw, Check, MapPin, Users,
+  Calendar, Sliders, Sparkles
 } from 'lucide-react';
 import axios from 'axios';
 import MainHeader from '../components/MainHeader';
@@ -25,12 +24,8 @@ const BrowseFilters = () => {
   // State for all filter options
   const [filters, setFilters] = useState({
     ageRange: { min: 18, max: 35 },
-    distance: 25, // miles
-    distanceEnabled: true,
+    location: '', // Country
     bodyTypes: [],
-    height: { min: null, max: null },
-    ethnicities: [],
-    hairColors: [],
     onlineOnly: false,
     verifiedOnly: false,
     newMembersOnly: false
@@ -46,22 +41,11 @@ const BrowseFilters = () => {
     'Plus Size', 'BBW', 'Muscular', 'Dad Bod', 'Mom Bod'
   ];
 
-  const ethnicityOptions = [
-    'Asian', 'Black', 'Caucasian', 'Hispanic/Latino', 
-    'Middle Eastern', 'Mixed', 'Native American', 'Pacific Islander', 'Other'
+  const countryOptions = [
+    'United States', 'Canada', 'United Kingdom', 'Australia', 'Germany',
+    'France', 'Italy', 'Spain', 'Netherlands', 'Sweden', 'Norway', 'Denmark',
+    'Japan', 'South Korea', 'Brazil', 'Mexico', 'Argentina', 'Other'
   ];
-
-  const hairColorOptions = [
-    'Black', 'Brown', 'Blonde', 'Red', 'Auburn', 
-    'Gray', 'White', 'Colored', 'Bald'
-  ];
-
-
-
-  const heightOptions = {
-    min: "4'0\"",
-    max: "7'0\""
-  };
 
   useEffect(() => {
     loadSavedFilters();
@@ -109,26 +93,21 @@ const BrowseFilters = () => {
 
   const countActiveFilters = () => {
     let count = 0;
-    
+
     // Check age range (not default)
     if (filters.ageRange.min !== 18 || filters.ageRange.max !== 35) count++;
-    
-    // Check distance
-    if (filters.distanceEnabled && filters.distance !== 25) count++;
-    
-    // Check arrays
+
+    // Check location
+    if (filters.location && filters.location !== '') count++;
+
+    // Check body types
     if (filters.bodyTypes.length > 0) count++;
-    if (filters.ethnicities.length > 0) count++;
-    if (filters.hairColors.length > 0) count++;
-    
+
     // Check toggles
     if (filters.onlineOnly) count++;
     if (filters.verifiedOnly) count++;
     if (filters.newMembersOnly) count++;
-    
-    // Check height
-    if (filters.height.min || filters.height.max) count++;
-    
+
     setActiveFilterCount(count);
   };
 
@@ -143,18 +122,10 @@ const BrowseFilters = () => {
     setHasChanges(true);
   };
 
-  const handleDistanceChange = (value) => {
+  const handleLocationChange = (value) => {
     setFilters(prev => ({
       ...prev,
-      distance: parseInt(value)
-    }));
-    setHasChanges(true);
-  };
-
-  const toggleDistanceEnabled = () => {
-    setFilters(prev => ({
-      ...prev,
-      distanceEnabled: !prev.distanceEnabled
+      location: value
     }));
     setHasChanges(true);
   };
@@ -182,26 +153,12 @@ const BrowseFilters = () => {
     setHasChanges(true);
   };
 
-  const handleHeightChange = (type, value) => {
-    setFilters(prev => ({
-      ...prev,
-      height: {
-        ...prev.height,
-        [type]: value || null
-      }
-    }));
-    setHasChanges(true);
-  };
 
   const resetAllFilters = () => {
     const defaultFilters = {
       ageRange: { min: 18, max: 35 },
-      distance: 25,
-      distanceEnabled: true,
+      location: '',
       bodyTypes: [],
-      height: { min: null, max: null },
-      ethnicities: [],
-      hairColors: [],
       onlineOnly: false,
       verifiedOnly: false,
       newMembersOnly: false
@@ -269,12 +226,6 @@ const BrowseFilters = () => {
     }
   };
 
-  const formatHeight = (inches) => {
-    if (!inches) return '';
-    const feet = Math.floor(inches / 12);
-    const remainingInches = inches % 12;
-    return `${feet}'${remainingInches}"`;
-  };
 
   if (isLoading) {
     return (
@@ -392,44 +343,26 @@ const BrowseFilters = () => {
           </div>
         </section>
 
-        {/* Location/Distance */}
+        {/* Location/Country */}
         <section className="bf-section">
-          <div className="bf-section-header">
-            <h2 className="bf-section-title">
-              <MapPin size={18} />
-              Location
-            </h2>
-            <button
-              className={`bf-toggle ${filters.distanceEnabled ? 'bf-active' : ''}`}
-              onClick={toggleDistanceEnabled}
-              aria-label="Toggle location filter"
+          <h2 className="bf-section-title">
+            <MapPin size={18} />
+            Location
+          </h2>
+          <div className="bf-location">
+            <select
+              value={filters.location}
+              onChange={(e) => handleLocationChange(e.target.value)}
+              className="bf-location-select"
             >
-              <div className="bf-toggle-handle"></div>
-            </button>
+              <option value="">Any Country</option>
+              {countryOptions.map(country => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
           </div>
-          
-          {filters.distanceEnabled && (
-            <div className="bf-distance">
-              <div className="bf-distance-display">
-                <span className="bf-distance-value">{filters.distance}</span>
-                <span className="bf-distance-unit">miles</span>
-              </div>
-              <div className="bf-distance-container">
-                <input
-                  type="range"
-                  min="1"
-                  max="100"
-                  value={filters.distance}
-                  onChange={(e) => handleDistanceChange(e.target.value)}
-                  className="bf-slider bf-distance-slider"
-                />
-              </div>
-              <div className="bf-distance-labels">
-                <span>1 mi</span>
-                <span>100 mi</span>
-              </div>
-            </div>
-          )}
         </section>
 
         {/* Body Type */}
@@ -452,92 +385,6 @@ const BrowseFilters = () => {
           </div>
         </section>
 
-        {/* Height */}
-        <section className="bf-section">
-          <h2 className="bf-section-title">
-            <Ruler size={18} />
-            Height
-          </h2>
-          <div className="bf-height-inputs">
-            <div className="bf-height-input-group">
-              <label>Min Height</label>
-              <select
-                value={filters.height.min || ''}
-                onChange={(e) => handleHeightChange('min', e.target.value ? parseInt(e.target.value) : null)}
-                className="bf-height-select"
-              >
-                <option value="">Any</option>
-                {[...Array(37)].map((_, i) => {
-                  const inches = 48 + i; // 4'0" to 7'0"
-                  return (
-                    <option key={inches} value={inches}>
-                      {formatHeight(inches)}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <span className="bf-height-separator">to</span>
-            <div className="bf-height-input-group">
-              <label>Max Height</label>
-              <select
-                value={filters.height.max || ''}
-                onChange={(e) => handleHeightChange('max', e.target.value ? parseInt(e.target.value) : null)}
-                className="bf-height-select"
-              >
-                <option value="">Any</option>
-                {[...Array(37)].map((_, i) => {
-                  const inches = 48 + i;
-                  return (
-                    <option key={inches} value={inches}>
-                      {formatHeight(inches)}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-          </div>
-        </section>
-
-        {/* Ethnicity */}
-        <section className="bf-section">
-          <h2 className="bf-section-title">
-            <Globe size={18} />
-            Ethnicity
-          </h2>
-          <div className="bf-chip-grid">
-            {ethnicityOptions.map(ethnicity => (
-              <button
-                key={ethnicity}
-                className={`bf-chip ${filters.ethnicities.includes(ethnicity) ? 'bf-selected' : ''}`}
-                onClick={() => toggleArrayFilter('ethnicities', ethnicity)}
-              >
-                {filters.ethnicities.includes(ethnicity) && <Check size={14} />}
-                {ethnicity}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Hair Color */}
-        <section className="bf-section">
-          <h2 className="bf-section-title">
-            <Eye size={18} />
-            Hair Color
-          </h2>
-          <div className="bf-chip-grid">
-            {hairColorOptions.map(color => (
-              <button
-                key={color}
-                className={`bf-chip ${filters.hairColors.includes(color) ? 'bf-selected' : ''}`}
-                onClick={() => toggleArrayFilter('hairColors', color)}
-              >
-                {filters.hairColors.includes(color) && <Check size={14} />}
-                {color}
-              </button>
-            ))}
-          </div>
-        </section>
 
         {/* Quick Filters */}
         <section className="bf-section">

@@ -60,10 +60,15 @@ const creatorConnectionSchema = new mongoose.Schema({
   browseContext: {
     filters: {
       orientation: String, // What filter was active
-      ageRange: [Number],
-      distance: Number,
-      bodyType: [String],
-      ethnicity: [String]
+      ageRange: {
+        min: Number,
+        max: Number
+      },
+      location: String, // Country-based location
+      bodyTypes: [String],
+      onlineOnly: Boolean,
+      verifiedOnly: Boolean,
+      newMembersOnly: Boolean
     },
     
     algorithm: {
