@@ -98,9 +98,9 @@ class MemberService {
       });
       return response;
     } catch (error) {
-      // If the first endpoint fails, try the alternative
+      // If the first endpoint fails, try the public browse endpoint
       try {
-        const fallbackResponse = await api.get('/member/discover', {
+        const fallbackResponse = await api.get('/public/creator', {
           params
         });
         return fallbackResponse;
@@ -127,22 +127,17 @@ class MemberService {
    */
   async browseCreators(params = {}) {
     try {
-      const response = await api.get('/member/discover', {
+      const response = await api.get('/public/creator', {
         params: {
-          categories: params.categories,
+          category: params.categories,
           gender: params.gender,
           orientation: params.orientation,
-          age_min: params.age_min || 18,
-          age_max: params.age_max || 99,
-          distance: params.distance, // km
-          price_min: params.price_min,
-          price_max: params.price_max,
-          verified_only: params.verified_only || false,
-          online_now: params.online_now || false,
-          new_creators: params.new_creators || false,
-          sort: params.sort || 'recommended', // 'recommended', 'popular', 'nearest', 'newest'
-          exclude_seen: params.exclude_seen || true,
-          limit: params.limit || 10
+          ageMin: params.age_min || 18,
+          ageMax: params.age_max || 99,
+          priceRange: params.price_range,
+          sortBy: params.sort || 'popular', // 'popular', 'newest', 'active'
+          limit: params.limit || 20,
+          page: params.page || 1
         }
       });
       return response;
