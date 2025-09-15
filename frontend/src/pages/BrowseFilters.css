@@ -453,6 +453,13 @@
   font-weight: 600;
 }
 
+/* Mobile-specific styles */
+@media (max-width: 767px) {
+  .bf-apply-btn {
+    margin-bottom: 50px;
+  }
+}
+
 /* Tablet Support */
 @media (min-width: 768px) {
   .bf-content {
