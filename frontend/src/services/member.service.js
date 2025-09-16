@@ -59,9 +59,10 @@ class MemberService {
    */
   async updateProfile(data) {
     try {
-      const response = await api.put('/auth/profile', {
+      const response = await api.put('/member/profile', {
         username: data.username,
-        displayName: data.displayName
+        displayName: data.displayName,
+        email: data.email
       });
       return response;
     } catch (error) {

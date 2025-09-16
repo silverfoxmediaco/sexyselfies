@@ -2834,3 +2834,25 @@ Files Modified:
 
 Status: FIXED ✅ - Username editing should now work properly
 
+
+EDIT SUMMARY - Profile Update Fix v2 - September 16, 2025
+=========================================================
+
+Issue: Previous fix didn't work - memberService.updateProfile() was still calling broken /auth/profile endpoint
+
+Root Cause Analysis:
+- Frontend was calling memberService.updateProfile() 
+- But memberService.updateProfile() internally called api.put('/auth/profile') - still broken
+- Production server missing /auth/profile endpoint but HAS /member/profile endpoint
+
+Real Fix:
+- Updated memberService.updateProfile() to use /member/profile instead of /auth/profile
+- Added email field to the request body
+- Confirmed /member/profile endpoint exists on production server
+
+Files Modified:
+- frontend/src/services/member.service.js (updateProfile method)
+- frontend/src/pages/MemberProfilePage.jsx (already using memberService.updateProfile)
+
+Status: SHOULD BE FIXED ✅ - Username editing now uses working endpoint
+
