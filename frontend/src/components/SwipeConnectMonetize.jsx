@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { LogIn, UserPlus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './SwipeConnectMonetize.css';
-import logo from '../assets/sexysselfies_logo.png';
 
 const SwipeConnectMonetize = () => {
   const navigate = useNavigate();
-  // Removed videoOpen state - no longer needed
+  const [videoOpen, setVideoOpen] = useState(false);
   const [counters, setCounters] = useState({ creators: 0, earned: 0, connections: 0 });
 
   useEffect(() => {
@@ -44,28 +42,9 @@ const SwipeConnectMonetize = () => {
       <section className="hero-section">
         <div className="container">
           <div className="hero-content">
-            {/* Logo */}
-            <Link to="/" className="swipe-hero-logo">
-              <img 
-                src={logo} 
-                alt="SexySelfies" 
-                className="swipe-hero-logo-img"
-              />
-            </Link>
-            
-            <div className="header-buttons">
-              <Link to="/member/login" className="mainheader-btn-secondary">
-                <LogIn size={18} />
-                <span>Member Login</span>
-              </Link>
-              <Link to="/member/register" className="mainheader-btn-primary">
-                <UserPlus size={18} />
-                <span>Join Free</span>
-              </Link>
-            </div>
             <div className="launch-chip pulse-animation">
               <span className="chip-icon">🚀</span>
-              <span>Launching January 2026</span>
+              <span>Launching January 2025</span>
             </div>
             
             <h1 className="hero-title">
@@ -89,14 +68,11 @@ const SwipeConnectMonetize = () => {
                   <path d="M5 12h14m-7-7l7 7-7 7" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </button>
-              <button 
-                className="btn btn-secondary btn-large"
-                onClick={() => navigate('/creator/login')}
-              >
-                <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4m-5-4l5-5-5-5m5 5H3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <button className="btn btn-secondary btn-large" onClick={() => setVideoOpen(true)}>
+                <svg className="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
                 </svg>
-                <span>Already a Creator? Login Here</span>
+                <span>Watch Demo</span>
               </button>
             </div>
 
@@ -127,7 +103,25 @@ const SwipeConnectMonetize = () => {
         </div>
       </section>
 
-      {/* Video Modal removed - replaced with creator login button */}
+      {/* Video Modal */}
+      {videoOpen && (
+        <div className="video-modal" onClick={() => setVideoOpen(false)}>
+          <div className="video-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={() => setVideoOpen(false)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M18 6L6 18M6 6l12 12" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+            <div className="video-placeholder">
+              <svg className="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              <h3>Demo Video Coming Soon</h3>
+              <p>See how SexySelfies works in action</p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
