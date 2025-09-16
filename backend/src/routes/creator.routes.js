@@ -391,6 +391,149 @@ router.put('/notifications/preferences', (req, res) => {
 });
 
 // ==========================================
+// MEMBER DISCOVERY & MANAGEMENT
+// ==========================================
+
+// Discover high-value members for active sales
+router.get('/members/discover', (req, res) => {
+  // Mock data for now - this would be replaced with actual member discovery logic
+  const mockMembers = [
+    {
+      id: 'member_1',
+      username: 'mike_explorer',
+      isOnline: true,
+      lastActive: new Date().toISOString(),
+      joinDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+      spendingTier: 'whale',
+      stats: {
+        totalSpent: 1250,
+        last30DaySpend: 350,
+        averagePurchase: 15.50,
+        contentPurchases: 45,
+        messagesExchanged: 128,
+        tipsGiven: 8
+      },
+      activity: {
+        lastPurchase: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        purchaseFrequency: 'weekly',
+        engagementLevel: 'very-active',
+        hasSubscribed: true,
+        subscriptionTier: 'premium'
+      },
+      badges: ['whale', 'loyal-fan', 'big-spender']
+    },
+    {
+      id: 'member_2',
+      username: 'alex_vip',
+      isOnline: false,
+      lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      joinDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+      spendingTier: 'high',
+      stats: {
+        totalSpent: 680,
+        last30DaySpend: 180,
+        averagePurchase: 12.25,
+        contentPurchases: 32,
+        messagesExchanged: 85,
+        tipsGiven: 5
+      },
+      activity: {
+        lastPurchase: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        purchaseFrequency: 'biweekly',
+        engagementLevel: 'active',
+        hasSubscribed: true,
+        subscriptionTier: 'standard'
+      },
+      badges: ['vip', 'supporter', 'engaged']
+    },
+    {
+      id: 'member_3',
+      username: 'sarah_regular',
+      isOnline: false,
+      lastActive: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+      joinDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+      spendingTier: 'medium',
+      stats: {
+        totalSpent: 245,
+        last30DaySpend: 85,
+        averagePurchase: 8.75,
+        contentPurchases: 18,
+        messagesExchanged: 42,
+        tipsGiven: 3
+      },
+      activity: {
+        lastPurchase: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        purchaseFrequency: 'monthly',
+        engagementLevel: 'moderate',
+        hasSubscribed: false,
+        subscriptionTier: null
+      },
+      badges: ['regular', 'supporter']
+    },
+    {
+      id: 'member_4',
+      username: 'chris_new',
+      isOnline: true,
+      lastActive: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+      joinDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      spendingTier: 'low',
+      stats: {
+        totalSpent: 45,
+        last30DaySpend: 45,
+        averagePurchase: 5.00,
+        contentPurchases: 6,
+        messagesExchanged: 15,
+        tipsGiven: 1
+      },
+      activity: {
+        lastPurchase: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        purchaseFrequency: 'sporadic',
+        engagementLevel: 'moderate',
+        hasSubscribed: false,
+        subscriptionTier: null
+      },
+      badges: ['newcomer', 'engaged']
+    }
+  ];
+
+  res.json({
+    success: true,
+    members: mockMembers,
+    total: mockMembers.length,
+    filters: {
+      spendingTiers: ['whale', 'high', 'medium', 'low'],
+      activityLevels: ['very-active', 'active', 'moderate', 'inactive'],
+      timeframes: ['today', 'week', 'month', 'all']
+    }
+  });
+});
+
+// Search members with filters
+router.post('/members/search', (req, res) => {
+  res.status(501).json({ message: 'Member search coming soon' });
+});
+
+// Get specific member profile for creators
+router.get('/members/profile/:memberId', (req, res) => {
+  res.status(501).json({ message: 'Member profile details coming soon' });
+});
+
+// Send message to member
+router.post('/members/:memberId/message', (req, res) => {
+  res.status(501).json({ message: 'Send member message coming soon' });
+});
+
+// Send special offer to member
+router.post('/members/:memberId/special-offer', (req, res) => {
+  res.status(501).json({ message: 'Special offers coming soon' });
+});
+
+// Get sales dashboard
+router.get('/sales/dashboard', (req, res) => {
+  res.status(501).json({ message: 'Sales dashboard coming soon' });
+});
+
+// ==========================================
 // SEARCH & BROWSE
 // ==========================================
 

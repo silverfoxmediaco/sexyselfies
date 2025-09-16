@@ -386,6 +386,73 @@
   background: #14B5A8;
 }
 
+/* Pending Connection Actions */
+.pending-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.accept-btn, .decline-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.accept-btn {
+  background: #22C55E;
+  color: white;
+}
+
+.accept-btn:hover {
+  background: #16A34A;
+  transform: translateY(-1px);
+}
+
+.decline-btn {
+  background: #EF4444;
+  color: white;
+}
+
+.decline-btn:hover {
+  background: #DC2626;
+  transform: translateY(-1px);
+}
+
+/* Pending Status (waiting for response) */
+.pending-status {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.waiting-response {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  border-radius: 8px;
+  color: #F59E0B;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.waiting-response::before {
+  content: "⏳";
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;

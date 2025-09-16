@@ -84,6 +84,8 @@ const MyConnections = () => {
         avatar: conn.connectionData.avatar || '/placeholders/beautifulbrunette2.png',
         connectionType: conn.connectionType,
         status: conn.status,
+        memberLiked: conn.memberLiked || false,
+        creatorLiked: conn.creatorLiked || false,
         lastMessage: conn.lastMessage,
         lastMessageTime: conn.lastMessageTime,
         unreadCount: conn.unreadCount,
@@ -469,20 +471,30 @@ const MyConnections = () => {
                 )}
 
                 {connection.status === 'pending' && (
-                  <div className="pending-actions" onClick={(e) => e.stopPropagation()}>
-                    <button 
-                      className="accept-btn"
-                      onClick={(e) => handleAcceptConnection(connection.id, e)}
-                    >
-                      Accept
-                    </button>
-                    <button 
-                      className="decline-btn"
-                      onClick={(e) => handleDeclineConnection(connection.id, e)}
-                    >
-                      Decline
-                    </button>
-                  </div>
+                  <>
+                    {/* Show Accept/Decline only for incoming connections (creator liked member) */}
+                    {connection.creatorLiked && !connection.memberLiked ? (
+                      <div className="pending-actions" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          className="accept-btn"
+                          onClick={(e) => handleAcceptConnection(connection.id, e)}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className="decline-btn"
+                          onClick={(e) => handleDeclineConnection(connection.id, e)}
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    ) : (
+                      /* Show waiting message for outgoing connections (member liked creator) */
+                      <div className="pending-status">
+                        <span className="waiting-response">Waiting for response...</span>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
