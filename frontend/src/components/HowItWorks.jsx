@@ -17,7 +17,7 @@ export default function HowItWorks({
       ? steps
       : [
           { n: 1, title: "Create your profile", desc: "Set your vibe, filters, and preferences." },
-          { n: 2, title: "Match & chat", desc: "Flirt safely with tools to control your experience." },
+          { n: 2, title: "Connect & chat", desc: "Flirt safely with tools to control your experience." },
           { n: 3, title: "Unlock premium", desc: "Tip creators or unlock photos and videos when you want." },
         ];
 

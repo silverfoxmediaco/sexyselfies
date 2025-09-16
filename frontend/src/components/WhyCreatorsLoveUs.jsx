@@ -5,7 +5,7 @@ const WhyCreatorsLoveUs = () => {
   const features = [
     {
       icon: '👆',
-      title: "Swipe to Match",
+      title: "Swipe to Connect",
       description: "Unlimited swipes. Find your perfect audience with smart filters.",
       color: "#17D2C2"
     },

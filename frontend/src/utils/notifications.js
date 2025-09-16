@@ -315,19 +315,19 @@ class NotificationManager {
  }
 
  /**
-  * Show match notification
+  * Show connection notification
   */
- showMatchNotification(match) {
-   return this.showNotification("It's a Match! 🎉", {
-     body: `You matched with ${match.creatorName}!`,
-     icon: match.creatorAvatar || '/icons/icon-192x192.png',
-     image: match.creatorImage,
-     tag: `match-${match.id}`,
+ showConnectionNotification(connection) {
+   return this.showNotification("It's a Connection! 🎉", {
+     body: `You connected with ${connection.creatorName}!`,
+     icon: connection.creatorAvatar || '/icons/icon-192x192.png',
+     image: connection.creatorImage,
+     tag: `connection-${connection.id}`,
      vibrate: [200, 100, 200, 100, 200],
      data: {
-       type: 'match',
-       matchId: match.id,
-       creatorId: match.creatorId
+       type: 'connection',
+       connectionId: connection.id,
+       creatorId: connection.creatorId
      },
      actions: [
        {

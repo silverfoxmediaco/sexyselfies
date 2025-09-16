@@ -24,7 +24,7 @@ export default function Features({
     Array.isArray(items) && items.length
       ? items
       : [
-          { icon: <FavoriteIcon />, title: "Swipe to Match", desc: "Discover nearby cuties with fast, fluid swipes." },
+          { icon: <FavoriteIcon />, title: "Swipe to Connect", desc: "Discover nearby cuties with fast, fluid swipes." },
           { icon: <LockIcon />, title: "Private DMs", desc: "Encrypted chat with preview and unlock flow." },
           { icon: <BoltIcon />, title: "Pay-Per-Unlock", desc: "No subscriptions—support creators on your terms." },
           { icon: <ShieldIcon />, title: "Safety First", desc: "ID + age verification, AI + human moderation." },

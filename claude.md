@@ -4,7 +4,7 @@
 - **Name**: SexySelfies
 - **Type**: Mobile-first Progressive Web App (PWA)
 - **Stack**: MERN (MongoDB, Express, React, Node.js)
-- **Core Concept**: Content monetization platform combining Tinder's swipe-to-match discovery with OnlyFans' creator economy, focused on authentic amateur content
+- **Core Concept**: Content monetization platform combining Tinder's swipe-to-connect discovery with OnlyFans' creator economy, focused on authentic amateur content
 - **Target Users**: 100% mobile users (except admins who use desktop)
 - **Content Standards**: "Instagram Plus" - sexy but not pornographic (lingerie, implied nudity allowed; explicit content prohibited)
 
@@ -343,7 +343,7 @@ sexy-selfies/
 
 1. **Members**
    - Swipe to discover creators (Tinder-style)
-   - Match to unlock content
+   - Connect to unlock content
    - Pay per content piece
    - Privacy controls
    - Connection management

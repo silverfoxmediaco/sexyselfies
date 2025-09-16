@@ -499,7 +499,7 @@ const BrowseCreators = () => {
         {isDesktop && <MainHeader />}
         <div className="browse-creators-no-results">
           <Filter size={60} />
-          <h2>No creators match your preferences</h2>
+          <h2>No creators meet your preferences</h2>
           <p>Try adjusting your browse settings to see more profiles</p>
           <button onClick={handleResetFilters} className="browse-reset-filters-btn">
             Reset Filters
