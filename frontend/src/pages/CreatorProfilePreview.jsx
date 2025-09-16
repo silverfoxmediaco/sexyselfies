@@ -16,7 +16,6 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
   const userRole = getUserRole();
   const [viewMode, setViewMode] = useState('swipe'); // 'swipe' or 'profile'
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState(null);
 
@@ -121,28 +120,6 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
         </div>
       </div>
 
-      {/* Swipe Actions */}
-      <div className="swipe-actions">
-        <motion.button 
-          className="swipe-btn dislike"
-          whileTap={{ scale: 0.9 }}
-        >
-          <X size={28} />
-        </motion.button>
-        <motion.button 
-          className="swipe-btn superlike"
-          whileTap={{ scale: 0.9 }}
-        >
-          <Star size={24} />
-        </motion.button>
-        <motion.button 
-          className="swipe-btn like"
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setIsLiked(true)}
-        >
-          <Heart size={28} />
-        </motion.button>
-      </div>
 
       {/* View Full Profile Button */}
       <motion.button
