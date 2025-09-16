@@ -36,7 +36,7 @@ const memberSchema = new mongoose.Schema({
     },
     interestedIn: [{
       type: String,
-      enum: ['men', 'women', 'everyone']
+      enum: ['male', 'female', 'everyone']
     }],
     contentTypes: [{
       type: String,
@@ -120,6 +120,11 @@ const memberSchema = new mongoose.Schema({
   displayName: String,
   birthDate: Date,
   phone: String,
+  gender: {
+    type: String,
+    enum: ['male', 'female'],
+    required: [true, 'Please specify your gender']
+  },
   agreeToTerms: {
     type: Boolean,
     default: false

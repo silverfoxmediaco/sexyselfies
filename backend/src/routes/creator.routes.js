@@ -400,34 +400,117 @@ router.get('/members/discover', async (req, res) => {
     // Import models (require here to avoid circular dependency)
     const Member = require('../models/Member');
     const MemberProfile = require('../models/MemberProfile');
+    const Creator = require('../models/Creator');
     const User = require('../models/User');
 
-    // Fetch real members with their profiles and user data
-    const memberProfiles = await MemberProfile.find()
-      .populate({
-        path: 'member',
-        populate: {
-          path: 'user',
-          select: 'email lastLogin createdAt isActive'
+    // Get the requesting creator's information and preferences
+    const creatorId = req.user.id; // Assuming auth middleware provides user ID
+    const creator = await Creator.findOne({ user: creatorId })
+      .populate('user', 'email');
+
+    if (!creator) {
+      return res.status(404).json({
+        success: false,
+        message: 'Creator profile not found'
+      });
+    }
+
+    console.log(`🎯 Creator ${creator.username || creator.displayName} browsing members`);
+    console.log(`📋 Creator preferences: interested in ${creator.preferences?.interestedIn || ['everyone']}`);
+
+    // Helper function to check preference compatibility
+    const isCompatible = (member, creator) => {
+      // Get gender and preference data
+      const creatorGender = creator.gender; // Need to add this field to Creator model
+      const memberGender = member.gender; // Need to add this field to Member model
+
+      const creatorInterestedIn = creator.preferences?.interestedIn || [];
+      const memberInterestedIn = member.preferences?.interestedIn || [];
+
+      console.log(`🔍 Checking compatibility:`);
+      console.log(`   Creator: ${creatorGender} interested in [${creatorInterestedIn.join(', ')}]`);
+      console.log(`   Member: ${memberGender} interested in [${memberInterestedIn.join(', ')}]`);
+
+      // If gender fields are missing, we can't properly filter
+      if (!creatorGender || !memberGender) {
+        console.log(`   ⚠️  Missing gender data - allowing for now`);
+        return true; // Allow until proper gender fields are added
+      }
+
+      // Check if creator is interested in member's gender
+      const creatorWantsMember = creatorInterestedIn.includes('everyone') ||
+                                 creatorInterestedIn.includes(memberGender);
+
+      // Check if member is interested in creator's gender
+      const memberWantsCreator = memberInterestedIn.includes('everyone') ||
+                                 memberInterestedIn.includes(creatorGender);
+
+      // Both parties must be interested in each other's gender
+      const compatible = creatorWantsMember && memberWantsCreator;
+
+      console.log(`   Creator wants member: ${creatorWantsMember}`);
+      console.log(`   Member wants creator: ${memberWantsCreator}`);
+      console.log(`   💫 Compatible: ${compatible}`);
+
+      return compatible;
+    };
+
+    // Get all members first, with preference filtering
+    const allMembers = await Member.find({ profileComplete: true }) // Only show completed profiles
+      .populate('user', 'email lastLogin createdAt isActive')
+      .sort({ lastActive: -1 })
+      .limit(50); // Get more members
+
+    // Filter members based on compatibility
+    const compatibleMembers = allMembers.filter(member => isCompatible(member, creator));
+
+    console.log(`📊 Found ${allMembers.length} total members, ${compatibleMembers.length} compatible members`);
+
+    if (compatibleMembers.length === 0) {
+      return res.json({
+        success: true,
+        members: [],
+        total: 0,
+        message: 'No compatible members found based on preferences',
+        filters: {
+          spendingTiers: ['whale', 'high', 'medium', 'low', 'new'],
+          activityLevels: ['very-active', 'active', 'moderate', 'inactive'],
+          timeframes: ['today', 'week', 'month', 'all']
         }
-      })
-      .sort({ 'spending.totalSpent': -1 }) // Sort by highest spenders first
-      .limit(20); // Limit to top 20 for performance
+      });
+    }
 
-    // If no profiles exist, fall back to basic member data
-    let members = [];
+    // Get member profiles for compatible members only
+    const compatibleMemberIds = compatibleMembers.map(m => m._id);
+    const memberProfiles = await MemberProfile.find()
+      .populate('member')
+      .sort({ 'spending.totalSpent': -1 });
 
-    if (memberProfiles.length > 0) {
-      // Transform MemberProfile data to match frontend expectations
-      members = memberProfiles.map(profile => {
-        const member = profile.member;
-        const user = member?.user;
+    // Filter profiles to only include compatible members
+    const compatibleProfiles = memberProfiles.filter(profile =>
+      profile.member && compatibleMemberIds.some(id => id.equals(profile.member._id))
+    );
 
+    // Create a map of member profiles by member ID for quick lookup
+    const profileMap = new Map();
+    compatibleProfiles.forEach(profile => {
+      if (profile.member && profile.member._id) {
+        profileMap.set(profile.member._id.toString(), profile);
+      }
+    });
+
+    // Transform compatible members, using profile data when available
+    const members = compatibleMembers.map(member => {
+      const profile = profileMap.get(member._id.toString());
+      const user = member.user;
+
+      if (profile) {
+        // Member has a profile - use rich data
         return {
-          id: member?._id || profile._id,
-          username: member?.username || `Member_${profile._id.toString().slice(-4)}`,
+          id: member._id,
+          username: member.username || `Member_${member._id.toString().slice(-4)}`,
           isOnline: false, // Would need real-time tracking for this
-          lastActive: member?.lastActive || user?.lastLogin || new Date(),
+          lastActive: member.lastActive || user?.lastLogin || new Date(),
           joinDate: user?.createdAt || new Date(),
           spendingTier: profile.spending.tier,
           stats: {
@@ -447,38 +530,51 @@ router.get('/members/discover', async (req, res) => {
           },
           badges: profile.badges || []
         };
-      });
-    } else {
-      // Fallback: fetch basic member data if no profiles exist
-      const basicMembers = await Member.find()
-        .populate('user', 'email lastLogin createdAt isActive')
-        .limit(10);
+      } else {
+        // Member has no profile - use basic data
+        return {
+          id: member._id,
+          username: member.username || `Member_${member._id.toString().slice(-4)}`,
+          isOnline: false,
+          lastActive: member.lastActive || user?.lastLogin || new Date(),
+          joinDate: user?.createdAt || new Date(),
+          spendingTier: 'new', // Default for members without profiles
+          stats: {
+            totalSpent: 0,
+            last30DaySpend: 0,
+            averagePurchase: 0,
+            contentPurchases: member.purchasedContent?.length || 0,
+            messagesExchanged: 0,
+            tipsGiven: 0
+          },
+          activity: {
+            lastPurchase: member.purchasedContent && member.purchasedContent.length > 0
+              ? member.purchasedContent[member.purchasedContent.length - 1].purchaseDate
+              : null,
+            purchaseFrequency: 'inactive',
+            engagementLevel: 'inactive',
+            hasSubscribed: false,
+            subscriptionTier: null
+          },
+          badges: ['newcomer']
+        };
+      }
+    });
 
-      members = basicMembers.map(member => ({
-        id: member._id,
-        username: member.username || `Member_${member._id.toString().slice(-4)}`,
-        isOnline: false,
-        lastActive: member.lastActive || member.user?.lastLogin || new Date(),
-        joinDate: member.user?.createdAt || new Date(),
-        spendingTier: 'new', // Default for members without profiles
-        stats: {
-          totalSpent: 0,
-          last30DaySpend: 0,
-          averagePurchase: 0,
-          contentPurchases: 0,
-          messagesExchanged: 0,
-          tipsGiven: 0
-        },
-        activity: {
-          lastPurchase: null,
-          purchaseFrequency: 'inactive',
-          engagementLevel: 'inactive',
-          hasSubscribed: false,
-          subscriptionTier: null
-        },
-        badges: ['newcomer']
-      }));
-    }
+    // Sort members: those with profiles (by spending) first, then basic members by activity
+    members.sort((a, b) => {
+      // Prioritize members with spending data
+      if (a.stats.totalSpent > 0 && b.stats.totalSpent === 0) return -1;
+      if (a.stats.totalSpent === 0 && b.stats.totalSpent > 0) return 1;
+
+      // Both have spending data - sort by total spent
+      if (a.stats.totalSpent > 0 && b.stats.totalSpent > 0) {
+        return b.stats.totalSpent - a.stats.totalSpent;
+      }
+
+      // Both have no spending - sort by last active
+      return new Date(b.lastActive) - new Date(a.lastActive);
+    });
 
     res.json({
       success: true,

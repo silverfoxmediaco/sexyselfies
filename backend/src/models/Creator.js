@@ -23,6 +23,11 @@ const creatorSchema = new mongoose.Schema({
     type: Number,
     min: 18
   },
+  gender: {
+    type: String,
+    enum: ['male', 'female'],
+    required: [true, 'Please specify your gender']
+  },
   bio: {
     type: String,
     maxlength: [500, 'Bio cannot be more than 500 characters']
@@ -136,7 +141,7 @@ const creatorSchema = new mongoose.Schema({
     },
     interestedIn: [{
       type: String,
-      enum: ['men', 'women', 'everyone']
+      enum: ['male', 'female', 'everyone']
     }]
   },
   location: {
