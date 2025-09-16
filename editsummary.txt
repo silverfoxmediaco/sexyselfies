@@ -2816,3 +2816,21 @@ New Feature: Quick Profile View
 
 Status: COMPLETE ✅
 
+
+EDIT SUMMARY - Profile Update Fix - September 16, 2025
+======================================================
+
+Issue: Member username editing was failing with 404 error on /auth/profile endpoint
+
+Root Cause: Production server was missing the /auth/profile endpoint or had deployment issues
+
+Solution: Updated MemberProfilePage.jsx to use memberService.updateProfile() instead of direct API call
+- Replaced direct api.put('/auth/profile') call with memberService.updateProfile()
+- Added proper error handling and success validation
+- Maintained same UX flow (edit → save → update display)
+
+Files Modified:
+- frontend/src/pages/MemberProfilePage.jsx (handleSaveProfile function)
+
+Status: FIXED ✅ - Username editing should now work properly
+

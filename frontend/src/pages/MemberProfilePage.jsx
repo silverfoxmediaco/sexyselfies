@@ -124,13 +124,18 @@ const MemberProfilePage = () => {
 
   const handleSaveProfile = async () => {
     try {
-      await api.put('/auth/profile', {
+      // Try the member service endpoint first
+      const response = await memberService.updateProfile({
         username: editedProfile.username,
         email: editedProfile.email
       });
-      
-      setMember({ ...member, ...editedProfile });
-      setIsEditing(false);
+
+      if (response.success) {
+        setMember({ ...member, ...editedProfile });
+        setIsEditing(false);
+      } else {
+        throw new Error(response.error || 'Failed to update profile');
+      }
     } catch (err) {
       console.error('Failed to save profile:', err);
       // Show error to user if needed
