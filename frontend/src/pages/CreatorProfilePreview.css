@@ -800,6 +800,10 @@
   .preview-header {
     padding: 16px;
   }
+
+  .card-info-overlay {
+  margin-bottom: 60px ;
+}
   
   .view-toggle {
     display: none;
