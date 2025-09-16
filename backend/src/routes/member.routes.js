@@ -11,7 +11,7 @@ const {
   getPurchasedContent,
   likeCreator,
   passCreator,
-  superLikeCreator
+  // superLikeCreator // Super Like feature disabled
   // Removed getMatches - using connections system instead
 } = require('../controllers/member.controller');
 
@@ -122,7 +122,7 @@ router.get('/purchased', getPurchasedContent);
 // ==========================================
 router.post('/swipe/like/:creatorId', likeCreator);
 router.post('/swipe/pass/:creatorId', passCreator);
-router.post('/swipe/superlike/:creatorId', superLikeCreator);
+// router.post('/swipe/superlike/:creatorId', superLikeCreator); // Super Like feature disabled
 
 // ==========================================
 // CONNECTIONS (Redirect to main connections routes)

@@ -43,13 +43,26 @@ const SwipeCard = ({
   
   // Handle drag end
   const handleDragEnd = (event, info) => {
-    const swipeDirection = info.offset.x > swipeThreshold ? 'right' : 
+    const swipeDirection = info.offset.x > swipeThreshold ? 'right' :
                           info.offset.x < -swipeThreshold ? 'left' : null;
-    
-    if (swipeDirection || Math.abs(info.velocity.x) > swipeVelocityThreshold) {
+
+    // Check for swipe up (Quick Profile View)
+    const swipeUp = info.offset.y < -swipeThreshold || info.velocity.y < -swipeVelocityThreshold;
+
+    if (swipeUp) {
+      // Handle swipe up for Quick Profile View
+      handleQuickProfileView();
+      // Snap back to center (no exit animation)
+      controls.start({
+        x: 0,
+        y: 0,
+        rotate: 0,
+        transition: { type: "spring", stiffness: 300, damping: 20 }
+      });
+    } else if (swipeDirection || Math.abs(info.velocity.x) > swipeVelocityThreshold) {
       const finalDirection = swipeDirection || (info.velocity.x > 0 ? 'right' : 'left');
       setExitDirection(finalDirection);
-      
+
       // Animate card off screen
       controls.start({
         x: finalDirection === 'right' ? 300 : -300,
@@ -71,19 +84,12 @@ const SwipeCard = ({
     }
   };
   
-  // Handle super like (double tap or swipe up)
-  const handleSuperLike = () => {
-    setExitDirection('super');
-    controls.start({
-      y: -300,
-      opacity: 0,
-      scale: 0.8,
-      transition: { duration: 0.5 }
-    }).then(() => {
-      if (onSwipe) {
-        onSwipe('super', creator._id);
-      }
-    });
+  // Handle quick profile view (swipe up)
+  const handleQuickProfileView = () => {
+    if (onSwipe) {
+      onSwipe('up', creator._id);
+    }
+    // No exit animation for profile view - let parent handle modal
   };
   
   // Handle photo navigation
@@ -110,14 +116,15 @@ const SwipeCard = ({
     }
   };
   
-  // Double tap detection
+  // Double tap detection (disabled - was for Super Like)
   const lastTap = useRef(0);
   const handleDoubleTap = () => {
+    // Super Like functionality removed
+    // Double tap now just handles photo navigation
     const now = Date.now();
-    if (now - lastTap.current < 300) {
-      handleSuperLike();
-    }
     lastTap.current = now;
+    // Could repurpose for quick profile view if needed
+    // handleQuickProfileView();
   };
   
   // Calculate time ago

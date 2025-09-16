@@ -313,8 +313,14 @@ const BrowseCreators = () => {
     if (!creator) return;
     
     try {
+      // Handle Quick Profile View
+      if (direction === 'up') {
+        handleViewProfile(creator);
+        return;
+      }
+
       // Make API call to process swipe
-      const swipeAction = direction === 'right' ? 'like' : direction === 'up' ? 'superlike' : 'pass';
+      const swipeAction = direction === 'right' ? 'like' : 'pass';
       const response = await memberService.swipeAction(creator._id || creator.id, swipeAction);
       console.log('👆 Swipe response:', response);
       
@@ -593,15 +599,7 @@ const BrowseCreators = () => {
         >
           <X size={30} />
         </button>
-        
-        <button 
-          className="browse-creators-action-btn browse-creators-super"
-          onClick={() => handleButtonSwipe('up')}
-          aria-label="Super Like"
-        >
-          <Star size={26} />
-        </button>
-        
+
         <button 
           className="browse-creators-action-btn browse-creators-like"
           onClick={() => handleButtonSwipe('right')}

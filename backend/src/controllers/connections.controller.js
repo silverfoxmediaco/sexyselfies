@@ -219,7 +219,7 @@ exports.getSwipeStack = async (req, res, next) => {
 // @access  Private
 exports.swipeAction = async (req, res, next) => {
   try {
-    const { creatorId, action } = req.body; // action: 'like', 'pass', 'superlike'
+    const { creatorId, action } = req.body; // action: 'like', 'pass' (superlike removed)
     const userId = req.user.id;
     const userRole = req.user.role;
 
@@ -256,13 +256,13 @@ exports.swipeAction = async (req, res, next) => {
           connection.memberLiked = true;
           connection.status = 'pending';
           break;
-        case 'superlike':
-          member.superLikes.push({ creator: creator._id });
-          connection.memberLiked = true;
-          connection.memberSuperLiked = true;
-          connection.connectionType = 'premium';
-          connection.status = 'pending';
-          break;
+        // case 'superlike': // Super Like feature disabled
+        // member.superLikes.push({ creator: creator._id });
+        // connection.memberLiked = true;
+        // connection.memberSuperLiked = true;
+        // connection.connectionType = 'premium';
+        // connection.status = 'pending';
+        // break;
         case 'pass':
           member.passes.push({ creator: creator._id });
           connection.status = 'rejected';

@@ -20,10 +20,10 @@ const connectionSchema = new mongoose.Schema({
     default: 'pending'
   },
   
-  // Connection type/tier
+  // Connection type/tier (premium removed - no Super Likes)
   connectionType: {
     type: String,
-    enum: ['basic', 'verified', 'premium'],
+    enum: ['basic', 'verified'],
     default: 'basic'
   },
   
@@ -32,10 +32,11 @@ const connectionSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  memberSuperLiked: {
-    type: Boolean,
-    default: false
-  },
+  // memberSuperLiked removed - Super Like feature disabled
+  // memberSuperLiked: {
+  //   type: Boolean,
+  //   default: false
+  // },
   
   // Creator actions
   creatorLiked: {
@@ -154,7 +155,7 @@ connectionSchema.methods.establishConnection = function() {
   this.isConnected = true;
   this.status = 'active';
   this.connectedAt = Date.now();
-  this.connectionType = this.memberSuperLiked ? 'premium' : 'verified';
+  this.connectionType = 'verified'; // Always verified when connection established
   return this.save();
 };
 
@@ -200,4 +201,4 @@ connectionSchema.methods.addSpending = function(amount, type = 'tip') {
   return this.save();
 };
 
-module.exports = mongoose.model('Connection', connectionSchema, 'matches');
+module.exports = mongoose.model('Connection', connectionSchema, 'connections');

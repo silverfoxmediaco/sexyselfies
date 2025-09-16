@@ -82,23 +82,24 @@ const memberSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
-  superLikes: [{
-    creator: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Creator'
-    },
-    superLikedAt: {
-      type: Date,
-      default: Date.now
-    }
-  }],
-  dailySuperLikes: {
-    count: {
-      type: Number,
-      default: 1
-    },
-    resetAt: Date
-  },
+  // Super Like fields removed - feature disabled
+  // superLikes: [{
+  //   creator: {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: 'Creator'
+  //   },
+  //   superLikedAt: {
+  //     type: Date,
+  //     default: Date.now
+  //   }
+  // }],
+  // dailySuperLikes: {
+  //   count: {
+  //     type: Number,
+  //     default: 1
+  //   },
+  //   resetAt: Date
+  // },
   location: {
     type: {
       type: String,

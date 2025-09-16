@@ -914,6 +914,29 @@ class MemberService {
     }
   }
 
+  // Super Like status method removed - feature disabled
+  // /**
+  //  * Get Super Like status (remaining count, cost, etc.)
+  //  */
+  // async getSuperLikeStatus() {
+  //   try {
+  //     const response = await api.get('/member/superlike/status');
+  //     return response;
+  //   } catch (error) {
+  //     // Fallback if endpoint doesn't exist yet
+  //     return {
+  //       success: true,
+  //       data: {
+  //         remainingDaily: 1,
+  //         cost: 1.99,
+  //         totalUsedToday: 0,
+  //         dailyLimit: 1,
+  //         resetTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+  //       }
+  //     };
+  //   }
+  // }
+
   // ==========================================
   // HELPER METHODS
   // ==========================================

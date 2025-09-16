@@ -371,79 +371,80 @@ exports.passCreator = async (req, res, next) => {
   }
 };
 
-// @desc    Super like creator
-// @route   POST /api/members/swipe/superlike/:creatorId
-// @access  Private (Member only)
-exports.superLikeCreator = async (req, res, next) => {
-  try {
-    const member = await Member.findOne({ user: req.user.id });
-    const creator = await Creator.findById(req.params.creatorId);
+// Super Like feature disabled - controller commented out
+// // @desc    Super like creator
+// // @route   POST /api/members/swipe/superlike/:creatorId
+// // @access  Private (Member only)
+// exports.superLikeCreator = async (req, res, next) => {
+//   try {
+//     const member = await Member.findOne({ user: req.user.id });
+//     const creator = await Creator.findById(req.params.creatorId);
 
-    // Check daily super likes limit
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    if (member.dailySuperLikes.resetAt < today) {
-      member.dailySuperLikes.count = 1;
-      member.dailySuperLikes.resetAt = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-    }
+//     // Check daily super likes limit
+//     const today = new Date();
+//     today.setHours(0, 0, 0, 0);
 
-    if (member.dailySuperLikes.count <= 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'No super likes remaining today'
-      });
-    }
+//     if (member.dailySuperLikes.resetAt < today) {
+//       member.dailySuperLikes.count = 1;
+//       member.dailySuperLikes.resetAt = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+//     }
 
-    // Add to super likes
-    member.superLikes.push({ creator: creator._id });
-    member.dailySuperLikes.count -= 1;
-    await member.save();
+//     if (member.dailySuperLikes.count <= 0) {
+//       return res.status(400).json({
+//         success: false,
+//         error: 'No super likes remaining today'
+//       });
+//     }
 
-    // Create or update connection
-    let connection = await Connection.findOne({
-      member: member._id,
-      creator: creator._id
-    });
+//     // Add to super likes
+//     member.superLikes.push({ creator: creator._id });
+//     member.dailySuperLikes.count -= 1;
+//     await member.save();
 
-    if (!connection) {
-      connection = await Connection.create({
-        member: member._id,
-        creator: creator._id,
-        memberLiked: true,
-        memberSuperLiked: true
-      });
-    } else {
-      connection.memberLiked = true;
-      connection.memberSuperLiked = true;
-      if (connection.creatorLiked) {
-        connection.isConnected = true;
-        connection.connectedAt = Date.now();
-        creator.stats.totalConnections += 1;
-        await creator.save();
-      }
-      await connection.save();
-    }
+//     // Create or update connection
+//     let connection = await Connection.findOne({
+//       member: member._id,
+//       creator: creator._id
+//     });
 
-    // Notify creator about super like
-    // TODO: Send notification
-    
-    // 📊 Track member activity for analytics
-    await updateMemberActivity(member._id, 'swipe_superlike');
+//     if (!connection) {
+//       connection = await Connection.create({
+//         member: member._id,
+//         creator: creator._id,
+//         memberLiked: true,
+//         memberSuperLiked: true
+//       });
+//     } else {
+//       connection.memberLiked = true;
+//       connection.memberSuperLiked = true;
+//       if (connection.creatorLiked) {
+//         connection.isConnected = true;
+//         connection.connectedAt = Date.now();
+//         creator.stats.totalConnections += 1;
+//         await creator.save();
+//       }
+//       await connection.save();
+//     }
 
-    res.status(200).json({
-      success: true,
-      isConnected: connection.isConnected,
-      remainingSuperLikes: member.dailySuperLikes.count,
-      data: connection
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-};
+//     // Notify creator about super like
+//     // TODO: Send notification
+
+//     // 📊 Track member activity for analytics
+//     await updateMemberActivity(member._id, 'swipe_superlike');
+
+//     res.status(200).json({
+//       success: true,
+//       isConnected: connection.isConnected,
+//       remainingSuperLikes: member.dailySuperLikes.count,
+//       data: connection
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: error.message
+//     });
+//   }
+// };
 
 // @desc    Get connections
 // @route   GET /api/members/connections

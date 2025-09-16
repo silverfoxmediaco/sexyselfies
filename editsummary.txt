@@ -2794,3 +2794,25 @@ if (activeFilters.ageRange && (activeFilters.ageRange.min || activeFilters.ageRa
 - **Debug logging ready** - developers can easily troubleshoot filter issues
 
 This update aligns the BrowseCreators filter logic with the simplified filter structure and provides comprehensive debugging capabilities.
+
+EDIT SUMMARY - Super Like Feature Removal - September 16, 2025
+================================================================
+
+Summary: Removed all Super Like functionality from SexySelfies platform. Feature was incomplete and had UX issues, so it was disabled while preserving regular Like/Pass functionality.
+
+Frontend Changes:
+- BrowseCreators.jsx: Removed Super Like button, updated swipe handling for Quick Profile View
+- SwipeCard.jsx: Removed Super Like logic, repurposed swipe up as Quick Profile View
+- member.service.js: Commented out Super Like methods
+
+Backend Changes:
+- Models: Removed memberSuperLiked, premium connectionType from schema
+- Controllers: Commented out Super Like handlers and routes
+- Created removeSuperLikeFields.js migration script
+
+New Feature: Quick Profile View
+- Swipe up now opens creator profile modal (like Instagram stories)
+- Simplified to just Pass (❌) and Like (❤️) buttons
+
+Status: COMPLETE ✅
+
