@@ -395,117 +395,110 @@ router.put('/notifications/preferences', (req, res) => {
 // ==========================================
 
 // Discover high-value members for active sales
-router.get('/members/discover', (req, res) => {
-  // Mock data for now - this would be replaced with actual member discovery logic
-  const mockMembers = [
-    {
-      id: 'member_1',
-      username: 'mike_explorer',
-      isOnline: true,
-      lastActive: new Date().toISOString(),
-      joinDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      spendingTier: 'whale',
-      stats: {
-        totalSpent: 1250,
-        last30DaySpend: 350,
-        averagePurchase: 15.50,
-        contentPurchases: 45,
-        messagesExchanged: 128,
-        tipsGiven: 8
-      },
-      activity: {
-        lastPurchase: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        purchaseFrequency: 'weekly',
-        engagementLevel: 'very-active',
-        hasSubscribed: true,
-        subscriptionTier: 'premium'
-      },
-      badges: ['whale', 'loyal-fan', 'big-spender']
-    },
-    {
-      id: 'member_2',
-      username: 'alex_vip',
-      isOnline: false,
-      lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      joinDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-      spendingTier: 'high',
-      stats: {
-        totalSpent: 680,
-        last30DaySpend: 180,
-        averagePurchase: 12.25,
-        contentPurchases: 32,
-        messagesExchanged: 85,
-        tipsGiven: 5
-      },
-      activity: {
-        lastPurchase: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        purchaseFrequency: 'biweekly',
-        engagementLevel: 'active',
-        hasSubscribed: true,
-        subscriptionTier: 'standard'
-      },
-      badges: ['vip', 'supporter', 'engaged']
-    },
-    {
-      id: 'member_3',
-      username: 'sarah_regular',
-      isOnline: false,
-      lastActive: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-      joinDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-      spendingTier: 'medium',
-      stats: {
-        totalSpent: 245,
-        last30DaySpend: 85,
-        averagePurchase: 8.75,
-        contentPurchases: 18,
-        messagesExchanged: 42,
-        tipsGiven: 3
-      },
-      activity: {
-        lastPurchase: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        purchaseFrequency: 'monthly',
-        engagementLevel: 'moderate',
-        hasSubscribed: false,
-        subscriptionTier: null
-      },
-      badges: ['regular', 'supporter']
-    },
-    {
-      id: 'member_4',
-      username: 'chris_new',
-      isOnline: true,
-      lastActive: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-      joinDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      spendingTier: 'low',
-      stats: {
-        totalSpent: 45,
-        last30DaySpend: 45,
-        averagePurchase: 5.00,
-        contentPurchases: 6,
-        messagesExchanged: 15,
-        tipsGiven: 1
-      },
-      activity: {
-        lastPurchase: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        purchaseFrequency: 'sporadic',
-        engagementLevel: 'moderate',
-        hasSubscribed: false,
-        subscriptionTier: null
-      },
-      badges: ['newcomer', 'engaged']
-    }
-  ];
+router.get('/members/discover', async (req, res) => {
+  try {
+    // Import models (require here to avoid circular dependency)
+    const Member = require('../models/Member');
+    const MemberProfile = require('../models/MemberProfile');
+    const User = require('../models/User');
 
-  res.json({
-    success: true,
-    members: mockMembers,
-    total: mockMembers.length,
-    filters: {
-      spendingTiers: ['whale', 'high', 'medium', 'low'],
-      activityLevels: ['very-active', 'active', 'moderate', 'inactive'],
-      timeframes: ['today', 'week', 'month', 'all']
+    // Fetch real members with their profiles and user data
+    const memberProfiles = await MemberProfile.find()
+      .populate({
+        path: 'member',
+        populate: {
+          path: 'user',
+          select: 'email lastLogin createdAt isActive'
+        }
+      })
+      .sort({ 'spending.totalSpent': -1 }) // Sort by highest spenders first
+      .limit(20); // Limit to top 20 for performance
+
+    // If no profiles exist, fall back to basic member data
+    let members = [];
+
+    if (memberProfiles.length > 0) {
+      // Transform MemberProfile data to match frontend expectations
+      members = memberProfiles.map(profile => {
+        const member = profile.member;
+        const user = member?.user;
+
+        return {
+          id: member?._id || profile._id,
+          username: member?.username || `Member_${profile._id.toString().slice(-4)}`,
+          isOnline: false, // Would need real-time tracking for this
+          lastActive: member?.lastActive || user?.lastLogin || new Date(),
+          joinDate: user?.createdAt || new Date(),
+          spendingTier: profile.spending.tier,
+          stats: {
+            totalSpent: profile.spending.totalSpent,
+            last30DaySpend: profile.spending.last30DaySpend,
+            averagePurchase: profile.spending.averagePurchase,
+            contentPurchases: profile.activity.contentPurchases,
+            messagesExchanged: profile.activity.messagesExchanged,
+            tipsGiven: profile.activity.tipsGiven
+          },
+          activity: {
+            lastPurchase: profile.spending.lastPurchaseDate || new Date(),
+            purchaseFrequency: profile.spending.purchaseFrequency,
+            engagementLevel: profile.activity.engagementLevel,
+            hasSubscribed: profile.subscription.hasSubscribed,
+            subscriptionTier: profile.subscription.subscriptionTier
+          },
+          badges: profile.badges || []
+        };
+      });
+    } else {
+      // Fallback: fetch basic member data if no profiles exist
+      const basicMembers = await Member.find()
+        .populate('user', 'email lastLogin createdAt isActive')
+        .limit(10);
+
+      members = basicMembers.map(member => ({
+        id: member._id,
+        username: member.username || `Member_${member._id.toString().slice(-4)}`,
+        isOnline: false,
+        lastActive: member.lastActive || member.user?.lastLogin || new Date(),
+        joinDate: member.user?.createdAt || new Date(),
+        spendingTier: 'new', // Default for members without profiles
+        stats: {
+          totalSpent: 0,
+          last30DaySpend: 0,
+          averagePurchase: 0,
+          contentPurchases: 0,
+          messagesExchanged: 0,
+          tipsGiven: 0
+        },
+        activity: {
+          lastPurchase: null,
+          purchaseFrequency: 'inactive',
+          engagementLevel: 'inactive',
+          hasSubscribed: false,
+          subscriptionTier: null
+        },
+        badges: ['newcomer']
+      }));
     }
-  });
+
+    res.json({
+      success: true,
+      members: members,
+      total: members.length,
+      filters: {
+        spendingTiers: ['whale', 'high', 'medium', 'low', 'new'],
+        activityLevels: ['very-active', 'active', 'moderate', 'inactive'],
+        timeframes: ['today', 'week', 'month', 'all']
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching members for discovery:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to load members',
+      error: error.message
+    });
+  }
 });
 
 // Search members with filters
