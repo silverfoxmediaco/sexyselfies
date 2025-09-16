@@ -203,6 +203,7 @@
    ======================== */
 .memberreg-form-section {
   padding: var(--memberreg-space-lg);
+  padding-bottom: 80px; /* Extra bottom padding to clear bottom navigation */
 }
 
 .memberreg-form {
@@ -739,7 +740,7 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--memberreg-space-md);
-  margin-bottom: var(--memberreg-space-lg);
+  margin-bottom: 80px; /* Increased spacing to clear bottom navigation */
 }
 
 .memberreg-form-actions > * {
@@ -822,6 +823,7 @@
   .memberreg-form-section {
     flex: 1;
     padding: var(--memberreg-space-xl);
+    padding-bottom: 40px; /* Less bottom padding on tablet since bottom nav is less intrusive */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -861,6 +863,7 @@
 
   .memberreg-form-section {
     padding: var(--memberreg-space-2xl);
+    padding-bottom: 40px; /* Consistent bottom padding for desktop */
   }
 
   .memberreg-radio-group,

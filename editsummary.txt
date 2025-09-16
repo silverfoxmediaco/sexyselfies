@@ -2856,3 +2856,25 @@ Files Modified:
 
 Status: SHOULD BE FIXED ✅ - Username editing now uses working endpoint
 
+
+EDIT SUMMARY - Bottom Navigation Overlap Fix - September 16, 2025
+=================================================================
+
+Issue: Bottom navigation was overlapping the 'Next' button in member registration form
+- Users couldn't properly tap the Next button
+- Form content extended to viewport edge without accounting for fixed bottom nav
+
+Solution: Added proper bottom spacing to prevent overlap
+- Added 80px margin-bottom to .memberreg-form-actions (mobile)
+- Added 80px padding-bottom to .memberreg-form-section (mobile)
+- Added 40px padding-bottom for tablet/desktop breakpoints (less intrusive nav)
+
+Changes Made:
+- frontend/src/pages/MemberRegistration.css:
+  * .memberreg-form-actions: margin-bottom increased to 80px
+  * .memberreg-form-section: added padding-bottom 80px (mobile)
+  * Tablet breakpoint: padding-bottom 40px
+  * Desktop breakpoint: padding-bottom 40px
+
+Status: FIXED ✅ - Next button should now be fully accessible above bottom nav
+
