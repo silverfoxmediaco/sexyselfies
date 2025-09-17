@@ -28,6 +28,15 @@ const creatorSchema = new mongoose.Schema({
     enum: ['male', 'female'],
     required: [true, 'Please specify your gender']
   },
+  orientation: {
+    type: String,
+    enum: ['straight', 'gay', 'bisexual', 'pansexual', 'other']
+  },
+  bodyType: {
+    type: String,
+    enum: ['slim', 'athletic', 'average', 'curvy', 'plus-size', 'muscular']
+  },
+  ethnicity: String,
   bio: {
     type: String,
     maxlength: [500, 'Bio cannot be more than 500 characters']
@@ -130,6 +139,7 @@ const creatorSchema = new mongoose.Schema({
     tiktok: String
   },
   preferences: {
+    // Discovery preferences - who should see this creator's profile
     minAge: {
       type: Number,
       default: 18,
@@ -142,7 +152,11 @@ const creatorSchema = new mongoose.Schema({
     interestedIn: [{
       type: String,
       enum: ['male', 'female', 'everyone']
-    }]
+    }],
+    showInBrowse: {
+      type: Boolean,
+      default: true
+    }
   },
   location: {
     type: {

@@ -144,16 +144,17 @@ exports.setupProfile = async (req, res) => {
       profileImage: profileImageUrl,
       coverImage: coverImageUrl,
       profileComplete: true,
-      // Add other profile fields from formData
+      // Creator identity (root level)
+      gender: formData.gender,
+      orientation: formData.orientation,
+      bodyType: formData.bodyType,
+      ethnicity: formData.ethnicity,
+      // Discovery preferences (who can see this creator)
       preferences: {
-        gender: formData.gender,
-        orientation: formData.orientation,
-        ageRange: formData.ageRange,
-        bodyType: formData.bodyType,
-        ethnicity: formData.ethnicity,
-        languages: formData.languages || [],
-        showInBrowse: formData.showInBrowse !== false,
-        browsePreferences: formData.browsePreferences || {}
+        minAge: formData.ageRange?.[0] || 18,
+        maxAge: formData.ageRange?.[1] || 99,
+        interestedIn: formData.interestedIn || ['everyone'],
+        showInBrowse: formData.showInBrowse !== false
       },
       contentTypes: formData.contentTypes || {},
       pricing: formData.pricing || {},
