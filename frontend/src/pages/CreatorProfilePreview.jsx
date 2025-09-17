@@ -21,8 +21,8 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
 
   // Debug logging to see what data is being passed
   console.log('🔍 CreatorProfilePreview received profileData:', profileData);
-  console.log('📷 Profile photo preview:', profileData?.profileImage);
-  console.log('🖼️ Cover image preview:', profileData?.coverImage);
+  console.log('📷 Profile photo preview:', profileData?.profileImage || profileData?.profilePhotoPreview);
+  console.log('🖼️ Cover image preview:', profileData?.coverImage || profileData?.coverImagePreview);
 
   // Mock sample content for preview
   const sampleContent = [
@@ -51,9 +51,11 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
     >
       {/* Card Images */}
       <div className="card-image-container">
-        {profileData?.profileImage && profileData.profileImage !== 'default-avatar.jpg' && profileData.profileImage.startsWith('http') ? (
+        {(profileData?.profileImage || profileData?.profilePhotoPreview) &&
+         profileData.profileImage !== 'default-avatar.jpg' &&
+         (profileData.profileImage?.startsWith('http') || profileData.profilePhotoPreview?.startsWith('data:')) ? (
           <img
-            src={profileData.profileImage}
+            src={profileData.profileImage || profileData.profilePhotoPreview}
             alt={profileData.displayName}
             className="card-main-image"
           />
@@ -146,10 +148,10 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
         <div className="profile-header">
           {/* Cover Photo */}
           <div className="cover-photo-container">
-            {profileData?.coverImage || profileData?.coverPhoto ? (
+            {profileData?.coverImage || profileData?.coverImagePreview || profileData?.coverPhoto ? (
               <img
-                src={profileData?.coverImage || profileData?.coverPhoto} 
-                alt="Cover" 
+                src={profileData?.coverImage || profileData?.coverImagePreview || profileData?.coverPhoto}
+                alt="Cover"
                 className="cover-photo"
               />
             ) : (
@@ -175,9 +177,11 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
           <div className="profile-info">
             <div className="profile-avatar-section">
               <div className="profile-avatar">
-                {profileData?.profileImage && profileData.profileImage !== 'default-avatar.jpg' && profileData.profileImage.startsWith('http') ? (
+                {(profileData?.profileImage || profileData?.profilePhotoPreview) &&
+                 profileData.profileImage !== 'default-avatar.jpg' &&
+                 (profileData.profileImage?.startsWith('http') || profileData.profilePhotoPreview?.startsWith('data:')) ? (
                   <img
-                    src={profileData.profileImage}
+                    src={profileData.profileImage || profileData.profilePhotoPreview}
                     alt={profileData.displayName}
                   />
                 ) : (

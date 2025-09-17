@@ -68,9 +68,10 @@ const CreatorProfilePage = () => {
           if (response.profile.profileImage.includes('cloudinary')) {
             processedProfile.profileImage = response.profile.profileImage.replace('http://', 'https://');
           }
-          // If it's a relative URL, add the base URL
+          // If it's a relative URL, add the base server URL (without /api/v1)
           else if (!response.profile.profileImage.startsWith('http')) {
-            processedProfile.profileImage = `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/${response.profile.profileImage}`;
+            const baseServerUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5002').replace('/api/v1', '');
+            processedProfile.profileImage = `${baseServerUrl}/${response.profile.profileImage}`;
           }
         }
         
