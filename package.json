@@ -33,8 +33,7 @@
     "test:coverage": "npm run test:coverage --workspace=frontend",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "health": "curl -f http://localhost:5002/health || echo 'Health check failed'",
-    "deploy": "npm run build:all && npm run start:prod",
-    "prepare": "husky"
+    "deploy": "npm run build:all && npm run start:prod"
   },
   "keywords": [
     "pwa",
