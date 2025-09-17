@@ -21,7 +21,6 @@
     "install:all": "npm install",
     "install:backend": "npm install --workspace=backend",
     "install:frontend": "npm install --workspace=frontend",
-    "postinstall": "npm run build:frontend",
     "clean": "npm run clean --workspaces --if-present",
     "clean:all": "rimraf node_modules backend/node_modules frontend/node_modules frontend/dist",
     "lint": "npm run lint --workspaces --if-present",
