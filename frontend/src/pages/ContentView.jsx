@@ -40,9 +40,18 @@ const ContentView = () => {
     try {
       setLoading(true);
       const response = await contentService.getContentById(id);
-      setContent(response.data.content);
-      setHasAccess(response.data.hasAccess);
-      setLiked(response.data.content.isLiked || false);
+
+      // Handle different possible response structures
+      const contentData = response.data?.content || response.data || response;
+      const hasAccessData = response.data?.hasAccess ?? true; // Default to true if not specified
+
+      if (!contentData) {
+        throw new Error('No content data received');
+      }
+
+      setContent(contentData);
+      setHasAccess(hasAccessData);
+      setLiked(contentData.isLiked || false);
     } catch (error) {
       console.error('Error loading content:', error);
       setError('Content not found or access denied');

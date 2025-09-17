@@ -81,25 +81,34 @@ const getContent = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
-    const hasAccess = req.hasAccess; // Set by checkContentUnlock middleware
+    const hasAccess = req.hasAccess; // Set by middleware
 
-    const content = await Content.findById(id)
-      .populate('creator', 'displayName profileImage bio isVerified');
-
+    // Use content from middleware if available, otherwise fetch
+    let content = req.content;
     if (!content) {
-      return res.status(404).json({
-        success: false,
-        message: 'Content not found'
-      });
+      content = await Content.findById(id)
+        .populate('creator', 'displayName profileImage bio isVerified');
+
+      if (!content) {
+        return res.status(404).json({
+          success: false,
+          message: 'Content not found'
+        });
+      }
     }
 
+    console.log(`📊 Content access: ${hasAccess ? 'FULL' : 'PREVIEW'} for content ${content._id}`);
+
     // Track view
-    content.stats.views += 1;
-    await content.save();
+    if (content.stats) {
+      content.stats.views = (content.stats.views || 0) + 1;
+      await content.save();
+    }
 
     // Return based on access
     if (hasAccess) {
       // Full access - return everything including full media URL
+      console.log(`✅ Returning full content access`);
       res.json({
         success: true,
         data: content,
@@ -108,10 +117,11 @@ const getContent = async (req, res) => {
       });
     } else {
       // Preview only - return blurred/watermarked version
+      console.log(`🔒 Returning preview content`);
       const preview = {
         ...content.toObject(),
         fullMediaUrl: undefined, // Remove full URL
-        mediaUrl: content.blurredUrl || content.thumbnailUrl,
+        mediaUrl: content.blurredUrl || content.thumbnailUrl || content.thumbnail,
         isBlurred: true,
         unlockPrice: content.price,
         hasAccess: false

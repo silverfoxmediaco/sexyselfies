@@ -43,47 +43,60 @@ router.get('/:id/preview', getContentPreview);
 router.get('/creator/:creatorId', getCreatorContent);
 
 // Get single content (full access if unlocked, preview if not) - PUBLIC
-router.get('/:id', 
+router.get('/:id',
   // Custom middleware for public content access
   async (req, res, next) => {
     try {
       const { id: contentId } = req.params;
-      
+      console.log(`🔍 Content request for ID: ${contentId}`);
+
       // Check if content exists
-      const content = await require('../models/Content').findById(contentId);
+      const Content = require('../models/Content');
+      const content = await Content.findById(contentId).populate('creator', 'username profileImage isVerified');
+
       if (!content) {
+        console.log(`❌ Content not found: ${contentId}`);
         return res.status(404).json({
           success: false,
           message: 'Content not found'
         });
       }
-      
+
+      console.log(`✅ Content found: ${content.title || 'Untitled'} by ${content.creator?.username}`);
+
       // Default to no access for unauthenticated users
       req.hasAccess = false;
-      
+
       // If user is authenticated, check for access
       if (req.user) {
-        const memberId = req.user.id;
-        
+        const userId = req.user.id;
+        console.log(`👤 Authenticated user: ${userId}`);
+
         // Creator always has access to their own content
-        if (content.creator.toString() === memberId) {
+        if (content.creator._id.toString() === userId) {
+          console.log(`🎨 Creator viewing own content`);
           req.hasAccess = true;
         } else {
           // Check if member has purchased this content
           const Transaction = require('../models/Transaction');
           const transaction = await Transaction.findOne({
-            memberId,
-            contentId,
+            member: userId,
+            content: contentId,
             type: 'content_unlock',
             status: 'completed'
           });
-          
+
           if (transaction) {
+            console.log(`💰 Content unlocked via transaction`);
             req.hasAccess = true;
+          } else {
+            console.log(`🔒 Content locked for user`);
           }
         }
+      } else {
+        console.log(`👤 Unauthenticated user - preview mode`);
       }
-      
+
       // Store content for controller
       req.content = content;
       next();
