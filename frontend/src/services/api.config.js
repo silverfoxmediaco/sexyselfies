@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 // Base API URL from environment or fallback to production
-let API_BASE_URL = import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onrender.com/api/v1';
+let API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
-// Ensure API_BASE_URL includes /v1 if it's missing
+// Only modify URL if it doesn't already include /v1
 if (!API_BASE_URL.includes('/v1')) {
   if (API_BASE_URL.endsWith('/api')) {
     // If URL ends with /api, just add /v1

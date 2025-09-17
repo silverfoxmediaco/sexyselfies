@@ -2878,3 +2878,39 @@ Changes Made:
 
 Status: FIXED ✅ - Next button should now be fully accessible above bottom nav
 
+=================================================================
+EDIT 88: Fixed 404 Error for Creator Profile Update API Call
+Date: 2025-09-17 13:35 UTC
+=================================================================
+
+Issue: Creator profile settings save was failing with 404 error
+- Frontend API calls to PUT /creator/profile returned "404 (Not Found)"
+- Error occurred on production deployment at sexyselfies-frontend.onrender.com
+- Users couldn't save their profile settings
+
+Root Cause: Incorrect API URL configuration for production environment
+- Frontend .env had VITE_API_URL=https://sexyselfies-api.onrender.com/api
+- But production serves both frontend and backend from same domain
+- API calls need to be relative paths, not absolute URLs to different domain
+
+Solution: Updated API configuration for production deployment
+- Changed VITE_API_URL from absolute URL to relative path: /api/v1
+- Updated api.config.js fallback from external domain to relative path
+- Fixed Socket URL to use correct production domain
+
+Changes Made:
+- frontend/.env:
+  * VITE_API_URL: https://sexyselfies-api.onrender.com/api → /api/v1
+  * VITE_SOCKET_URL: wss://sexyselfies-api.onrender.com → wss://sexyselfies-frontend.onrender.com
+
+- frontend/src/services/api.config.js:
+  * Default fallback: https://sexyselfies-api.onrender.com/api/v1 → /api/v1
+  * Updated comment to reflect same-domain serving
+
+Testing Results:
+- ❌ /creator/profile returns 404 (HTML page)
+- ✅ /api/v1/creator/profile returns 401 (proper API response)
+- Route exists and authentication middleware working correctly
+
+Status: FIXED ✅ - API calls now use correct relative paths for production
+
