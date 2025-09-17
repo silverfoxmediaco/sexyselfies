@@ -2914,3 +2914,33 @@ Testing Results:
 
 Status: FIXED ✅ - API calls now use correct relative paths for production
 
+=================================================================
+EDIT 89: Fixed Creator Profile Data Field Mapping
+Date: 2025-09-17 13:45 UTC
+=================================================================
+
+Issue: Creator profile showing "Not specified" for Gender, Orientation, Body Type
+- Registration data was being saved correctly to database
+- But profile display wasn't connected to the saved data
+- Backend stores these fields in preferences object but frontend expected root level
+
+Root Cause: Field path mismatch between backend and frontend
+- Backend: profileData.preferences.gender, profileData.preferences.orientation, etc.
+- Frontend: profileData.gender, profileData.orientation, etc.
+
+Solution: Updated frontend to check both locations (preferences first, then root)
+- Added fallback chain: preferences?.field || field || 'Not specified'
+- Maintains backward compatibility with both data structures
+
+Changes Made:
+- frontend/src/pages/CreatorProfilePage.jsx:
+  * Gender: profileData?.preferences?.gender || profileData?.gender
+  * Orientation: profileData?.preferences?.orientation || profileData?.orientation
+  * Body Type: profileData?.preferences?.bodyType || profileData?.bodyType
+
+- frontend/src/pages/CreatorProfilePreview.jsx:
+  * getOrientationDisplay(): Check preferences first for both gender and orientation
+  * Profile tags: Check preferences?.orientation || orientation for tag display
+
+Status: FIXED ✅ - Creator registration data now properly displays in profile
+

@@ -36,8 +36,8 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
 
   // Format orientation display
   const getOrientationDisplay = () => {
-    const orientation = profileData?.orientation || 'Not specified';
-    const gender = profileData?.gender || 'Not specified';
+    const orientation = profileData?.preferences?.orientation || profileData?.orientation || 'Not specified';
+    const gender = profileData?.preferences?.gender || profileData?.gender || 'Not specified';
     return `${gender} • ${orientation}`;
   };
 
@@ -235,7 +235,7 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
               <div className="profile-tags">
                 {profileData?.contentTypes?.photos && <span className="profile-tag">#photos</span>}
                 {profileData?.contentTypes?.videos && <span className="profile-tag">#videos</span>}
-                {profileData?.orientation && <span className="profile-tag">#{profileData.orientation.toLowerCase()}</span>}
+                {(profileData?.preferences?.orientation || profileData?.orientation) && <span className="profile-tag">#{(profileData?.preferences?.orientation || profileData?.orientation).toLowerCase()}</span>}
                 <span className="profile-tag">#exclusive</span>
               </div>
             </div>

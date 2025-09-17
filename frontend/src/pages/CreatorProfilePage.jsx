@@ -416,15 +416,15 @@ const CreatorProfilePage = () => {
           <div className="details-grid">
             <div className="detail-item">
               <span className="detail-label">Gender</span>
-              <span className="detail-value">{profileData?.gender || 'Not specified'}</span>
+              <span className="detail-value">{profileData?.preferences?.gender || profileData?.gender || 'Not specified'}</span>
             </div>
             <div className="detail-item">
               <span className="detail-label">Orientation</span>
-              <span className="detail-value">{profileData?.orientation || 'Not specified'}</span>
+              <span className="detail-value">{profileData?.preferences?.orientation || profileData?.orientation || 'Not specified'}</span>
             </div>
             <div className="detail-item">
               <span className="detail-label">Body Type</span>
-              <span className="detail-value">{profileData?.bodyType || 'Not specified'}</span>
+              <span className="detail-value">{profileData?.preferences?.bodyType || profileData?.bodyType || 'Not specified'}</span>
             </div>
             <div className="detail-item">
               <span className="detail-label">Location</span>
