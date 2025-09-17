@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SwipeConnectMonetize.css';
+import logoImage from '../assets/sexysselfies_logo.png';
 
 const SwipeConnectMonetize = () => {
   const navigate = useNavigate();
@@ -42,6 +43,10 @@ const SwipeConnectMonetize = () => {
       <section className="hero-section">
         <div className="container">
           <div className="hero-content">
+            <div className="hero-logo">
+              <img src={logoImage} alt="SexySelfies Logo" className="logo-image" />
+            </div>
+
             <div className="launch-chip pulse-animation">
               <span className="chip-icon">🚀</span>
               <span>Launching January 2025</span>
@@ -68,11 +73,14 @@ const SwipeConnectMonetize = () => {
                   <path d="M5 12h14m-7-7l7 7-7 7" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </button>
-              <button className="btn btn-secondary btn-large" onClick={() => setVideoOpen(true)}>
+              <button
+                className="btn btn-secondary btn-large"
+                onClick={() => navigate('/creator/login')}
+              >
                 <svg className="btn-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 5v14l11-7z"/>
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
-                <span>Watch Demo</span>
+                <span>Creator Login</span>
               </button>
             </div>
 

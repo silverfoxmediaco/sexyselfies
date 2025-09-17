@@ -83,6 +83,24 @@
   gap: var(--space-xl);
 }
 
+.hero-logo {
+  margin-bottom: var(--space-lg);
+  display: block; /* Show on mobile by default */
+}
+
+.logo-image {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Hide logo on tablet and desktop */
+@media (min-width: 768px) {
+  .hero-logo {
+    display: none;
+  }
+}
+
 .launch-chip {
   display: inline-flex;
   align-items: center;
