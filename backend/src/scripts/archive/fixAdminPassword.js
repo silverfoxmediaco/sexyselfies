@@ -20,49 +20,51 @@ const connectDB = async () => {
 const fixPassword = async () => {
   try {
     // Find the admin
-    const admin = await Admin.findOne({ email: 'admin@sexyselfies.com' }).select('+password');
-    
+    const admin = await Admin.findOne({
+      email: 'admin@sexyselfies.com',
+    }).select('+password');
+
     if (!admin) {
       console.log('❌ Admin not found');
       return;
     }
-    
+
     console.log('📧 Admin found:', admin.email);
-    
+
     const testPassword = 'AdminPass123!';
-    
+
     // Method 1: Direct database update (bypasses pre-save hooks)
     console.log('\n🔧 Updating password directly in database...');
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(testPassword, salt);
-    
+
     // Use updateOne to bypass model hooks
     await Admin.updateOne(
       { _id: admin._id },
-      { 
-        $set: { 
+      {
+        $set: {
           password: hashedPassword,
           loginAttempts: 0,
-          lockUntil: null
-        }
+          lockUntil: null,
+        },
       }
     );
-    
+
     console.log('✅ Password updated directly in database');
     console.log('🔐 New hash:', hashedPassword.substring(0, 20) + '...');
-    
+
     // Verify the update worked
-    const updatedAdmin = await Admin.findOne({ email: 'admin@sexyselfies.com' }).select('+password');
+    const updatedAdmin = await Admin.findOne({
+      email: 'admin@sexyselfies.com',
+    }).select('+password');
     const isMatch = await bcrypt.compare(testPassword, updatedAdmin.password);
-    
-    
+
     if (isMatch) {
       console.log('✅ Password has been fixed!');
     } else {
       console.log('\n❌ Password verification failed');
       console.log('There may be an issue with the Admin model');
     }
-    
   } catch (error) {
     console.error('Error fixing password:', error);
   } finally {

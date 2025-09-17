@@ -4,25 +4,26 @@
 /* CSS Variables */
 :root {
   /* Brand Colors */
-  --brand: #17D2C2;
-  --brand-300: #47E0D2;
-  
+  --brand: #17d2c2;
+  --brand-300: #47e0d2;
+
   /* Dark Theme */
-  --bg-900: #0A0A0A;
-  --border-600: #2A2A2C;
-  --text-primary: #FFFFFF;
-  --text-secondary: #C7C7CC;
-  
+  --bg-900: #0a0a0a;
+  --border-600: #2a2a2c;
+  --text-primary: #ffffff;
+  --text-secondary: #c7c7cc;
+
   /* Spacing */
   --space-md: 16px;
   --space-lg: 24px;
   --space-3xl: 64px;
-  
+
   /* Border Radius */
   --radius-lg: 16px;
-  
+
   /* Typography */
-  --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:
+    'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Container */
@@ -111,7 +112,9 @@
   width: 24px;
   height: 24px;
   stroke: var(--text-secondary);
-  transition: transform 0.3s ease, stroke 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    stroke 0.3s ease;
   flex-shrink: 0;
 }
 
@@ -124,7 +127,10 @@
 .faq-answer {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+  transition:
+    max-height 0.3s ease,
+    padding 0.3s ease,
+    opacity 0.3s ease;
   opacity: 0;
 }
 
@@ -154,16 +160,16 @@
   .container {
     padding: 0 var(--space-md);
   }
-  
+
   .faq-question {
     font-size: 16px;
     padding: var(--space-md);
   }
-  
+
   .faq-answer.expanded {
     padding: 0 var(--space-md) var(--space-md);
   }
-  
+
   .faq-answer p {
     font-size: 14px;
   }
@@ -189,7 +195,7 @@
   .faq-answer {
     transition: none;
   }
-  
+
   .faq-answer.expanded {
     max-height: none;
   }

@@ -40,7 +40,8 @@ router.get('/creator/:identifier', async (req, res) => {
     const mongoose = require('mongoose');
 
     // Check if identifier is an ObjectId (24 character hex string)
-    const isObjectId = mongoose.Types.ObjectId.isValid(identifier) && identifier.length === 24;
+    const isObjectId =
+      mongoose.Types.ObjectId.isValid(identifier) && identifier.length === 24;
 
     let query;
     if (isObjectId) {
@@ -50,31 +51,32 @@ router.get('/creator/:identifier', async (req, res) => {
     } else {
       // Search by username or displayName
       query = {
-        $or: [
-          { username: identifier },
-          { displayName: identifier }
-        ]
+        $or: [{ username: identifier }, { displayName: identifier }],
       };
       console.log('🔍 Searching by username/displayName:', identifier);
     }
 
     // Find creator
-    const creator = await Creator.findOne(query).populate('user', 'email lastLogin');
-    
+    const creator = await Creator.findOne(query).populate(
+      'user',
+      'email lastLogin'
+    );
+
     if (!creator) {
       return res.status(404).json({
         success: false,
-        message: 'Creator not found'
+        message: 'Creator not found',
       });
     }
-    
+
     // Get creator's content (public previews and locked content)
-    const content = await Content.find({ 
-      creator: creator._id 
-    }).select('title description price media thumbnail createdAt type isFree')
+    const content = await Content.find({
+      creator: creator._id,
+    })
+      .select('title description price media thumbnail createdAt type isFree')
       .sort({ createdAt: -1 })
       .limit(20);
-    
+
     // Transform creator data for public view
     const creatorProfile = {
       id: creator._id,
@@ -91,22 +93,21 @@ router.get('/creator/:identifier', async (req, res) => {
       contentPrice: creator.contentPrice,
       stats: creator.stats,
       preferences: creator.preferences,
-      createdAt: creator.createdAt
+      createdAt: creator.createdAt,
     };
-    
+
     res.status(200).json({
       success: true,
       data: {
         creator: creatorProfile,
-        content: content
-      }
+        content: content,
+      },
     });
-    
   } catch (error) {
     console.error('Error fetching creator profile:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
     });
   }
 });

@@ -11,7 +11,8 @@ const webhookController = require('../controllers/webhook.controller');
 // ==========================================
 
 // Create payment intent for content unlock
-router.post('/create-intent',
+router.post(
+  '/create-intent',
   protect,
   authorize('member'),
   validatePayment,
@@ -20,14 +21,16 @@ router.post('/create-intent',
 );
 
 // Confirm payment
-router.post('/confirm',
+router.post(
+  '/confirm',
   protect,
   authorize('member'),
   paymentController.confirmPayment
 );
 
 // Process content unlock payment
-router.post('/unlock-content',
+router.post(
+  '/unlock-content',
   protect,
   authorize('member'),
   validatePayment,
@@ -35,7 +38,8 @@ router.post('/unlock-content',
 );
 
 // Process message unlock payment
-router.post('/unlock-message',
+router.post(
+  '/unlock-message',
   protect,
   authorize('member'),
   validatePayment,
@@ -43,7 +47,8 @@ router.post('/unlock-message',
 );
 
 // Process tip payment
-router.post('/tip',
+router.post(
+  '/tip',
   protect,
   authorize('member'),
   validatePayment,
@@ -52,7 +57,8 @@ router.post('/tip',
 );
 
 // Add credits to account
-router.post('/credits/add',
+router.post(
+  '/credits/add',
   protect,
   authorize('member'),
   validatePayment,
@@ -60,22 +66,18 @@ router.post('/credits/add',
 );
 
 // Get credit packages
-router.get('/credits/packages',
-  paymentController.getCreditPackages
-);
+router.get('/credits/packages', paymentController.getCreditPackages);
 
 // ==========================================
 // PAYMENT METHOD MANAGEMENT
 // ==========================================
 
 // Get saved payment methods
-router.get('/methods',
-  protect,
-  paymentController.getPaymentMethods
-);
+router.get('/methods', protect, paymentController.getPaymentMethods);
 
 // Add new payment method
-router.post('/methods',
+router.post(
+  '/methods',
   protect,
   validatePayment,
   rateLimiter({ max: 5, windowMs: 60 * 60 * 1000 }), // 5 new methods per hour
@@ -83,13 +85,15 @@ router.post('/methods',
 );
 
 // Remove payment method
-router.delete('/methods/:methodId',
+router.delete(
+  '/methods/:methodId',
   protect,
   paymentController.removePaymentMethod
 );
 
 // Set default payment method
-router.put('/methods/:methodId/default',
+router.put(
+  '/methods/:methodId/default',
   protect,
   paymentController.setDefaultPaymentMethod
 );
@@ -99,7 +103,8 @@ router.put('/methods/:methodId/default',
 // ==========================================
 
 // Request payout
-router.post('/payout/request',
+router.post(
+  '/payout/request',
   protect,
   authorize('creator'),
   validatePayment,
@@ -108,14 +113,16 @@ router.post('/payout/request',
 );
 
 // Get payout methods
-router.get('/payout/methods',
+router.get(
+  '/payout/methods',
   protect,
   authorize('creator'),
   paymentController.getPayoutMethods
 );
 
 // Add payout method (bank account, PayPal, etc)
-router.post('/payout/methods',
+router.post(
+  '/payout/methods',
   protect,
   authorize('creator'),
   validatePayment,
@@ -123,21 +130,24 @@ router.post('/payout/methods',
 );
 
 // Get payout history
-router.get('/payout/history',
+router.get(
+  '/payout/history',
   protect,
   authorize('creator'),
   paymentController.getPayoutHistory
 );
 
 // Get payout schedule
-router.get('/payout/schedule',
+router.get(
+  '/payout/schedule',
   protect,
   authorize('creator'),
   paymentController.getPayoutSchedule
 );
 
 // Enable instant payouts
-router.post('/payout/instant',
+router.post(
+  '/payout/instant',
   protect,
   authorize('creator'),
   paymentController.enableInstantPayouts
@@ -148,25 +158,25 @@ router.post('/payout/instant',
 // ==========================================
 
 // Get transaction history
-router.get('/transactions',
-  protect,
-  paymentController.getTransactionHistory
-);
+router.get('/transactions', protect, paymentController.getTransactionHistory);
 
 // Get specific transaction
-router.get('/transactions/:transactionId',
+router.get(
+  '/transactions/:transactionId',
   protect,
   paymentController.getTransaction
 );
 
 // Download transaction report
-router.get('/transactions/export',
+router.get(
+  '/transactions/export',
   protect,
   paymentController.exportTransactions
 );
 
 // Dispute transaction
-router.post('/transactions/:transactionId/dispute',
+router.post(
+  '/transactions/:transactionId/dispute',
   protect,
   rateLimiter({ max: 3, windowMs: 24 * 60 * 60 * 1000 }), // 3 disputes per day
   paymentController.disputeTransaction
@@ -177,12 +187,11 @@ router.post('/transactions/:transactionId/dispute',
 // ==========================================
 
 // Get subscription plans
-router.get('/subscriptions/plans',
-  paymentController.getSubscriptionPlans
-);
+router.get('/subscriptions/plans', paymentController.getSubscriptionPlans);
 
 // Create subscription
-router.post('/subscriptions',
+router.post(
+  '/subscriptions',
   protect,
   authorize('member'),
   validatePayment,
@@ -190,14 +199,16 @@ router.post('/subscriptions',
 );
 
 // Cancel subscription
-router.delete('/subscriptions/:subscriptionId',
+router.delete(
+  '/subscriptions/:subscriptionId',
   protect,
   authorize('member'),
   paymentController.cancelSubscription
 );
 
 // Update subscription
-router.put('/subscriptions/:subscriptionId',
+router.put(
+  '/subscriptions/:subscriptionId',
   protect,
   authorize('member'),
   paymentController.updateSubscription
@@ -208,21 +219,24 @@ router.put('/subscriptions/:subscriptionId',
 // ==========================================
 
 // Get tax information
-router.get('/tax/info',
+router.get(
+  '/tax/info',
   protect,
   authorize('creator'),
   paymentController.getTaxInfo
 );
 
 // Submit tax forms (W9, W8-BEN, etc)
-router.post('/tax/forms',
+router.post(
+  '/tax/forms',
   protect,
   authorize('creator'),
   paymentController.submitTaxForms
 );
 
 // Get tax documents (1099s)
-router.get('/tax/documents',
+router.get(
+  '/tax/documents',
   protect,
   authorize('creator'),
   paymentController.getTaxDocuments
@@ -233,44 +247,42 @@ router.get('/tax/documents',
 // ==========================================
 
 // Get platform fees
-router.get('/fees',
-  paymentController.getPlatformFees
-);
+router.get('/fees', paymentController.getPlatformFees);
 
 // Calculate fees for amount
-router.post('/fees/calculate',
-  paymentController.calculateFees
-);
+router.post('/fees/calculate', paymentController.calculateFees);
 
 // Get exchange rates (for international)
-router.get('/rates',
-  paymentController.getExchangeRates
-);
+router.get('/rates', paymentController.getExchangeRates);
 
 // ==========================================
 // WEBHOOKS (No auth required - verified by signature)
 // ==========================================
 
 // Stripe webhooks
-router.post('/webhooks/stripe',
+router.post(
+  '/webhooks/stripe',
   express.raw({ type: 'application/json' }),
   webhookController.handleStripeWebhook
 );
 
 // PayPal webhooks
-router.post('/webhooks/paypal',
+router.post(
+  '/webhooks/paypal',
   express.json(),
   webhookController.handlePayPalWebhook
 );
 
 // CCBill webhooks (adult payment processor)
-router.post('/webhooks/ccbill',
+router.post(
+  '/webhooks/ccbill',
   express.urlencoded({ extended: true }),
   webhookController.handleCCBillWebhook
 );
 
 // Cryptocurrency webhooks (future)
-router.post('/webhooks/crypto',
+router.post(
+  '/webhooks/crypto',
   express.json(),
   webhookController.handleCryptoWebhook
 );
@@ -280,7 +292,8 @@ router.post('/webhooks/crypto',
 // ==========================================
 
 // Request refund
-router.post('/refund',
+router.post(
+  '/refund',
   protect,
   authorize('member'),
   validatePayment,
@@ -289,13 +302,11 @@ router.post('/refund',
 );
 
 // Get refund status
-router.get('/refund/:refundId',
-  protect,
-  paymentController.getRefundStatus
-);
+router.get('/refund/:refundId', protect, paymentController.getRefundStatus);
 
 // Handle chargeback (admin only)
-router.post('/chargeback/:transactionId',
+router.post(
+  '/chargeback/:transactionId',
   protect,
   authorize('admin'),
   paymentController.handleChargeback
@@ -306,21 +317,24 @@ router.post('/chargeback/:transactionId',
 // ==========================================
 
 // Get payment analytics (creator)
-router.get('/analytics',
+router.get(
+  '/analytics',
   protect,
   authorize('creator'),
   paymentController.getPaymentAnalytics
 );
 
 // Get revenue report
-router.get('/analytics/revenue',
+router.get(
+  '/analytics/revenue',
   protect,
   authorize('creator'),
   paymentController.getRevenueReport
 );
 
 // Get customer spending analytics
-router.get('/analytics/customers',
+router.get(
+  '/analytics/customers',
   protect,
   authorize('creator'),
   paymentController.getCustomerAnalytics
@@ -331,18 +345,14 @@ router.get('/analytics/customers',
 // ==========================================
 
 // Apply promo code
-router.post('/promo/apply',
-  protect,
-  paymentController.applyPromoCode
-);
+router.post('/promo/apply', protect, paymentController.applyPromoCode);
 
 // Validate promo code
-router.get('/promo/validate/:code',
-  paymentController.validatePromoCode
-);
+router.get('/promo/validate/:code', paymentController.validatePromoCode);
 
 // Create promo code (creator)
-router.post('/promo/create',
+router.post(
+  '/promo/create',
   protect,
   authorize('creator'),
   paymentController.createPromoCode
@@ -353,19 +363,18 @@ router.post('/promo/create',
 // ==========================================
 
 // Get wallet balance
-router.get('/wallet/balance',
-  protect,
-  paymentController.getWalletBalance
-);
+router.get('/wallet/balance', protect, paymentController.getWalletBalance);
 
 // Get wallet transactions
-router.get('/wallet/transactions',
+router.get(
+  '/wallet/transactions',
   protect,
   paymentController.getWalletTransactions
 );
 
 // Transfer between wallets (internal)
-router.post('/wallet/transfer',
+router.post(
+  '/wallet/transfer',
   protect,
   validatePayment,
   paymentController.transferFunds
@@ -378,38 +387,38 @@ router.post('/wallet/transfer',
 // Payment error handler
 router.use((error, req, res, next) => {
   console.error('Payment route error:', error);
-  
+
   // Handle Stripe errors
   if (error.type === 'StripeCardError') {
     return res.status(400).json({
       success: false,
       message: 'Card declined',
-      error: error.message
+      error: error.message,
     });
   }
-  
+
   // Handle insufficient funds
   if (error.code === 'insufficient_funds') {
     return res.status(400).json({
       success: false,
       message: 'Insufficient funds',
-      error: 'Please add credits or use a different payment method'
+      error: 'Please add credits or use a different payment method',
     });
   }
-  
+
   // Handle rate limit
   if (error.code === 'rate_limit') {
     return res.status(429).json({
       success: false,
       message: 'Too many requests',
-      error: 'Please wait before trying again'
+      error: 'Please wait before trying again',
     });
   }
-  
+
   // Default error
   res.status(error.status || 500).json({
     success: false,
-    message: error.message || 'Payment processing error'
+    message: error.message || 'Payment processing error',
   });
 });
 

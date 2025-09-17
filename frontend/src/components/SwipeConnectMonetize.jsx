@@ -6,27 +6,37 @@ import logoImage from '../assets/sexysselfies_logo.png';
 const SwipeConnectMonetize = () => {
   const navigate = useNavigate();
   const [videoOpen, setVideoOpen] = useState(false);
-  const [counters, setCounters] = useState({ creators: 0, earned: 0, connections: 0 });
+  const [counters, setCounters] = useState({
+    creators: 0,
+    earned: 0,
+    connections: 0,
+  });
 
   useEffect(() => {
     const duration = 2000;
     const steps = 60;
     const stepDuration = duration / steps;
-    
+
     const targets = { creators: 102500, earned: 11850000, connections: 45000 };
     const increments = {
       creators: targets.creators / steps,
       earned: targets.earned / steps,
-      connections: targets.connections / steps
+      connections: targets.connections / steps,
     };
 
     let currentStep = 0;
     const timer = setInterval(() => {
       if (currentStep < steps) {
         setCounters(prev => ({
-          creators: Math.min(prev.creators + increments.creators, targets.creators),
+          creators: Math.min(
+            prev.creators + increments.creators,
+            targets.creators
+          ),
           earned: Math.min(prev.earned + increments.earned, targets.earned),
-          connections: Math.min(prev.connections + increments.connections, targets.connections)
+          connections: Math.min(
+            prev.connections + increments.connections,
+            targets.connections
+          ),
         }));
         currentStep++;
       } else {
@@ -40,71 +50,92 @@ const SwipeConnectMonetize = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="hero-section">
-        <div className="container">
-          <div className="hero-content">
-            <div className="hero-logo">
-              <img src={logoImage} alt="SexySelfies Logo" className="logo-image" />
+      <section className='hero-section'>
+        <div className='container'>
+          <div className='hero-content'>
+            <div className='hero-logo'>
+              <img
+                src={logoImage}
+                alt='SexySelfies Logo'
+                className='logo-image'
+              />
             </div>
 
-            <div className="launch-chip pulse-animation">
-              <span className="chip-icon">🚀</span>
+            <div className='launch-chip pulse-animation'>
+              <span className='chip-icon'>🚀</span>
               <span>Launching January 2025</span>
             </div>
-            
-            <h1 className="hero-title">
-              <span className="gradient-text">Swipe.</span>
-              <span className="gradient-text-2"> Connect.</span>
-              <span className="gradient-text-3"> Monetize.</span>
+
+            <h1 className='hero-title'>
+              <span className='gradient-text'>Swipe.</span>
+              <span className='gradient-text-2'> Connect.</span>
+              <span className='gradient-text-3'> Monetize.</span>
             </h1>
-            
-            <p className="hero-description">
-              The content platform that combines Tinder's discovery with OnlyFans' economy. 
-              <span className="highlight-text"> Instagram Plus content only.</span>
+
+            <p className='hero-description'>
+              The content platform that combines Tinder's discovery with
+              OnlyFans' economy.
+              <span className='highlight-text'>
+                {' '}
+                Instagram Plus content only.
+              </span>
             </p>
 
-            <div className="hero-cta-group">
-              <button 
-                className="btn btn-primary btn-large btn-glow"
+            <div className='hero-cta-group'>
+              <button
+                className='btn btn-primary btn-large btn-glow'
                 onClick={() => navigate('/creator/register')}
               >
                 <span>Start Earning Today</span>
-                <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M5 12h14m-7-7l7 7-7 7" strokeWidth="2" strokeLinecap="round"/>
+                <svg
+                  className='btn-icon'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
+                >
+                  <path
+                    d='M5 12h14m-7-7l7 7-7 7'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                  />
                 </svg>
               </button>
               <button
-                className="btn btn-secondary btn-large"
+                className='btn btn-secondary btn-large'
                 onClick={() => navigate('/creator/login')}
               >
-                <svg className="btn-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                <svg
+                  className='btn-icon'
+                  viewBox='0 0 24 24'
+                  fill='currentColor'
+                >
+                  <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z' />
                 </svg>
                 <span>Creator Login</span>
               </button>
             </div>
 
             {/* Social Proof */}
-            <div className="social-proof">
-              <div className="stat-item">
-                <div className="stat-number counter-number">
+            <div className='social-proof'>
+              <div className='stat-item'>
+                <div className='stat-number counter-number'>
                   {Math.floor(counters.creators).toLocaleString()}+
                 </div>
-                <div className="stat-label">Creators</div>
+                <div className='stat-label'>Creators</div>
               </div>
-              <div className="stat-divider" />
-              <div className="stat-item">
-                <div className="stat-number counter-number">
+              <div className='stat-divider' />
+              <div className='stat-item'>
+                <div className='stat-number counter-number'>
                   ${Math.floor(counters.earned).toLocaleString()}
                 </div>
-                <div className="stat-label">Earned</div>
+                <div className='stat-label'>Earned</div>
               </div>
-              <div className="stat-divider" />
-              <div className="stat-item">
-                <div className="stat-number counter-number">
+              <div className='stat-divider' />
+              <div className='stat-item'>
+                <div className='stat-number counter-number'>
                   {Math.floor(counters.connections).toLocaleString()}
                 </div>
-                <div className="stat-label">Daily Connections</div>
+                <div className='stat-label'>Daily Connections</div>
               </div>
             </div>
           </div>
@@ -113,16 +144,24 @@ const SwipeConnectMonetize = () => {
 
       {/* Video Modal */}
       {videoOpen && (
-        <div className="video-modal" onClick={() => setVideoOpen(false)}>
-          <div className="video-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setVideoOpen(false)}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M18 6L6 18M6 6l12 12" strokeWidth="2" strokeLinecap="round"/>
+        <div className='video-modal' onClick={() => setVideoOpen(false)}>
+          <div className='video-content' onClick={e => e.stopPropagation()}>
+            <button className='close-btn' onClick={() => setVideoOpen(false)}>
+              <svg viewBox='0 0 24 24' fill='none' stroke='currentColor'>
+                <path
+                  d='M18 6L6 18M6 6l12 12'
+                  strokeWidth='2'
+                  strokeLinecap='round'
+                />
               </svg>
             </button>
-            <div className="video-placeholder">
-              <svg className="play-icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
+            <div className='video-placeholder'>
+              <svg
+                className='play-icon'
+                viewBox='0 0 24 24'
+                fill='currentColor'
+              >
+                <path d='M8 5v14l11-7z' />
               </svg>
               <h3>Demo Video Coming Soon</h3>
               <p>See how SexySelfies works in action</p>

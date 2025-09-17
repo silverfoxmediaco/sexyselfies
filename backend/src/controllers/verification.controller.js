@@ -1,7 +1,9 @@
 const Creator = require('../models/Creator');
 const User = require('../models/User');
 const cloudinary = require('../config/cloudinary');
-const { sendAdminVerificationNotification } = require('./notification.controller');
+const {
+  sendAdminVerificationNotification,
+} = require('./notification.controller');
 
 // @desc    Upload verification documents
 // @route   POST /api/verification/upload
@@ -9,13 +11,13 @@ const { sendAdminVerificationNotification } = require('./notification.controller
 exports.uploadVerification = async (req, res) => {
   try {
     console.log('Starting verification upload for user:', req.user.id);
-    
+
     // Find creator profile
     const creator = await Creator.findOne({ user: req.user.id });
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator profile not found'
+        error: 'Creator profile not found',
       });
     }
 
@@ -23,7 +25,7 @@ exports.uploadVerification = async (req, res) => {
     if (creator.isVerified) {
       return res.status(400).json({
         success: false,
-        error: 'Already verified'
+        error: 'Already verified',
       });
     }
 
@@ -32,7 +34,7 @@ exports.uploadVerification = async (req, res) => {
     if (!idFront || !idBack || !selfie || !idType) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required verification documents'
+        error: 'Missing required verification documents',
       });
     }
 
@@ -41,18 +43,18 @@ exports.uploadVerification = async (req, res) => {
       cloudinary.uploader.upload(idFront, {
         folder: `verifications/${req.user.id}`,
         public_id: `id_front_${Date.now()}`,
-        resource_type: 'image'
+        resource_type: 'image',
       }),
       cloudinary.uploader.upload(idBack, {
         folder: `verifications/${req.user.id}`,
         public_id: `id_back_${Date.now()}`,
-        resource_type: 'image'
+        resource_type: 'image',
       }),
       cloudinary.uploader.upload(selfie, {
         folder: `verifications/${req.user.id}`,
         public_id: `selfie_${Date.now()}`,
-        resource_type: 'image'
-      })
+        resource_type: 'image',
+      }),
     ];
 
     const uploadResults = await Promise.all(uploadPromises);
@@ -65,24 +67,24 @@ exports.uploadVerification = async (req, res) => {
       idBackUrl: uploadResults[1].secure_url,
       selfieUrl: uploadResults[2].secure_url,
       submittedAt: new Date(),
-      status: 'pending'
+      status: 'pending',
     };
     creator.verificationStatus = 'pending';
     creator.verificationSubmittedAt = new Date();
-    
+
     // Also populate the verificationDocuments array for compatibility
     creator.verificationDocuments = [
       uploadResults[0].secure_url, // ID front
       uploadResults[1].secure_url, // ID back
-      uploadResults[2].secure_url  // Selfie
+      uploadResults[2].secure_url, // Selfie
     ];
-    
+
     await creator.save();
     console.log('Creator verification data saved');
 
     // Get user email
     const user = await User.findById(req.user.id);
-    
+
     // Send email notification to admin
     try {
       console.log('Sending email notification...');
@@ -90,16 +92,16 @@ exports.uploadVerification = async (req, res) => {
         body: {
           userId: req.user.id,
           userEmail: user.email,
-          idType: idType
-        }
+          idType: idType,
+        },
       };
-      
+
       const notificationRes = {
-        status: (code) => ({
-          json: (data) => console.log('Email notification response:', data)
-        })
+        status: code => ({
+          json: data => console.log('Email notification response:', data),
+        }),
       };
-      
+
       await sendAdminVerificationNotification(notificationReq, notificationRes);
       console.log('Email notification sent successfully');
     } catch (emailError) {
@@ -112,15 +114,14 @@ exports.uploadVerification = async (req, res) => {
       message: 'Verification documents uploaded successfully',
       data: {
         status: 'pending',
-        submittedAt: creator.verificationSubmittedAt
-      }
+        submittedAt: creator.verificationSubmittedAt,
+      },
     });
-
   } catch (error) {
     console.error('Verification upload error:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to upload verification documents'
+      error: error.message || 'Failed to upload verification documents',
     });
   }
 };
@@ -131,11 +132,11 @@ exports.uploadVerification = async (req, res) => {
 exports.getVerificationStatus = async (req, res) => {
   try {
     const creator = await Creator.findOne({ user: req.user.id });
-    
+
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator profile not found'
+        error: 'Creator profile not found',
       });
     }
 
@@ -146,14 +147,14 @@ exports.getVerificationStatus = async (req, res) => {
         verificationStatus: creator.verificationStatus || 'not_submitted',
         submittedAt: creator.verificationSubmittedAt,
         approvedAt: creator.verificationApprovedAt,
-        rejectionReason: creator.verificationRejectionReason
-      }
+        rejectionReason: creator.verificationRejectionReason,
+      },
     });
   } catch (error) {
     console.error('Get verification status error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -163,22 +164,22 @@ exports.getVerificationStatus = async (req, res) => {
 // @access  Admin only
 exports.getPendingVerifications = async (req, res) => {
   try {
-    const creators = await Creator.find({ 
-      verificationStatus: 'pending' 
+    const creators = await Creator.find({
+      verificationStatus: 'pending',
     })
-    .populate('user', 'email username createdAt')
-    .sort({ verificationSubmittedAt: -1 });
+      .populate('user', 'email username createdAt')
+      .sort({ verificationSubmittedAt: -1 });
 
     res.status(200).json({
       success: true,
       count: creators.length,
-      data: creators
+      data: creators,
     });
   } catch (error) {
     console.error('Get pending verifications error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -189,12 +190,12 @@ exports.getPendingVerifications = async (req, res) => {
 exports.approveVerification = async (req, res) => {
   try {
     const { userId } = req.params;
-    
+
     const creator = await Creator.findOne({ user: userId });
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator not found'
+        error: 'Creator not found',
       });
     }
 
@@ -208,20 +209,20 @@ exports.approveVerification = async (req, res) => {
     const user = await User.findByIdAndUpdate(userId, {
       isVerified: true,
       verificationStatus: 'approved',
-      verificationApprovedAt: new Date()
+      verificationApprovedAt: new Date(),
     });
 
     // Send approval notification
     const { approveVerification } = require('./notification.controller');
     const notificationReq = {
-      body: { userId }
+      body: { userId },
     };
     const notificationRes = {
-      status: (code) => ({
-        json: (data) => console.log('Approval notification response:', data)
-      })
+      status: code => ({
+        json: data => console.log('Approval notification response:', data),
+      }),
     };
-    
+
     try {
       await approveVerification(notificationReq, notificationRes);
     } catch (emailError) {
@@ -230,13 +231,13 @@ exports.approveVerification = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Verification approved successfully'
+      message: 'Verification approved successfully',
     });
   } catch (error) {
     console.error('Approve verification error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -248,12 +249,12 @@ exports.rejectVerification = async (req, res) => {
   try {
     const { userId } = req.params;
     const { reason } = req.body;
-    
+
     const creator = await Creator.findOne({ user: userId });
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator not found'
+        error: 'Creator not found',
       });
     }
 
@@ -268,20 +269,20 @@ exports.rejectVerification = async (req, res) => {
     await User.findByIdAndUpdate(userId, {
       isVerified: false,
       verificationStatus: 'rejected',
-      verificationRejectedAt: new Date()
+      verificationRejectedAt: new Date(),
     });
 
     // Send rejection notification
     const { rejectVerification } = require('./notification.controller');
     const notificationReq = {
-      body: { userId, reason }
+      body: { userId, reason },
     };
     const notificationRes = {
-      status: (code) => ({
-        json: (data) => console.log('Rejection notification response:', data)
-      })
+      status: code => ({
+        json: data => console.log('Rejection notification response:', data),
+      }),
     };
-    
+
     try {
       await rejectVerification(notificationReq, notificationRes);
     } catch (emailError) {
@@ -290,13 +291,13 @@ exports.rejectVerification = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Verification rejected'
+      message: 'Verification rejected',
     });
   } catch (error) {
     console.error('Reject verification error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };

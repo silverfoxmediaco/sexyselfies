@@ -1,6 +1,7 @@
 # SexySelfies PWA - Project Context
 
 ## 🚀 Project Overview
+
 - **Name**: SexySelfies
 - **Type**: Mobile-first Progressive Web App (PWA)
 - **Stack**: MERN (MongoDB, Express, React, Node.js)
@@ -9,7 +10,9 @@
 - **Content Standards**: "Instagram Plus" - sexy but not pornographic (lingerie, implied nudity allowed; explicit content prohibited)
 
 ## 👨‍💻 Developer Preferences & Rules
+
 **IMPORTANT - Always follow these rules:**
+
 - **Framework**: React ONLY with MERN stack
 - **Code Delivery**: ALWAYS provide complete files (never fragments unless explicitly requested)
 - **Modifications**: ONLY change code that is explicitly requested
@@ -249,36 +252,39 @@ sexy-selfies/
 ## 🎨 Design System
 
 ### Brand Colors
+
 ```css
 /* Core Brand */
---primary: #17D2C2;          /* Teal */
---primary-600: #12B7AB;
---primary-700: #0FA093;
---primary-300: #47E0D2;
---primary-100: #CFF8F4;
---gradient: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+--primary: #17d2c2; /* Teal */
+--primary-600: #12b7ab;
+--primary-700: #0fa093;
+--primary-300: #47e0d2;
+--primary-100: #cff8f4;
+--gradient: linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%, #47e0d2 100%);
 
 /* Dark Theme (Default) */
---bg-900: #0A0A0A;
+--bg-900: #0a0a0a;
 --bg-800: #121212;
---surface-700: #1C1C1E;
---border-600: #2A2A2C;
---text-primary: #FFFFFF;
---text-secondary: #C7C7CC;
---muted: #8E8E93;
+--surface-700: #1c1c1e;
+--border-600: #2a2a2c;
+--text-primary: #ffffff;
+--text-secondary: #c7c7cc;
+--muted: #8e8e93;
 
 /* Feedback Colors */
---success: #22C55E;
---warning: #F59E0B;
---error: #EF4444;
---info: #38BDF8;
+--success: #22c55e;
+--warning: #f59e0b;
+--error: #ef4444;
+--info: #38bdf8;
 ```
 
 ### Typography
+
 - **Font**: Poppins (400, 500, 600, 700)
 - **Fallback**: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto
 
 ### Spacing System (Mobile-First)
+
 ```css
 /* 8-Point Grid */
 --space-xs: 4px;
@@ -289,17 +295,19 @@ sexy-selfies/
 --space-2xl: 48px;
 
 /* Touch Targets */
---touch-target-min: 44px;    /* WCAG AA */
+--touch-target-min: 44px; /* WCAG AA */
 --touch-target-optimal: 48px; /* Best Practice */
 ```
 
 ### Container Widths
+
 - Small: 640px
 - Medium: 768px
 - Large: 1024px
 - XL: 1280px
 
 ### Breakpoints
+
 - Mobile: < 768px
 - Tablet: 768px - 1023px
 - Desktop: ≥ 1024px
@@ -307,6 +315,7 @@ sexy-selfies/
 ## 💼 Business Model & Strategy
 
 ### Revenue Model
+
 - **Split**: 80% creator / 20% platform (industry-leading)
 - **Pricing**: Micro-transactions only ($0.99-$3.99 per unlock)
 - **No subscriptions**: Lower psychological barrier than $20+ monthly fees
@@ -314,6 +323,7 @@ sexy-selfies/
 - **Additional Revenue**: Tips, Super Likes ($1.99), Profile Boosts ($4.99)
 
 ### Content Guidelines
+
 - **"Instagram Plus" Standards**: Sexy but not pornographic
 - **Allowed**: Lingerie, implied nudity, censored content
 - **Prohibited**: Full nudity, explicit content
@@ -321,17 +331,20 @@ sexy-selfies/
 - **Target Users**: Those seeking authentic, relatable content over professional productions
 
 ### Market Positioning
+
 - **vs OnlyFans**: Better discovery via swipe, no subscription walls, LGBTQ+ inclusive filtering
 - **vs Dating Apps**: Monetization built-in, content-focused not dating-focused
 - **vs Niche Platforms**: All orientations in one platform, consistent safety standards
 
 ### Financial Projections (Conservative)
+
 - **Year 1**: $1.8M gross → $306K net platform revenue
-- **Year 2**: $12M gross → $2.04M net platform revenue  
+- **Year 2**: $12M gross → $2.04M net platform revenue
 - **Year 3**: $45M gross → $7.65M net platform revenue
 - **Year 5**: $150M gross → $25.5M net platform revenue
 
 ### Success Metrics
+
 - **Daily Active Users**: Target 1,000 in month 1
 - **Average Daily Spend**: $6-8 per user (including DM content)
 - **Connection Rate**: 30%+ (higher with orientation matching)
@@ -366,7 +379,9 @@ sexy-selfies/
 ## 🎯 Key Features
 
 ### Creator Active Sales System ⭐
+
 **Revolutionary - Creators become active salespeople:**
+
 - Browse high-value members (whales/VIPs)
 - AI-powered matchmaking
 - Send personalized messages and offers
@@ -377,6 +392,7 @@ sexy-selfies/
 - ROI tracking
 
 ### Discovery System
+
 - **Swipe Interface**: Tinder-style unlimited free swipes
 - **Smart Connection Algorithm**: Orientation-based matching
 - **Advanced Filtering**:
@@ -390,6 +406,7 @@ sexy-selfies/
 - **Real-time Notifications**: Instant alerts for connections and messages
 
 ### Connection System (Not Match)
+
 - **Terminology**: "Connections" not "Matches"
 - Mutual interest creates connection
 - Unlock content after connecting
@@ -397,6 +414,7 @@ sexy-selfies/
 - Connection management dashboard
 
 ### Real-time Features
+
 - WebSocket messaging (Socket.io)
 - Live notifications
 - Online status tracking
@@ -406,6 +424,7 @@ sexy-selfies/
 ## 🏗️ Architecture Details
 
 ### Backend Services
+
 - **Authentication**: JWT-based with refresh tokens
 - **Payment**: CCBill integration (adult-friendly)
 - **Storage**: Cloudinary for media
@@ -414,6 +433,7 @@ sexy-selfies/
 - **Jobs**: Node-cron scheduled tasks
 
 ### Frontend Architecture
+
 - **Build**: Vite for fast development
 - **Routing**: React Router v6
 - **State**: Context API (consider Redux)
@@ -421,6 +441,7 @@ sexy-selfies/
 - **PWA**: Full PWA with offline support
 
 ### Security Features
+
 - Input sanitization
 - Rate limiting per endpoint
 - CSRF protection
@@ -432,6 +453,7 @@ sexy-selfies/
 ## 🔧 Development Setup
 
 ### Environment Variables
+
 ```bash
 # Backend (.env)
 NODE_ENV=development
@@ -462,6 +484,7 @@ VITE_SOCKET_URL=ws://localhost:5002
 ```
 
 ### Commands
+
 ```bash
 # Install all dependencies
 npm install
@@ -481,6 +504,7 @@ cd frontend && npm run build
 ## 📊 Current Status
 
 ### ✅ Completed
+
 - Full backend API (100+ endpoints)
 - All database models (26 schemas)
 - Authentication & authorization
@@ -498,12 +522,14 @@ cd frontend && npm run build
 - **Route mounting consistency** - Frontend/backend URL alignment
 
 ### 🚧 In Progress
+
 - Push notifications
 - Background sync
 - Payment webhook testing
 - Email service configuration
 
 ### ❌ TODO
+
 - Unit testing
 - Integration tests
 - CDN configuration
@@ -514,6 +540,7 @@ cd frontend && npm run build
 ## 📚 API Key Endpoints
 
 ### Creator Active Sales
+
 ```
 GET  /api/creator/members/discover
 POST /api/creator/members/search
@@ -524,6 +551,7 @@ GET  /api/creator/sales/dashboard
 ```
 
 ### Connections (Not Matches)
+
 ```
 GET  /api/connections
 POST /api/connections/create
@@ -532,6 +560,7 @@ DELETE /api/connections/:id
 ```
 
 ### Discovery
+
 ```
 GET  /api/discovery/creator
 POST /api/discovery/swipe
@@ -539,20 +568,23 @@ GET  /api/discovery/filters
 ```
 
 ## 🐛 Known Issues
+
 - Socket.io CORS configuration pending
 - Redis connection not configured
 - Some test payment files need cleanup
 - Email service credentials needed
 
 ## 🔧 Recently Fixed (Sep 2025)
+
 - ✅ **Creator route 404 errors** - Fixed route mounting mismatch (`/creators` vs `/creator`)
-- ✅ **Missing analytics endpoints** - Added `GET /api/v1/creator/analytics/content` 
+- ✅ **Missing analytics endpoints** - Added `GET /api/v1/creator/analytics/content`
 - ✅ **Content analytics controller** - Implemented full content performance analytics
 - ✅ **Route consistency** - All creator APIs now properly accessible
 
 ## 📝 Critical Notes for Claude
 
 ### ALWAYS Remember:
+
 1. **Connections NOT Matches** - Use "connection" terminology
 2. **Mobile-first** - 100% of users on mobile (except admins)
 3. **Complete files only** - Never provide fragments
@@ -565,7 +597,9 @@ GET  /api/discovery/filters
 10. **Active Sales** - Revolutionary creator feature
 
 ### Launch Strategy
+
 **Phase 1: MVP (Months 1-2)**
+
 - Core swipe and connection functionality
 - Basic filtering (orientation, gender, location)
 - Payment integration (CCBill)
@@ -573,6 +607,7 @@ GET  /api/discovery/filters
 - AI content moderation
 
 **Phase 2: Growth (Month 3)**
+
 - Full filtering system with all preferences
 - Paid photo/video DM sharing
 - Creator dashboard with analytics
@@ -580,6 +615,7 @@ GET  /api/discovery/filters
 - Push notifications
 
 **Phase 3: Scale (Months 4+)**
+
 - AI-powered matching algorithms
 - Orientation-specific features
 - Live streaming capabilities
@@ -588,52 +624,53 @@ GET  /api/discovery/filters
 
 ---
 
-*Last Updated: Current Session*
-*Version: 1.1.0*
-*Total Files: 423*
+_Last Updated: Current Session_
+_Version: 1.1.0_
+_Total Files: 423_
 
 You're absolutely right, and I appreciate your direct feedback. Here's what I need to do
-  to be more consistent and professional:
+to be more consistent and professional:
 
-  My Current Problems:
+My Current Problems:
 
-  1. Rushing to implement without fully thinking through consequences
-  2. Breaking working features when adding new ones
-  3. Not testing the full user journey before making changes
-  4. Making assumptions instead of asking clarifying questions
-  5. Not maintaining backward compatibility
+1. Rushing to implement without fully thinking through consequences
+2. Breaking working features when adding new ones
+3. Not testing the full user journey before making changes
+4. Making assumptions instead of asking clarifying questions
+5. Not maintaining backward compatibility
 
-  How You Can Train Me Better:
+How You Can Train Me Better:
 
-  1. Demand I Follow This Process Every Time:
+1. Demand I Follow This Process Every Time:
 
-  BEFORE any code change:
-  1. Read and understand the current working code
-  2. Identify exactly what needs to change and what must stay the same
-  3. Plan the implementation with backward compatibility
-  4. Ask: "Will this break any existing functionality?"
+BEFORE any code change:
 
-  2. Make Me Explain My Changes First:
+1. Read and understand the current working code
+2. Identify exactly what needs to change and what must stay the same
+3. Plan the implementation with backward compatibility
+4. Ask: "Will this break any existing functionality?"
 
-  - Force me to say: "Here's what I'm going to change and why"
-  - Make me identify: "Here's what could break and how I'll prevent it"
-  - Require me to confirm: "Here's how existing users won't be affected"
+5. Make Me Explain My Changes First:
 
-  3. Set Clear Expectations:
+- Force me to say: "Here's what I'm going to change and why"
+- Make me identify: "Here's what could break and how I'll prevent it"
+- Require me to confirm: "Here's how existing users won't be affected"
 
-  - "Always maintain backward compatibility"
-  - "Test the user's perspective, not just the code"
-  - "If it works, don't break it while improving it"
-  - "Ask before making structural changes"
+3. Set Clear Expectations:
 
-  4. Call Me Out Immediately:
+- "Always maintain backward compatibility"
+- "Test the user's perspective, not just the code"
+- "If it works, don't break it while improving it"
+- "Ask before making structural changes"
 
-  - When I start implementing without explaining the plan
-  - When I don't consider existing functionality
-  - When I rush to "fix" without understanding the impact
+4. Call Me Out Immediately:
 
-  5. Require Incremental Changes:
+- When I start implementing without explaining the plan
+- When I don't consider existing functionality
+- When I rush to "fix" without understanding the impact
 
-  - Make me implement one small change at a time
-  - Test each change before moving to the next
-  - Never let me make sweeping changes to multiple systems at once
+5. Require Incremental Changes:
+
+- Make me implement one small change at a time
+- Test each change before moving to the next
+- Never let me make sweeping changes to multiple systems at once

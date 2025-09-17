@@ -19,7 +19,9 @@ const errorHandler = (err, req, res, next) => {
 
   // Mongoose validation error
   if (err.name === 'ValidationError') {
-    const message = Object.values(err.errors).map(val => val.message).join(', ');
+    const message = Object.values(err.errors)
+      .map(val => val.message)
+      .join(', ');
     error = { message, statusCode: 400 };
   }
 
@@ -27,10 +29,13 @@ const errorHandler = (err, req, res, next) => {
   if (!res.headersSent) {
     res.status(error.statusCode || 500).json({
       success: false,
-      error: error.message || 'Server Error'
+      error: error.message || 'Server Error',
     });
   } else {
-    console.error('❌ Attempted to send error response but headers already sent:', error.message);
+    console.error(
+      '❌ Attempted to send error response but headers already sent:',
+      error.message
+    );
   }
 };
 

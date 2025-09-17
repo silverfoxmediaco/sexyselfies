@@ -1,5 +1,4 @@
 @import './components/UI/ui.css';
-@import './styles/responsive-widths.css';
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -79,7 +78,7 @@ button:focus-visible {
   body {
     font-size: 14px;
   }
-  
+
   button {
     padding: 0.8em 1em; /* Larger touch targets on mobile */
     min-height: 44px; /* iOS touch target recommendation */

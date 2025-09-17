@@ -8,33 +8,33 @@
 
 /* Root Variables for Easy Theming */
 :root {
-  --admin-management-bg-primary: #0A0A0A;
+  --admin-management-bg-primary: #0a0a0a;
   --admin-management-bg-secondary: #121212;
-  --admin-management-bg-tertiary: #1C1C1E;
-  --admin-management-border-color: #2A2A2C;
-  --admin-management-text-primary: #FFFFFF;
-  --admin-management-text-secondary: #C7C7CC;
-  --admin-management-text-tertiary: #8E8E93;
-  --admin-management-accent-primary: #17D2C2;
-  --admin-management-accent-secondary: #12B7AB;
-  --admin-management-accent-tertiary: #47E0D2;
-  --admin-management-error: #EF4444;
-  --admin-management-warning: #F59E0B;
-  --admin-management-success: #22C55E;
-  --admin-management-info: #38BDF8;
-  
+  --admin-management-bg-tertiary: #1c1c1e;
+  --admin-management-border-color: #2a2a2c;
+  --admin-management-text-primary: #ffffff;
+  --admin-management-text-secondary: #c7c7cc;
+  --admin-management-text-tertiary: #8e8e93;
+  --admin-management-accent-primary: #17d2c2;
+  --admin-management-accent-secondary: #12b7ab;
+  --admin-management-accent-tertiary: #47e0d2;
+  --admin-management-error: #ef4444;
+  --admin-management-warning: #f59e0b;
+  --admin-management-success: #22c55e;
+  --admin-management-info: #38bdf8;
+
   /* Mobile-first spacing */
   --admin-management-spacing-xs: 4px;
   --admin-management-spacing-sm: 8px;
   --admin-management-spacing-md: 16px;
   --admin-management-spacing-lg: 24px;
   --admin-management-spacing-xl: 32px;
-  
+
   /* Touch-friendly sizes */
   --admin-management-touch-target: 44px;
   --admin-management-border-radius: 8px;
   --admin-management-border-radius-lg: 12px;
-  
+
   /* Typography - Mobile First */
   --admin-management-font-size-xs: 11px;
   --admin-management-font-size-sm: 13px;
@@ -109,7 +109,9 @@
 }
 
 @keyframes adminManagementSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Header - Mobile First */
@@ -186,7 +188,12 @@
   align-items: center;
   gap: var(--admin-management-spacing-sm);
   padding: 12px 20px;
-  background: linear-gradient(135deg, var(--admin-management-accent-secondary) 0%, var(--admin-management-accent-primary) 50%, var(--admin-management-accent-tertiary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--admin-management-accent-secondary) 0%,
+    var(--admin-management-accent-primary) 50%,
+    var(--admin-management-accent-tertiary) 100%
+  );
   color: #001310;
   border: none;
   border-radius: var(--admin-management-border-radius);
@@ -270,7 +277,11 @@
 .admin-management-admin-avatar {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, var(--admin-management-accent-secondary) 0%, var(--admin-management-accent-primary) 50%);
+  background: linear-gradient(
+    135deg,
+    var(--admin-management-accent-secondary) 0%,
+    var(--admin-management-accent-primary) 50%
+  );
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -579,15 +590,21 @@
 }
 
 @keyframes adminManagementFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .admin-management-modal-content {
   background: var(--admin-management-bg-secondary);
   border: 1px solid var(--admin-management-border-color);
-  border-radius: var(--admin-management-border-radius-lg) var(--admin-management-border-radius-lg) 0 0;
-  padding: var(--admin-management-spacing-lg) var(--admin-management-spacing-md) env(safe-area-inset-bottom);
+  border-radius: var(--admin-management-border-radius-lg)
+    var(--admin-management-border-radius-lg) 0 0;
+  padding: var(--admin-management-spacing-lg) var(--admin-management-spacing-md)
+    env(safe-area-inset-bottom);
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
@@ -697,7 +714,9 @@
 }
 
 .admin-management-password-input input {
-  padding-right: calc(var(--admin-management-touch-target) + var(--admin-management-spacing-sm));
+  padding-right: calc(
+    var(--admin-management-touch-target) + var(--admin-management-spacing-sm)
+  );
 }
 
 .admin-management-password-toggle {
@@ -815,7 +834,12 @@
 }
 
 .admin-management-modal-btn.confirm {
-  background: linear-gradient(135deg, var(--admin-management-accent-secondary) 0%, var(--admin-management-accent-primary) 50%, var(--admin-management-accent-tertiary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--admin-management-accent-secondary) 0%,
+    var(--admin-management-accent-primary) 50%,
+    var(--admin-management-accent-tertiary) 100%
+  );
   color: #001310;
 }
 
@@ -847,67 +871,67 @@
     --admin-management-font-size-2xl: 26px;
     --admin-management-font-size-3xl: 32px;
   }
-  
+
   .admin-management-header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     padding: var(--admin-management-spacing-lg);
   }
-  
+
   .admin-management-header-title {
     flex-direction: row;
     align-items: center;
     gap: var(--admin-management-spacing-lg);
   }
-  
+
   .admin-management-back-btn {
     margin-bottom: 0;
   }
-  
+
   .admin-management-header-actions {
     width: auto;
     gap: var(--admin-management-spacing-md);
   }
-  
+
   .admin-management-create-btn {
     padding: 12px 24px;
   }
-  
+
   .admin-management-admins-grid {
     display: grid;
     grid-template-columns: 1fr;
     padding: var(--admin-management-spacing-lg);
     gap: var(--admin-management-spacing-lg);
   }
-  
+
   .admin-management-admin-card {
     padding: var(--admin-management-spacing-lg);
     width: 100%;
   }
-  
+
   .admin-management-admin-avatar {
     width: 48px;
     height: 48px;
     font-size: var(--admin-management-font-size-lg);
   }
-  
+
   .admin-management-admin-stats {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .admin-management-modal-overlay {
     align-items: center;
     padding: var(--admin-management-spacing-lg);
   }
-  
+
   .admin-management-modal-content {
     border-radius: var(--admin-management-border-radius-lg);
     max-width: 500px;
     padding: var(--admin-management-spacing-xl);
     max-height: 90vh;
   }
-  
+
   .admin-management-modal-btn {
     flex: 0;
     padding: 12px 32px;
@@ -920,39 +944,39 @@
     grid-template-columns: 1fr;
     padding: var(--admin-management-spacing-xl);
   }
-  
+
   .admin-management-admin-card {
     width: 100%;
   }
-  
+
   .admin-management-admin-stats {
     grid-template-columns: repeat(5, 1fr);
   }
-  
+
   .admin-management-admin-details {
     max-height: none;
   }
-  
+
   .admin-management-admin-details.expanded {
     max-height: none;
   }
-  
+
   .admin-management-expand-btn {
     display: none;
   }
-  
+
   .admin-management-admin-actions {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .admin-management-pagination {
     position: static;
     background: transparent;
     border-top: none;
     padding: var(--admin-management-spacing-xl);
   }
-  
+
   .admin-management-page-numbers {
     max-width: none;
   }
@@ -963,17 +987,17 @@
   .admin-management-header {
     padding: var(--admin-management-spacing-xl) 48px;
   }
-  
+
   .admin-management-admins-grid {
     grid-template-columns: 1fr;
     padding: var(--admin-management-spacing-xl) 48px;
     gap: var(--admin-management-spacing-xl);
   }
-  
+
   .admin-management-admin-card {
     width: 100%;
   }
-  
+
   .admin-management-modal-content {
     max-width: 600px;
   }
@@ -984,7 +1008,7 @@
   .admin-management-admins-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .admin-management-admin-card {
     width: 100%;
   }
@@ -997,45 +1021,45 @@
     color: var(--admin-management-accent-primary);
     transform: translateX(-2px);
   }
-  
+
   .admin-management-create-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(23, 210, 194, 0.4);
   }
-  
+
   .admin-management-refresh-btn:hover {
     background: var(--admin-management-border-color);
     color: var(--admin-management-accent-primary);
   }
-  
+
   .admin-management-refresh-btn:hover svg {
     transform: rotate(180deg);
   }
-  
+
   .admin-management-admin-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     border-color: var(--admin-management-accent-primary);
   }
-  
+
   .admin-management-action-btn.edit:hover {
     background: rgba(56, 189, 248, 0.2);
   }
-  
+
   .admin-management-action-btn.delete:hover {
     background: rgba(239, 68, 68, 0.2);
   }
-  
+
   .admin-management-page-btn:not(:disabled):hover {
     background: var(--admin-management-border-color);
     color: var(--admin-management-accent-primary);
   }
-  
+
   .admin-management-modal-btn.cancel:hover {
     background: var(--admin-management-border-color);
     color: var(--admin-management-text-primary);
   }
-  
+
   .admin-management-modal-btn.confirm:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(23, 210, 194, 0.3);
@@ -1067,7 +1091,7 @@
   .admin-management-expand-btn {
     display: none;
   }
-  
+
   .admin-management-admin-details {
     max-height: none !important;
   }

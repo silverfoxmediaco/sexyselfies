@@ -12,24 +12,26 @@ const { updateMemberActivity } = require('../services/memberAnalytics.service');
 // @access  Private (Member only)
 exports.getMemberProfile = async (req, res, next) => {
   try {
-    const member = await Member.findOne({ user: req.user.id })
-      .populate('user', 'email lastLogin');
+    const member = await Member.findOne({ user: req.user.id }).populate(
+      'user',
+      'email lastLogin'
+    );
 
     if (!member) {
       return res.status(404).json({
         success: false,
-        error: 'Member profile not found'
+        error: 'Member profile not found',
       });
     }
 
     res.status(200).json({
       success: true,
-      data: member
+      data: member,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -44,27 +46,23 @@ exports.updateMemberProfile = async (req, res, next) => {
     if (!member) {
       return res.status(404).json({
         success: false,
-        error: 'Member profile not found'
+        error: 'Member profile not found',
       });
     }
 
-    const updatedMember = await Member.findByIdAndUpdate(
-      member._id,
-      req.body,
-      {
-        new: true,
-        runValidators: true
-      }
-    );
+    const updatedMember = await Member.findByIdAndUpdate(member._id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     res.status(200).json({
       success: true,
-      data: updatedMember
+      data: updatedMember,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -78,19 +76,19 @@ exports.updatePreferences = async (req, res, next) => {
 
     member.preferences = {
       ...member.preferences,
-      ...req.body
+      ...req.body,
     };
 
     await member.save();
 
     res.status(200).json({
       success: true,
-      data: member.preferences
+      data: member.preferences,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -101,13 +99,14 @@ exports.updatePreferences = async (req, res, next) => {
 exports.purchaseContent = async (req, res, next) => {
   try {
     const member = await Member.findOne({ user: req.user.id });
-    const content = await Content.findById(req.params.contentId)
-      .populate('creator');
+    const content = await Content.findById(req.params.contentId).populate(
+      'creator'
+    );
 
     if (!content) {
       return res.status(404).json({
         success: false,
-        error: 'Content not found'
+        error: 'Content not found',
       });
     }
 
@@ -119,7 +118,7 @@ exports.purchaseContent = async (req, res, next) => {
     if (alreadyPurchased) {
       return res.status(400).json({
         success: false,
-        error: 'Content already purchased'
+        error: 'Content already purchased',
       });
     }
 
@@ -127,7 +126,7 @@ exports.purchaseContent = async (req, res, next) => {
     if (member.credits < content.price) {
       return res.status(400).json({
         success: false,
-        error: 'Insufficient credits'
+        error: 'Insufficient credits',
       });
     }
 
@@ -136,7 +135,7 @@ exports.purchaseContent = async (req, res, next) => {
     member.purchasedContent.push({
       creator: content.creator._id,
       content: content._id,
-      amount: content.price
+      amount: content.price,
     });
     await member.save();
 
@@ -145,7 +144,7 @@ exports.purchaseContent = async (req, res, next) => {
     content.stats.revenue += content.price;
     content.purchasedBy.push({
       member: member._id,
-      amount: content.price
+      amount: content.price,
     });
     await content.save();
 
@@ -156,7 +155,7 @@ exports.purchaseContent = async (req, res, next) => {
       content: content._id,
       type: 'content_purchase',
       amount: content.price,
-      status: 'completed'
+      status: 'completed',
     });
 
     // Update creator earnings
@@ -169,13 +168,13 @@ exports.purchaseContent = async (req, res, next) => {
       success: true,
       data: {
         content,
-        remainingCredits: member.credits
-      }
+        remainingCredits: member.credits,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -185,24 +184,23 @@ exports.purchaseContent = async (req, res, next) => {
 // @access  Private (Member only)
 exports.getPurchasedContent = async (req, res, next) => {
   try {
-    const member = await Member.findOne({ user: req.user.id })
-      .populate({
-        path: 'purchasedContent.content',
-        populate: {
-          path: 'creator',
-          select: 'displayName profileImage'
-        }
-      });
+    const member = await Member.findOne({ user: req.user.id }).populate({
+      path: 'purchasedContent.content',
+      populate: {
+        path: 'creator',
+        select: 'displayName profileImage',
+      },
+    });
 
     res.status(200).json({
       success: true,
       count: member.purchasedContent.length,
-      data: member.purchasedContent
+      data: member.purchasedContent,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -227,20 +225,20 @@ exports.addCredits = async (req, res, next) => {
       type: 'credit_purchase',
       amount,
       paymentMethod,
-      status: 'completed'
+      status: 'completed',
     });
 
     res.status(200).json({
       success: true,
       data: {
         credits: member.credits,
-        added: amount
-      }
+        added: amount,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -254,20 +252,22 @@ exports.getCreditsHistory = async (req, res, next) => {
 
     const transactions = await Transaction.find({
       member: member._id,
-      type: { $in: ['credit_purchase', 'content_purchase', 'tip', 'message_unlock'] }
+      type: {
+        $in: ['credit_purchase', 'content_purchase', 'tip', 'message_unlock'],
+      },
     })
-    .sort({ createdAt: -1 })
-    .limit(50);
+      .sort({ createdAt: -1 })
+      .limit(50);
 
     res.status(200).json({
       success: true,
       currentCredits: member.credits,
-      data: transactions
+      data: transactions,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -283,7 +283,7 @@ exports.likeCreator = async (req, res, next) => {
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator not found'
+        error: 'Creator not found',
       });
     }
 
@@ -295,7 +295,7 @@ exports.likeCreator = async (req, res, next) => {
     if (alreadyLiked) {
       return res.status(400).json({
         success: false,
-        error: 'Already liked this creator'
+        error: 'Already liked this creator',
       });
     }
 
@@ -306,14 +306,14 @@ exports.likeCreator = async (req, res, next) => {
     // Check for existing connection record
     let connection = await Connection.findOne({
       member: member._id,
-      creator: creator._id
+      creator: creator._id,
     });
 
     if (!connection) {
       connection = await Connection.create({
         member: member._id,
         creator: creator._id,
-        memberLiked: true
+        memberLiked: true,
       });
     } else {
       connection.memberLiked = true;
@@ -321,7 +321,7 @@ exports.likeCreator = async (req, res, next) => {
       if (connection.creatorLiked) {
         connection.isConnected = true;
         connection.connectedAt = Date.now();
-        
+
         // Update creator stats
         creator.stats.totalConnections += 1;
         await creator.save();
@@ -331,16 +331,16 @@ exports.likeCreator = async (req, res, next) => {
 
     // 📊 Track member activity for analytics
     await updateMemberActivity(member._id, 'swipe_like');
-    
+
     res.status(200).json({
       success: true,
       isConnected: connection.isConnected,
-      data: connection
+      data: connection,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -351,22 +351,22 @@ exports.likeCreator = async (req, res, next) => {
 exports.passCreator = async (req, res, next) => {
   try {
     const member = await Member.findOne({ user: req.user.id });
-    
+
     // Add to passes
     member.passes.push({ creator: req.params.creatorId });
     await member.save();
-    
+
     // 📊 Track member activity for analytics
     await updateMemberActivity(member._id, 'swipe_pass');
 
     res.status(200).json({
       success: true,
-      message: 'Creator passed'
+      message: 'Creator passed',
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -456,20 +456,20 @@ exports.getConnections = async (req, res, next) => {
     const connections = await Connection.find({
       member: member._id,
       isConnected: true,
-      isActive: true
+      isActive: true,
     })
-    .populate('creator', 'displayName profileImage bio lastActive')
-    .sort({ connectedAt: -1 });
+      .populate('creator', 'displayName profileImage bio lastActive')
+      .sort({ connectedAt: -1 });
 
     res.status(200).json({
       success: true,
       count: connections.length,
-      data: connections
+      data: connections,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -488,7 +488,7 @@ exports.completeProfile = async (req, res, next) => {
     if (!member) {
       return res.status(404).json({
         success: false,
-        error: 'Member profile not found'
+        error: 'Member profile not found',
       });
     }
 
@@ -496,13 +496,13 @@ exports.completeProfile = async (req, res, next) => {
       success: true,
       data: {
         profileComplete: true,
-        message: 'Profile setup completed successfully!'
-      }
+        message: 'Profile setup completed successfully!',
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };

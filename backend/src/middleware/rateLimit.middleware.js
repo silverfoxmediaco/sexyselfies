@@ -11,27 +11,27 @@ try {
   // Try to load Redis dependencies
   RedisStore = require('rate-limit-redis');
   Redis = require('ioredis');
-  
+
   // Create Redis client if Redis is available and configured
   if (process.env.REDIS_URL || process.env.REDIS_HOST) {
     redisClient = new Redis({
       host: process.env.REDIS_HOST || 'localhost',
       port: process.env.REDIS_PORT || 6379,
       password: process.env.REDIS_PASSWORD,
-      retryStrategy: (times) => {
+      retryStrategy: times => {
         if (times > 3) {
           console.log('Redis connection failed, falling back to memory store');
           return null;
         }
         return Math.min(times * 50, 2000);
-      }
+      },
     });
-    
-    redisClient.on('error', (err) => {
+
+    redisClient.on('error', err => {
       console.error('Redis Client Error:', err);
       redisClient = null; // Disable Redis on error
     });
-    
+
     console.log('Redis rate limiting enabled');
   }
 } catch (err) {
@@ -54,7 +54,7 @@ const createRateLimiter = (options = {}) => {
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    skipSuccessfulRequests: false
+    skipSuccessfulRequests: false,
   };
 
   const limiterOptions = { ...defaultOptions, ...options };
@@ -81,7 +81,7 @@ const createRateLimiter = (options = {}) => {
 exports.apiLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
-  message: 'Too many API requests, please try again later.'
+  message: 'Too many API requests, please try again later.',
 });
 
 // Strict rate limiter for auth endpoints
@@ -89,77 +89,77 @@ exports.authLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // 5 requests per window
   skipSuccessfulRequests: true, // Don't count successful requests
-  message: 'Too many authentication attempts, please try again later.'
+  message: 'Too many authentication attempts, please try again later.',
 });
 
 // Rate limiter for registration
 exports.registrationLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3, // 3 registration attempts per hour
-  message: 'Too many registration attempts, please try again later.'
+  message: 'Too many registration attempts, please try again later.',
 });
 
 // Rate limiter for password reset
 exports.passwordResetLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3,
-  message: 'Too many password reset attempts, please try again later.'
+  message: 'Too many password reset attempts, please try again later.',
 });
 
 // Rate limiter for file uploads
 exports.uploadLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10,
-  message: 'Too many uploads, please try again later.'
+  message: 'Too many uploads, please try again later.',
 });
 
 // Rate limiter for content creation
 exports.contentCreationLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 30, // 30 posts per hour
-  message: 'Too many posts created, please slow down.'
+  message: 'Too many posts created, please slow down.',
 });
 
 // Rate limiter for messages
 exports.messageLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   max: 30, // 30 messages per minute
-  message: 'Too many messages sent, please slow down.'
+  message: 'Too many messages sent, please slow down.',
 });
 
 // Rate limiter for payments
 exports.paymentLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   max: 10,
-  message: 'Too many payment attempts, please try again later.'
+  message: 'Too many payment attempts, please try again later.',
 });
 
 // Rate limiter for searches
 exports.searchLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   max: 30,
-  message: 'Too many searches, please slow down.'
+  message: 'Too many searches, please slow down.',
 });
 
 // Rate limiter for swipes (discovery)
 exports.swipeLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 1000, // 1000 swipes per hour
-  message: 'Too many swipes, please take a break.'
+  message: 'Too many swipes, please take a break.',
 });
 
 // Rate limiter for reports
 exports.reportLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 10,
-  message: 'Too many reports submitted, please try again later.'
+  message: 'Too many reports submitted, please try again later.',
 });
 
 // Rate limiter for webhook endpoints
 exports.webhookLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   max: 100,
-  message: 'Too many webhook requests.'
+  message: 'Too many webhook requests.',
 });
 
 // ==========================================
@@ -184,7 +184,7 @@ exports.rateLimiter = (options = {}) => {
  */
 exports.tieredRateLimiter = (req, res, next) => {
   let maxRequests = 100; // Default for unverified users
-  
+
   if (req.user) {
     // Check creator verification level
     if (req.user.role === 'creator') {
@@ -211,13 +211,13 @@ exports.tieredRateLimiter = (req, res, next) => {
       maxRequests = 2000;
     }
   }
-  
+
   const limiter = createRateLimiter({
     windowMs: 15 * 60 * 1000,
     max: maxRequests,
-    message: `Rate limit exceeded for your account level. Contact support for higher limits.`
+    message: `Rate limit exceeded for your account level. Contact support for higher limits.`,
   });
-  
+
   return limiter(req, res, next);
 };
 
@@ -232,7 +232,7 @@ exports.tieredRateLimiter = (req, res, next) => {
 exports.ipRateLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
   max: 50,
-  message: 'Too many requests from this IP address.'
+  message: 'Too many requests from this IP address.',
   // No custom keyGenerator - use default IP handling
 });
 
@@ -243,17 +243,18 @@ exports.ipRateLimiter = createRateLimiter({
 /**
  * Skip rate limiting for certain conditions
  */
-exports.skipRateLimit = (req) => {
+exports.skipRateLimit = req => {
   // Skip for admin users
   if (req.user?.role === 'admin') return true;
-  
+
   // Skip for whitelisted IPs
   const whitelist = process.env.RATE_LIMIT_WHITELIST?.split(',') || [];
   if (whitelist.includes(req.ip)) return true;
-  
+
   // Skip for internal services
-  if (req.headers['x-internal-service'] === process.env.INTERNAL_SERVICE_KEY) return true;
-  
+  if (req.headers['x-internal-service'] === process.env.INTERNAL_SERVICE_KEY)
+    return true;
+
   return false;
 };
 
@@ -272,7 +273,7 @@ exports.rateLimitHandler = (req, res) => {
     retryAfter: res.getHeader('Retry-After'),
     limit: res.getHeader('RateLimit-Limit'),
     remaining: res.getHeader('RateLimit-Remaining'),
-    reset: res.getHeader('RateLimit-Reset')
+    reset: res.getHeader('RateLimit-Reset'),
   });
 };
 

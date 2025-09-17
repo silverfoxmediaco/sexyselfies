@@ -2,21 +2,21 @@
 
 /* CSS Variables */
 :root {
-  --search-bg-primary: #0A0A0A;
+  --search-bg-primary: #0a0a0a;
   --search-bg-secondary: #121212;
-  --search-bg-tertiary: #1C1C1E;
-  --search-border-color: #2A2A2C;
-  --search-text-primary: #FFFFFF;
-  --search-text-secondary: #C7C7CC;
-  --search-text-tertiary: #8E8E93;
-  --search-accent-primary: #17D2C2;
-  --search-accent-secondary: #12B7AB;
-  --search-accent-tertiary: #47E0D2;
-  --search-error: #EF4444;
-  --search-warning: #F59E0B;
-  --search-success: #22C55E;
-  --search-info: #38BDF8;
-  
+  --search-bg-tertiary: #1c1c1e;
+  --search-border-color: #2a2a2c;
+  --search-text-primary: #ffffff;
+  --search-text-secondary: #c7c7cc;
+  --search-text-tertiary: #8e8e93;
+  --search-accent-primary: #17d2c2;
+  --search-accent-secondary: #12b7ab;
+  --search-accent-tertiary: #47e0d2;
+  --search-error: #ef4444;
+  --search-warning: #f59e0b;
+  --search-success: #22c55e;
+  --search-info: #38bdf8;
+
   /* Spacing - 8px grid system */
   --search-space-xs: 4px;
   --search-space-sm: 8px;
@@ -24,17 +24,17 @@
   --search-space-lg: 24px;
   --search-space-xl: 32px;
   --search-space-2xl: 48px;
-  
+
   /* Touch targets */
   --search-touch-target: 44px;
   --search-touch-target-lg: 48px;
-  
+
   /* Border radius */
   --search-radius-sm: 8px;
   --search-radius-md: 12px;
   --search-radius-lg: 16px;
   --search-radius-xl: 20px;
-  
+
   /* Shadows */
   --search-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
   --search-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
@@ -46,7 +46,13 @@
   min-height: 100vh;
   background: var(--search-bg-primary);
   color: var(--search-text-primary);
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'Poppins',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 
 /* Header */
@@ -377,7 +383,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Error State */
@@ -694,23 +702,23 @@
     gap: var(--search-space-md);
     align-items: stretch;
   }
-  
+
   .search-actions {
     justify-content: space-between;
   }
-  
+
   .filter-groups {
     gap: var(--search-space-xl);
   }
-  
+
   .results-grid.grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
-  
+
   .results-grid.list .creator-result-card {
     flex-direction: column;
   }
-  
+
   .results-grid.list .creator-image {
     width: 100%;
     height: 200px;
@@ -721,15 +729,15 @@
   .search-header {
     padding: var(--search-space-sm);
   }
-  
+
   .search-results {
     padding: var(--search-space-sm);
   }
-  
+
   .results-grid.grid {
     grid-template-columns: 1fr;
   }
-  
+
   .pagination-btn {
     padding: var(--search-space-sm) var(--search-space-md);
     font-size: 14px;
@@ -742,7 +750,7 @@
     -webkit-appearance: none;
     appearance: none;
   }
-  
+
   .sort-select {
     -webkit-appearance: none;
     appearance: none;

@@ -1,13 +1,13 @@
 import React from 'react';
 
-const Chip = ({ 
+const Chip = ({
   children,
   variant = 'filled',
   color = 'default',
   size = 'medium',
   className = '',
   onClick,
-  ...props 
+  ...props
 }) => {
   const classes = [
     'chip',
@@ -15,11 +15,13 @@ const Chip = ({
     `chip-${color}`,
     `chip-${size}`,
     onClick && 'chip-clickable',
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div 
+    <div
       className={classes}
       onClick={onClick}
       role={onClick ? 'button' : undefined}

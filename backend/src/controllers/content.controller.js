@@ -20,17 +20,17 @@ const getAllContent = async (req, res) => {
       priceMin,
       priceMax,
       sort = '-createdAt',
-      creatorId
+      creatorId,
     } = req.query;
 
-    const query = { 
+    const query = {
       status: 'active',
-      isPublished: true 
+      isPublished: true,
     };
 
     if (category) query.category = category;
     if (creatorId) query.creatorId = creatorId;
-    
+
     // Optional price filtering - no limits enforced
     if (priceMin || priceMax) {
       query.price = {};
@@ -52,7 +52,7 @@ const getAllContent = async (req, res) => {
       ...item.toObject(),
       isBlurred: true,
       unlockPrice: item.price,
-      previewUrl: item.thumbnailUrl || item.blurredUrl
+      previewUrl: item.thumbnailUrl || item.blurredUrl,
     }));
 
     res.json({
@@ -62,14 +62,14 @@ const getAllContent = async (req, res) => {
         page: parseInt(page),
         limit: parseInt(limit),
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+      },
     });
   } catch (error) {
     console.error('Get all content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching content'
+      message: 'Error fetching content',
     });
   }
 };
@@ -86,18 +86,22 @@ const getContent = async (req, res) => {
     // Use content from middleware if available, otherwise fetch
     let content = req.content;
     if (!content) {
-      content = await Content.findById(id)
-        .populate('creator', 'displayName profileImage bio isVerified');
+      content = await Content.findById(id).populate(
+        'creator',
+        'displayName profileImage bio isVerified'
+      );
 
       if (!content) {
         return res.status(404).json({
           success: false,
-          message: 'Content not found'
+          message: 'Content not found',
         });
       }
     }
 
-    console.log(`📊 Content access: ${hasAccess ? 'FULL' : 'PREVIEW'} for content ${content._id}`);
+    console.log(
+      `📊 Content access: ${hasAccess ? 'FULL' : 'PREVIEW'} for content ${content._id}`
+    );
 
     // Track view
     if (content.stats) {
@@ -113,7 +117,7 @@ const getContent = async (req, res) => {
         success: true,
         data: content,
         hasAccess: true,
-        unlockedAt: req.transaction?.createdAt
+        unlockedAt: req.transaction?.createdAt,
       });
     } else {
       // Preview only - return blurred/watermarked version
@@ -121,24 +125,25 @@ const getContent = async (req, res) => {
       const preview = {
         ...content.toObject(),
         fullMediaUrl: undefined, // Remove full URL
-        mediaUrl: content.blurredUrl || content.thumbnailUrl || content.thumbnail,
+        mediaUrl:
+          content.blurredUrl || content.thumbnailUrl || content.thumbnail,
         isBlurred: true,
         unlockPrice: content.price,
-        hasAccess: false
+        hasAccess: false,
       };
 
       res.json({
         success: true,
         data: preview,
         hasAccess: false,
-        unlockPrice: content.price
+        unlockPrice: content.price,
       });
     }
   } catch (error) {
     console.error('Get content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching content'
+      message: 'Error fetching content',
     });
   }
 };
@@ -153,13 +158,12 @@ const unlockContent = async (req, res) => {
     const { paymentMethodId } = req.body;
 
     // Get content
-    const content = await Content.findById(id)
-      .populate('creatorId');
+    const content = await Content.findById(id).populate('creatorId');
 
     if (!content) {
       return res.status(404).json({
         success: false,
-        message: 'Content not found'
+        message: 'Content not found',
       });
     }
 
@@ -168,14 +172,14 @@ const unlockContent = async (req, res) => {
       memberId,
       contentId: id,
       type: 'content_unlock',
-      status: 'completed'
+      status: 'completed',
     });
 
     if (existingUnlock) {
       return res.status(400).json({
         success: false,
         message: 'Content already unlocked',
-        unlockedAt: existingUnlock.createdAt
+        unlockedAt: existingUnlock.createdAt,
       });
     }
 
@@ -190,14 +194,14 @@ const unlockContent = async (req, res) => {
       description: `Unlock: ${content.title}`,
       metadata: {
         contentId: content._id,
-        type: 'content_unlock'
-      }
+        type: 'content_unlock',
+      },
     });
 
     if (!paymentResult.success) {
       return res.status(402).json({
         success: false,
-        message: paymentResult.message || 'Payment failed'
+        message: paymentResult.message || 'Payment failed',
       });
     }
 
@@ -217,13 +221,15 @@ const unlockContent = async (req, res) => {
         deviceInfo: {
           ip: req.ip,
           userAgent: req.headers['user-agent'],
-          deviceType: req.headers['user-agent']?.includes('Mobile') ? 'mobile' : 'desktop'
-        }
+          deviceType: req.headers['user-agent']?.includes('Mobile')
+            ? 'mobile'
+            : 'desktop',
+        },
       },
       analytics: {
         source: req.query.source || 'direct',
-        memberSegment: req.user.segment || 'regular'
-      }
+        memberSegment: req.user.segment || 'regular',
+      },
     });
 
     // Update content stats
@@ -234,18 +240,18 @@ const unlockContent = async (req, res) => {
     // Update member analytics
     await MemberAnalytics.findOneAndUpdate(
       { memberId },
-      { 
-        $inc: { 
+      {
+        $inc: {
           'spending.lifetime': amount,
-          'spending.contentPurchases': 1
+          'spending.contentPurchases': 1,
         },
         $push: {
           'engagement.purchaseHistory': {
             contentId: content._id,
             amount,
-            date: new Date()
-          }
-        }
+            date: new Date(),
+          },
+        },
       }
     );
 
@@ -258,8 +264,8 @@ const unlockContent = async (req, res) => {
       data: {
         contentId: content._id,
         memberId,
-        earnings: amount * 0.8 // Creator gets 80%
-      }
+        earnings: amount * 0.8, // Creator gets 80%
+      },
     });
 
     // Track analytics
@@ -269,12 +275,14 @@ const unlockContent = async (req, res) => {
       creatorId: content.creatorId._id,
       contentId: content._id,
       amount,
-      source: req.query.source
+      source: req.query.source,
     });
 
     // Return full content now that it's unlocked
-    const unlockedContent = await Content.findById(id)
-      .populate('creatorId', 'username profileImage bio isVerified');
+    const unlockedContent = await Content.findById(id).populate(
+      'creatorId',
+      'username profileImage bio isVerified'
+    );
 
     res.json({
       success: true,
@@ -282,16 +290,15 @@ const unlockContent = async (req, res) => {
       transaction: {
         id: transaction._id,
         amount,
-        creatorEarnings: transaction.creatorEarnings
+        creatorEarnings: transaction.creatorEarnings,
       },
-      data: unlockedContent
+      data: unlockedContent,
     });
-
   } catch (error) {
     console.error('Unlock content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error unlocking content'
+      message: 'Error unlocking content',
     });
   }
 };
@@ -304,13 +311,15 @@ const getContentPreview = async (req, res) => {
     const { id } = req.params;
 
     const content = await Content.findById(id)
-      .select('title description thumbnailUrl blurredUrl price category creatorId stats')
+      .select(
+        'title description thumbnailUrl blurredUrl price category creatorId stats'
+      )
       .populate('creatorId', 'username profileImage isVerified');
 
     if (!content) {
       return res.status(404).json({
         success: false,
-        message: 'Content not found'
+        message: 'Content not found',
       });
     }
 
@@ -321,14 +330,14 @@ const getContentPreview = async (req, res) => {
         isPreview: true,
         isBlurred: true,
         unlockPrice: content.price,
-        mediaUrl: content.blurredUrl || content.thumbnailUrl
-      }
+        mediaUrl: content.blurredUrl || content.thumbnailUrl,
+      },
     });
   } catch (error) {
     console.error('Get preview error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching preview'
+      message: 'Error fetching preview',
     });
   }
 };
@@ -344,7 +353,7 @@ const getMyUnlockedContent = async (req, res) => {
     const query = {
       memberId,
       type: 'content_unlock',
-      status: 'completed'
+      status: 'completed',
     };
 
     if (creatorId) query.creatorId = creatorId;
@@ -354,8 +363,8 @@ const getMyUnlockedContent = async (req, res) => {
         path: 'contentId',
         populate: {
           path: 'creatorId',
-          select: 'username profileImage'
-        }
+          select: 'username profileImage',
+        },
       })
       .sort('-createdAt')
       .limit(limit * 1)
@@ -369,7 +378,7 @@ const getMyUnlockedContent = async (req, res) => {
         ...t.contentId.toObject(),
         unlockedAt: t.createdAt,
         transactionId: t._id,
-        hasAccess: true
+        hasAccess: true,
       }));
 
     res.json({
@@ -379,14 +388,14 @@ const getMyUnlockedContent = async (req, res) => {
         page: parseInt(page),
         limit: parseInt(limit),
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+      },
     });
   } catch (error) {
     console.error('Get unlocked content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching unlocked content'
+      message: 'Error fetching unlocked content',
     });
   }
 };
@@ -405,14 +414,14 @@ const createContent = async (req, res) => {
       mediaUrl,
       thumbnailUrl,
       mediaType,
-      tags
+      tags,
     } = req.body;
 
     // Validate minimum price only
     if (!price || price < 0.99) {
       return res.status(400).json({
         success: false,
-        message: 'Price must be at least $0.99'
+        message: 'Price must be at least $0.99',
       });
     }
 
@@ -428,19 +437,19 @@ const createContent = async (req, res) => {
       mediaType,
       tags,
       status: 'active',
-      isPublished: true
+      isPublished: true,
     });
 
     res.status(201).json({
       success: true,
       message: 'Content created successfully',
-      data: content
+      data: content,
     });
   } catch (error) {
     console.error('Create content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error creating content'
+      message: 'Error creating content',
     });
   }
 };
@@ -459,7 +468,7 @@ const updateContent = async (req, res) => {
     if (!content) {
       return res.status(404).json({
         success: false,
-        message: 'Content not found or unauthorized'
+        message: 'Content not found or unauthorized',
       });
     }
 
@@ -467,7 +476,7 @@ const updateContent = async (req, res) => {
     if (updates.price && updates.price < 0.99) {
       return res.status(400).json({
         success: false,
-        message: 'Price must be at least $0.99'
+        message: 'Price must be at least $0.99',
       });
     }
 
@@ -477,13 +486,13 @@ const updateContent = async (req, res) => {
     res.json({
       success: true,
       message: 'Content updated successfully',
-      data: content
+      data: content,
     });
   } catch (error) {
     console.error('Update content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error updating content'
+      message: 'Error updating content',
     });
   }
 };
@@ -501,7 +510,7 @@ const deleteContent = async (req, res) => {
     if (!content) {
       return res.status(404).json({
         success: false,
-        message: 'Content not found or unauthorized'
+        message: 'Content not found or unauthorized',
       });
     }
 
@@ -512,13 +521,13 @@ const deleteContent = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Content deleted successfully'
+      message: 'Content deleted successfully',
     });
   } catch (error) {
     console.error('Delete content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error deleting content'
+      message: 'Error deleting content',
     });
   }
 };
@@ -535,7 +544,7 @@ const likeContent = async (req, res) => {
     if (!content) {
       return res.status(404).json({
         success: false,
-        message: 'Content not found'
+        message: 'Content not found',
       });
     }
 
@@ -543,7 +552,7 @@ const likeContent = async (req, res) => {
     if (content.likes.includes(userId)) {
       return res.status(400).json({
         success: false,
-        message: 'Content already liked'
+        message: 'Content already liked',
       });
     }
 
@@ -554,13 +563,13 @@ const likeContent = async (req, res) => {
     res.json({
       success: true,
       message: 'Content liked',
-      likes: content.stats.likes
+      likes: content.stats.likes,
     });
   } catch (error) {
     console.error('Like content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error liking content'
+      message: 'Error liking content',
     });
   }
 };
@@ -577,26 +586,24 @@ const unlikeContent = async (req, res) => {
     if (!content) {
       return res.status(404).json({
         success: false,
-        message: 'Content not found'
+        message: 'Content not found',
       });
     }
 
-    content.likes = content.likes.filter(
-      like => like.toString() !== userId
-    );
+    content.likes = content.likes.filter(like => like.toString() !== userId);
     content.stats.likes = content.likes.length;
     await content.save();
 
     res.json({
       success: true,
       message: 'Content unliked',
-      likes: content.stats.likes
+      likes: content.stats.likes,
     });
   } catch (error) {
     console.error('Unlike content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error unliking content'
+      message: 'Error unliking content',
     });
   }
 };
@@ -616,18 +623,18 @@ const reportContent = async (req, res) => {
       reporterId,
       reason,
       description,
-      status: 'pending'
+      status: 'pending',
     });
 
     res.json({
       success: true,
-      message: 'Content reported. Our team will review it within 24 hours.'
+      message: 'Content reported. Our team will review it within 24 hours.',
     });
   } catch (error) {
     console.error('Report content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error reporting content'
+      message: 'Error reporting content',
     });
   }
 };
@@ -641,15 +648,15 @@ const getCreatorContent = async (req, res) => {
     const { page = 1, limit = 20 } = req.query;
     const userId = req.user?.id;
 
-    const content = await Content.find({ 
+    const content = await Content.find({
       creatorId,
       status: 'active',
-      isPublished: true
+      isPublished: true,
     })
-    .select('-fullMediaUrl')
-    .sort('-createdAt')
-    .limit(limit * 1)
-    .skip((page - 1) * limit);
+      .select('-fullMediaUrl')
+      .sort('-createdAt')
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
 
     // Check which content is unlocked by this user
     let unlockedIds = [];
@@ -658,9 +665,9 @@ const getCreatorContent = async (req, res) => {
         memberId: userId,
         creatorId,
         type: 'content_unlock',
-        status: 'completed'
+        status: 'completed',
       }).select('contentId');
-      
+
       unlockedIds = unlocked.map(t => t.contentId.toString());
     }
 
@@ -668,13 +675,13 @@ const getCreatorContent = async (req, res) => {
       ...item.toObject(),
       hasAccess: unlockedIds.includes(item._id.toString()),
       isBlurred: !unlockedIds.includes(item._id.toString()),
-      unlockPrice: item.price
+      unlockPrice: item.price,
     }));
 
-    const total = await Content.countDocuments({ 
+    const total = await Content.countDocuments({
       creatorId,
       status: 'active',
-      isPublished: true
+      isPublished: true,
     });
 
     res.json({
@@ -684,14 +691,14 @@ const getCreatorContent = async (req, res) => {
         page: parseInt(page),
         limit: parseInt(limit),
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+      },
     });
   } catch (error) {
     console.error('Get creator content error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching creator content'
+      message: 'Error fetching creator content',
     });
   }
 };
@@ -705,18 +712,20 @@ const getBundledContent = async (req, res) => {
     const hasAccess = req.hasAccess;
 
     // Fetch bundle details
-    const bundle = await req.db.collection('bundles').findOne({ _id: bundleId });
-    
+    const bundle = await req.db
+      .collection('bundles')
+      .findOne({ _id: bundleId });
+
     if (!bundle) {
       return res.status(404).json({
         success: false,
-        message: 'Bundle not found'
+        message: 'Bundle not found',
       });
     }
 
     // Get all content in bundle
     const content = await Content.find({
-      _id: { $in: bundle.contentIds }
+      _id: { $in: bundle.contentIds },
     }).populate('creatorId', 'username profileImage');
 
     if (hasAccess) {
@@ -724,14 +733,14 @@ const getBundledContent = async (req, res) => {
         success: true,
         data: content,
         bundle: bundle,
-        hasAccess: true
+        hasAccess: true,
       });
     } else {
       // Return preview with bundle pricing
       const previews = content.map(item => ({
         ...item.toObject(),
         fullMediaUrl: undefined,
-        isBlurred: true
+        isBlurred: true,
       }));
 
       res.json({
@@ -742,16 +751,16 @@ const getBundledContent = async (req, res) => {
           price: bundle.price,
           originalPrice: bundle.originalPrice,
           discount: bundle.discount,
-          savings: bundle.originalPrice - bundle.price
+          savings: bundle.originalPrice - bundle.price,
         },
-        hasAccess: false
+        hasAccess: false,
       });
     }
   } catch (error) {
     console.error('Get bundle error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching bundle'
+      message: 'Error fetching bundle',
     });
   }
 };
@@ -772,13 +781,13 @@ const unlockBundle = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Bundle unlocked successfully!'
+      message: 'Bundle unlocked successfully!',
     });
   } catch (error) {
     console.error('Unlock bundle error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error unlocking bundle'
+      message: 'Error unlocking bundle',
     });
   }
 };
@@ -792,11 +801,11 @@ const getContentStats = async (req, res) => {
     const creatorId = req.user.id;
 
     const content = await Content.findOne({ _id: id, creatorId });
-    
+
     if (!content) {
       return res.status(404).json({
         success: false,
-        message: 'Content not found or unauthorized'
+        message: 'Content not found or unauthorized',
       });
     }
 
@@ -804,34 +813,36 @@ const getContentStats = async (req, res) => {
     const unlockHistory = await Transaction.find({
       contentId: id,
       type: 'content_unlock',
-      status: 'completed'
+      status: 'completed',
     })
-    .select('amount createdAt memberId')
-    .populate('memberId', 'username')
-    .sort('-createdAt')
-    .limit(50);
+      .select('amount createdAt memberId')
+      .populate('memberId', 'username')
+      .sort('-createdAt')
+      .limit(50);
 
     // Calculate additional stats
     const stats = {
       ...content.stats,
-      conversionRate: content.stats.views > 0 
-        ? ((content.stats.unlocks / content.stats.views) * 100).toFixed(2) 
-        : 0,
-      averageRevenue: content.stats.unlocks > 0
-        ? (content.stats.revenue / content.stats.unlocks).toFixed(2)
-        : 0,
-      recentUnlocks: unlockHistory
+      conversionRate:
+        content.stats.views > 0
+          ? ((content.stats.unlocks / content.stats.views) * 100).toFixed(2)
+          : 0,
+      averageRevenue:
+        content.stats.unlocks > 0
+          ? (content.stats.revenue / content.stats.unlocks).toFixed(2)
+          : 0,
+      recentUnlocks: unlockHistory,
     };
 
     res.json({
       success: true,
-      data: stats
+      data: stats,
     });
   } catch (error) {
     console.error('Get content stats error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching content statistics'
+      message: 'Error fetching content statistics',
     });
   }
 };
@@ -843,7 +854,7 @@ module.exports = {
   createContent,
   updateContent,
   deleteContent,
-  unlockContent,  // Renamed from purchaseContent
+  unlockContent, // Renamed from purchaseContent
   likeContent,
   unlikeContent,
   reportContent,
@@ -851,5 +862,5 @@ module.exports = {
   getBundledContent,
   unlockBundle,
   getMyUnlockedContent,
-  getContentStats
+  getContentStats,
 };

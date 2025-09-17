@@ -10,24 +10,28 @@ import CreatorSuccessStories from '../components/CreatorSuccessStories';
 import MainFAQ from '../components/MainFAQ';
 import ReadyToStartEarning from '../components/ReadyToStartEarning';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import {
+  useIsMobile,
+  useIsDesktop,
+  getUserRole,
+} from '../utils/mobileDetection';
 
 const LandingPageV2 = () => {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
-  
+
   return (
-    <div className="landing-page-v2">
+    <div className='landing-page-v2'>
       {/* Desktop Header */}
       {isDesktop && <MainHeader />}
-      
+
       {/* Animated Background */}
-      <div className="animated-bg">
-        <div className="gradient-orb orb-1" />
-        <div className="gradient-orb orb-2" />
-        <div className="gradient-orb orb-3" />
-        <div className="noise-overlay" />
+      <div className='animated-bg'>
+        <div className='gradient-orb orb-1' />
+        <div className='gradient-orb orb-2' />
+        <div className='gradient-orb orb-3' />
+        <div className='noise-overlay' />
       </div>
 
       {/* Hero Section Component */}
@@ -50,10 +54,10 @@ const LandingPageV2 = () => {
 
       {/* Final CTA Component */}
       <ReadyToStartEarning />
-      
+
       {/* Desktop Footer */}
       {isDesktop && <MainFooter />}
-      
+
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>

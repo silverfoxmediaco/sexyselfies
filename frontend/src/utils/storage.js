@@ -24,7 +24,7 @@ class StorageManager {
       const item = {
         value: value,
         timestamp: Date.now(),
-        expiry: expiryMinutes ? Date.now() + (expiryMinutes * 60 * 1000) : null
+        expiry: expiryMinutes ? Date.now() + expiryMinutes * 60 * 1000 : null,
       };
       localStorage.setItem(this.prefix + key, JSON.stringify(item));
       return true;
@@ -54,7 +54,7 @@ class StorageManager {
       if (!item) return defaultValue;
 
       const parsed = JSON.parse(item);
-      
+
       // Check expiry
       if (parsed.expiry && Date.now() > parsed.expiry) {
         this.removeLocal(key);
@@ -128,7 +128,7 @@ class StorageManager {
       totalBytes: total,
       totalKB: (total / 1024).toFixed(2),
       items: items,
-      itemCount: Object.keys(items).length
+      itemCount: Object.keys(items).length,
     };
   }
 
@@ -218,24 +218,32 @@ class StorageManager {
         console.log('IndexedDB initialized');
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = event.target.result;
 
         // Create object stores
         if (!db.objectStoreNames.contains('content')) {
-          const contentStore = db.createObjectStore('content', { keyPath: 'id' });
+          const contentStore = db.createObjectStore('content', {
+            keyPath: 'id',
+          });
           contentStore.createIndex('creatorId', 'creatorId', { unique: false });
           contentStore.createIndex('timestamp', 'timestamp', { unique: false });
         }
 
         if (!db.objectStoreNames.contains('messages')) {
-          const messageStore = db.createObjectStore('messages', { keyPath: 'id' });
-          messageStore.createIndex('conversationId', 'conversationId', { unique: false });
+          const messageStore = db.createObjectStore('messages', {
+            keyPath: 'id',
+          });
+          messageStore.createIndex('conversationId', 'conversationId', {
+            unique: false,
+          });
           messageStore.createIndex('timestamp', 'timestamp', { unique: false });
         }
 
         if (!db.objectStoreNames.contains('profiles')) {
-          const profileStore = db.createObjectStore('profiles', { keyPath: 'id' });
+          const profileStore = db.createObjectStore('profiles', {
+            keyPath: 'id',
+          });
           profileStore.createIndex('type', 'type', { unique: false });
         }
 
@@ -245,7 +253,10 @@ class StorageManager {
         }
 
         if (!db.objectStoreNames.contains('queue')) {
-          const queueStore = db.createObjectStore('queue', { keyPath: 'id', autoIncrement: true });
+          const queueStore = db.createObjectStore('queue', {
+            keyPath: 'id',
+            autoIncrement: true,
+          });
           queueStore.createIndex('type', 'type', { unique: false });
           queueStore.createIndex('timestamp', 'timestamp', { unique: false });
         }
@@ -305,7 +316,7 @@ class StorageManager {
       try {
         const transaction = this.db.transaction([storeName], 'readonly');
         const store = transaction.objectStore(storeName);
-        
+
         let request;
         if (indexName && query) {
           const index = store.index(indexName);
@@ -366,7 +377,7 @@ class StorageManager {
    * Wait for database to be ready
    */
   waitForDB() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (this.db) {
         resolve();
       } else {
@@ -397,7 +408,7 @@ class StorageManager {
     const queueItem = {
       ...action,
       timestamp: Date.now(),
-      retries: 0
+      retries: 0,
     };
 
     // Store in IndexedDB
@@ -418,18 +429,18 @@ class StorageManager {
     try {
       // Get from IndexedDB
       const queue = await this.getAllFromIndexedDB('queue');
-      
+
       for (const item of queue) {
         try {
           // Process item (this would be implemented based on action type)
           await this.processQueueItem(item);
-          
+
           // Remove from queue if successful
           await this.deleteFromIndexedDB('queue', item.id);
         } catch (error) {
           // Increment retry count
           item.retries++;
-          
+
           if (item.retries >= 3) {
             // Move to failed queue
             await this.deleteFromIndexedDB('queue', item.id);
@@ -442,7 +453,7 @@ class StorageManager {
       }
     } catch (error) {
       console.error('Process queue error:', error);
-      
+
       // Fallback to localStorage queue
       const queue = this.getLocal('offline_queue', []);
       // Process localStorage queue...
@@ -492,7 +503,7 @@ class StorageManager {
       dataUsage: 'auto',
       language: 'en',
       soundEffects: true,
-      hapticFeedback: true
+      hapticFeedback: true,
     });
   }
 
@@ -556,7 +567,7 @@ class StorageManager {
     return {
       bytes: total,
       kb: (total / 1024).toFixed(2),
-      mb: (total / 1024 / 1024).toFixed(2)
+      mb: (total / 1024 / 1024).toFixed(2),
     };
   }
 
@@ -586,16 +597,21 @@ class StorageManager {
     const usage = {
       localStorage: this.getLocalStorageUsage(),
       sessionStorage: this.getSessionStorageUsage(),
-      indexedDB: await this.getIndexedDBUsage()
+      indexedDB: await this.getIndexedDBUsage(),
     };
 
     usage.total = {
-      bytes: usage.localStorage.totalBytes + 
-             usage.sessionStorage.totalBytes + 
-             usage.indexedDB.bytes,
-      mb: ((usage.localStorage.totalBytes + 
-           usage.sessionStorage.totalBytes + 
-           usage.indexedDB.bytes) / 1024 / 1024).toFixed(2)
+      bytes:
+        usage.localStorage.totalBytes +
+        usage.sessionStorage.totalBytes +
+        usage.indexedDB.bytes,
+      mb: (
+        (usage.localStorage.totalBytes +
+          usage.sessionStorage.totalBytes +
+          usage.indexedDB.bytes) /
+        1024 /
+        1024
+      ).toFixed(2),
     };
 
     return usage;
@@ -620,7 +636,7 @@ class StorageManager {
       totalBytes: total,
       totalKB: (total / 1024).toFixed(2),
       items: items,
-      itemCount: Object.keys(items).length
+      itemCount: Object.keys(items).length,
     };
   }
 
@@ -633,7 +649,7 @@ class StorageManager {
       return {
         bytes: estimate.usage || 0,
         quota: estimate.quota || 0,
-        percentage: ((estimate.usage / estimate.quota) * 100).toFixed(2)
+        percentage: ((estimate.usage / estimate.quota) * 100).toFixed(2),
       };
     }
     return { bytes: 0, quota: 0, percentage: 0 };

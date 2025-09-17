@@ -9,17 +9,21 @@ class MemberService {
   // ==========================================
   // AUTHENTICATION
   // ==========================================
-  
+
   /**
    * Member login
    */
   async login(credentials) {
     try {
-      const response = await authService.memberLogin(credentials.email, credentials.password, credentials.rememberMe);
+      const response = await authService.memberLogin(
+        credentials.email,
+        credentials.password,
+        credentials.rememberMe
+      );
       return {
         success: true,
         token: response.token,
-        user: response.user
+        user: response.user,
       };
     } catch (error) {
       throw error;
@@ -41,7 +45,7 @@ class MemberService {
   // ==========================================
   // MEMBER PROFILE
   // ==========================================
-  
+
   /**
    * Get member profile
    */
@@ -62,7 +66,7 @@ class MemberService {
       const response = await api.put('/member/profile', {
         username: data.username,
         displayName: data.displayName,
-        email: data.email
+        email: data.email,
       });
       return response;
     } catch (error) {
@@ -70,14 +74,13 @@ class MemberService {
     }
   }
 
-
   /**
    * Delete account
    */
   async deleteAccount(password, reason) {
     try {
       const response = await api.delete('/member/profile', {
-        data: { password, reason }
+        data: { password, reason },
       });
       return response;
     } catch (error) {
@@ -88,21 +91,21 @@ class MemberService {
   // ==========================================
   // DISCOVERY & BROWSING
   // ==========================================
-  
+
   /**
    * Get swipe stack of creators to browse
    */
   async getSwipeStack(params = {}) {
     try {
       const response = await api.get('/connections/stack', {
-        params
+        params,
       });
       return response;
     } catch (error) {
       // If the first endpoint fails, try the public browse endpoint
       try {
         const fallbackResponse = await api.get('/public/creator', {
-          params
+          params,
         });
         return fallbackResponse;
       } catch (fallbackError) {
@@ -138,8 +141,8 @@ class MemberService {
           priceRange: params.price_range,
           sortBy: params.sort || 'popular', // 'popular', 'newest', 'active'
           limit: params.limit || 20,
-          page: params.page || 1
-        }
+          page: params.page || 1,
+        },
       });
       return response;
     } catch (error) {
@@ -153,10 +156,13 @@ class MemberService {
   async resolveCreatorId(identifier) {
     try {
       // If identifier looks like MongoDB ObjectId, return as-is
-      if (typeof identifier === 'string' && /^[0-9a-fA-F]{24}$/.test(identifier)) {
+      if (
+        typeof identifier === 'string' &&
+        /^[0-9a-fA-F]{24}$/.test(identifier)
+      ) {
         return identifier;
       }
-      
+
       // Otherwise, resolve username to ID via profile lookup
       const response = await api.get(`/members/creator/${identifier}`);
       return response.id || response._id;
@@ -187,8 +193,8 @@ class MemberService {
         params: {
           type: params.type, // 'photos', 'videos', 'all'
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -204,8 +210,8 @@ class MemberService {
       const response = await api.get('/member/search/creator', {
         params: {
           q: query,
-          ...filters
-        }
+          ...filters,
+        },
       });
       return response;
     } catch (error) {
@@ -216,12 +222,14 @@ class MemberService {
   // ==========================================
   // HYBRID IDENTIFIER UTILITIES
   // ==========================================
-  
+
   /**
    * Determine if identifier is a MongoDB ObjectId vs username
    */
   isObjectId(identifier) {
-    return typeof identifier === 'string' && /^[0-9a-fA-F]{24}$/.test(identifier);
+    return (
+      typeof identifier === 'string' && /^[0-9a-fA-F]{24}$/.test(identifier)
+    );
   }
 
   /**
@@ -240,7 +248,7 @@ class MemberService {
   // ==========================================
   // SWIPING & MATCHING
   // ==========================================
-  
+
   /**
    * Swipe on creator profile
    */
@@ -249,7 +257,7 @@ class MemberService {
       const response = await api.post('/member/swipe', {
         creator_id: creatorId,
         action: action, // 'like', 'superlike', 'pass'
-        swiped_at: new Date().toISOString()
+        swiped_at: new Date().toISOString(),
       });
       return response;
     } catch (error) {
@@ -279,8 +287,8 @@ class MemberService {
           filter: params.filter || 'all', // 'all', 'new', 'online', 'subscribed'
           sort: params.sort || 'recent', // 'recent', 'alphabetical', 'active'
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -294,7 +302,7 @@ class MemberService {
   async unmatch(creatorId, reason) {
     try {
       const response = await api.delete(`/member/matches/${creatorId}`, {
-        data: { reason }
+        data: { reason },
       });
       return response;
     } catch (error) {
@@ -305,18 +313,21 @@ class MemberService {
   // ==========================================
   // SUBSCRIPTIONS
   // ==========================================
-  
+
   /**
    * Subscribe to creator
    */
   async subscribeToCreator(creatorId, data = {}) {
     try {
-      const response = await api.post(`/member/creator/${creatorId}/subscribe`, {
-        subscription_tier: data.tier || 'basic', // 'basic', 'vip', 'premium'
-        duration: data.duration || 1, // months
-        auto_renew: data.auto_renew !== false,
-        payment_method: data.payment_method || 'credits'
-      });
+      const response = await api.post(
+        `/member/creator/${creatorId}/subscribe`,
+        {
+          subscription_tier: data.tier || 'basic', // 'basic', 'vip', 'premium'
+          duration: data.duration || 1, // months
+          auto_renew: data.auto_renew !== false,
+          payment_method: data.payment_method || 'credits',
+        }
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -328,12 +339,15 @@ class MemberService {
    */
   async cancelSubscription(creatorId, reason) {
     try {
-      const response = await api.delete(`/member/creator/${creatorId}/subscribe`, {
-        data: { 
-          reason,
-          cancel_immediately: false // false = cancel at end of period
+      const response = await api.delete(
+        `/member/creator/${creatorId}/subscribe`,
+        {
+          data: {
+            reason,
+            cancel_immediately: false, // false = cancel at end of period
+          },
         }
-      });
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -349,8 +363,8 @@ class MemberService {
         params: {
           status: params.status || 'active', // 'active', 'expired', 'cancelled', 'all'
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -363,7 +377,9 @@ class MemberService {
    */
   async reactivateSubscription(creatorId) {
     try {
-      const response = await api.post(`/member/subscriptions/${creatorId}/reactivate`);
+      const response = await api.post(
+        `/member/subscriptions/${creatorId}/reactivate`
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -373,14 +389,14 @@ class MemberService {
   // ==========================================
   // PURCHASES & PAYMENTS
   // ==========================================
-  
+
   /**
    * Purchase content
    */
   async purchaseContent(contentId, paymentMethod = 'credits') {
     try {
       const response = await api.post(`/member/content/${contentId}/purchase`, {
-        payment_method: paymentMethod
+        payment_method: paymentMethod,
       });
       return response;
     } catch (error) {
@@ -393,9 +409,12 @@ class MemberService {
    */
   async purchaseMessage(messageId, paymentMethod = 'credits') {
     try {
-      const response = await api.post(`/member/messages/${messageId}/purchase`, {
-        payment_method: paymentMethod
-      });
+      const response = await api.post(
+        `/member/messages/${messageId}/purchase`,
+        {
+          payment_method: paymentMethod,
+        }
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -413,8 +432,8 @@ class MemberService {
           creator_id: params.creator_id,
           sort: params.sort || 'recent', // 'recent', 'oldest', 'creator'
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -431,7 +450,7 @@ class MemberService {
         package_id,
         payment_method: paymentMethod, // 'card', 'paypal', 'crypto'
         return_url: `${window.location.origin}/member/credits/success`,
-        cancel_url: `${window.location.origin}/member/credits/cancel`
+        cancel_url: `${window.location.origin}/member/credits/cancel`,
       });
       return response;
     } catch (error) {
@@ -474,8 +493,8 @@ class MemberService {
           start_date: params.start_date,
           end_date: params.end_date,
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -486,7 +505,7 @@ class MemberService {
   // ==========================================
   // MESSAGES & CHAT
   // ==========================================
-  
+
   /**
    * Get conversations
    */
@@ -497,8 +516,8 @@ class MemberService {
           filter: params.filter || 'all', // 'all', 'unread', 'matches', 'subscribed'
           sort: params.sort || 'recent',
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -514,8 +533,8 @@ class MemberService {
       const response = await api.get(`/member/messages/${creatorId}`, {
         params: {
           page: params.page || 1,
-          limit: params.limit || 50
-        }
+          limit: params.limit || 50,
+        },
       });
       return response;
     } catch (error) {
@@ -531,16 +550,19 @@ class MemberService {
       const formData = new FormData();
       formData.append('message', data.message || '');
       formData.append('message_type', data.message_type || 'text');
-      
+
       if (data.media) {
         formData.append('media', data.media);
       }
-      
+
       if (data.tip_amount) {
         formData.append('tip_amount', data.tip_amount);
       }
-      
-      const response = await uploadApi.post(`/member/messages/${creatorId}/send`, formData);
+
+      const response = await uploadApi.post(
+        `/member/messages/${creatorId}/send`,
+        formData
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -555,7 +577,7 @@ class MemberService {
       const response = await api.post(`/member/creator/${creatorId}/tip`, {
         amount,
         message,
-        payment_method: 'credits'
+        payment_method: 'credits',
       });
       return response;
     } catch (error) {
@@ -582,7 +604,7 @@ class MemberService {
     try {
       const response = await api.post(`/member/messages/${messageId}/report`, {
         reason, // 'spam', 'inappropriate', 'scam', 'harassment', 'other'
-        details
+        details,
       });
       return response;
     } catch (error) {
@@ -593,7 +615,7 @@ class MemberService {
   // ==========================================
   // INTERACTIONS
   // ==========================================
-  
+
   /**
    * Like content
    */
@@ -624,7 +646,7 @@ class MemberService {
   async commentOnContent(contentId, comment) {
     try {
       const response = await api.post(`/member/content/${contentId}/comment`, {
-        comment
+        comment,
       });
       return response;
     } catch (error) {
@@ -651,7 +673,7 @@ class MemberService {
     try {
       const response = await api.post(`/member/content/${contentId}/report`, {
         reason, // 'inappropriate', 'copyright', 'spam', 'misleading', 'other'
-        details
+        details,
       });
       return response;
     } catch (error) {
@@ -666,7 +688,7 @@ class MemberService {
     try {
       const response = await api.post(`/member/creator/${creatorId}/report`, {
         reason, // 'fake', 'scam', 'inappropriate', 'harassment', 'other'
-        details
+        details,
       });
       return response;
     } catch (error) {
@@ -680,7 +702,7 @@ class MemberService {
   async blockCreator(creatorId, reason) {
     try {
       const response = await api.post(`/member/creator/${creatorId}/block`, {
-        reason
+        reason,
       });
       return response;
     } catch (error) {
@@ -715,7 +737,7 @@ class MemberService {
   // ==========================================
   // FAVORITES & LISTS
   // ==========================================
-  
+
   /**
    * Add creator to favorites
    */
@@ -748,8 +770,8 @@ class MemberService {
       const response = await api.get('/member/favorites', {
         params: {
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -764,7 +786,7 @@ class MemberService {
     try {
       const response = await api.post('/member/lists', {
         name,
-        description
+        description,
       });
       return response;
     } catch (error) {
@@ -777,7 +799,9 @@ class MemberService {
    */
   async addToList(listId, creatorId) {
     try {
-      const response = await api.post(`/member/lists/${listId}/creator/${creatorId}`);
+      const response = await api.post(
+        `/member/lists/${listId}/creator/${creatorId}`
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -787,7 +811,7 @@ class MemberService {
   // ==========================================
   // SETTINGS & PREFERENCES
   // ==========================================
-  
+
   /**
    * Get settings
    */
@@ -823,7 +847,7 @@ class MemberService {
         distance: data.distance,
         categories: data.categories,
         price_range: data.price_range,
-        verified_only: data.verified_only
+        verified_only: data.verified_only,
       });
       return response;
     } catch (error) {
@@ -840,7 +864,7 @@ class MemberService {
         email_notifications: data.email_notifications,
         push_notifications: data.push_notifications,
         sms_notifications: data.sms_notifications,
-        notification_types: data.notification_types
+        notification_types: data.notification_types,
       });
       return response;
     } catch (error) {
@@ -859,7 +883,7 @@ class MemberService {
         show_last_seen: data.show_last_seen,
         allow_screenshots: data.allow_screenshots,
         discoverable: data.discoverable,
-        show_spending_tier: data.show_spending_tier
+        show_spending_tier: data.show_spending_tier,
       });
       return response;
     } catch (error) {
@@ -882,14 +906,14 @@ class MemberService {
   // ==========================================
   // ANALYTICS & ACTIVITY
   // ==========================================
-  
+
   /**
    * Get activity summary
    */
   async getActivitySummary(period = '30d') {
     try {
       const response = await api.get('/member/activity', {
-        params: { period }
+        params: { period },
       });
       return response;
     } catch (error) {
@@ -906,8 +930,8 @@ class MemberService {
         params: {
           start_date: params.start_date,
           end_date: params.end_date,
-          group_by: params.group_by || 'month'
-        }
+          group_by: params.group_by || 'month',
+        },
       });
       return response;
     } catch (error) {
@@ -941,76 +965,77 @@ class MemberService {
   // ==========================================
   // HELPER METHODS
   // ==========================================
-  
+
   /**
    * Handle service errors
    */
   handleError(error) {
     if (error.response) {
       const { status, data } = error.response;
-      
+
       switch (status) {
         case 400:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: data.message || 'Invalid request',
-            errors: data.errors || {}
+            errors: data.errors || {},
           };
         case 401:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Please login to continue.',
-            code: 'UNAUTHORIZED'
+            code: 'UNAUTHORIZED',
           };
         case 402:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Insufficient credits. Please purchase more credits.',
-            code: 'PAYMENT_REQUIRED'
+            code: 'PAYMENT_REQUIRED',
           };
         case 403:
-          return { 
-            error: true, 
-            message: 'Access denied. You may need to subscribe to view this content.',
-            code: 'FORBIDDEN'
+          return {
+            error: true,
+            message:
+              'Access denied. You may need to subscribe to view this content.',
+            code: 'FORBIDDEN',
           };
         case 404:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Content not found',
-            code: 'NOT_FOUND'
+            code: 'NOT_FOUND',
           };
         case 422:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Validation failed',
-            errors: data.errors || {}
+            errors: data.errors || {},
           };
         case 429:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Too many requests. Please slow down.',
-            code: 'RATE_LIMITED'
+            code: 'RATE_LIMITED',
           };
         default:
-          return { 
-            error: true, 
-            message: data.message || 'Something went wrong'
+          return {
+            error: true,
+            message: data.message || 'Something went wrong',
           };
       }
     }
-    
+
     if (!navigator.onLine) {
-      return { 
-        error: true, 
+      return {
+        error: true,
         message: 'No internet connection',
-        code: 'OFFLINE'
+        code: 'OFFLINE',
       };
     }
-    
-    return { 
-      error: true, 
-      message: error.message || 'An unexpected error occurred'
+
+    return {
+      error: true,
+      message: error.message || 'An unexpected error occurred',
     };
   }
 }

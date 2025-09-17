@@ -1,17 +1,22 @@
 import React, { useState, useRef } from 'react';
-import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion';
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  useAnimation,
+} from 'framer-motion';
 import { Shield } from 'lucide-react';
 import './SwipeCard.css';
 
-const SwipeCard = ({ 
-  creator, 
-  onSwipe, 
+const SwipeCard = ({
+  creator,
+  onSwipe,
   onViewProfile,
   isTop = false,
   style = {},
   dragEnabled = true,
   showActions = true,
-  minimalView = false
+  minimalView = false,
 }) => {
   // Motion values for drag
   const motionValue = useMotionValue(0);
@@ -21,33 +26,46 @@ const SwipeCard = ({
     [-200, -100, 0, 100, 200],
     [0.5, 1, 1, 1, 0.5]
   );
-  
+
   // Animation controls
   const controls = useAnimation();
-  
+
   // State
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [exitDirection, setExitDirection] = useState(null);
-  
+
   // Refs
   const cardRef = useRef(null);
   const swipeThreshold = 100;
   const swipeVelocityThreshold = 500;
-  
+
   // Get all photos (profile photo + additional photos with metadata)
-  const profilePhoto = { url: creator.profileImage, isFree: true, isPaid: false, price: 0 };
-  const contentPhotos = (creator.photos || []).map(photo => 
-    typeof photo === 'string' ? { url: photo, isFree: true, isPaid: false, price: 0 } : photo
+  const profilePhoto = {
+    url: creator.profileImage,
+    isFree: true,
+    isPaid: false,
+    price: 0,
+  };
+  const contentPhotos = (creator.photos || []).map(photo =>
+    typeof photo === 'string'
+      ? { url: photo, isFree: true, isPaid: false, price: 0 }
+      : photo
   );
   const allPhotos = [profilePhoto, ...contentPhotos];
-  
+
   // Handle drag end
   const handleDragEnd = (event, info) => {
-    const swipeDirection = info.offset.x > swipeThreshold ? 'right' :
-                          info.offset.x < -swipeThreshold ? 'left' : null;
+    const swipeDirection =
+      info.offset.x > swipeThreshold
+        ? 'right'
+        : info.offset.x < -swipeThreshold
+          ? 'left'
+          : null;
 
     // Check for swipe up (Quick Profile View)
-    const swipeUp = info.offset.y < -swipeThreshold || info.velocity.y < -swipeVelocityThreshold;
+    const swipeUp =
+      info.offset.y < -swipeThreshold ||
+      info.velocity.y < -swipeVelocityThreshold;
 
     if (swipeUp) {
       // Handle swipe up for Quick Profile View
@@ -57,33 +75,39 @@ const SwipeCard = ({
         x: 0,
         y: 0,
         rotate: 0,
-        transition: { type: "spring", stiffness: 300, damping: 20 }
+        transition: { type: 'spring', stiffness: 300, damping: 20 },
       });
-    } else if (swipeDirection || Math.abs(info.velocity.x) > swipeVelocityThreshold) {
-      const finalDirection = swipeDirection || (info.velocity.x > 0 ? 'right' : 'left');
+    } else if (
+      swipeDirection ||
+      Math.abs(info.velocity.x) > swipeVelocityThreshold
+    ) {
+      const finalDirection =
+        swipeDirection || (info.velocity.x > 0 ? 'right' : 'left');
       setExitDirection(finalDirection);
 
       // Animate card off screen
-      controls.start({
-        x: finalDirection === 'right' ? 300 : -300,
-        opacity: 0,
-        transition: { duration: 0.3 }
-      }).then(() => {
-        if (onSwipe) {
-          onSwipe(finalDirection, creator._id);
-        }
-      });
+      controls
+        .start({
+          x: finalDirection === 'right' ? 300 : -300,
+          opacity: 0,
+          transition: { duration: 0.3 },
+        })
+        .then(() => {
+          if (onSwipe) {
+            onSwipe(finalDirection, creator._id);
+          }
+        });
     } else {
       // Snap back to center
       controls.start({
         x: 0,
         y: 0,
         rotate: 0,
-        transition: { type: "spring", stiffness: 300, damping: 20 }
+        transition: { type: 'spring', stiffness: 300, damping: 20 },
       });
     }
   };
-  
+
   // Handle quick profile view (swipe up)
   const handleQuickProfileView = () => {
     if (onSwipe) {
@@ -91,31 +115,31 @@ const SwipeCard = ({
     }
     // No exit animation for profile view - let parent handle modal
   };
-  
+
   // Handle photo navigation
-  const handlePhotoNavigation = (direction) => {
+  const handlePhotoNavigation = direction => {
     if (direction === 'next' && currentPhotoIndex < allPhotos.length - 1) {
       setCurrentPhotoIndex(prev => prev + 1);
     } else if (direction === 'prev' && currentPhotoIndex > 0) {
       setCurrentPhotoIndex(prev => prev - 1);
     }
   };
-  
+
   // Touch handlers for photo navigation
-  const handleCardTouch = (e) => {
+  const handleCardTouch = e => {
     if (!isTop || minimalView) return;
-    
+
     const cardWidth = cardRef.current?.offsetWidth || 0;
     const touchX = e.nativeEvent.offsetX || e.touches?.[0]?.clientX;
     const isLeftSide = touchX < cardWidth / 2;
-    
+
     if (isLeftSide) {
       handlePhotoNavigation('prev');
     } else {
       handlePhotoNavigation('next');
     }
   };
-  
+
   // Double tap detection (disabled - was for Super Like)
   const lastTap = useRef(0);
   const handleDoubleTap = () => {
@@ -126,9 +150,9 @@ const SwipeCard = ({
     // Could repurpose for quick profile view if needed
     // handleQuickProfileView();
   };
-  
+
   // Calculate time ago
-  const getTimeAgo = (timestamp) => {
+  const getTimeAgo = timestamp => {
     if (!timestamp) return '';
     const minutes = Math.floor((Date.now() - timestamp) / 60000);
     if (minutes < 1) return 'Just now';
@@ -147,91 +171,96 @@ const SwipeCard = ({
         x: motionValue,
         rotate: rotateValue,
         opacity: opacityValue,
-        ...style
+        ...style,
       }}
-      drag={dragEnabled && isTop ? "x" : false}
+      drag={dragEnabled && isTop ? 'x' : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={1}
       onDragEnd={handleDragEnd}
       animate={controls}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       onClick={!minimalView ? handleDoubleTap : undefined}
     >
-      <div className="swipecard-photo-container" onClick={!minimalView ? handleCardTouch : undefined}>
+      <div
+        className='swipecard-photo-container'
+        onClick={!minimalView ? handleCardTouch : undefined}
+      >
         {/* Main Photo */}
-        <img 
-          src={allPhotos[currentPhotoIndex]?.url || creator.profileImage} 
+        <img
+          src={allPhotos[currentPhotoIndex]?.url || creator.profileImage}
           alt={creator.displayName || ''}
           className={`swipecard-photo ${allPhotos[currentPhotoIndex]?.isPaid ? 'swipecard-photo-blurred' : ''}`}
-          draggable="false"
+          draggable='false'
         />
-        
+
         {/* Paid Content Overlay */}
         {!minimalView && allPhotos[currentPhotoIndex]?.isPaid && (
-          <div className="swipecard-paid-overlay">
-            <div className="swipecard-unlock-icon">🔒</div>
-            <div className="swipecard-price">${allPhotos[currentPhotoIndex]?.price?.toFixed(2)}</div>
-            <div className="swipecard-unlock-text">Tap to unlock</div>
+          <div className='swipecard-paid-overlay'>
+            <div className='swipecard-unlock-icon'>🔒</div>
+            <div className='swipecard-price'>
+              ${allPhotos[currentPhotoIndex]?.price?.toFixed(2)}
+            </div>
+            <div className='swipecard-unlock-text'>Tap to unlock</div>
           </div>
         )}
-        
+
         {/* Photo Indicators - NOT in minimal view */}
         {!minimalView && allPhotos.length > 1 && (
-          <div className="swipecard-photo-indicators">
+          <div className='swipecard-photo-indicators'>
             {allPhotos.map((_, index) => (
-              <div 
+              <div
                 key={index}
                 className={`photo-indicator ${index === currentPhotoIndex ? 'active' : ''}`}
               />
             ))}
           </div>
         )}
-        
+
         {/* Gradient Overlay - NOT in minimal view */}
-        {!minimalView && <div className="swipecard-gradient-overlay" />}
-        
+        {!minimalView && <div className='swipecard-gradient-overlay' />}
+
         {/* Minimal View Status - ONLY show these in minimal view */}
         {minimalView && (
-          <div className="swipecard-minimal-status">
+          <div className='swipecard-minimal-status'>
             {creator.isOnline && (
-              <div className="minimal-online-indicator">
-                <span className="minimal-online-dot"></span>
+              <div className='minimal-online-indicator'>
+                <span className='minimal-online-dot'></span>
               </div>
             )}
             {creator.verified && (
-              <div className="minimal-verified-indicator">
-                <Shield size={16} className="minimal-verified-icon" />
+              <div className='minimal-verified-indicator'>
+                <Shield size={16} className='minimal-verified-icon' />
               </div>
             )}
           </div>
         )}
-        
+
         {/* Full View Content - NOT in minimal view */}
         {!minimalView && (
           <>
             {/* Top Bar */}
-            <div className="swipecard-top-bar">
+            <div className='swipecard-top-bar'>
               {creator.isOnline && (
-                <div className="swipecard-online-status">
-                  <span className="online-dot-indicator" />
+                <div className='swipecard-online-status'>
+                  <span className='online-dot-indicator' />
                   <span>Online</span>
                 </div>
               )}
             </div>
-            
+
             {/* Badges */}
-            <div className="swipecard-badges">
+            <div className='swipecard-badges'>
               {creator.verified && (
-                <span className="swipecard-badge verified-badge">
+                <span className='swipecard-badge verified-badge'>
                   <Shield size={12} />
                   <span>Verified</span>
                 </span>
               )}
             </div>
-            
+
             {/* Last Active (if not online) */}
             {!creator.isOnline && creator.lastActive && (
-              <div className="swipecard-last-active">
+              <div className='swipecard-last-active'>
                 Active {getTimeAgo(creator.lastActive)}
               </div>
             )}

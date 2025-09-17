@@ -15,12 +15,15 @@
 const mongoose = require('mongoose');
 require('dotenv').config({ path: '../../../.env' });
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sexyselfies';
+const MONGODB_URI =
+  process.env.MONGODB_URI || 'mongodb://localhost:27017/sexyselfies';
 
 async function removeSuperLikeFields() {
   try {
     console.log('🚀 Starting Super Like field removal');
-    console.log(`📡 Connecting to: ${MONGODB_URI.replace(/:[^:]+@/, ':****@')}`);
+    console.log(
+      `📡 Connecting to: ${MONGODB_URI.replace(/:[^:]+@/, ':****@')}`
+    );
 
     // Connect to MongoDB
     await mongoose.connect(MONGODB_URI);
@@ -32,12 +35,14 @@ async function removeSuperLikeFields() {
     console.log('\n📊 Processing Connections collection...');
 
     // Count documents that need updates
-    const connectionsNeedingUpdate = await db.collection('connections').countDocuments({
-      $or: [
-        { memberSuperLiked: { $exists: true } },
-        { connectionType: 'premium' }
-      ]
-    });
+    const connectionsNeedingUpdate = await db
+      .collection('connections')
+      .countDocuments({
+        $or: [
+          { memberSuperLiked: { $exists: true } },
+          { connectionType: 'premium' },
+        ],
+      });
 
     console.log(`📈 Found ${connectionsNeedingUpdate} connections to update`);
 
@@ -46,19 +51,33 @@ async function removeSuperLikeFields() {
       const connectionsResult = await db.collection('connections').updateMany(
         {},
         {
-          $unset: { memberSuperLiked: "" },
-          $set: { connectionType: { $cond: [{ $eq: ["$connectionType", "premium"] }, "verified", "$connectionType"] } }
+          $unset: { memberSuperLiked: '' },
+          $set: {
+            connectionType: {
+              $cond: [
+                { $eq: ['$connectionType', 'premium'] },
+                'verified',
+                '$connectionType',
+              ],
+            },
+          },
         }
       );
 
       // Clean up connectionType enum (convert premium to verified)
-      const premiumConnectionsResult = await db.collection('connections').updateMany(
-        { connectionType: 'premium' },
-        { $set: { connectionType: 'verified' } }
-      );
+      const premiumConnectionsResult = await db
+        .collection('connections')
+        .updateMany(
+          { connectionType: 'premium' },
+          { $set: { connectionType: 'verified' } }
+        );
 
-      console.log(`✅ Connections updated: ${connectionsResult.modifiedCount} documents`);
-      console.log(`✅ Premium connections converted: ${premiumConnectionsResult.modifiedCount} documents`);
+      console.log(
+        `✅ Connections updated: ${connectionsResult.modifiedCount} documents`
+      );
+      console.log(
+        `✅ Premium connections converted: ${premiumConnectionsResult.modifiedCount} documents`
+      );
     }
 
     // 2. Update Members collection
@@ -68,8 +87,8 @@ async function removeSuperLikeFields() {
     const membersNeedingUpdate = await db.collection('members').countDocuments({
       $or: [
         { superLikes: { $exists: true } },
-        { dailySuperLikes: { $exists: true } }
-      ]
+        { dailySuperLikes: { $exists: true } },
+      ],
     });
 
     console.log(`📈 Found ${membersNeedingUpdate} members to update`);
@@ -80,42 +99,54 @@ async function removeSuperLikeFields() {
         {},
         {
           $unset: {
-            superLikes: "",
-            dailySuperLikes: ""
-          }
+            superLikes: '',
+            dailySuperLikes: '',
+          },
         }
       );
 
-      console.log(`✅ Members updated: ${membersResult.modifiedCount} documents`);
+      console.log(
+        `✅ Members updated: ${membersResult.modifiedCount} documents`
+      );
     }
 
     // 3. Verify cleanup
     console.log('\n🔍 Verifying cleanup...');
 
-    const remainingConnections = await db.collection('connections').countDocuments({
-      $or: [
-        { memberSuperLiked: { $exists: true } },
-        { connectionType: 'premium' }
-      ]
-    });
+    const remainingConnections = await db
+      .collection('connections')
+      .countDocuments({
+        $or: [
+          { memberSuperLiked: { $exists: true } },
+          { connectionType: 'premium' },
+        ],
+      });
 
     const remainingMembers = await db.collection('members').countDocuments({
       $or: [
         { superLikes: { $exists: true } },
-        { dailySuperLikes: { $exists: true } }
-      ]
+        { dailySuperLikes: { $exists: true } },
+      ],
     });
 
     if (remainingConnections === 0 && remainingMembers === 0) {
       console.log('✅ Cleanup successful! No Super Like fields remain');
     } else {
-      console.log(`⚠️  Cleanup incomplete: ${remainingConnections} connections, ${remainingMembers} members still have Super Like fields`);
+      console.log(
+        `⚠️  Cleanup incomplete: ${remainingConnections} connections, ${remainingMembers} members still have Super Like fields`
+      );
     }
 
     console.log('\n📊 Final Statistics:');
-    const totalConnections = await db.collection('connections').countDocuments();
-    const verifiedConnections = await db.collection('connections').countDocuments({ connectionType: 'verified' });
-    const basicConnections = await db.collection('connections').countDocuments({ connectionType: 'basic' });
+    const totalConnections = await db
+      .collection('connections')
+      .countDocuments();
+    const verifiedConnections = await db
+      .collection('connections')
+      .countDocuments({ connectionType: 'verified' });
+    const basicConnections = await db
+      .collection('connections')
+      .countDocuments({ connectionType: 'basic' });
 
     console.log(`   Total connections: ${totalConnections}`);
     console.log(`   Basic connections: ${basicConnections}`);
@@ -128,7 +159,6 @@ async function removeSuperLikeFields() {
     console.log('✅ Converted premium connections to verified');
     console.log('✅ Removed superLikes array from members');
     console.log('✅ Removed dailySuperLikes object from members');
-
   } catch (error) {
     console.error('❌ Migration failed:', error);
     throw error;
@@ -147,7 +177,7 @@ if (require.main === module) {
       console.log('✅ Migration script completed successfully');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('❌ Migration script failed:', error);
       process.exit(1);
     });

@@ -4,8 +4,8 @@
   width: 100%;
   max-width: 100vw;
   min-height: 100vh;
-  background: #0A0A0A;
-  color: #FFFFFF;
+  background: #0a0a0a;
+  color: #ffffff;
   padding-bottom: calc(80px + env(safe-area-inset-bottom, 0));
   overflow-x: hidden;
   box-sizing: border-box;
@@ -37,7 +37,7 @@
   justify-content: center;
   background: transparent;
   border: none;
-  color: #FFFFFF;
+  color: #ffffff;
   cursor: pointer;
   border-radius: 50%;
   transition: all 0.2s;
@@ -70,7 +70,7 @@
 .bf-count-badge {
   width: 24px;
   height: 24px;
-  background: #17D2C2;
+  background: #17d2c2;
   color: #001310;
   border-radius: 50%;
   display: flex;
@@ -82,7 +82,7 @@
 
 .bf-count-text {
   font-size: 14px;
-  color: #17D2C2;
+  color: #17d2c2;
   font-weight: 500;
 }
 
@@ -100,17 +100,19 @@
   width: 40px;
   height: 40px;
   border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #17D2C2;
+  border-top-color: #17d2c2;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .bf-loading p {
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 14px;
 }
 
@@ -143,7 +145,7 @@
 .bf-section-title {
   font-size: 16px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0 0 16px 0;
   display: flex;
   align-items: center;
@@ -151,7 +153,7 @@
 }
 
 .bf-section-title svg {
-  color: #17D2C2;
+  color: #17d2c2;
 }
 
 /* Age Range */
@@ -176,7 +178,7 @@
 
 .bf-age-input-group label {
   font-size: 12px;
-  color: #8E8E93;
+  color: #8e8e93;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -187,7 +189,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 16px;
   text-align: center;
   outline: none;
@@ -196,11 +198,11 @@
 
 .bf-age-input:focus {
   background: rgba(255, 255, 255, 0.08);
-  border-color: #17D2C2;
+  border-color: #17d2c2;
 }
 
 .bf-age-separator {
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 14px;
   margin-top: 20px;
 }
@@ -229,8 +231,8 @@
   appearance: none;
   width: 20px;
   height: 20px;
-  background: #17D2C2;
-  border: 2px solid #0A0A0A;
+  background: #17d2c2;
+  border: 2px solid #0a0a0a;
   border-radius: 50%;
   cursor: pointer;
   pointer-events: all;
@@ -240,8 +242,8 @@
 .bf-slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: #17D2C2;
-  border: 2px solid #0A0A0A;
+  background: #17d2c2;
+  border: 2px solid #0a0a0a;
   border-radius: 50%;
   cursor: pointer;
   pointer-events: all;
@@ -259,7 +261,7 @@
 .bf-slider-fill {
   position: absolute;
   height: 4px;
-  background: #17D2C2;
+  background: #17d2c2;
   border-radius: 2px;
 }
 
@@ -274,7 +276,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 16px;
   outline: none;
   transition: all 0.2s;
@@ -283,12 +285,12 @@
 
 .bf-location-select:focus {
   background: rgba(255, 255, 255, 0.08);
-  border-color: #17D2C2;
+  border-color: #17d2c2;
 }
 
 .bf-location-select option {
-  background: #1C1C1E;
-  color: #FFFFFF;
+  background: #1c1c1e;
+  color: #ffffff;
 }
 
 /* Chip Grid */
@@ -303,7 +305,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  color: #C7C7CC;
+  color: #c7c7cc;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -319,15 +321,14 @@
 
 .bf-chip.bf-selected {
   background: rgba(23, 210, 194, 0.15);
-  border-color: #17D2C2;
-  color: #17D2C2;
+  border-color: #17d2c2;
+  color: #17d2c2;
 }
 
 .bf-chip svg {
   width: 14px;
   height: 14px;
 }
-
 
 /* Toggle Switches */
 .bf-toggle {
@@ -342,8 +343,8 @@
 }
 
 .bf-toggle.bf-active {
-  background: #17D2C2;
-  border-color: #17D2C2;
+  background: #17d2c2;
+  border-color: #17d2c2;
 }
 
 .bf-toggle-handle {
@@ -352,7 +353,7 @@
   left: 2px;
   width: 22px;
   height: 22px;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 50%;
   transition: transform 0.3s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -392,12 +393,12 @@
 .bf-toggle-label {
   font-size: 15px;
   font-weight: 500;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .bf-toggle-description {
   font-size: 13px;
-  color: #8E8E93;
+  color: #8e8e93;
 }
 
 /* Footer */
@@ -420,7 +421,7 @@
   width: 100%;
   margin: 32px 0 20px 0;
   padding: 16px;
-  background: #17D2C2;
+  background: #17d2c2;
   color: #001310;
   border: none;
   border-radius: 16px;
@@ -439,14 +440,14 @@
 }
 
 .bf-apply-btn:disabled {
-  background: #17D2C2;
+  background: #17d2c2;
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 .bf-apply-count {
   background: #001310;
-  color: #17D2C2;
+  color: #17d2c2;
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 14px;
@@ -521,7 +522,7 @@
   }
 
   .bf-apply-btn:hover:not(:disabled) {
-    background: #14B5A8;
+    background: #14b5a8;
     transform: translateY(-2px);
   }
 }
@@ -530,21 +531,21 @@
 .bf-chip:focus-visible,
 .bf-toggle:focus-visible,
 .bf-apply-btn:focus-visible {
-  outline: 2px solid #17D2C2;
+  outline: 2px solid #17d2c2;
   outline-offset: 2px;
 }
 
 /* Dark Mode (default) */
 @media (prefers-color-scheme: dark) {
   .bf-container {
-    background: #0A0A0A;
+    background: #0a0a0a;
   }
 }
 
 /* Light Mode Support */
 @media (prefers-color-scheme: light) {
   .bf-container {
-    background: #F5F5F5;
+    background: #f5f5f5;
     color: #000000;
   }
 
@@ -566,7 +567,7 @@
   .bf-chip {
     background: rgba(0, 0, 0, 0.05);
     border-color: rgba(0, 0, 0, 0.1);
-    color: #3C3C43;
+    color: #3c3c43;
   }
 
   .bf-age-input,
@@ -577,7 +578,7 @@
   }
 
   .bf-location-select option {
-    background: #FFFFFF;
+    background: #ffffff;
     color: #000000;
   }
 }

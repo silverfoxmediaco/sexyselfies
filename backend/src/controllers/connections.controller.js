@@ -15,22 +15,22 @@ exports.getSwipeStack = async (req, res, next) => {
   try {
     console.log('🎯 GetSwipeStack called by user:', req.user.id);
     console.log('🎯 Request query params:', req.query);
-    
+
     // Get member document
     const member = await Member.findOne({ user: req.user.id });
-    
+
     if (!member) {
       return res.status(404).json({
         success: false,
-        error: 'Member profile not found'
+        error: 'Member profile not found',
       });
     }
 
     // Get IDs of creators already interacted with
-    const existingConnections = await Connection.find({ 
-      member: member._id 
+    const existingConnections = await Connection.find({
+      member: member._id,
     }).select('creator');
-    
+
     const excludedIds = existingConnections.map(c => c.creator);
     console.log('Excluding creators:', excludedIds.length);
 
@@ -38,12 +38,9 @@ exports.getSwipeStack = async (req, res, next) => {
     const query = {
       _id: { $nin: excludedIds },
       // Check for both undefined and false for isPaused
-      $or: [
-        { isPaused: false },
-        { isPaused: { $exists: false } }
-      ],
+      $or: [{ isPaused: false }, { isPaused: { $exists: false } }],
       // Check for verified status
-      isVerified: true
+      isVerified: true,
     };
 
     console.log('Query:', JSON.stringify(query, null, 2));
@@ -64,34 +61,38 @@ exports.getSwipeStack = async (req, res, next) => {
       .lean();
 
     console.log('Found creators:', creators.length);
-    
+
     // Get Content model for populating creator content
     const Content = require('../models/Content');
-    
+
     // Get content for each creator (mix of free and paid for browse display)
-    const creatorsWithContent = await Promise.all(creators.map(async (creator) => {
-      // Get recent content for this creator (limit to 5 for swipe display)
-      const creatorContent = await Content.find({ 
-        creator: creator._id,
-        status: 'approved' // Only show approved content
+    const creatorsWithContent = await Promise.all(
+      creators.map(async creator => {
+        // Get recent content for this creator (limit to 5 for swipe display)
+        const creatorContent = await Content.find({
+          creator: creator._id,
+          status: 'approved', // Only show approved content
+        })
+          .select('thumbnail media price isFree type title')
+          .sort({ createdAt: -1 })
+          .limit(5)
+          .lean();
+
+        // Transform content for frontend - free content shows actual images, paid shows thumbnails for blur effect
+        const photos = creatorContent.map(content => ({
+          url: content.isFree
+            ? content.media[0]?.url || content.thumbnail
+            : content.thumbnail,
+          price: content.price,
+          isFree: content.isFree,
+          isPaid: !content.isFree,
+          type: content.type,
+          title: content.title || '',
+        }));
+
+        return { ...creator, photos };
       })
-      .select('thumbnail media price isFree type title')
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .lean();
-      
-      // Transform content for frontend - free content shows actual images, paid shows thumbnails for blur effect
-      const photos = creatorContent.map(content => ({
-        url: content.isFree ? (content.media[0]?.url || content.thumbnail) : content.thumbnail,
-        price: content.price,
-        isFree: content.isFree,
-        isPaid: !content.isFree,
-        type: content.type,
-        title: content.title || ''
-      }));
-      
-      return { ...creator, photos };
-    }));
+    );
 
     // Transform creators to match frontend expectations
     const transformedCreators = creatorsWithContent.map(creator => {
@@ -101,13 +102,17 @@ exports.getSwipeStack = async (req, res, next) => {
         location = {
           city: creator.location.city || 'Unknown',
           state: creator.location.state || '',
-          distance: 0 // Calculate if needed
+          distance: 0, // Calculate if needed
         };
       }
 
       // Fix profile image URL
       let profileImageUrl = creator.profileImage;
-      if (profileImageUrl === 'default-avatar.jpg' || !profileImageUrl || !profileImageUrl.startsWith('http')) {
+      if (
+        profileImageUrl === 'default-avatar.jpg' ||
+        !profileImageUrl ||
+        !profileImageUrl.startsWith('http')
+      ) {
         profileImageUrl = '/placeholders/beaufitulbrunette1.png';
       }
 
@@ -116,14 +121,21 @@ exports.getSwipeStack = async (req, res, next) => {
       if (!username) {
         if (creator.displayName) {
           // Convert display name to username format (lowercase, no spaces)
-          username = creator.displayName.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+          username = creator.displayName
+            .toLowerCase()
+            .replace(/\s+/g, '')
+            .replace(/[^a-z0-9]/g, '');
         } else {
           // Fallback to creator ID last 8 characters
           username = `creator${creator._id.toString().slice(-8)}`;
         }
 
         // Update the creator with the generated username (fire-and-forget)
-        Creator.findByIdAndUpdate(creator._id, { username }, { new: true }).catch(err => {
+        Creator.findByIdAndUpdate(
+          creator._id,
+          { username },
+          { new: true }
+        ).catch(err => {
           console.warn('Failed to update creator username:', err);
         });
       }
@@ -147,12 +159,15 @@ exports.getSwipeStack = async (req, res, next) => {
         gender: creator.gender || 'female',
         verified: creator.isVerified || false,
         // Include creator content for swipe display
-        photos: creator.photos || []
+        photos: creator.photos || [],
       };
     });
 
     // If no creators found, return demo data for testing
-    if (transformedCreators.length === 0 && process.env.NODE_ENV === 'development') {
+    if (
+      transformedCreators.length === 0 &&
+      process.env.NODE_ENV === 'development'
+    ) {
       console.log('No creators found, returning demo data');
       const demoCreators = [
         {
@@ -170,7 +185,7 @@ exports.getSwipeStack = async (req, res, next) => {
           age: 24,
           gender: 'female',
           verified: true,
-          createdAt: new Date()
+          createdAt: new Date(),
         },
         {
           _id: '507f1f77bcf86cd799439012',
@@ -187,29 +202,29 @@ exports.getSwipeStack = async (req, res, next) => {
           age: 26,
           gender: 'female',
           verified: true,
-          createdAt: new Date()
-        }
+          createdAt: new Date(),
+        },
       ];
-      
+
       return res.status(200).json({
         success: true,
         count: demoCreators.length,
         data: demoCreators,
-        isDemoData: true
+        isDemoData: true,
       });
     }
 
     res.status(200).json({
       success: true,
       count: transformedCreators.length,
-      data: transformedCreators
+      data: transformedCreators,
     });
   } catch (error) {
     console.error('GetSwipeStack error:', error);
     res.status(500).json({
       success: false,
       error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
   }
 };
@@ -233,20 +248,20 @@ exports.swipeAction = async (req, res, next) => {
       if (!creator) {
         return res.status(404).json({
           success: false,
-          error: 'Creator not found'
+          error: 'Creator not found',
         });
       }
 
       // Check if connection exists
       connection = await Connection.findOne({
         member: member._id,
-        creator: creator._id
+        creator: creator._id,
       });
 
       if (!connection) {
         connection = new Connection({
           member: member._id,
-          creator: creator._id
+          creator: creator._id,
         });
       }
 
@@ -277,7 +292,8 @@ exports.swipeAction = async (req, res, next) => {
         isNewConnection = true;
 
         // Update creator stats
-        creator.stats.totalConnections = (creator.stats.totalConnections || 0) + 1;
+        creator.stats.totalConnections =
+          (creator.stats.totalConnections || 0) + 1;
         await creator.save();
       }
 
@@ -288,13 +304,13 @@ exports.swipeAction = async (req, res, next) => {
       success: true,
       isConnected: connection.isConnected,
       isNewConnection,
-      data: connection
+      data: connection,
     });
   } catch (error) {
     console.error('SwipeAction error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -308,12 +324,17 @@ exports.swipeAction = async (req, res, next) => {
 // @access  Private
 exports.getConnections = async (req, res, next) => {
   try {
-    console.log('🔗 GetConnections called by user:', req.user.id, 'role:', req.user.role);
+    console.log(
+      '🔗 GetConnections called by user:',
+      req.user.id,
+      'role:',
+      req.user.role
+    );
     console.log('🔗 Request query params:', req.query);
 
     const userRole = req.user.role;
     const { status, type, sort = '-lastInteraction', search } = req.query;
-    
+
     let query = { isActive: true };
 
     // Build query based on user role
@@ -322,7 +343,7 @@ exports.getConnections = async (req, res, next) => {
       if (!member) {
         return res.status(404).json({
           success: false,
-          error: 'Member profile not found'
+          error: 'Member profile not found',
         });
       }
       query.member = member._id;
@@ -331,7 +352,7 @@ exports.getConnections = async (req, res, next) => {
       if (!creator) {
         return res.status(404).json({
           success: false,
-          error: 'Creator profile not found'
+          error: 'Creator profile not found',
         });
       }
       query.creator = creator._id;
@@ -353,7 +374,7 @@ exports.getConnections = async (req, res, next) => {
       .populate('member', 'username profileImage')
       .populate({
         path: 'creator',
-        select: 'displayName profileImage bio isOnline contentPrice'
+        select: 'displayName profileImage bio isOnline contentPrice',
       })
       .populate('lastMessage')
       .sort(sort);
@@ -375,8 +396,12 @@ exports.getConnections = async (req, res, next) => {
     if (search) {
       connections = connections.filter(conn => {
         const searchTarget = userRole === 'member' ? conn.creator : conn.member;
-        return searchTarget?.displayName?.toLowerCase().includes(search.toLowerCase()) ||
-               searchTarget?.username?.toLowerCase().includes(search.toLowerCase());
+        return (
+          searchTarget?.displayName
+            ?.toLowerCase()
+            .includes(search.toLowerCase()) ||
+          searchTarget?.username?.toLowerCase().includes(search.toLowerCase())
+        );
       });
     }
 
@@ -385,7 +410,11 @@ exports.getConnections = async (req, res, next) => {
       // Fix profile image URL for creators (same logic as getSwipeStack)
       let creatorAvatarUrl = conn.creator?.profileImage;
       if (userRole === 'member' && conn.creator) {
-        if (creatorAvatarUrl === 'default-avatar.jpg' || !creatorAvatarUrl || !creatorAvatarUrl.startsWith('http')) {
+        if (
+          creatorAvatarUrl === 'default-avatar.jpg' ||
+          !creatorAvatarUrl ||
+          !creatorAvatarUrl.startsWith('http')
+        ) {
           creatorAvatarUrl = '/placeholders/beaufitulbrunette1.png';
         }
       }
@@ -393,48 +422,60 @@ exports.getConnections = async (req, res, next) => {
       // Fix profile image URL for members
       let memberAvatarUrl = conn.member?.profileImage;
       if (userRole === 'creator' && conn.member) {
-        if (memberAvatarUrl === 'default-avatar.jpg' || !memberAvatarUrl || !memberAvatarUrl.startsWith('http')) {
+        if (
+          memberAvatarUrl === 'default-avatar.jpg' ||
+          !memberAvatarUrl ||
+          !memberAvatarUrl.startsWith('http')
+        ) {
           memberAvatarUrl = '/placeholders/member-default.png';
         }
       }
 
       return {
         id: conn._id,
-        connectionData: userRole === 'member' ? {
-          creatorName: conn.creator.displayName,
-          creatorUsername: `@${conn.creator.username || conn.creator.displayName}`,
-          avatar: creatorAvatarUrl,
-          isOnline: conn.creator.isOnline
-        } : {
-          memberName: conn.member.username,
-          memberUsername: `@${conn.member.username}`,
-          avatar: memberAvatarUrl
-        },
+        connectionData:
+          userRole === 'member'
+            ? {
+                creatorName: conn.creator.displayName,
+                creatorUsername: `@${conn.creator.username || conn.creator.displayName}`,
+                avatar: creatorAvatarUrl,
+                isOnline: conn.creator.isOnline,
+              }
+            : {
+                memberName: conn.member.username,
+                memberUsername: `@${conn.member.username}`,
+                avatar: memberAvatarUrl,
+              },
         connectionType: conn.connectionType,
         status: conn.status,
         lastMessage: conn.lastMessagePreview?.content || 'No messages yet',
-        lastMessageTime: formatTime(conn.lastMessagePreview?.createdAt || conn.lastInteraction),
-        unreadCount: userRole === 'member' ? conn.unreadCount.member : conn.unreadCount.creator,
+        lastMessageTime: formatTime(
+          conn.lastMessagePreview?.createdAt || conn.lastInteraction
+        ),
+        unreadCount:
+          userRole === 'member'
+            ? conn.unreadCount.member
+            : conn.unreadCount.creator,
         isPinned: conn.isPinned,
         subscriptionAmount: conn.subscriptionAmount,
         totalSpent: conn.totalSpent,
         connectedSince: conn.connectedAt,
         messageCount: conn.messageCount,
         contentUnlocked: conn.contentUnlocked,
-        specialOffers: conn.specialOffers
+        specialOffers: conn.specialOffers,
       };
     });
 
     res.status(200).json({
       success: true,
       count: formattedConnections.length,
-      data: formattedConnections
+      data: formattedConnections,
     });
   } catch (error) {
     console.error('GetConnections error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -460,9 +501,9 @@ exports.getConnectionStats = async (req, res, next) => {
       {
         $group: {
           _id: '$status',
-          count: { $sum: 1 }
-        }
-      }
+          count: { $sum: 1 },
+        },
+      },
     ]);
 
     const formattedStats = {
@@ -470,7 +511,7 @@ exports.getConnectionStats = async (req, res, next) => {
       active: 0,
       pending: 0,
       expired: 0,
-      rejected: 0
+      rejected: 0,
     };
 
     stats.forEach(stat => {
@@ -480,12 +521,12 @@ exports.getConnectionStats = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: formattedStats
+      data: formattedStats,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -500,7 +541,7 @@ exports.acceptConnection = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found'
+        error: 'Connection not found',
       });
     }
 
@@ -524,12 +565,12 @@ exports.acceptConnection = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: connection
+      data: connection,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -543,7 +584,7 @@ exports.declineConnection = async (req, res, next) => {
       req.params.connectionId,
       {
         status: 'rejected',
-        lastInteraction: Date.now()
+        lastInteraction: Date.now(),
       },
       { new: true }
     );
@@ -551,18 +592,18 @@ exports.declineConnection = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found'
+        error: 'Connection not found',
       });
     }
 
     res.status(200).json({
       success: true,
-      data: connection
+      data: connection,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -577,7 +618,7 @@ exports.pinConnection = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found'
+        error: 'Connection not found',
       });
     }
 
@@ -586,12 +627,12 @@ exports.pinConnection = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: connection
+      data: connection,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -605,7 +646,7 @@ exports.archiveConnection = async (req, res, next) => {
       req.params.connectionId,
       {
         isArchived: true,
-        lastInteraction: Date.now()
+        lastInteraction: Date.now(),
       },
       { new: true }
     );
@@ -613,18 +654,18 @@ exports.archiveConnection = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found'
+        error: 'Connection not found',
       });
     }
 
     res.status(200).json({
       success: true,
-      data: connection
+      data: connection,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -641,7 +682,7 @@ exports.blockConnection = async (req, res, next) => {
         isActive: false,
         disconnectedBy: req.user.id,
         disconnectedAt: Date.now(),
-        disconnectReason: 'blocked'
+        disconnectReason: 'blocked',
       },
       { new: true }
     );
@@ -649,18 +690,18 @@ exports.blockConnection = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found'
+        error: 'Connection not found',
       });
     }
 
     res.status(200).json({
       success: true,
-      data: connection
+      data: connection,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -671,10 +712,10 @@ exports.blockConnection = async (req, res, next) => {
 exports.bulkConnectionAction = async (req, res, next) => {
   try {
     const { connectionIds, action } = req.body;
-    
+
     let updateData = {};
-    
-    switch(action) {
+
+    switch (action) {
       case 'archive':
         updateData = { isArchived: true };
         break;
@@ -690,7 +731,7 @@ exports.bulkConnectionAction = async (req, res, next) => {
       default:
         return res.status(400).json({
           success: false,
-          error: 'Invalid action'
+          error: 'Invalid action',
         });
     }
 
@@ -703,12 +744,12 @@ exports.bulkConnectionAction = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      modified: result.modifiedCount
+      modified: result.modifiedCount,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -737,18 +778,18 @@ exports.getMatch = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found'
+        error: 'Connection not found',
       });
     }
 
     res.status(200).json({
       success: true,
-      data: connection
+      data: connection,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -763,7 +804,7 @@ exports.unmatch = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found'
+        error: 'Connection not found',
       });
     }
 
@@ -775,12 +816,12 @@ exports.unmatch = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: 'Successfully disconnected'
+      message: 'Successfully disconnected',
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -800,7 +841,7 @@ exports.sendMessage = async (req, res, next) => {
     if (!connection || !connection.isConnected) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found or not active'
+        error: 'Connection not found or not active',
       });
     }
 
@@ -811,8 +852,8 @@ exports.sendMessage = async (req, res, next) => {
       senderModel: userRole === 'member' ? 'Member' : 'Creator',
       content: {
         text,
-        media
-      }
+        media,
+      },
     });
 
     // Update connection with last message
@@ -820,12 +861,12 @@ exports.sendMessage = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      data: message
+      data: message,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -836,19 +877,19 @@ exports.sendMessage = async (req, res, next) => {
 exports.getMessages = async (req, res, next) => {
   try {
     const { page = 1, limit = 50 } = req.query;
-    
+
     const messages = await Message.find({
       connection: req.params.connectionId,
-      isDeleted: false
+      isDeleted: false,
     })
-    .sort({ createdAt: -1 })
-    .limit(limit * 1)
-    .skip((page - 1) * limit)
-    .populate('sender', 'email');
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .populate('sender', 'email');
 
     const count = await Message.countDocuments({
       connection: req.params.connectionId,
-      isDeleted: false
+      isDeleted: false,
     });
 
     res.status(200).json({
@@ -856,12 +897,12 @@ exports.getMessages = async (req, res, next) => {
       count: messages.length,
       total: count,
       pages: Math.ceil(count / limit),
-      data: messages.reverse()
+      data: messages.reverse(),
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -882,22 +923,22 @@ exports.markMessagesAsRead = async (req, res, next) => {
       {
         connection: req.params.connectionId,
         sender: { $ne: req.user.id },
-        isRead: false
+        isRead: false,
       },
       {
         isRead: true,
-        readAt: Date.now()
+        readAt: Date.now(),
       }
     );
 
     res.status(200).json({
       success: true,
-      message: 'Messages marked as read'
+      message: 'Messages marked as read',
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -912,7 +953,7 @@ exports.deleteMessage = async (req, res, next) => {
     if (!message) {
       return res.status(404).json({
         success: false,
-        error: 'Message not found'
+        error: 'Message not found',
       });
     }
 
@@ -920,7 +961,7 @@ exports.deleteMessage = async (req, res, next) => {
     if (message.sender.toString() !== req.user.id) {
       return res.status(403).json({
         success: false,
-        error: 'Not authorized to delete this message'
+        error: 'Not authorized to delete this message',
       });
     }
 
@@ -931,12 +972,12 @@ exports.deleteMessage = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: 'Message deleted'
+      message: 'Message deleted',
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -947,19 +988,19 @@ exports.deleteMessage = async (req, res, next) => {
 
 function formatTime(date) {
   if (!date) return 'Never';
-  
+
   const now = new Date();
   const messageDate = new Date(date);
   const diffMs = now - messageDate;
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
-  
+
   if (diffMins < 1) return 'Just now';
   if (diffMins < 60) return `${diffMins} min ago`;
   if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
   if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-  
+
   return messageDate.toLocaleDateString();
 }
 

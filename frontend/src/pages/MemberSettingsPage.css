@@ -1,44 +1,52 @@
 /* MemberSettingsPage.css - Mobile-First Design */
 .member-settings-mobile {
-  --settings-primary: #17D2C2;
-  --settings-primary-hover: #12B7AB;
-  --settings-bg: #0A0B0F;
-  --settings-surface: #1A1D29;
+  --settings-primary: #17d2c2;
+  --settings-primary-hover: #12b7ab;
+  --settings-bg: #0a0b0f;
+  --settings-surface: #1a1d29;
   --settings-surface-hover: #242938;
-  --settings-border: #2A2F3F;
-  --settings-text: #FFFFFF;
-  --settings-text-secondary: #9CA3AF;
-  --settings-text-muted: #6B7280;
-  --settings-success: #10B981;
-  --settings-warning: #F59E0B;
-  --settings-error: #EF4444;
-  
+  --settings-border: #2a2f3f;
+  --settings-text: #ffffff;
+  --settings-text-secondary: #9ca3af;
+  --settings-text-muted: #6b7280;
+  --settings-success: #10b981;
+  --settings-warning: #f59e0b;
+  --settings-error: #ef4444;
+
   width: 100%;
   min-height: 100vh;
   background: var(--settings-bg);
   color: var(--settings-text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   position: relative;
 }
 
 /* Desktop Layout */
 .member-settings-desktop {
-  --settings-primary: #17D2C2;
-  --settings-primary-hover: #12B7AB;
-  --settings-bg: #0A0B0F;
-  --settings-surface: #1A1D29;
+  --settings-primary: #17d2c2;
+  --settings-primary-hover: #12b7ab;
+  --settings-bg: #0a0b0f;
+  --settings-surface: #1a1d29;
   --settings-surface-hover: #242938;
-  --settings-border: #2A2F3F;
-  --settings-text: #FFFFFF;
-  --settings-text-secondary: #9CA3AF;
-  --settings-text-muted: #6B7280;
-  --settings-success: #10B981;
-  --settings-warning: #F59E0B;
-  --settings-error: #EF4444;
+  --settings-border: #2a2f3f;
+  --settings-text: #ffffff;
+  --settings-text-secondary: #9ca3af;
+  --settings-text-muted: #6b7280;
+  --settings-success: #10b981;
+  --settings-warning: #f59e0b;
+  --settings-error: #ef4444;
 
   background: var(--settings-bg);
   color: var(--settings-text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   min-height: 100vh;
 }
 

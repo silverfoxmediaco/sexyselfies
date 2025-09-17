@@ -2,12 +2,12 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth.middleware');
-const { 
-  checkContentUnlock, 
+const {
+  checkContentUnlock,
   checkSpendingLimit,
   validateUnlockPrice,
   trackUnlock,
-  checkBundleUnlock
+  checkBundleUnlock,
 } = require('../middleware/unlock.middleware');
 const { rateLimiter } = require('../middleware/rateLimit.middleware');
 
@@ -18,7 +18,7 @@ const {
   createContent,
   updateContent,
   deleteContent,
-  unlockContent,  // Changed from purchaseContent
+  unlockContent, // Changed from purchaseContent
   likeContent,
   unlikeContent,
   reportContent,
@@ -26,7 +26,7 @@ const {
   getBundledContent,
   unlockBundle,
   getMyUnlockedContent,
-  getContentStats
+  getContentStats,
 } = require('../controllers/content.controller');
 
 // ============================================
@@ -43,7 +43,8 @@ router.get('/:id/preview', getContentPreview);
 router.get('/creator/:creatorId', getCreatorContent);
 
 // Get single content (full access if unlocked, preview if not) - PUBLIC
-router.get('/:id',
+router.get(
+  '/:id',
   // Custom middleware for public content access
   async (req, res, next) => {
     try {
@@ -52,17 +53,22 @@ router.get('/:id',
 
       // Check if content exists
       const Content = require('../models/Content');
-      const content = await Content.findById(contentId).populate('creator', 'username profileImage isVerified');
+      const content = await Content.findById(contentId).populate(
+        'creator',
+        'username profileImage isVerified'
+      );
 
       if (!content) {
         console.log(`❌ Content not found: ${contentId}`);
         return res.status(404).json({
           success: false,
-          message: 'Content not found'
+          message: 'Content not found',
         });
       }
 
-      console.log(`✅ Content found: ${content.title || 'Untitled'} by ${content.creator?.username}`);
+      console.log(
+        `✅ Content found: ${content.title || 'Untitled'} by ${content.creator?.username}`
+      );
 
       // Default to no access for unauthenticated users
       req.hasAccess = false;
@@ -83,7 +89,7 @@ router.get('/:id',
             member: userId,
             content: contentId,
             type: 'content_unlock',
-            status: 'completed'
+            status: 'completed',
           });
 
           if (transaction) {
@@ -104,7 +110,7 @@ router.get('/:id',
       console.error('Content access check error:', error);
       res.status(500).json({
         success: false,
-        message: 'Server error checking content access'
+        message: 'Server error checking content access',
       });
     }
   },
@@ -121,22 +127,25 @@ router.use(protect);
 // ------------------------------------------
 
 // Unlock single content (micro-transaction)
-router.post('/:id/unlock',
+router.post(
+  '/:id/unlock',
   authorize('member'),
-  validateUnlockPrice,  // Validates minimum price only ($0.99+)
-  checkSpendingLimit,   // Checks daily spending limits if set
-  trackUnlock,          // Analytics tracking
-  unlockContent         // Process the unlock
+  validateUnlockPrice, // Validates minimum price only ($0.99+)
+  checkSpendingLimit, // Checks daily spending limits if set
+  trackUnlock, // Analytics tracking
+  unlockContent // Process the unlock
 );
 
 // Bundle operations
-router.get('/bundle/:bundleId',
+router.get(
+  '/bundle/:bundleId',
   authorize('member'),
   checkBundleUnlock,
   getBundledContent
 );
 
-router.post('/bundle/:bundleId/unlock',
+router.post(
+  '/bundle/:bundleId/unlock',
   authorize('member'),
   validateUnlockPrice,
   checkSpendingLimit,
@@ -145,25 +154,21 @@ router.post('/bundle/:bundleId/unlock',
 );
 
 // Get all content I've unlocked
-router.get('/my/unlocked',
-  authorize('member'),
-  getMyUnlockedContent
-);
+router.get('/my/unlocked', authorize('member'), getMyUnlockedContent);
 
 // Like/unlike content (free action)
-router.post('/:id/like',
+router.post(
+  '/:id/like',
   authorize('member'),
   rateLimiter({ windowMs: 1000, max: 10 }), // Prevent spam
   likeContent
 );
 
-router.delete('/:id/like',
-  authorize('member'),
-  unlikeContent
-);
+router.delete('/:id/like', authorize('member'), unlikeContent);
 
 // Report inappropriate content
-router.post('/:id/report',
+router.post(
+  '/:id/report',
   authorize('member'),
   rateLimiter({ windowMs: 60000, max: 5 }), // Max 5 reports per minute
   reportContent
@@ -174,28 +179,24 @@ router.post('/:id/report',
 // ------------------------------------------
 
 // Create new content with pricing
-router.post('/',
+router.post(
+  '/',
   authorize('creator'),
   rateLimiter({ windowMs: 60000, max: 20 }), // Max 20 uploads per minute
   createContent
 );
 
 // Update content (including price changes)
-router.put('/:id',
-  authorize('creator'),
-  updateContent
-);
+router.put('/:id', authorize('creator'), updateContent);
 
 // Delete content (soft delete, preserves unlock history)
-router.delete('/:id',
-  authorize('creator'),
-  deleteContent
-);
+router.delete('/:id', authorize('creator'), deleteContent);
 
 // Get content statistics
-router.get('/:id/stats',
+router.get(
+  '/:id/stats',
   authorize('creator'),
-  getContentStats  // Views, unlocks, revenue, etc.
+  getContentStats // Views, unlocks, revenue, etc.
 );
 
 // ------------------------------------------
@@ -203,7 +204,8 @@ router.get('/:id/stats',
 // ------------------------------------------
 
 // Admin can view any content
-router.get('/:id/admin',
+router.get(
+  '/:id/admin',
   authorize('admin'),
   (req, res, next) => {
     req.hasAccess = true; // Admin bypass

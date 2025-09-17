@@ -10,63 +10,62 @@ const { getRealTimeMetrics } = require('../services/analytics.service');
 /**
  * Initialize creator sales socket handlers
  */
-exports.initializeCreatorSalesSockets = (io) => {
+exports.initializeCreatorSalesSockets = io => {
   const salesNamespace = io.of('/creator-sales');
-  
+
   // Store active dashboard connections
   const activeDashboards = new Map();
-  
-  salesNamespace.on('connection', (socket) => {
+
+  salesNamespace.on('connection', socket => {
     console.log(`💰 Creator sales socket connected: ${socket.id}`);
-    
+
     // Authentication and setup
-    socket.on('authenticate', async (data) => {
+    socket.on('authenticate', async data => {
       try {
         const { creatorId, token } = data;
-        
+
         // Verify creator identity
         if (!creatorId || !token) {
           socket.emit('error', { message: 'Authentication required' });
           return socket.disconnect();
         }
-        
+
         // Store creator info
         socket.creatorId = creatorId;
         socket.authenticated = true;
-        
+
         // Join creator-specific rooms
         socket.join(`creator:${creatorId}`);
         socket.join('creators:active');
-        
+
         // Initialize dashboard session
         activeDashboards.set(creatorId, {
           socketId: socket.id,
           connectedAt: new Date(),
-          lastActivity: new Date()
+          lastActivity: new Date(),
         });
-        
+
         // Send initial dashboard data
         await sendInitialDashboardData(socket, creatorId);
-        
+
         // Start real-time metrics streaming
         startMetricsStreaming(socket, creatorId);
-        
+
         socket.emit('authenticated', {
           success: true,
           creatorId,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
-        
       } catch (error) {
         console.error('Sales socket authentication error:', error);
         socket.emit('error', { message: 'Authentication failed' });
       }
     });
-    
+
     // ============================================
     // LIVE SALES DASHBOARD
     // ============================================
-    
+
     /**
      * Stream real-time metrics
      */
@@ -78,35 +77,34 @@ exports.initializeCreatorSalesSockets = (io) => {
             clearInterval(metricsInterval);
             return;
           }
-          
+
           const metrics = await getRealTimeMetrics(creatorId);
-          
+
           socket.emit('metrics:update', {
             metrics,
-            timestamp: new Date()
+            timestamp: new Date(),
           });
-          
         } catch (error) {
           console.error('Metrics streaming error:', error);
         }
       }, 5000);
-      
+
       // Clean up on disconnect
       socket.on('disconnect', () => {
         clearInterval(metricsInterval);
       });
     }
-    
+
     /**
      * Dashboard widget refresh
      */
-    socket.on('dashboard:refresh-widget', async (data) => {
+    socket.on('dashboard:refresh-widget', async data => {
       try {
         const { widgetType } = data;
         const creatorId = socket.creatorId;
-        
+
         let widgetData;
-        
+
         switch (widgetType) {
           case 'revenue':
             widgetData = await getRevenueWidget(creatorId);
@@ -126,52 +124,50 @@ exports.initializeCreatorSalesSockets = (io) => {
           default:
             widgetData = null;
         }
-        
+
         socket.emit('widget:data', {
           widgetType,
           data: widgetData,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
-        
       } catch (error) {
         console.error('Widget refresh error:', error);
         socket.emit('error', { message: 'Failed to refresh widget' });
       }
     });
-    
+
     /**
      * Live activity feed
      */
-    socket.on('dashboard:activity-feed', async (data) => {
+    socket.on('dashboard:activity-feed', async data => {
       try {
         const creatorId = socket.creatorId;
         const { limit = 20 } = data;
-        
+
         // Get recent activities
         const activities = await getRecentActivities(creatorId, limit);
-        
+
         socket.emit('activity:feed', {
           activities,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
-        
       } catch (error) {
         console.error('Activity feed error:', error);
       }
     });
-    
+
     // ============================================
     // REAL-TIME CONVERSION ALERTS
     // ============================================
-    
+
     /**
      * Broadcast conversion event
      */
-    socket.on('conversion:occurred', async (data) => {
+    socket.on('conversion:occurred', async data => {
       try {
         const { memberId, amount, interactionType } = data;
         const creatorId = socket.creatorId;
-        
+
         // Update sales activity
         const salesActivity = await CreatorSalesActivity.findOneAndUpdate(
           { creator: creatorId },
@@ -180,16 +176,22 @@ exports.initializeCreatorSalesSockets = (io) => {
               'daily.conversions': 1,
               'daily.revenue': amount,
               'metrics.last7Days.totalConversions': 1,
-              'metrics.last7Days.totalRevenue': amount
-            }
+              'metrics.last7Days.totalRevenue': amount,
+            },
           },
           { new: true }
         );
-        
+
         // Calculate conversion rate
-        const conversionRate = salesActivity.daily.totalInteractions > 0 ?
-          (salesActivity.daily.conversions / salesActivity.daily.totalInteractions * 100).toFixed(2) : 0;
-        
+        const conversionRate =
+          salesActivity.daily.totalInteractions > 0
+            ? (
+                (salesActivity.daily.conversions /
+                  salesActivity.daily.totalInteractions) *
+                100
+              ).toFixed(2)
+            : 0;
+
         // Broadcast to creator's dashboard
         salesNamespace.to(`creator:${creatorId}`).emit('conversion:alert', {
           memberId,
@@ -199,115 +201,116 @@ exports.initializeCreatorSalesSockets = (io) => {
           totalToday: salesActivity.daily.conversions,
           revenueToday: salesActivity.daily.revenue,
           timestamp: new Date(),
-          celebration: amount > 100 // Trigger celebration animation for big conversions
+          celebration: amount > 100, // Trigger celebration animation for big conversions
         });
-        
+
         // Check for achievements
         await checkAndUnlockAchievements(salesActivity, socket);
-        
+
         // Update leaderboard position
         await updateLeaderboardPosition(creatorId, socket);
-        
       } catch (error) {
         console.error('Conversion alert error:', error);
       }
     });
-    
+
     /**
      * Real-time ROI tracking
      */
-    socket.on('roi:calculate', async (data) => {
+    socket.on('roi:calculate', async data => {
       try {
         const { interactionId } = data;
         const creatorId = socket.creatorId;
-        
+
         // Calculate ROI for interaction
-        const { trackInteractionROI } = require('../services/analytics.service');
+        const {
+          trackInteractionROI,
+        } = require('../services/analytics.service');
         const roi = await trackInteractionROI(interactionId, creatorId);
-        
+
         socket.emit('roi:calculated', {
           interactionId,
           roi,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
-        
       } catch (error) {
         console.error('ROI calculation error:', error);
       }
     });
-    
+
     // ============================================
     // INSTANT MEMBER RESPONSES
     // ============================================
-    
+
     /**
      * Member response notification
      */
-    socket.on('member:response-received', async (data) => {
+    socket.on('member:response-received', async data => {
       try {
         const { memberId, interactionId, responseType } = data;
         const creatorId = socket.creatorId;
-        
+
         // Get member details
         const MemberAnalytics = require('../models/MemberAnalytics');
-        const memberAnalytics = await MemberAnalytics.findOne({ member: memberId })
+        const memberAnalytics = await MemberAnalytics.findOne({
+          member: memberId,
+        })
           .populate('member', 'username avatar')
           .select('spending.tier activity.level');
-        
+
         // Broadcast response alert
         salesNamespace.to(`creator:${creatorId}`).emit('response:alert', {
           member: {
             id: memberId,
             username: memberAnalytics?.member.username,
             avatar: memberAnalytics?.member.avatar,
-            tier: memberAnalytics?.spending.tier
+            tier: memberAnalytics?.spending.tier,
           },
           interactionId,
           responseType,
           timestamp: new Date(),
-          priority: memberAnalytics?.spending.tier === 'whale' ? 'high' : 'normal'
+          priority:
+            memberAnalytics?.spending.tier === 'whale' ? 'high' : 'normal',
         });
-        
+
         // Update response metrics
         await updateResponseMetrics(creatorId, responseType);
-        
       } catch (error) {
         console.error('Member response error:', error);
       }
     });
-    
+
     /**
      * Message read receipt
      */
-    socket.on('message:read', async (data) => {
+    socket.on('message:read', async data => {
       try {
         const { memberId, messageId } = data;
         const creatorId = socket.creatorId;
-        
+
         // Update interaction
         await MemberInteraction.findByIdAndUpdate(messageId, {
           $set: {
             'response.messageRead': true,
-            'response.readAt': new Date()
-          }
+            'response.readAt': new Date(),
+          },
         });
-        
+
         // Notify creator
         socket.emit('message:read-receipt', {
           memberId,
           messageId,
-          readAt: new Date()
+          readAt: new Date(),
         });
-        
       } catch (error) {
         console.error('Read receipt error:', error);
       }
     });
-    
+
     // ============================================
     // COMPETITION UPDATES (GAMIFICATION)
     // ============================================
-    
+
     /**
      * Leaderboard updates
      */
@@ -315,65 +318,66 @@ exports.initializeCreatorSalesSockets = (io) => {
       try {
         const creatorId = socket.creatorId;
         const position = await getLeaderboardPosition(creatorId);
-        
+
         socket.emit('leaderboard:position', position);
-        
       } catch (error) {
         console.error('Leaderboard check error:', error);
       }
     });
-    
+
     /**
      * Achievement unlocked
      */
     socket.on('achievement:check', async () => {
       try {
         const creatorId = socket.creatorId;
-        const salesActivity = await CreatorSalesActivity.findOne({ creator: creatorId });
-        
+        const salesActivity = await CreatorSalesActivity.findOne({
+          creator: creatorId,
+        });
+
         if (salesActivity) {
           await checkAndUnlockAchievements(salesActivity, socket);
         }
-        
       } catch (error) {
         console.error('Achievement check error:', error);
       }
     });
-    
+
     /**
      * Challenge participation
      */
-    socket.on('challenge:join', async (data) => {
+    socket.on('challenge:join', async data => {
       try {
         const { challengeId } = data;
         const creatorId = socket.creatorId;
-        
+
         // Join challenge room
         socket.join(`challenge:${challengeId}`);
-        
+
         // Get challenge details
         const challenge = await getChallenge(challengeId);
-        
+
         // Broadcast participation
-        salesNamespace.to(`challenge:${challengeId}`).emit('challenge:participant-joined', {
-          creatorId,
-          challenge,
-          timestamp: new Date()
-        });
-        
+        salesNamespace
+          .to(`challenge:${challengeId}`)
+          .emit('challenge:participant-joined', {
+            creatorId,
+            challenge,
+            timestamp: new Date(),
+          });
+
         // Send challenge leaderboard
         const challengeLeaderboard = await getChallengeLeaderboard(challengeId);
-        
+
         socket.emit('challenge:leaderboard', {
           challengeId,
-          leaderboard: challengeLeaderboard
+          leaderboard: challengeLeaderboard,
         });
-        
       } catch (error) {
         console.error('Challenge join error:', error);
       }
     });
-    
+
     /**
      * Live competition updates
      */
@@ -385,65 +389,70 @@ exports.initializeCreatorSalesSockets = (io) => {
             clearInterval(competitionInterval);
             return;
           }
-          
+
           // Get current competitions
           const competitions = await getActiveCompetitions();
-          
+
           // Get creator's position in each
           const positions = await Promise.all(
-            competitions.map(async (comp) => ({
+            competitions.map(async comp => ({
               competitionId: comp._id,
               name: comp.name,
               position: await getCompetitionPosition(creatorId, comp._id),
-              timeRemaining: comp.endDate - new Date()
+              timeRemaining: comp.endDate - new Date(),
             }))
           );
-          
+
           socket.emit('competition:update', {
             competitions: positions,
-            timestamp: new Date()
+            timestamp: new Date(),
           });
-          
         } catch (error) {
           console.error('Competition update error:', error);
         }
       }, 60000); // Every minute
-      
+
       socket.on('disconnect', () => {
         clearInterval(competitionInterval);
       });
     }
-    
+
     // ============================================
     // GOAL TRACKING
     // ============================================
-    
+
     /**
      * Goal progress update
      */
     socket.on('goal:check-progress', async () => {
       try {
         const creatorId = socket.creatorId;
-        const salesActivity = await CreatorSalesActivity.findOne({ creator: creatorId });
-        
+        const salesActivity = await CreatorSalesActivity.findOne({
+          creator: creatorId,
+        });
+
         if (salesActivity && salesActivity.goals) {
-          const activeGoals = salesActivity.goals.filter(g => g.status === 'active');
-          
+          const activeGoals = salesActivity.goals.filter(
+            g => g.status === 'active'
+          );
+
           const goalProgress = activeGoals.map(goal => ({
             id: goal._id,
             type: goal.type,
             target: goal.target,
             current: goal.current,
-            progress: (goal.current / goal.target * 100).toFixed(2),
+            progress: ((goal.current / goal.target) * 100).toFixed(2),
             deadline: goal.deadline,
-            daysRemaining: Math.ceil((goal.deadline - new Date()) / (1000 * 60 * 60 * 24))
+            daysRemaining: Math.ceil(
+              (goal.deadline - new Date()) / (1000 * 60 * 60 * 24)
+            ),
           }));
-          
+
           socket.emit('goal:progress', {
             goals: goalProgress,
-            timestamp: new Date()
+            timestamp: new Date(),
           });
-          
+
           // Check for completed goals
           goalProgress.forEach(goal => {
             if (goal.progress >= 100) {
@@ -451,30 +460,29 @@ exports.initializeCreatorSalesSockets = (io) => {
                 goalId: goal.id,
                 type: goal.type,
                 achievement: 'Goal Crusher',
-                reward: calculateGoalReward(goal)
+                reward: calculateGoalReward(goal),
               });
             }
           });
         }
-        
       } catch (error) {
         console.error('Goal progress error:', error);
       }
     });
-    
+
     // ============================================
     // SPECIAL OFFER TRACKING
     // ============================================
-    
+
     /**
      * Offer performance real-time
      */
-    socket.on('offer:track-performance', async (data) => {
+    socket.on('offer:track-performance', async data => {
       try {
         const { offerId } = data;
-        
+
         const offer = await SpecialOffer.findById(offerId);
-        
+
         if (offer) {
           socket.emit('offer:performance', {
             offerId,
@@ -482,34 +490,33 @@ exports.initializeCreatorSalesSockets = (io) => {
             redemptions: offer.redemption.totalRedemptions,
             redemptionRate: offer.performance.redemptionRate,
             revenue: offer.performance.totalRevenue,
-            timeRemaining: offer.validity.endDate - new Date()
+            timeRemaining: offer.validity.endDate - new Date(),
           });
         }
-        
       } catch (error) {
         console.error('Offer tracking error:', error);
       }
     });
-    
+
     // ============================================
     // DISCONNECT HANDLING
     // ============================================
-    
+
     socket.on('disconnect', () => {
       console.log(`💰 Creator sales socket disconnected: ${socket.id}`);
-      
+
       // Remove from active dashboards
       if (socket.creatorId) {
         activeDashboards.delete(socket.creatorId);
       }
-      
+
       // Leave all rooms
       socket.rooms.forEach(room => {
         socket.leave(room);
       });
     });
   });
-  
+
   console.log('✅ Creator sales WebSocket handlers initialized');
 };
 
@@ -522,29 +529,32 @@ exports.initializeCreatorSalesSockets = (io) => {
  */
 async function sendInitialDashboardData(socket, creatorId) {
   try {
-    const salesActivity = await CreatorSalesActivity.findOne({ creator: creatorId });
-    
+    const salesActivity = await CreatorSalesActivity.findOne({
+      creator: creatorId,
+    });
+
     if (!salesActivity) {
       // Create new activity if doesn't exist
       const newActivity = new CreatorSalesActivity({
         creator: creatorId,
-        daily: { date: new Date() }
+        daily: { date: new Date() },
       });
       await newActivity.save();
       salesActivity = newActivity;
     }
-    
+
     socket.emit('dashboard:initial-data', {
       daily: salesActivity.daily,
       metrics: salesActivity.metrics,
       performance: salesActivity.performance,
       goals: salesActivity.goals.filter(g => g.status === 'active'),
-      achievements: salesActivity.gamification.achievements.filter(a => a.unlockedAt),
+      achievements: salesActivity.gamification.achievements.filter(
+        a => a.unlockedAt
+      ),
       level: salesActivity.gamification.level,
       points: salesActivity.gamification.points,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
-    
   } catch (error) {
     console.error('Error sending initial dashboard data:', error);
   }
@@ -556,28 +566,28 @@ async function sendInitialDashboardData(socket, creatorId) {
 async function getRevenueWidget(creatorId) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   const revenue = await Transaction.aggregate([
     {
       $match: {
         creator: creatorId,
         createdAt: { $gte: today },
-        status: 'completed'
-      }
+        status: 'completed',
+      },
     },
     {
       $group: {
         _id: null,
         total: { $sum: '$amount' },
-        count: { $sum: 1 }
-      }
-    }
+        count: { $sum: 1 },
+      },
+    },
   ]);
-  
+
   return {
     todayRevenue: revenue[0]?.total || 0,
     transactionCount: revenue[0]?.count || 0,
-    avgTransaction: revenue[0] ? (revenue[0].total / revenue[0].count) : 0
+    avgTransaction: revenue[0] ? revenue[0].total / revenue[0].count : 0,
   };
 }
 
@@ -585,13 +595,16 @@ async function getRevenueWidget(creatorId) {
  * Get conversions widget data
  */
 async function getConversionsWidget(creatorId) {
-  const salesActivity = await CreatorSalesActivity.findOne({ creator: creatorId });
-  
+  const salesActivity = await CreatorSalesActivity.findOne({
+    creator: creatorId,
+  });
+
   return {
     todayConversions: salesActivity?.daily.conversions || 0,
     conversionRate: salesActivity?.performance.overallConversionRate || 0,
-    bestConvertingType: Object.entries(salesActivity?.performance.conversionRates || {})
-      .sort((a, b) => b[1].rate - a[1].rate)[0]
+    bestConvertingType: Object.entries(
+      salesActivity?.performance.conversionRates || {}
+    ).sort((a, b) => b[1].rate - a[1].rate)[0],
   };
 }
 
@@ -599,12 +612,17 @@ async function getConversionsWidget(creatorId) {
  * Get interactions widget data
  */
 async function getInteractionsWidget(creatorId) {
-  const salesActivity = await CreatorSalesActivity.findOne({ creator: creatorId });
-  
+  const salesActivity = await CreatorSalesActivity.findOne({
+    creator: creatorId,
+  });
+
   return {
     todayInteractions: salesActivity?.daily.totalInteractions || 0,
-    responseRate: salesActivity?.daily.responses / (salesActivity?.daily.totalInteractions || 1) * 100,
-    mostUsedType: salesActivity?.daily.segments
+    responseRate:
+      (salesActivity?.daily.responses /
+        (salesActivity?.daily.totalInteractions || 1)) *
+      100,
+    mostUsedType: salesActivity?.daily.segments,
   };
 }
 
@@ -613,19 +631,19 @@ async function getInteractionsWidget(creatorId) {
  */
 async function getActiveMembersWidget(creatorId) {
   const MemberAnalytics = require('../models/MemberAnalytics');
-  
+
   const activeMembers = await MemberAnalytics.find({
     'activity.isOnline': true,
     'privacy.discoverable': true,
-    'privacy.blockedCreators': { $ne: creatorId }
+    'privacy.blockedCreators': { $ne: creatorId },
   })
-  .select('member spending.tier')
-  .limit(10);
-  
+    .select('member spending.tier')
+    .limit(10);
+
   return {
     onlineCount: activeMembers.length,
     whalesOnline: activeMembers.filter(m => m.spending.tier === 'whale').length,
-    vipsOnline: activeMembers.filter(m => m.spending.tier === 'vip').length
+    vipsOnline: activeMembers.filter(m => m.spending.tier === 'vip').length,
   };
 }
 
@@ -641,26 +659,26 @@ async function getLeaderboardWidget(creatorId) {
  */
 async function getRecentActivities(creatorId, limit) {
   const activities = [];
-  
+
   // Get recent interactions
   const interactions = await MemberInteraction.find({ creator: creatorId })
     .sort('-createdAt')
     .limit(limit)
     .populate('member', 'username avatar');
-  
+
   interactions.forEach(interaction => {
     activities.push({
       type: 'interaction',
       subtype: interaction.interactionType,
       member: interaction.member,
       timestamp: interaction.createdAt,
-      converted: interaction.conversion.resulted_in_purchase
+      converted: interaction.conversion.resulted_in_purchase,
     });
   });
-  
+
   // Sort by timestamp
   activities.sort((a, b) => b.timestamp - a.timestamp);
-  
+
   return activities.slice(0, limit);
 }
 
@@ -669,13 +687,16 @@ async function getRecentActivities(creatorId, limit) {
  */
 async function checkAndUnlockAchievements(salesActivity, socket) {
   const achievements = salesActivity.gamification.achievements;
-  
+
   // Check each achievement
   achievements.forEach(achievement => {
-    if (!achievement.unlockedAt && checkAchievementCriteria(achievement, salesActivity)) {
+    if (
+      !achievement.unlockedAt &&
+      checkAchievementCriteria(achievement, salesActivity)
+    ) {
       achievement.unlockedAt = new Date();
       achievement.progress = 100;
-      
+
       // Notify creator
       socket.emit('achievement:unlocked', {
         achievement: {
@@ -683,16 +704,16 @@ async function checkAndUnlockAchievements(salesActivity, socket) {
           name: achievement.name,
           description: achievement.description,
           icon: achievement.icon,
-          points: achievement.points
+          points: achievement.points,
         },
-        totalPoints: salesActivity.gamification.points + achievement.points
+        totalPoints: salesActivity.gamification.points + achievement.points,
       });
-      
+
       // Update points
       salesActivity.gamification.points += achievement.points;
     }
   });
-  
+
   await salesActivity.save();
 }
 
@@ -720,11 +741,13 @@ async function getLeaderboardPosition(creatorId) {
   const allCreators = await CreatorSalesActivity.find({})
     .sort('-metrics.last30Days.totalRevenue')
     .select('creator metrics.last30Days.totalRevenue');
-  
-  const position = allCreators.findIndex(c => c.creator.toString() === creatorId) + 1;
+
+  const position =
+    allCreators.findIndex(c => c.creator.toString() === creatorId) + 1;
   const total = allCreators.length;
-  const percentile = position > 0 ? Math.round((1 - position / total) * 100) : 0;
-  
+  const percentile =
+    position > 0 ? Math.round((1 - position / total) * 100) : 0;
+
   return {
     position,
     total,
@@ -732,7 +755,7 @@ async function getLeaderboardPosition(creatorId) {
     nearbyCreators: allCreators.slice(
       Math.max(0, position - 2),
       Math.min(total, position + 3)
-    )
+    ),
   };
 }
 
@@ -741,20 +764,20 @@ async function getLeaderboardPosition(creatorId) {
  */
 async function updateLeaderboardPosition(creatorId, socket) {
   const position = await getLeaderboardPosition(creatorId);
-  
+
   socket.emit('leaderboard:updated', position);
-  
+
   // Check for rank improvements
   const previousPosition = socket.previousPosition || position.position;
-  
+
   if (position.position < previousPosition) {
     socket.emit('rank:improved', {
       previousRank: previousPosition,
       newRank: position.position,
-      spotsGained: previousPosition - position.position
+      spotsGained: previousPosition - position.position,
     });
   }
-  
+
   socket.previousPosition = position.position;
 }
 
@@ -767,8 +790,8 @@ async function updateResponseMetrics(creatorId, responseType) {
     {
       $inc: {
         'daily.responses': 1,
-        [`daily.responseTypes.${responseType}`]: 1
-      }
+        [`daily.responseTypes.${responseType}`]: 1,
+      },
     }
   );
 }
@@ -798,7 +821,7 @@ async function getChallenge(challengeId) {
     id: challengeId,
     name: 'Daily Conversion Challenge',
     target: 10,
-    reward: 500
+    reward: 500,
   };
 }
 
@@ -816,7 +839,7 @@ async function getChallengeLeaderboard(challengeId) {
 function calculateGoalReward(goal) {
   const baseReward = 100;
   const difficultyMultiplier = goal.target / 10;
-  
+
   return Math.round(baseReward * difficultyMultiplier);
 }
 

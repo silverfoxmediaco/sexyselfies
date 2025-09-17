@@ -10,7 +10,7 @@ const {
   adminLogout,
   updateAdminStatus,
   getAllAdmins,
-  deleteAdmin
+  deleteAdmin,
 } = require('../controllers/admin.auth.controller');
 
 const {
@@ -23,7 +23,7 @@ const {
   removeContent,
   getModerationStats,
   searchUsers,
-  freezePayouts
+  freezePayouts,
 } = require('../controllers/admin.moderation.controller');
 
 // Import middleware
@@ -36,7 +36,7 @@ const {
   rateLimitAdminAction,
   logAdminAction,
   validateAdminRequest,
-  canModifyUser
+  canModifyUser,
 } = require('../middleware/admin.auth.middleware');
 
 // ============================
@@ -168,22 +168,22 @@ router.get(
             from: 'creatorprofiles',
             localField: '_id',
             foreignField: 'creator',
-            as: 'profile'
-          }
+            as: 'profile',
+          },
         },
         {
           $lookup: {
             from: 'users',
             localField: 'user',
             foreignField: '_id',
-            as: 'user'
-          }
+            as: 'user',
+          },
         },
         {
-          $unwind: { path: '$profile', preserveNullAndEmptyArrays: true }
+          $unwind: { path: '$profile', preserveNullAndEmptyArrays: true },
         },
         {
-          $unwind: '$user'
+          $unwind: '$user',
         },
         {
           $lookup: {
@@ -196,36 +196,39 @@ router.get(
                     $and: [
                       { $eq: ['$creator', '$$creatorId'] },
                       { $eq: ['$status', 'completed'] },
-                      { $eq: ['$payoutProcessed', false] }
-                    ]
-                  }
-                }
+                      { $eq: ['$payoutProcessed', false] },
+                    ],
+                  },
+                },
               },
               {
                 $group: {
                   _id: null,
-                  totalEarnings: { $sum: '$creatorEarnings' }
-                }
-              }
+                  totalEarnings: { $sum: '$creatorEarnings' },
+                },
+              },
             ],
-            as: 'pendingEarnings'
-          }
+            as: 'pendingEarnings',
+          },
         },
         {
           $addFields: {
-            pendingAmount: { 
-              $ifNull: [{ $arrayElemAt: ['$pendingEarnings.totalEarnings', 0] }, 0] 
+            pendingAmount: {
+              $ifNull: [
+                { $arrayElemAt: ['$pendingEarnings.totalEarnings', 0] },
+                0,
+              ],
             },
-            minimumPayout: { 
-              $ifNull: ['$profile.financials.payoutSettings.minimumPayout', 50] 
+            minimumPayout: {
+              $ifNull: ['$profile.financials.payoutSettings.minimumPayout', 50],
             },
-            paypalEmail: '$profile.financials.payoutSettings.paypalEmail'
-          }
+            paypalEmail: '$profile.financials.payoutSettings.paypalEmail',
+          },
         },
         {
           $match: {
-            pendingAmount: { $gt: 0 }
-          }
+            pendingAmount: { $gt: 0 },
+          },
         },
         {
           $project: {
@@ -235,33 +238,36 @@ router.get(
             email: '$user.email',
             pendingAmount: 1,
             minimumPayout: 1,
-            paypalEmail: 1
-          }
+            paypalEmail: 1,
+          },
         },
-        { $sort: { pendingAmount: -1 } }
+        { $sort: { pendingAmount: -1 } },
       ]);
 
       // Get payout statistics
-      const totalPending = creatorsWithProfiles.reduce((sum, creator) => sum + creator.pendingAmount, 0);
-      
+      const totalPending = creatorsWithProfiles.reduce(
+        (sum, creator) => sum + creator.pendingAmount,
+        0
+      );
+
       // Get today's payouts
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
-      
+
       const todayPayouts = await Transaction.aggregate([
         {
           $match: {
             type: 'payout',
             createdAt: { $gte: todayStart },
-            status: 'completed'
-          }
+            status: 'completed',
+          },
         },
         {
           $group: {
             _id: null,
-            total: { $sum: { $abs: '$amount' } }
-          }
-        }
+            total: { $sum: { $abs: '$amount' } },
+          },
+        },
       ]);
 
       // Get this month's payouts
@@ -274,20 +280,22 @@ router.get(
           $match: {
             type: 'payout',
             createdAt: { $gte: monthStart },
-            status: 'completed'
-          }
+            status: 'completed',
+          },
         },
         {
           $group: {
             _id: null,
             total: { $sum: { $abs: '$amount' } },
-            count: { $sum: 1 }
-          }
-        }
+            count: { $sum: 1 },
+          },
+        },
       ]);
 
       // Get payout requests
-      const pendingPayoutRequests = await PayoutRequest.find({ status: 'pending' })
+      const pendingPayoutRequests = await PayoutRequest.find({
+        status: 'pending',
+      })
         .populate('creator', 'displayName profileImage')
         .populate('creator.user', 'email')
         .sort('-createdAt')
@@ -295,12 +303,12 @@ router.get(
 
       // Get recent payout history from PayoutRequest model
       const payoutHistory = await PayoutRequest.find({
-        status: { $in: ['processed', 'approved'] }
+        status: { $in: ['processed', 'approved'] },
       })
-      .populate('creator', 'displayName')
-      .sort('-createdAt')
-      .limit(20)
-      .lean();
+        .populate('creator', 'displayName')
+        .sort('-createdAt')
+        .limit(20)
+        .lean();
 
       const formattedHistory = payoutHistory.map(payout => ({
         _id: payout._id,
@@ -308,7 +316,7 @@ router.get(
         amount: payout.requestedAmount,
         status: payout.status,
         processedAt: payout.processedAt || payout.reviewedAt,
-        paymentMethod: 'paypal'
+        paymentMethod: 'paypal',
       }));
 
       // Format payout requests for frontend
@@ -322,11 +330,14 @@ router.get(
         paypalEmail: request.paypalEmail,
         minimumPayout: 50, // Default minimum
         createdAt: request.createdAt,
-        message: request.message
+        message: request.message,
       }));
 
       // Calculate total pending from requests
-      const requestsPendingTotal = pendingPayoutRequests.reduce((sum, req) => sum + req.requestedAmount, 0);
+      const requestsPendingTotal = pendingPayoutRequests.reduce(
+        (sum, req) => sum + req.requestedAmount,
+        0
+      );
 
       res.status(200).json({
         success: true,
@@ -340,18 +351,19 @@ router.get(
           stats: {
             creatorsAwaitingPayout: creatorsWithProfiles.length,
             pendingRequests: pendingPayoutRequests.length,
-            averagePayoutAmount: monthlyPayouts[0]?.count > 0 ? 
-              (monthlyPayouts[0].total / monthlyPayouts[0].count) : 0,
-            thisMonthPayouts: monthlyPayouts[0]?.total || 0
-          }
-        }
+            averagePayoutAmount:
+              monthlyPayouts[0]?.count > 0
+                ? monthlyPayouts[0].total / monthlyPayouts[0].count
+                : 0,
+            thisMonthPayouts: monthlyPayouts[0]?.total || 0,
+          },
+        },
       });
-
     } catch (error) {
       console.error('Payout data fetch error:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch payout data'
+        error: 'Failed to fetch payout data',
       });
     }
   }
@@ -374,7 +386,7 @@ router.post(
       if (!Array.isArray(creatorIds) || creatorIds.length === 0) {
         return res.status(400).json({
           success: false,
-          error: 'Creator IDs array is required'
+          error: 'Creator IDs array is required',
         });
       }
 
@@ -393,18 +405,20 @@ router.post(
             results.push({
               creatorId,
               success: false,
-              error: 'Creator not found'
+              error: 'Creator not found',
             });
             continue;
           }
 
-          const profile = await CreatorProfile.findOne({ creator: creatorId }).lean();
-          
+          const profile = await CreatorProfile.findOne({
+            creator: creatorId,
+          }).lean();
+
           if (!profile?.financials?.payoutSettings?.paypalEmail) {
             results.push({
               creatorId,
               success: false,
-              error: 'No PayPal email configured'
+              error: 'No PayPal email configured',
             });
             continue;
           }
@@ -413,17 +427,21 @@ router.post(
           const pendingTransactions = await Transaction.find({
             creator: creatorId,
             status: 'completed',
-            payoutProcessed: false
+            payoutProcessed: false,
           });
 
-          const totalEarnings = pendingTransactions.reduce((sum, t) => sum + t.creatorEarnings, 0);
-          const minimumPayout = profile.financials.payoutSettings.minimumPayout || 50;
+          const totalEarnings = pendingTransactions.reduce(
+            (sum, t) => sum + t.creatorEarnings,
+            0
+          );
+          const minimumPayout =
+            profile.financials.payoutSettings.minimumPayout || 50;
 
           if (totalEarnings < minimumPayout) {
             results.push({
               creatorId,
               success: false,
-              error: `Amount $${totalEarnings} below minimum $${minimumPayout}`
+              error: `Amount $${totalEarnings} below minimum $${minimumPayout}`,
             });
             continue;
           }
@@ -442,8 +460,8 @@ router.post(
             metadata: {
               paypalEmail: profile.financials.payoutSettings.paypalEmail,
               transactionIds: pendingTransactions.map(t => t._id),
-              processedBy: req.admin.id
-            }
+              processedBy: req.admin.id,
+            },
           });
 
           await payoutTransaction.save();
@@ -458,18 +476,17 @@ router.post(
             creatorId,
             success: true,
             amount: totalEarnings,
-            paypalEmail: profile.financials.payoutSettings.paypalEmail
+            paypalEmail: profile.financials.payoutSettings.paypalEmail,
           });
 
           totalProcessed += totalEarnings;
           successCount++;
-
         } catch (error) {
           console.error(`Payout error for creator ${creatorId}:`, error);
           results.push({
             creatorId,
             success: false,
-            error: error.message
+            error: error.message,
           });
         }
       }
@@ -491,16 +508,15 @@ router.post(
             totalRequested: creatorIds.length,
             successCount,
             failedCount: creatorIds.length - successCount,
-            totalProcessed
-          }
-        }
+            totalProcessed,
+          },
+        },
       });
-
     } catch (error) {
       console.error('Batch payout processing error:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to process payouts'
+        error: 'Failed to process payouts',
       });
     }
   }
@@ -517,24 +533,24 @@ router.get(
   async (req, res) => {
     try {
       const Creator = require('../models/Creator');
-      
+
       const pendingCreators = await Creator.find({
         isVerified: false,
-        verificationDocuments: { $exists: true, $ne: [] }
+        verificationDocuments: { $exists: true, $ne: [] },
       })
-      .populate('user', 'email createdAt')
-      .sort('-verificationSubmittedAt')
-      .limit(50);
-      
+        .populate('user', 'email createdAt')
+        .sort('-verificationSubmittedAt')
+        .limit(50);
+
       res.status(200).json({
         success: true,
         count: pendingCreators.length,
-        data: pendingCreators
+        data: pendingCreators,
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch pending verifications'
+        error: 'Failed to fetch pending verifications',
       });
     }
   }
@@ -548,18 +564,21 @@ router.post(
   async (req, res) => {
     try {
       const Creator = require('../models/Creator');
-      const { approveVerification } = require('../controllers/notification.controller');
-      
-      const creator = await Creator.findById(req.params.creatorId)
-        .populate('user');
-      
+      const {
+        approveVerification,
+      } = require('../controllers/notification.controller');
+
+      const creator = await Creator.findById(req.params.creatorId).populate(
+        'user'
+      );
+
       if (!creator) {
         return res.status(404).json({
           success: false,
-          error: 'Creator not found'
+          error: 'Creator not found',
         });
       }
-      
+
       // Update verification status in Creator
       creator.isVerified = true;
       creator.verificationStatus = 'approved';
@@ -573,16 +592,16 @@ router.post(
         await User.findByIdAndUpdate(creator.user._id, {
           isVerified: true,
           verificationStatus: 'approved',
-          verificationApprovedAt: new Date()
+          verificationApprovedAt: new Date(),
         });
       }
-      
+
       // Send approval email
       await approveVerification({ body: { userId: creator.user._id } }, res);
     } catch (error) {
       res.status(500).json({
         success: false,
-        error: 'Failed to approve verification'
+        error: 'Failed to approve verification',
       });
     }
   }
@@ -597,18 +616,21 @@ router.post(
   async (req, res) => {
     try {
       const Creator = require('../models/Creator');
-      const { rejectVerification } = require('../controllers/notification.controller');
-      
-      const creator = await Creator.findById(req.params.creatorId)
-        .populate('user');
-      
+      const {
+        rejectVerification,
+      } = require('../controllers/notification.controller');
+
+      const creator = await Creator.findById(req.params.creatorId).populate(
+        'user'
+      );
+
       if (!creator) {
         return res.status(404).json({
           success: false,
-          error: 'Creator not found'
+          error: 'Creator not found',
         });
       }
-      
+
       // Update verification status in Creator
       creator.isVerified = false;
       creator.verificationStatus = 'rejected';
@@ -622,21 +644,24 @@ router.post(
         await User.findByIdAndUpdate(creator.user._id, {
           isVerified: false,
           verificationStatus: 'rejected',
-          verificationRejectedAt: new Date()
+          verificationRejectedAt: new Date(),
         });
       }
-      
+
       // Send rejection email
-      await rejectVerification({ 
-        body: { 
-          userId: creator.user._id,
-          reason: req.body.reason 
-        } 
-      }, res);
+      await rejectVerification(
+        {
+          body: {
+            userId: creator.user._id,
+            reason: req.body.reason,
+          },
+        },
+        res
+      );
     } catch (error) {
       res.status(500).json({
         success: false,
-        error: 'Failed to reject verification'
+        error: 'Failed to reject verification',
       });
     }
   }
@@ -655,11 +680,7 @@ router.post(
   createAdmin
 );
 
-router.get(
-  '/auth/list',
-  authorizeAdmin('superAdmin'),
-  getAllAdmins
-);
+router.get('/auth/list', authorizeAdmin('superAdmin'), getAllAdmins);
 
 router.put(
   '/auth/:adminId/status',
@@ -681,155 +702,155 @@ router.delete(
 // ============================
 
 // Main dashboard stats
-router.get(
-  '/dashboard/stats',
-  async (req, res) => {
-    try {
-      const User = require('../models/User');
-      const Creator = require('../models/Creator');
-      const Member = require('../models/Member');
-      const Content = require('../models/Content');
-      const Transaction = require('../models/Transaction');
-      const AdminReport = require('../models/AdminReport');
-      const UserViolation = require('../models/UserViolation');
-      
-      // Get counts
-      const [
-        totalUsers,
-        totalCreators,
-        totalMembers,
-        totalContent,
-        pendingReports,
-        pendingVerifications,
-        recentTransactions
-      ] = await Promise.all([
-        User.countDocuments(),
-        Creator.countDocuments(),
-        Member.countDocuments(),
-        Content.countDocuments({ isActive: true }),
-        AdminReport.countDocuments({ status: 'pending' }),
-        Creator.countDocuments({ verificationStatus: 'pending' }),
-        Transaction.aggregate([
-          {
-            $match: {
-              createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
-            }
+router.get('/dashboard/stats', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const Creator = require('../models/Creator');
+    const Member = require('../models/Member');
+    const Content = require('../models/Content');
+    const Transaction = require('../models/Transaction');
+    const AdminReport = require('../models/AdminReport');
+    const UserViolation = require('../models/UserViolation');
+
+    // Get counts
+    const [
+      totalUsers,
+      totalCreators,
+      totalMembers,
+      totalContent,
+      pendingReports,
+      pendingVerifications,
+      recentTransactions,
+    ] = await Promise.all([
+      User.countDocuments(),
+      Creator.countDocuments(),
+      Member.countDocuments(),
+      Content.countDocuments({ isActive: true }),
+      AdminReport.countDocuments({ status: 'pending' }),
+      Creator.countDocuments({ verificationStatus: 'pending' }),
+      Transaction.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
           },
-          {
-            $group: {
-              _id: null,
-              total: { $sum: '$amount' },
-              count: { $sum: 1 }
-            }
-          }
-        ])
-      ]);
-      
-      // Get high risk users
-      const highRiskUsers = await UserViolation.getHighRiskUsers(5);
-      
-      res.status(200).json({
-        success: true,
-        data: {
-          users: {
-            total: totalUsers,
-            creators: totalCreators,
-            members: totalMembers
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: '$amount' },
+            count: { $sum: 1 },
           },
-          content: {
-            total: totalContent
-          },
-          moderation: {
-            pendingReports,
-            pendingVerifications,
-            highRiskUsers
-          },
-          financials: {
-            last24Hours: recentTransactions[0] || { total: 0, count: 0 }
-          }
-        }
-      });
-    } catch (error) {
-      console.error('Dashboard stats error:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to fetch dashboard statistics'
-      });
-    }
+        },
+      ]),
+    ]);
+
+    // Get high risk users
+    const highRiskUsers = await UserViolation.getHighRiskUsers(5);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        users: {
+          total: totalUsers,
+          creators: totalCreators,
+          members: totalMembers,
+        },
+        content: {
+          total: totalContent,
+        },
+        moderation: {
+          pendingReports,
+          pendingVerifications,
+          highRiskUsers,
+        },
+        financials: {
+          last24Hours: recentTransactions[0] || { total: 0, count: 0 },
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Dashboard stats error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch dashboard statistics',
+    });
   }
-);
+});
 
 // ============================
 // AUDIT LOG
 // ============================
 
 // Get admin action logs
-router.get(
-  '/audit/logs',
-  authorizeAdmin('superAdmin'),
-  async (req, res) => {
-    try {
-      const { adminId, action, startDate, endDate, page = 1, limit = 50 } = req.query;
-      const Admin = require('../models/Admin');
-      
-      const query = {};
-      if (adminId) query._id = adminId;
-      
-      const admins = await Admin.find(query)
-        .select('name email actionsLog')
-        .lean();
-      
-      // Flatten and filter logs
-      let allLogs = [];
-      admins.forEach(admin => {
-        admin.actionsLog.forEach(log => {
-          allLogs.push({
-            ...log,
-            adminName: admin.name,
-            adminEmail: admin.email,
-            adminId: admin._id
-          });
+router.get('/audit/logs', authorizeAdmin('superAdmin'), async (req, res) => {
+  try {
+    const {
+      adminId,
+      action,
+      startDate,
+      endDate,
+      page = 1,
+      limit = 50,
+    } = req.query;
+    const Admin = require('../models/Admin');
+
+    const query = {};
+    if (adminId) query._id = adminId;
+
+    const admins = await Admin.find(query)
+      .select('name email actionsLog')
+      .lean();
+
+    // Flatten and filter logs
+    let allLogs = [];
+    admins.forEach(admin => {
+      admin.actionsLog.forEach(log => {
+        allLogs.push({
+          ...log,
+          adminName: admin.name,
+          adminEmail: admin.email,
+          adminId: admin._id,
         });
       });
-      
-      // Filter by action if specified
-      if (action) {
-        allLogs = allLogs.filter(log => log.action === action);
-      }
-      
-      // Filter by date range
-      if (startDate || endDate) {
-        allLogs = allLogs.filter(log => {
-          const logDate = new Date(log.timestamp);
-          if (startDate && logDate < new Date(startDate)) return false;
-          if (endDate && logDate > new Date(endDate)) return false;
-          return true;
-        });
-      }
-      
-      // Sort by timestamp descending
-      allLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      
-      // Paginate
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + parseInt(limit);
-      const paginatedLogs = allLogs.slice(startIndex, endIndex);
-      
-      res.status(200).json({
-        success: true,
-        count: paginatedLogs.length,
-        total: allLogs.length,
-        pages: Math.ceil(allLogs.length / limit),
-        data: paginatedLogs
-      });
-    } catch (error) {
-      console.error('Audit log error:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to fetch audit logs'
+    });
+
+    // Filter by action if specified
+    if (action) {
+      allLogs = allLogs.filter(log => log.action === action);
+    }
+
+    // Filter by date range
+    if (startDate || endDate) {
+      allLogs = allLogs.filter(log => {
+        const logDate = new Date(log.timestamp);
+        if (startDate && logDate < new Date(startDate)) return false;
+        if (endDate && logDate > new Date(endDate)) return false;
+        return true;
       });
     }
+
+    // Sort by timestamp descending
+    allLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    // Paginate
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + parseInt(limit);
+    const paginatedLogs = allLogs.slice(startIndex, endIndex);
+
+    res.status(200).json({
+      success: true,
+      count: paginatedLogs.length,
+      total: allLogs.length,
+      pages: Math.ceil(allLogs.length / limit),
+      data: paginatedLogs,
+    });
+  } catch (error) {
+    console.error('Audit log error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch audit logs',
+    });
   }
-);
+});
 
 module.exports = router;

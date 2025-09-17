@@ -66,20 +66,20 @@
 .reply-context {
   padding: 4px 8px;
   background: rgba(255, 255, 255, 0.05);
-  border-left: 2px solid #17D2C2;
+  border-left: 2px solid #17d2c2;
   border-radius: 4px;
   margin-bottom: 4px;
   font-size: 12px;
 }
 
 .reply-context span {
-  color: #17D2C2;
+  color: #17d2c2;
   font-weight: 500;
   display: block;
 }
 
 .reply-context p {
-  color: #8E8E93;
+  color: #8e8e93;
   margin: 2px 0 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -99,7 +99,7 @@
 }
 
 .message-bubble-wrapper.member .message-bubble {
-  background: linear-gradient(135deg, #17D2C2, #12B7AB);
+  background: linear-gradient(135deg, #17d2c2, #12b7ab);
   color: #001310;
 }
 
@@ -152,7 +152,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.8);
-  color: #FFFFFF;
+  color: #ffffff;
   gap: 8px;
   padding: 20px;
   backdrop-filter: blur(5px);
@@ -171,7 +171,7 @@
 
 .unlock-button {
   padding: 8px 16px;
-  background: #17D2C2;
+  background: #17d2c2;
   border: none;
   border-radius: 20px;
   color: #001310;
@@ -248,7 +248,7 @@
 }
 
 .tip-message svg {
-  color: #FFD60A;
+  color: #ffd60a;
 }
 
 .tip-amount {
@@ -277,7 +277,7 @@
 .typing-indicator span {
   width: 8px;
   height: 8px;
-  background: #8E8E93;
+  background: #8e8e93;
   border-radius: 50%;
   animation: typing 1.4s infinite;
 }
@@ -291,7 +291,9 @@
 }
 
 @keyframes typing {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     opacity: 0.3;
     transform: scale(0.8);
   }
@@ -325,7 +327,7 @@
 }
 
 .message-status .read {
-  color: #17D2C2;
+  color: #17d2c2;
 }
 
 /* Message Actions */
@@ -352,7 +354,7 @@
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 11px;
   cursor: pointer;
   transition: all 0.2s;
@@ -363,7 +365,7 @@
 }
 
 .message-actions .delete-btn {
-  color: #EF4444;
+  color: #ef4444;
   border-color: rgba(239, 68, 68, 0.3);
 }
 
@@ -425,7 +427,7 @@
   }
 
   .unlock-button:hover {
-    background: #14C4B5;
+    background: #14c4b5;
   }
 
   .play-pause-btn:hover {
@@ -439,7 +441,7 @@
 
 /* Accessibility */
 .message-bubble-wrapper:focus-visible {
-  outline: 2px solid #17D2C2;
+  outline: 2px solid #17d2c2;
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -459,7 +461,7 @@
   }
 
   .message-bubble-wrapper.member .message-bubble {
-    background: linear-gradient(135deg, #17D2C2, #12B7AB);
+    background: linear-gradient(135deg, #17d2c2, #12b7ab);
     color: #001310;
   }
 
@@ -468,7 +470,7 @@
   }
 
   .reply-context p {
-    color: #3C3C43;
+    color: #3c3c43;
   }
 
   .message-meta {
@@ -482,7 +484,7 @@
   }
 
   .message-actions .delete-btn {
-    color: #EF4444;
+    color: #ef4444;
   }
 }
 

@@ -12,12 +12,15 @@
 const mongoose = require('mongoose');
 require('dotenv').config({ path: '../../../.env' });
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sexyselfies';
+const MONGODB_URI =
+  process.env.MONGODB_URI || 'mongodb://localhost:27017/sexyselfies';
 
 async function migrateCollection() {
   try {
     console.log('🚀 Starting migration: matches -> connections');
-    console.log(`📡 Connecting to: ${MONGODB_URI.replace(/:[^:]+@/, ':****@')}`);
+    console.log(
+      `📡 Connecting to: ${MONGODB_URI.replace(/:[^:]+@/, ':****@')}`
+    );
 
     // Connect to MongoDB
     await mongoose.connect(MONGODB_URI);
@@ -28,18 +31,24 @@ async function migrateCollection() {
     // Check if 'matches' collection exists
     const collections = await db.listCollections({ name: 'matches' }).toArray();
     if (collections.length === 0) {
-      console.log('ℹ️  Collection "matches" does not exist. Nothing to migrate.');
+      console.log(
+        'ℹ️  Collection "matches" does not exist. Nothing to migrate.'
+      );
       return;
     }
 
     // Check if 'connections' collection already exists
-    const connectionsExists = await db.listCollections({ name: 'connections' }).toArray();
+    const connectionsExists = await db
+      .listCollections({ name: 'connections' })
+      .toArray();
     if (connectionsExists.length > 0) {
       console.log('⚠️  Collection "connections" already exists!');
       console.log('📊 Checking document counts...');
 
       const matchesCount = await db.collection('matches').countDocuments();
-      const connectionsCount = await db.collection('connections').countDocuments();
+      const connectionsCount = await db
+        .collection('connections')
+        .countDocuments();
 
       console.log(`📈 Matches collection: ${matchesCount} documents`);
       console.log(`📈 Connections collection: ${connectionsCount} documents`);
@@ -50,8 +59,12 @@ async function migrateCollection() {
         console.log('✅ Matches collection is empty. Migration complete.');
         return;
       } else {
-        console.log('❌ Both collections contain data. Manual intervention required.');
-        console.log('Please backup your data and decide how to merge the collections.');
+        console.log(
+          '❌ Both collections contain data. Manual intervention required.'
+        );
+        console.log(
+          'Please backup your data and decide how to merge the collections.'
+        );
         return;
       }
     }
@@ -69,8 +82,12 @@ async function migrateCollection() {
     await db.collection('matches').rename('connections');
 
     // Verify the migration
-    const connectionsCount = await db.collection('connections').countDocuments();
-    console.log(`✅ Migration complete! ${connectionsCount} documents in 'connections' collection`);
+    const connectionsCount = await db
+      .collection('connections')
+      .countDocuments();
+    console.log(
+      `✅ Migration complete! ${connectionsCount} documents in 'connections' collection`
+    );
 
     // Get indexes from the new connections collection
     const indexes = await db.collection('connections').indexes();
@@ -82,10 +99,11 @@ async function migrateCollection() {
     console.log('🎉 Migration successful!');
     console.log('');
     console.log('Next steps:');
-    console.log('1. Update the Connection model to use "connections" collection');
+    console.log(
+      '1. Update the Connection model to use "connections" collection'
+    );
     console.log('2. Update any API endpoints that reference "matches"');
     console.log('3. Test the application to ensure everything works');
-
   } catch (error) {
     console.error('❌ Migration failed:', error);
     throw error;
@@ -104,7 +122,7 @@ if (require.main === module) {
       console.log('✅ Migration script completed successfully');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('❌ Migration script failed:', error);
       process.exit(1);
     });

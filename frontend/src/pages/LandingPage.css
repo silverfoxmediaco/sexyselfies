@@ -1,75 +1,163 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-:root{
-  --brand: #17D2C2;
-  --brand-600: #12B7AB;
-  --brand-700: #0FA093;
-  --brand-300: #47E0D2;
-  --brand-100: #CFF8F4;
-  --bg-900: #0A0A0A;
+:root {
+  --brand: #17d2c2;
+  --brand-600: #12b7ab;
+  --brand-700: #0fa093;
+  --brand-300: #47e0d2;
+  --brand-100: #cff8f4;
+  --bg-900: #0a0a0a;
   --bg-800: #121212;
-  --surface: #1C1C1E;
-  --border: #2A2A2C;
-  --text: #FFFFFF;
-  --text-2: #C7C7CC;
-  --muted: #8E8E93;
-  --shadow-elev: 0 10px 30px rgba(0,0,0,.35);
-  --grad: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  --surface: #1c1c1e;
+  --border: #2a2a2c;
+  --text: #ffffff;
+  --text-2: #c7c7cc;
+  --muted: #8e8e93;
+  --shadow-elev: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --grad: linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%, #47e0d2 100%);
 }
 
-html, body, #root { height: 100%; }
+html,
+body,
+#root {
+  height: 100%;
+}
 body {
   background: var(--bg-900);
   color: var(--text);
-  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    'Poppins',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
-.page { min-height: 100%; }
+.page {
+  min-height: 100%;
+}
 
-.container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
 
-.hero-gradient-bg{
-  position: relative; overflow: clip;
+.hero-gradient-bg {
+  position: relative;
+  overflow: clip;
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(23,210,194,.15), transparent),
-    radial-gradient(900px 500px at 110% 10%, rgba(71,224,210,.12), transparent),
+    radial-gradient(
+      1200px 600px at 10% -10%,
+      rgba(23, 210, 194, 0.15),
+      transparent
+    ),
+    radial-gradient(
+      900px 500px at 110% 10%,
+      rgba(71, 224, 210, 0.12),
+      transparent
+    ),
     var(--bg-900);
 }
 
-.glass-bar{
+.glass-bar {
   margin-top: 6px;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 16px; padding: 8px 12px; border-radius: 12px;
-  background: rgba(18,18,18,.6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(18, 18, 18, 0.6);
   border: 1px solid var(--border);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
-.bar-left{ display: flex; gap: 12px; align-items: center; }
-.bar-right{ display: flex; gap: 8px; align-items: center; color: var(--text-2); font-size: 13px; }
-.chip-soft{ background: rgba(255,255,255,.05) !important; }
-
-.progress-wrap{ margin: 20px auto 0; }
-.progress{ height: 10px !important; border-radius: 999px !important; background: rgba(255,255,255,.08) !important; }
-.progress .MuiLinearProgress-bar{ background: var(--brand-600) !important; }
-.progress-meta{ display: flex; justify-content: space-between; color: var(--text-2); font-size: 13px; margin-top: 6px; }
-
-.sticky-cta{
-  position: sticky; bottom: 0; z-index: 10;
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  background: linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,.75) 30%, rgba(10,10,10,.85) 100%);
-  padding: 12px 0; border-top: 1px solid var(--border);
+.bar-left {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.bar-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--text-2);
+  font-size: 13px;
+}
+.chip-soft {
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
-.input{
-  width: 100%; padding: 12px 14px; border-radius: 12px;
-  background: var(--surface); color: var(--text);
-  border: 1px solid var(--border); outline: none;
+.progress-wrap {
+  margin: 20px auto 0;
 }
-.input:focus{ border-color: var(--brand-600); box-shadow: 0 0 0 2px rgba(71,224,210,.25); }
-.input-help{ font-size: 12px; color: var(--muted); margin-top: 6px; }
-.input-help.error{ color: #EF4444; }
-.dialog-actions{ padding: 12px 16px; }
+.progress {
+  height: 10px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+.progress .MuiLinearProgress-bar {
+  background: var(--brand-600) !important;
+}
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-2);
+  font-size: 13px;
+  margin-top: 6px;
+}
 
-.muted{ color: var(--text-2); }
-::selection{ background: var(--brand-300); color:#001310; }
+.sticky-cta {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0) 0%,
+    rgba(10, 10, 10, 0.75) 30%,
+    rgba(10, 10, 10, 0.85) 100%
+  );
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  outline: none;
+}
+.input:focus {
+  border-color: var(--brand-600);
+  box-shadow: 0 0 0 2px rgba(71, 224, 210, 0.25);
+}
+.input-help {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.input-help.error {
+  color: #ef4444;
+}
+.dialog-actions {
+  padding: 12px 16px;
+}
+
+.muted {
+  color: var(--text-2);
+}
+::selection {
+  background: var(--brand-300);
+  color: #001310;
+}

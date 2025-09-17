@@ -2,33 +2,38 @@
 
 /* CSS Variables for SwipeCard */
 :root {
-  --swipecard-bg-primary: #0A0A0A;
+  --swipecard-bg-primary: #0a0a0a;
   --swipecard-bg-secondary: #121212;
-  --swipecard-bg-tertiary: #1C1C1E;
-  --swipecard-border-color: #2A2A2C;
-  --swipecard-text-primary: #FFFFFF;
-  --swipecard-text-secondary: #C7C7CC;
-  --swipecard-text-tertiary: #8E8E93;
-  --swipecard-accent-primary: #17D2C2;
-  --swipecard-accent-secondary: #12B7AB;
-  --swipecard-gradient: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
-  --swipecard-error: #EF4444;
-  --swipecard-warning: #F59E0B;
-  --swipecard-success: #22C55E;
-  --swipecard-info: #38BDF8;
-  
+  --swipecard-bg-tertiary: #1c1c1e;
+  --swipecard-border-color: #2a2a2c;
+  --swipecard-text-primary: #ffffff;
+  --swipecard-text-secondary: #c7c7cc;
+  --swipecard-text-tertiary: #8e8e93;
+  --swipecard-accent-primary: #17d2c2;
+  --swipecard-accent-secondary: #12b7ab;
+  --swipecard-gradient: linear-gradient(
+    135deg,
+    #12b7ab 0%,
+    #17d2c2 50%,
+    #47e0d2 100%
+  );
+  --swipecard-error: #ef4444;
+  --swipecard-warning: #f59e0b;
+  --swipecard-success: #22c55e;
+  --swipecard-info: #38bdf8;
+
   /* Spacing */
   --swipecard-spacing-xs: 4px;
   --swipecard-spacing-sm: 8px;
   --swipecard-spacing-md: 16px;
   --swipecard-spacing-lg: 24px;
   --swipecard-spacing-xl: 32px;
-  
+
   /* Border Radius */
   --swipecard-radius: 20px;
   --swipecard-radius-sm: 12px;
   --swipecard-radius-xs: 8px;
-  
+
   /* Shadows */
   --swipecard-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   --swipecard-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4);
@@ -153,8 +158,15 @@
 }
 
 @keyframes swipecardPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.2); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
 }
 
 /* Badges */
@@ -321,12 +333,12 @@
     height: 100vh !important;
     height: 100dvh !important;
   }
-  
+
   .swipecard-minimal .swipecard-photo-container {
     border-radius: 0 !important;
     height: 100%;
   }
-  
+
   .swipecard-minimal-status {
     top: calc(20px + env(safe-area-inset-top, 0));
     left: 20px;
@@ -360,11 +372,13 @@
     height: 700px;
     margin-top: 70px; /* Push SwipeCard below MainHeader */
   }
-  
+
   .swipecard-photo-container {
-    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.3s ease;
   }
-  
+
   .swipecard-top .swipecard-photo-container:hover {
     transform: translateY(-2px);
     box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
@@ -394,7 +408,7 @@
     transition: none !important;
     animation: none !important;
   }
-  
+
   .online-dot-indicator,
   .minimal-online-dot {
     animation: none;
@@ -406,7 +420,7 @@
   .swipecard-photo-container {
     border: 2px solid white;
   }
-  
+
   .swipecard-badge {
     border-width: 2px;
   }
@@ -492,12 +506,12 @@
     font-size: 2rem;
     margin-bottom: var(--swipecard-spacing-sm);
   }
-  
+
   .swipecard-price {
     font-size: 1.25rem;
     padding: var(--swipecard-spacing-xs) var(--swipecard-spacing-sm);
   }
-  
+
   .swipecard-unlock-text {
     font-size: 0.8rem;
   }

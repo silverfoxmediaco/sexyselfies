@@ -5,85 +5,93 @@ import { useAuth } from '../contexts/AuthContext';
 // Protected Route Component for Creators
 export function ProtectedCreatorRoute({ children }) {
   const { isAuthenticated, isCreator, isLoading } = useAuth();
-  
+
   // Show loading while auth is being initialized
   if (isLoading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#0A0A0A',
-        color: '#FFFFFF'
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#0A0A0A',
+          color: '#FFFFFF',
+        }}
+      >
         <div>Loading...</div>
       </div>
     );
   }
-  
+
   if (!isAuthenticated || !isCreator) {
     // Redirect to login if not authenticated or not a creator
-    return <Navigate to="/creator/login" replace />;
+    return <Navigate to='/creator/login' replace />;
   }
-  
+
   return children;
 }
 
 // Protected Route Component for Members
 export function ProtectedMemberRoute({ children }) {
   const { isAuthenticated, isMember, isLoading } = useAuth();
-  
+
   // Show loading while auth is being initialized
   if (isLoading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#0A0A0A',
-        color: '#FFFFFF'
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#0A0A0A',
+          color: '#FFFFFF',
+        }}
+      >
         <div>Loading...</div>
       </div>
     );
   }
-  
+
   if (!isAuthenticated || !isMember) {
     // Redirect to login if not authenticated or not a member
-    return <Navigate to="/member/login" replace />;
+    return <Navigate to='/member/login' replace />;
   }
-  
+
   return children;
 }
 
 // Simple coming soon placeholder
 export function ComingSoon({ title }) {
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#0A0A0A',
-      color: '#FFFFFF',
-      fontFamily: 'Poppins, sans-serif'
-    }}>
-      <h1 style={{ 
-        fontSize: '48px', 
-        marginBottom: '16px', 
-        background: 'linear-gradient(135deg, #17D2C2, #12B7AB)', 
-        WebkitBackgroundClip: 'text', 
-        WebkitTextFillColor: 'transparent' 
-      }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#0A0A0A',
+        color: '#FFFFFF',
+        fontFamily: 'Poppins, sans-serif',
+      }}
+    >
+      <h1
+        style={{
+          fontSize: '48px',
+          marginBottom: '16px',
+          background: 'linear-gradient(135deg, #17D2C2, #12B7AB)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+        }}
+      >
         {title}
       </h1>
       <p style={{ fontSize: '18px', color: '#C7C7CC', marginBottom: '32px' }}>
         This feature is coming soon!
       </p>
-      <button 
+      <button
         onClick={() => window.history.back()}
         style={{
           padding: '12px 24px',
@@ -94,10 +102,10 @@ export function ComingSoon({ title }) {
           fontSize: '16px',
           fontWeight: '600',
           cursor: 'pointer',
-          transition: 'transform 0.2s'
+          transition: 'transform 0.2s',
         }}
-        onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
-        onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+        onMouseOver={e => (e.target.style.transform = 'translateY(-2px)')}
+        onMouseOut={e => (e.target.style.transform = 'translateY(0)')}
       >
         Go Back
       </button>

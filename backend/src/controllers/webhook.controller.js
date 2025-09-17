@@ -8,7 +8,9 @@ const Creator = require('../models/Creator');
 const CreatorEarnings = require('../models/CreatorEarnings');
 
 // Services
-const { updateMemberPurchaseAnalytics } = require('../services/memberAnalytics.service');
+const {
+  updateMemberPurchaseAnalytics,
+} = require('../services/memberAnalytics.service');
 
 // Stub utility functions
 const sendNotification = async (userId, notification) => {
@@ -16,9 +18,9 @@ const sendNotification = async (userId, notification) => {
   // Implement actual notification logic
 };
 
-const calculatePlatformFee = (amount) => {
+const calculatePlatformFee = amount => {
   // 20% platform fee
-  return amount * 0.20;
+  return amount * 0.2;
 };
 
 // CCBill configuration
@@ -26,16 +28,16 @@ const CCBILL_CONFIG = {
   accountNumber: process.env.CCBILL_ACCOUNT_NUMBER,
   subacc: {
     initial: process.env.CCBILL_SUBACC_INITIAL,
-    recurring: process.env.CCBILL_SUBACC_RECURRING
+    recurring: process.env.CCBILL_SUBACC_RECURRING,
   },
   salt: process.env.CCBILL_SALT,
-  encryptionKey: process.env.CCBILL_ENCRYPTION_KEY
+  encryptionKey: process.env.CCBILL_ENCRYPTION_KEY,
 };
 
 // Handle CCBill webhooks (main webhook handler)
 exports.handleCCBillWebhook = async (req, res) => {
   try {
-    const { 
+    const {
       eventType,
       subscriptionId,
       transactionId,
@@ -49,21 +51,21 @@ exports.handleCCBillWebhook = async (req, res) => {
       email,
       username,
       password,
-      customFields
+      customFields,
     } = req.body;
-    
+
     // Verify webhook signature (CCBill specific)
     const isValid = verifyCCBillWebhook(req.body, req.headers);
-    
+
     if (!isValid) {
       console.error('Invalid CCBill webhook signature');
       return res.status(401).json({ error: 'Invalid signature' });
     }
-    
+
     console.log('CCBill webhook received:', eventType);
     console.log('Transaction ID:', transactionId);
     console.log('Custom Fields:', customFields);
-    
+
     // Process based on event type
     switch (eventType) {
       case 'NewSaleSuccess':
@@ -75,10 +77,10 @@ exports.handleCCBillWebhook = async (req, res) => {
           subscriptionId,
           email,
           username,
-          customFields: parseCustomFields(customFields)
+          customFields: parseCustomFields(customFields),
         });
         break;
-        
+
       case 'RenewalSuccess':
       case 'RenewalFailure':
         await handleRenewal({
@@ -86,48 +88,48 @@ exports.handleCCBillWebhook = async (req, res) => {
           transactionId,
           amount: parseFloat(accountingAmount || amount),
           subscriptionId,
-          customFields: parseCustomFields(customFields)
+          customFields: parseCustomFields(customFields),
         });
         break;
-        
+
       case 'Cancellation':
         await handleCancellation({
           subscriptionId,
           transactionId,
-          customFields: parseCustomFields(customFields)
+          customFields: parseCustomFields(customFields),
         });
         break;
-        
+
       case 'Chargeback':
         await handleChargeback({
           transactionId,
           subscriptionId,
           amount: parseFloat(accountingAmount || amount),
-          customFields: parseCustomFields(customFields)
+          customFields: parseCustomFields(customFields),
         });
         break;
-        
+
       case 'Refund':
         await handleRefund({
           transactionId,
           subscriptionId,
           amount: parseFloat(accountingAmount || amount),
-          customFields: parseCustomFields(customFields)
+          customFields: parseCustomFields(customFields),
         });
         break;
-        
+
       case 'Void':
         await handleVoid({
           transactionId,
           subscriptionId,
-          customFields: parseCustomFields(customFields)
+          customFields: parseCustomFields(customFields),
         });
         break;
-        
+
       default:
         console.log(`Unhandled CCBill event type: ${eventType}`);
     }
-    
+
     // Always return 200 OK to CCBill
     res.status(200).send('OK');
   } catch (error) {
@@ -139,23 +141,23 @@ exports.handleCCBillWebhook = async (req, res) => {
 
 // Stub handlers for other payment providers (not used with CCBill)
 exports.handleStripeWebhook = async (req, res) => {
-  res.status(200).json({ 
-    received: true, 
-    message: 'Stripe not configured - using CCBill' 
+  res.status(200).json({
+    received: true,
+    message: 'Stripe not configured - using CCBill',
   });
 };
 
 exports.handlePayPalWebhook = async (req, res) => {
-  res.status(200).json({ 
-    received: true, 
-    message: 'PayPal not configured - using CCBill' 
+  res.status(200).json({
+    received: true,
+    message: 'PayPal not configured - using CCBill',
   });
 };
 
 exports.handleCryptoWebhook = async (req, res) => {
-  res.status(200).json({ 
-    received: true, 
-    message: 'Crypto payments not configured' 
+  res.status(200).json({
+    received: true,
+    message: 'Crypto payments not configured',
   });
 };
 
@@ -163,22 +165,22 @@ exports.handleCryptoWebhook = async (req, res) => {
 
 async function handleNewSale(data) {
   const { eventType, transactionId, amount, customFields } = data;
-  
+
   console.log('Processing new sale:', transactionId);
-  
+
   if (eventType === 'NewSaleSuccess') {
     // Find the pending transaction
     const transaction = await Transaction.findById(customFields.transactionId);
-    
+
     if (transaction) {
       // Update transaction status
       transaction.status = 'completed';
       transaction.completedAt = new Date();
       transaction.processorTransactionId = transactionId;
       transaction.processorResponse = data;
-      
+
       await transaction.save();
-      
+
       // Process based on transaction type
       switch (transaction.type) {
         case 'content_unlock':
@@ -194,61 +196,63 @@ async function handleNewSale(data) {
           await processCreditsAdd(transaction);
           break;
       }
-      
+
       // Update creator earnings if applicable
       if (transaction.creator) {
         await updateCreatorEarnings(
           transaction.creator,
           amount,
           transaction.type,
-          transaction.member,
+          transaction.memberId,
           transaction.referenceId
         );
       }
-      
+
       // 🚀 UPDATE MEMBER ANALYTICS - Critical for Creator Active Sales System
-      if (transaction.member) {
+      if (transaction.memberId) {
         await updateMemberPurchaseAnalytics(
-          transaction.member,
+          transaction.memberId,
           amount,
           transaction.type,
           transaction.creator
         );
-        console.log(`📊 Analytics updated for member ${transaction.member} - $${amount} ${transaction.type}`);
+        console.log(
+          `📊 Analytics updated for member ${transaction.memberId} - $${amount} ${transaction.type}`
+        );
       }
-      
+
       // Send success notification to member
-      if (transaction.member) {
-        await sendNotification(transaction.member, {
+      if (transaction.memberId) {
+        await sendNotification(transaction.memberId, {
           type: 'payment_success',
           title: 'Payment Successful',
           body: `Your payment of $${amount} has been processed`,
-          data: { 
+          data: {
             transactionId: transaction._id,
-            ccbillTransactionId: transactionId
-          }
+            ccbillTransactionId: transactionId,
+          },
         });
       }
     }
   } else if (eventType === 'NewSaleFailure') {
     // Handle failed sale
     const transaction = await Transaction.findById(customFields.transactionId);
-    
+
     if (transaction) {
       transaction.status = 'failed';
       transaction.failedAt = new Date();
       transaction.failureReason = 'Payment declined by processor';
       transaction.processorResponse = data;
-      
+
       await transaction.save();
-      
+
       // Send failure notification
-      if (transaction.member) {
-        await sendNotification(transaction.member, {
+      if (transaction.memberId) {
+        await sendNotification(transaction.memberId, {
           type: 'payment_failed',
           title: 'Payment Failed',
           body: 'Your payment could not be processed. Please try again.',
-          data: { transactionId: transaction._id }
+          data: { transactionId: transaction._id },
         });
       }
     }
@@ -263,57 +267,57 @@ async function handleRenewal(data) {
 
 async function handleCancellation(data) {
   const { subscriptionId, customFields } = data;
-  
+
   console.log('Cancellation received for subscription:', subscriptionId);
-  
+
   // If you have subscriptions, update the subscription status
   // For now, just log it
-  
+
   if (customFields.memberId) {
     await sendNotification(customFields.memberId, {
       type: 'subscription_cancelled',
       title: 'Subscription Cancelled',
       body: 'Your subscription has been cancelled',
-      data: { subscriptionId }
+      data: { subscriptionId },
     });
   }
 }
 
 async function handleChargeback(data) {
   const { transactionId, amount, customFields } = data;
-  
+
   console.log('Chargeback received:', transactionId);
-  
+
   // Find the original transaction
   const transaction = await Transaction.findOne({
-    processorTransactionId: transactionId
+    processorTransactionId: transactionId,
   });
-  
+
   if (transaction) {
     transaction.status = 'chargebacked';
     transaction.chargebackAt = new Date();
     transaction.chargebackAmount = amount;
-    
+
     await transaction.save();
-    
+
     // Deduct from creator earnings
     if (transaction.creator) {
       const earnings = await CreatorEarnings.findOne({
-        creator: transaction.creator
+        creator: transaction.creator,
       });
-      
+
       if (earnings) {
         earnings.revenue.available -= amount;
         earnings.revenue.chargebacks += amount;
         await earnings.save();
       }
-      
+
       // Notify creator
       await sendNotification(transaction.creator, {
         type: 'chargeback_received',
         title: 'Chargeback Alert',
         body: `A chargeback of $${amount} has been received`,
-        data: { transactionId: transaction._id }
+        data: { transactionId: transaction._id },
       });
     }
   }
@@ -321,26 +325,26 @@ async function handleChargeback(data) {
 
 async function handleRefund(data) {
   const { transactionId, amount, customFields } = data;
-  
+
   console.log('Refund processed:', transactionId);
-  
+
   const transaction = await Transaction.findOne({
-    processorTransactionId: transactionId
+    processorTransactionId: transactionId,
   });
-  
+
   if (transaction) {
     transaction.status = 'refunded';
     transaction.refundedAt = new Date();
     transaction.refundAmount = amount;
-    
+
     await transaction.save();
-    
+
     // Adjust creator earnings
     if (transaction.creator) {
       const earnings = await CreatorEarnings.findOne({
-        creator: transaction.creator
+        creator: transaction.creator,
       });
-      
+
       if (earnings) {
         earnings.revenue.total -= amount;
         earnings.revenue.available -= amount;
@@ -348,14 +352,14 @@ async function handleRefund(data) {
         await earnings.save();
       }
     }
-    
+
     // Notify member
-    if (transaction.member) {
-      await sendNotification(transaction.member, {
+    if (transaction.memberId) {
+      await sendNotification(transaction.memberId, {
         type: 'refund_processed',
         title: 'Refund Processed',
         body: `Your refund of $${amount} has been processed`,
-        data: { transactionId: transaction._id }
+        data: { transactionId: transaction._id },
       });
     }
   }
@@ -363,13 +367,13 @@ async function handleRefund(data) {
 
 async function handleVoid(data) {
   const { transactionId, customFields } = data;
-  
+
   console.log('Transaction voided:', transactionId);
-  
+
   const transaction = await Transaction.findOne({
-    processorTransactionId: transactionId
+    processorTransactionId: transactionId,
   });
-  
+
   if (transaction) {
     transaction.status = 'voided';
     transaction.voidedAt = new Date();
@@ -381,44 +385,51 @@ async function handleVoid(data) {
 
 function verifyCCBillWebhook(body, headers) {
   // CCBill webhook verification with improved security
-  
+
   // 1. Check CCBill IP ranges (whitelist known CCBill IPs)
   const ccbillIPs = [
     '64.38.215.0/24',
-    '64.38.212.0/24', 
+    '64.38.212.0/24',
     '64.38.217.0/24',
     '64.38.240.0/24',
-    '64.38.241.0/24'
+    '64.38.241.0/24',
   ];
-  
-  // 2. For development, allow local testing
-  if (process.env.NODE_ENV === 'development') {
-    console.log('⚠️  Development mode: Skipping webhook signature verification');
+
+  // 2. For development, require explicit bypass flag and warn
+  if (
+    process.env.NODE_ENV === 'development' &&
+    process.env.CCBILL_WEBHOOK_BYPASS === 'true'
+  ) {
+    console.warn(
+      '⚠️  WARNING: Development mode with explicit webhook bypass enabled'
+    );
+    console.warn('⚠️  This should NEVER be used in production');
     return true;
   }
-  
+
   // 3. Check for required CCBill headers
   const clientAccnum = headers['x-ccbill-client-accnum'] || body.clientAccnum;
   const timestamp = headers['x-ccbill-timestamp'] || body.timestamp;
   const signature = headers['x-ccbill-signature'] || headers['x-ccbill-digest'];
-  
+
   if (!signature) {
     console.error('❌ Missing CCBill webhook signature');
     return false;
   }
-  
+
   // 4. Verify timestamp (prevent replay attacks)
   if (timestamp) {
     const webhookTime = new Date(parseInt(timestamp) * 1000);
     const currentTime = new Date();
     const timeDiff = Math.abs(currentTime - webhookTime) / 1000; // seconds
-    
-    if (timeDiff > 300) { // 5 minutes tolerance
+
+    if (timeDiff > 300) {
+      // 5 minutes tolerance
       console.error('❌ CCBill webhook timestamp too old:', timeDiff);
       return false;
     }
   }
-  
+
   // 5. Verify signature using CCBill salt
   if (CCBILL_CONFIG.salt) {
     try {
@@ -427,12 +438,12 @@ function verifyCCBillWebhook(body, headers) {
         .createHash('md5')
         .update(bodyString + CCBILL_CONFIG.salt)
         .digest('hex');
-      
+
       if (expectedSignature.toLowerCase() !== signature.toLowerCase()) {
         console.error('❌ CCBill webhook signature verification failed');
         return false;
       }
-      
+
       console.log('✅ CCBill webhook signature verified');
       return true;
     } catch (error) {
@@ -440,19 +451,21 @@ function verifyCCBillWebhook(body, headers) {
       return false;
     }
   }
-  
-  console.warn('⚠️  CCBill salt not configured, skipping signature verification');
+
+  console.warn(
+    '⚠️  CCBill salt not configured, skipping signature verification'
+  );
   return true;
 }
 
 function parseCustomFields(customFields) {
   // CCBill sends custom fields in various formats
   // Parse them into a usable object
-  
+
   if (typeof customFields === 'object') {
     return customFields;
   }
-  
+
   if (typeof customFields === 'string') {
     try {
       return JSON.parse(customFields);
@@ -466,14 +479,20 @@ function parseCustomFields(customFields) {
       return obj;
     }
   }
-  
+
   return {};
 }
 
-async function updateCreatorEarnings(creatorId, amount, type, memberId, referenceId) {
+async function updateCreatorEarnings(
+  creatorId,
+  amount,
+  type,
+  memberId,
+  referenceId
+) {
   try {
     let earnings = await CreatorEarnings.findOne({ creator: creatorId });
-    
+
     if (!earnings) {
       // Create new earnings record if doesn't exist
       earnings = new CreatorEarnings({
@@ -484,19 +503,19 @@ async function updateCreatorEarnings(creatorId, amount, type, memberId, referenc
           pending: 0,
           withdrawn: 0,
           chargebacks: 0,
-          refunds: 0
+          refunds: 0,
         },
-        transactions: []
+        transactions: [],
       });
     }
-    
+
     const platformFee = calculatePlatformFee(amount);
     const netAmount = amount - platformFee;
-    
+
     // Update revenue
     earnings.revenue.total += amount;
     earnings.revenue.available += netAmount;
-    
+
     // Add transaction record
     earnings.transactions.push({
       type,
@@ -506,11 +525,11 @@ async function updateCreatorEarnings(creatorId, amount, type, memberId, referenc
       customer: memberId,
       reference: referenceId,
       date: new Date(),
-      status: 'completed'
+      status: 'completed',
     });
-    
+
     await earnings.save();
-    
+
     console.log(`Updated earnings for creator ${creatorId}: +$${netAmount}`);
   } catch (error) {
     console.error('Error updating creator earnings:', error);

@@ -1,62 +1,247 @@
-.
-├── backend
-│   ├── drop-location-index.js
-│   ├── logs
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── src
-│   │   ├── config
-│   │   ├── controllers
-│   │   ├── jobs
-│   │   ├── middleware
-│   │   ├── models
-│   │   ├── routes
-│   │   ├── scripts
-│   │   ├── server.js
-│   │   ├── services
-│   │   ├── sockets
-│   │   └── utils
-│   ├── test-ccbill-integration.js
-│   ├── test-payment-flow.js
-│   └── testEmail.js
-├── Brand basics.txt
-├── Core Spacing System (Mobile-First).txt
-├── eslint.config.js
-├── frontend
-│   ├── favicon.ico
-│   ├── icon-192x192.png
-│   ├── icon-512x512.png
-│   ├── index.html
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── public
-│   │   ├── _redirects
-│   │   ├── 404.html
-│   │   ├── icons
-│   │   ├── manifest.json
-│   │   ├── offline.html
-│   │   ├── placeholders
-│   │   ├── render.yaml
-│   │   ├── service-worker.js
-│   │   └── vite.svg
-│   ├── src
-│   │   ├── assets
-│   │   ├── components
-│   │   ├── hooks
-│   │   ├── index.css
-│   │   ├── main 2.jsx
-│   │   ├── main-simple-working.jsx
-│   │   ├── main.jsx
-│   │   ├── pages
-│   │   ├── seeders
-│   │   ├── services
-│   │   ├── styles
-│   │   └── utils
-│   └── vite.config.js
-├── package.json
-├── project_structure.txt
+# SexySelfies PWA - Project Structure
+
+## Project Overview
+- **Total Files**: 423 files across 30 directories
+- **Stack**: MERN (MongoDB, Express, React, Node.js)
+- **Type**: Mobile-first Progressive Web App (PWA)
+
+## Directory Structure
+
+```
+sexy-selfies/
+├── .claude/
+│   └── settings.local.json
+├── backend/                          # Express.js API (Port 5002)
+│   ├── src/
+│   │   ├── config/ (2 files)
+│   │   │   ├── cloudinary.js         # Media storage config
+│   │   │   └── database.js           # MongoDB connection
+│   │   │
+│   │   ├── controllers/ (24 files)   # API controllers
+│   │   │   ├── admin.*.controller.js (auth, moderation)
+│   │   │   ├── auth.controller.js
+│   │   │   ├── connections.controller.js
+│   │   │   ├── content.controller.js
+│   │   │   ├── creator.*.controller.js (7 files)
+│   │   │   ├── member.*.controller.js (3 files)
+│   │   │   ├── notification.controller.js
+│   │   │   ├── payment.controller.js
+│   │   │   ├── payout.controller.js
+│   │   │   ├── transaction.controller.js
+│   │   │   ├── upload.controller.js
+│   │   │   ├── verification.controller.js
+│   │   │   └── webhook.controller.js
+│   │   │
+│   │   ├── models/ (26 files)        # MongoDB schemas
+│   │   │   ├── Admin.js, AdminReport.js
+│   │   │   ├── AnalyticsEvent.js
+│   │   │   ├── Connections.js
+│   │   │   ├── Content.js
+│   │   │   ├── Creator*.js (8 files)
+│   │   │   ├── Member*.js (4 files)
+│   │   │   ├── Message.js, Notification.js
+│   │   │   ├── PayoutRequest.js
+│   │   │   ├── Report.js, SpecialOffer.js
+│   │   │   ├── Transaction.js
+│   │   │   └── User.js, UserViolation.js
+│   │   │
+│   │   ├── routes/ (19 files)        # API routes
+│   │   │   ├── admin.routes.js
+│   │   │   ├── auth.routes.js
+│   │   │   ├── connections.routes.js
+│   │   │   ├── content.routes.js
+│   │   │   ├── creator*.routes.js (2 files)
+│   │   │   ├── member*.routes.js (3 files)
+│   │   │   ├── notification.routes.js
+│   │   │   ├── payment.routes.js
+│   │   │   ├── payout.routes.js
+│   │   │   ├── public.routes.js
+│   │   │   ├── transaction.routes.js
+│   │   │   ├── upload.routes.js
+│   │   │   ├── verification.routes.js
+│   │   │   └── webhook.routes.js
+│   │   │
+│   │   ├── middleware/ (15 files)    # Express middleware
+│   │   │   ├── admin.auth.middleware.js
+│   │   │   ├── auth.middleware.js
+│   │   │   ├── cache.middleware.js
+│   │   │   ├── cors.middleware.js
+│   │   │   ├── database.middleware.js
+│   │   │   ├── error.middleware.js
+│   │   │   ├── logging.middleware.js
+│   │   │   ├── privacy.middleware.js
+│   │   │   ├── rateLimit.middleware.js
+│   │   │   ├── salesLimits.middleware.js
+│   │   │   ├── unlock.middleware.js
+│   │   │   ├── upload.middleware.js
+│   │   │   ├── validation.middleware.js
+│   │   │   └── verification.middleware.js
+│   │   │
+│   │   ├── services/ (6 files)       # Business logic
+│   │   │   ├── analytics.service.js
+│   │   │   ├── connections.service.js
+│   │   │   ├── memberScoring.service.js
+│   │   │   ├── notification.service.js
+│   │   │   └── payment.service.js
+│   │   │
+│   │   ├── sockets/ (3 files)        # WebSocket handlers
+│   │   │   ├── creatorSales.socket.js
+│   │   │   ├── memberActivity.socket.js
+│   │   │   └── messaging.socket.js
+│   │   │
+│   │   ├── jobs/ (3 files)           # Scheduled tasks
+│   │   │   ├── cleanup.job.js
+│   │   │   ├── memberAnalytics.job.js
+│   │   │   └── salesDigest.job.js
+│   │   │
+│   │   ├── utils/ (6 files)          # Helper functions
+│   │   │   ├── memberSegmentation.js
+│   │   │   ├── moderation.js
+│   │   │   ├── notifications.js
+│   │   │   ├── payment.js
+│   │   │   ├── privacyFilters.js
+│   │   │   └── salesMetrics.js
+│   │   │
+│   │   ├── scripts/ (4 files)        # Admin scripts
+│   │   │   ├── createSuperAdmin.js
+│   │   │   ├── fixAdminPassword.js
+│   │   │   ├── seedCreators.js
+│   │   │   └── testAdminPassword.js
+│   │   │
+│   │   └── server.js                 # Main server file
+│   │
+│   ├── test-*.js                     # Payment integration tests
+│   ├── .env                          # Environment variables
+│   └── package.json
+│
+├── frontend/                         # React + Vite (Ports 5173/5174)
+│   ├── public/
+│   │   ├── icons/                    # PWA icons (50+ files)
+│   │   │   ├── actions/ (5 SVGs)     # UI action icons
+│   │   │   ├── nav/ (4 SVGs)         # Navigation icons
+│   │   │   ├── *-icon-*.png          # 50+ icon sizes for PWA
+│   │   │   └── SS logo*.png          # Logo variations
+│   │   │
+│   │   ├── placeholders/ (16 files)  # Sample creator images
+│   │   ├── manifest.json             # PWA manifest
+│   │   ├── service-worker.js         # PWA service worker
+│   │   ├── offline.html              # Offline fallback
+│   │   └── _redirects                # Netlify/deployment redirects
+│   │
+│   ├── src/
+│   │   ├── assets/ (40+ images)      # Sample content & UI icons
+│   │   │
+│   │   ├── components/ (50+ components)
+│   │   │   ├── UI/                   # Base UI components
+│   │   │   │   ├── Accordion, Button, Card
+│   │   │   │   ├── Chip, Dialog, Icons
+│   │   │   │   ├── LinearProgress, Snackbar
+│   │   │   │   └── Typography
+│   │   │   │
+│   │   │   ├── Layout Components:
+│   │   │   │   ├── AppLayout.jsx
+│   │   │   │   ├── AdminHeader.jsx
+│   │   │   │   ├── BottomNavigation.jsx
+│   │   │   │   ├── MainHeader/Footer.jsx
+│   │   │   │   └── CreatorMainHeader/Footer.jsx
+│   │   │   │
+│   │   │   ├── Core Features:
+│   │   │   │   ├── SwipeCard.jsx
+│   │   │   │   ├── CreatorProfileModal.jsx
+│   │   │   │   ├── ConnectionModal.jsx
+│   │   │   │   ├── MessageBubble.jsx
+│   │   │   │   ├── ChatInput.jsx
+│   │   │   │   └── Library.jsx
+│   │   │   │
+│   │   │   ├── Landing Components:
+│   │   │   │   ├── SwipeConnectMonetize.jsx
+│   │   │   │   ├── WhyCreatorsLoveUs.jsx
+│   │   │   │   ├── CreatorSuccessStories.jsx
+│   │   │   │   ├── Features.jsx
+│   │   │   │   ├── HowItWorks.jsx
+│   │   │   │   └── SafetyAndStandards.jsx
+│   │   │   │
+│   │   │   └── Security:
+│   │   │       ├── ProtectedAdminRoute.jsx
+│   │   │       └── RouteProtection.jsx
+│   │   │
+│   │   ├── pages/ (50+ page components)
+│   │   │   ├── Admin Pages (10):
+│   │   │   │   ├── AdminDashboard, Login
+│   │   │   │   ├── Users, Content, Reports
+│   │   │   │   ├── Verifications, Payouts
+│   │   │   │   └── Management
+│   │   │   │
+│   │   │   ├── Creator Pages (15):
+│   │   │   │   ├── Registration, Login, VerifyID
+│   │   │   │   ├── ProfileSetup, Profile, Preview
+│   │   │   │   ├── Dashboard, ContentUpload
+│   │   │   │   ├── Analytics, Earnings, Connections
+│   │   │   │   └── ManageMembers, Settings
+│   │   │   │
+│   │   │   ├── Member Pages (15):
+│   │   │   │   ├── Registration, Login
+│   │   │   │   ├── Profile, Settings
+│   │   │   │   ├── BrowseCreators, BrowseFilters
+│   │   │   │   ├── SearchCreators, TrendingCreators
+│   │   │   │   ├── Favorites, MyConnections
+│   │   │   │   └── Messages, Chat
+│   │   │   │
+│   │   │   └── Landing Pages:
+│   │   │       ├── LandingPage.jsx
+│   │   │       └── LandingPageV2.jsx
+│   │   │
+│   │   ├── services/ (7 files)       # API service layer
+│   │   │   ├── api.config.js
+│   │   │   ├── auth.service.js
+│   │   │   ├── content.service.js
+│   │   │   ├── creator.service.js
+│   │   │   ├── member.service.js
+│   │   │   ├── payment.service.js
+│   │   │   └── socket.service.js
+│   │   │
+│   │   ├── hooks/ (4 custom hooks)   # React hooks
+│   │   │   ├── useInfiniteScroll.js
+│   │   │   ├── useOfflineStatus.js
+│   │   │   ├── usePullToRefresh.js
+│   │   │   └── useSwipeGesture.js
+│   │   │
+│   │   ├── utils/ (5 utilities)      # Helper functions
+│   │   │   ├── cache.js
+│   │   │   ├── gestures.js
+│   │   │   ├── mobileDetection.js
+│   │   │   ├── notifications.js
+│   │   │   └── storage.js
+│   │   │
+│   │   ├── styles/
+│   │   │   └── responsive-widths.css
+│   │   │
+│   │   └── main.jsx                  # App entry point
+│   │
+│   ├── index.html
+│   ├── vite.config.js
+│   └── package.json
+│
+├── Brand basics.txt                  # Brand guidelines
+├── Core Spacing System (Mobile-First).txt  # Spacing documentation
 ├── README.md
 ├── REALTIME_MESSAGING.md
-└── render.yaml
+├── editsummary.txt                   # Primary changelog
+├── editsummary2.txt                  # Secondary changelog (needs cleanup)
+├── full_structure.txt                # Complete file listing
+└── render.yaml                       # Deployment config
+```
 
-27 directories, 33 files
+## Key Statistics
+- **Backend**: 80+ files (controllers, models, routes, middleware, services)
+- **Frontend**: 300+ files (components, pages, assets, icons)
+- **Documentation**: 10+ files (guides, changelogs, structure docs)
+
+## Recent Updates
+- Fixed creator login 404 errors
+- Resolved verification synchronization between Creator/User models
+- Enhanced SPA routing configuration
+- Added comprehensive debugging for ID verification uploads
+
+*Last Updated: Current Session*
+*Total: 30 directories, 423 files*

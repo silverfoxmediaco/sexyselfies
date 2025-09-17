@@ -1,10 +1,14 @@
-const { uploadProfileImage, uploadContentImage, uploadContentVideo } = require('../config/cloudinary');
+const {
+  uploadProfileImage,
+  uploadContentImage,
+  uploadContentVideo,
+} = require('../config/cloudinary');
 const multer = require('multer');
 
 // Middleware for profile image upload
 exports.profileImageUpload = uploadProfileImage.fields([
   { name: 'profilePhoto', maxCount: 1 },
-  { name: 'coverImage', maxCount: 1 }
+  { name: 'coverImage', maxCount: 1 },
 ]);
 
 // Middleware for content image upload (multiple)
@@ -13,7 +17,7 @@ exports.contentImagesUpload = uploadContentImage.array('content', 10); // Max 10
 // Middleware for content with custom thumbnails
 exports.contentWithThumbnailUpload = uploadContentImage.fields([
   { name: 'content', maxCount: 10 }, // Content files
-  { name: 'customThumbnail', maxCount: 1 } // Custom thumbnail for videos
+  { name: 'customThumbnail', maxCount: 1 }, // Custom thumbnail for videos
 ]);
 
 // Middleware for content video upload
@@ -24,19 +28,19 @@ exports.handleUploadError = (error, req, res, next) => {
   if (error.message === 'File too large') {
     return res.status(400).json({
       success: false,
-      error: 'File size exceeds the limit'
+      error: 'File size exceeds the limit',
     });
   }
-  
+
   if (error.message === 'Invalid file type') {
     return res.status(400).json({
       success: false,
-      error: 'Invalid file format'
+      error: 'Invalid file format',
     });
   }
-  
+
   return res.status(500).json({
     success: false,
-    error: 'File upload failed'
+    error: 'File upload failed',
   });
 };

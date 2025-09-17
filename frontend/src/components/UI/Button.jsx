@@ -1,26 +1,26 @@
 import React from 'react';
 
-const Button = ({ 
-  children, 
-  variant = 'primary', 
+const Button = ({
+  children,
+  variant = 'primary',
   size = 'medium',
   disabled = false,
   onClick,
   className = '',
   type = 'button',
-  ...props 
+  ...props
 }) => {
   const baseClasses = 'btn';
   const variantClasses = {
     primary: 'btn-primary',
     secondary: 'btn-secondary',
     outlined: 'btn-outlined',
-    text: 'btn-text'
+    text: 'btn-text',
   };
   const sizeClasses = {
     small: 'btn-small',
     medium: 'btn-medium',
-    large: 'btn-large'
+    large: 'btn-large',
   };
 
   const classes = [
@@ -28,11 +28,13 @@ const Button = ({
     variantClasses[variant],
     sizeClasses[size],
     disabled && 'btn-disabled',
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <button 
+    <button
       type={type}
       className={classes}
       disabled={disabled}

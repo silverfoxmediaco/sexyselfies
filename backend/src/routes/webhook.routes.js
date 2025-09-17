@@ -12,44 +12,42 @@ try {
     handleCCBillWebhook: (req, res) => res.status(200).send('OK'),
     handleStripeWebhook: (req, res) => res.status(200).json({ received: true }),
     handlePayPalWebhook: (req, res) => res.status(200).json({ received: true }),
-    handleCryptoWebhook: (req, res) => res.status(200).json({ received: true })
+    handleCryptoWebhook: (req, res) => res.status(200).json({ received: true }),
   };
 }
 
 // CCBill webhooks (primary payment processor)
-router.post('/ccbill',
+router.post(
+  '/ccbill',
   express.urlencoded({ extended: true }),
   webhookController.handleCCBillWebhook
 );
 
 // Alternative webhook endpoints for CCBill events
-router.post('/ccbill/success',
+router.post(
+  '/ccbill/success',
   express.urlencoded({ extended: true }),
   webhookController.handleCCBillWebhook
 );
 
-router.post('/ccbill/failure',
+router.post(
+  '/ccbill/failure',
   express.urlencoded({ extended: true }),
   webhookController.handleCCBillWebhook
 );
 
 // Stripe webhooks (if you add Stripe later)
-router.post('/stripe',
+router.post(
+  '/stripe',
   express.raw({ type: 'application/json' }),
   webhookController.handleStripeWebhook
 );
 
 // PayPal webhooks (if you add PayPal later)
-router.post('/paypal',
-  express.json(),
-  webhookController.handlePayPalWebhook
-);
+router.post('/paypal', express.json(), webhookController.handlePayPalWebhook);
 
 // Cryptocurrency webhooks (future)
-router.post('/crypto',
-  express.json(),
-  webhookController.handleCryptoWebhook
-);
+router.post('/crypto', express.json(), webhookController.handleCryptoWebhook);
 
 // Health check for webhooks
 router.get('/health', (req, res) => {
@@ -62,8 +60,8 @@ router.get('/health', (req, res) => {
       '/webhooks/ccbill/failure',
       '/webhooks/stripe',
       '/webhooks/paypal',
-      '/webhooks/crypto'
-    ]
+      '/webhooks/crypto',
+    ],
   });
 });
 
@@ -74,7 +72,7 @@ if (process.env.NODE_ENV === 'development') {
     res.json({
       success: true,
       message: 'Test webhook received',
-      data: req.body
+      data: req.body,
     });
   });
 }

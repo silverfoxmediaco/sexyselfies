@@ -9,17 +9,21 @@ class CreatorService {
   // ==========================================
   // AUTHENTICATION
   // ==========================================
-  
+
   /**
    * Creator login
    */
   async login(credentials) {
     try {
-      const response = await authService.creatorLogin(credentials.email, credentials.password, credentials.rememberMe);
+      const response = await authService.creatorLogin(
+        credentials.email,
+        credentials.password,
+        credentials.rememberMe
+      );
       return {
         success: true,
         token: response.data.token,
-        user: response.data.user
+        user: response.data.user,
       };
     } catch (error) {
       throw error;
@@ -27,7 +31,7 @@ class CreatorService {
   }
 
   /**
-   * Creator register  
+   * Creator register
    */
   async register(data) {
     try {
@@ -41,7 +45,7 @@ class CreatorService {
   // ==========================================
   // CREATOR PROFILE
   // ==========================================
-  
+
   /**
    * Get creator profile
    */
@@ -74,7 +78,7 @@ class CreatorService {
         auto_reply_enabled: data.auto_reply_enabled,
         auto_reply_message: data.auto_reply_message,
         is_active: data.is_active,
-        accepts_custom_requests: data.accepts_custom_requests
+        accepts_custom_requests: data.accepts_custom_requests,
       });
       return response;
     } catch (error) {
@@ -89,13 +93,19 @@ class CreatorService {
     try {
       const formData = new FormData();
       formData.append('profilePhoto', file);
-      
-      const response = await uploadApi.post('/creator/profile/photo', formData, {
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          console.log(`Upload Progress: ${percentCompleted}%`);
+
+      const response = await uploadApi.post(
+        '/creator/profile/photo',
+        formData,
+        {
+          onUploadProgress: progressEvent => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            console.log(`Upload Progress: ${percentCompleted}%`);
+          },
         }
-      });
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -109,13 +119,19 @@ class CreatorService {
     try {
       const formData = new FormData();
       formData.append('coverPhoto', file);
-      
-      const response = await uploadApi.post('/creator/profile/cover', formData, {
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          console.log(`Upload Progress: ${percentCompleted}%`);
+
+      const response = await uploadApi.post(
+        '/creator/profile/cover',
+        formData,
+        {
+          onUploadProgress: progressEvent => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            console.log(`Upload Progress: ${percentCompleted}%`);
+          },
         }
-      });
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -137,7 +153,7 @@ class CreatorService {
   // ==========================================
   // VERIFICATION
   // ==========================================
-  
+
   /**
    * Submit ID verification
    */
@@ -151,8 +167,11 @@ class CreatorService {
       formData.append('fullName', data.fullName);
       formData.append('dateOfBirth', data.dateOfBirth);
       formData.append('address', data.address);
-      
-      const response = await uploadApi.post('/creator/verification/id', formData);
+
+      const response = await uploadApi.post(
+        '/creator/verification/id',
+        formData
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -174,21 +193,21 @@ class CreatorService {
   // ==========================================
   // CONTENT MANAGEMENT
   // ==========================================
-  
+
   /**
    * Upload content (photos/videos)
    */
   async uploadContent(data) {
     try {
       const formData = new FormData();
-      
+
       // Add files
       if (data.files && data.files.length > 0) {
         data.files.forEach((file, index) => {
           formData.append('content', file);
         });
       }
-      
+
       // Add metadata
       formData.append('title', data.title);
       formData.append('description', data.description || '');
@@ -199,20 +218,26 @@ class CreatorService {
       formData.append('allow_comments', data.allow_comments || true);
       formData.append('allow_downloads', data.allow_downloads || false);
       formData.append('watermark', data.watermark || true);
-      
+
       // Thumbnail for videos
       if (data.thumbnail) {
         formData.append('thumbnail', data.thumbnail);
       }
-      
-      const response = await uploadApi.post('/creator/content/upload', formData, {
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          if (data.onProgress) {
-            data.onProgress(percentCompleted);
-          }
+
+      const response = await uploadApi.post(
+        '/creator/content/upload',
+        formData,
+        {
+          onUploadProgress: progressEvent => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            if (data.onProgress) {
+              data.onProgress(percentCompleted);
+            }
+          },
         }
-      });
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -230,8 +255,8 @@ class CreatorService {
           limit: params.limit || 20,
           content_type: params.content_type, // 'photo', 'video', 'all'
           visibility: params.visibility, // 'public', 'subscribers', 'premium'
-          sort: params.sort || 'newest' // 'newest', 'oldest', 'popular', 'highest_earning'
-        }
+          sort: params.sort || 'newest', // 'newest', 'oldest', 'popular', 'highest_earning'
+        },
       });
       return response;
     } catch (error) {
@@ -251,7 +276,7 @@ class CreatorService {
         price: data.price,
         tags: data.tags,
         allow_comments: data.allow_comments,
-        allow_downloads: data.allow_downloads
+        allow_downloads: data.allow_downloads,
       });
       return response;
     } catch (error) {
@@ -276,7 +301,9 @@ class CreatorService {
    */
   async updateContentPrice(contentId, price) {
     try {
-      const response = await api.patch(`/creator/content/${contentId}/price`, { price });
+      const response = await api.patch(`/creator/content/${contentId}/price`, {
+        price,
+      });
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -310,7 +337,7 @@ class CreatorService {
   // ==========================================
   // MEMBER MANAGEMENT (Active Sales System)
   // ==========================================
-  
+
   /**
    * Browse high-value members to target
    */
@@ -326,8 +353,8 @@ class CreatorService {
           last_active: filters.last_active, // 'online', '24h', '7d', '30d'
           sort: filters.sort || 'value_score', // 'value_score', 'spending', 'activity', 'newest'
           page: filters.page || 1,
-          limit: filters.limit || 20
-        }
+          limit: filters.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -352,14 +379,17 @@ class CreatorService {
    */
   async sendTargetedMessage(memberId, data) {
     try {
-      const response = await api.post(`/creator/members/profile/${memberId}/message`, {
-        message: data.message,
-        media_type: data.media_type, // 'text', 'photo', 'video', 'voice'
-        media_url: data.media_url,
-        is_paid: data.is_paid || false,
-        price: data.price || 0,
-        expires_in: data.expires_in // hours
-      });
+      const response = await api.post(
+        `/creator/members/profile/${memberId}/message`,
+        {
+          message: data.message,
+          media_type: data.media_type, // 'text', 'photo', 'video', 'voice'
+          media_url: data.media_url,
+          is_paid: data.is_paid || false,
+          price: data.price || 0,
+          expires_in: data.expires_in, // hours
+        }
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -371,17 +401,20 @@ class CreatorService {
    */
   async sendSpecialOffer(memberId, data) {
     try {
-      const response = await api.post(`/creator/members/profile/${memberId}/special-offer`, {
-        offer_type: data.offer_type, // 'discount', 'bundle', 'exclusive', 'limited_time'
-        title: data.title,
-        description: data.description,
-        original_price: data.original_price,
-        offer_price: data.offer_price,
-        discount_percentage: data.discount_percentage,
-        content_ids: data.content_ids || [],
-        expires_at: data.expires_at,
-        max_uses: data.max_uses || 1
-      });
+      const response = await api.post(
+        `/creator/members/profile/${memberId}/special-offer`,
+        {
+          offer_type: data.offer_type, // 'discount', 'bundle', 'exclusive', 'limited_time'
+          title: data.title,
+          description: data.description,
+          original_price: data.original_price,
+          offer_price: data.offer_price,
+          discount_percentage: data.discount_percentage,
+          content_ids: data.content_ids || [],
+          expires_at: data.expires_at,
+          max_uses: data.max_uses || 1,
+        }
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -393,7 +426,9 @@ class CreatorService {
    */
   async pokeMember(memberId) {
     try {
-      const response = await api.post(`/creator/members/profile/${memberId}/poke`);
+      const response = await api.post(
+        `/creator/members/profile/${memberId}/poke`
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -405,7 +440,9 @@ class CreatorService {
    */
   async likeMember(memberId) {
     try {
-      const response = await api.post(`/creator/members/profile/${memberId}/like`);
+      const response = await api.post(
+        `/creator/members/profile/${memberId}/like`
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -427,7 +464,7 @@ class CreatorService {
   // ==========================================
   // MESSAGES & CHAT
   // ==========================================
-  
+
   /**
    * Get conversations
    */
@@ -438,8 +475,8 @@ class CreatorService {
           filter: params.filter, // 'all', 'unread', 'paid', 'tipped'
           sort: params.sort || 'recent', // 'recent', 'unread_first', 'high_value'
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -455,8 +492,8 @@ class CreatorService {
       const response = await api.get(`/creator/messages/${memberId}`, {
         params: {
           page: params.page || 1,
-          limit: params.limit || 50
-        }
+          limit: params.limit || 50,
+        },
       });
       return response;
     } catch (error) {
@@ -472,17 +509,20 @@ class CreatorService {
       const formData = new FormData();
       formData.append('message', data.message || '');
       formData.append('message_type', data.message_type || 'text');
-      
+
       if (data.media) {
         formData.append('media', data.media);
       }
-      
+
       if (data.is_paid) {
         formData.append('is_paid', true);
         formData.append('price', data.price);
       }
-      
-      const response = await uploadApi.post(`/creator/messages/${memberId}/send`, formData);
+
+      const response = await uploadApi.post(
+        `/creator/messages/${memberId}/send`,
+        formData
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -504,14 +544,14 @@ class CreatorService {
   // ==========================================
   // EARNINGS & PAYOUTS
   // ==========================================
-  
+
   /**
    * Get earnings overview
    */
   async getEarnings(period = '30d') {
     try {
       const response = await api.get('/creator/earnings', {
-        params: { period } // '24h', '7d', '30d', '90d', 'all'
+        params: { period }, // '24h', '7d', '30d', '90d', 'all'
       });
       return response;
     } catch (error) {
@@ -529,8 +569,8 @@ class CreatorService {
           start_date: params.start_date,
           end_date: params.end_date,
           group_by: params.group_by || 'day', // 'day', 'week', 'month'
-          source: params.source // 'subscriptions', 'messages', 'tips', 'custom', 'ppv'
-        }
+          source: params.source, // 'subscriptions', 'messages', 'tips', 'custom', 'ppv'
+        },
       });
       return response;
     } catch (error) {
@@ -547,8 +587,8 @@ class CreatorService {
         params: {
           status: params.status, // 'pending', 'processing', 'completed', 'failed'
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -565,7 +605,7 @@ class CreatorService {
         amount: data.amount,
         payout_method: data.payout_method, // 'bank', 'paypal', 'crypto'
         account_details: data.account_details,
-        notes: data.notes
+        notes: data.notes,
       });
       return response;
     } catch (error) {
@@ -595,7 +635,7 @@ class CreatorService {
         auto_payout: data.auto_payout,
         auto_payout_day: data.auto_payout_day,
         payout_method: data.payout_method,
-        tax_info: data.tax_info
+        tax_info: data.tax_info,
       });
       return response;
     } catch (error) {
@@ -606,14 +646,14 @@ class CreatorService {
   // ==========================================
   // ANALYTICS
   // ==========================================
-  
+
   /**
    * Get analytics overview
    */
   async getAnalytics(period = '30d') {
     try {
       const response = await api.get('/creator/analytics', {
-        params: { period }
+        params: { period },
       });
       return response;
     } catch (error) {
@@ -630,8 +670,8 @@ class CreatorService {
         params: {
           start_date: params.start_date,
           end_date: params.end_date,
-          group_by: params.group_by || 'day'
-        }
+          group_by: params.group_by || 'day',
+        },
       });
       return response;
     } catch (error) {
@@ -648,15 +688,17 @@ class CreatorService {
         params: {
           period: params.period || '30d',
           content_type: params.content_type,
-          sort: params.sort || 'views'
-        }
+          sort: params.sort || 'views',
+        },
       });
       return response;
     } catch (error) {
-      console.warn('Content performance API unavailable, returning empty array for new creator');
+      console.warn(
+        'Content performance API unavailable, returning empty array for new creator'
+      );
       return {
         success: true,
-        data: [] // Empty array - new creators have no content performance yet
+        data: [], // Empty array - new creators have no content performance yet
       };
     }
   }
@@ -679,32 +721,34 @@ class CreatorService {
   async getDashboardData(period = '7d') {
     try {
       const response = await api.get('/creator/analytics', {
-        params: { period, compare: false }
+        params: { period, compare: false },
       });
       return response;
     } catch (error) {
       // Return zeros for new creators - they'll have real data once they get connections
-      console.warn('Analytics API unavailable, returning zeros for new creator');
+      console.warn(
+        'Analytics API unavailable, returning zeros for new creator'
+      );
       return {
         success: true,
         dashboard: {
           traffic: {
             overview: { totalVisits: 0 },
-            trends: { change: 0 }
+            trends: { change: 0 },
           },
           audience: {
             total: 0,
-            new: 0
+            new: 0,
           },
           revenue: {
             total: 0,
-            change: 0
+            change: 0,
           },
           engagement: {
             rating: 0,
-            ratingChange: 0
-          }
-        }
+            ratingChange: 0,
+          },
+        },
       };
     }
   }
@@ -730,8 +774,8 @@ class CreatorService {
         params: {
           format: options.format || 'json',
           period: options.period || '30d',
-          sections: options.sections || 'all'
-        }
+          sections: options.sections || 'all',
+        },
       });
       return response;
     } catch (error) {
@@ -745,15 +789,17 @@ class CreatorService {
   async getRecentActivity(limit = 10) {
     try {
       const response = await api.get('/creator/messages/analytics', {
-        params: { limit, recent: true }
+        params: { limit, recent: true },
       });
       return response;
     } catch (error) {
-      console.warn('Recent activity API unavailable, using empty data for new creator');
+      console.warn(
+        'Recent activity API unavailable, using empty data for new creator'
+      );
       return {
         success: true,
         data: [], // Dashboard expects array directly, not wrapped in object
-        error: false // Ensure error flag is false so dashboard uses the data
+        error: false, // Ensure error flag is false so dashboard uses the data
       };
     }
   }
@@ -761,7 +807,7 @@ class CreatorService {
   // ==========================================
   // CONNECTIONS & BROWSE
   // ==========================================
-  
+
   /**
    * Get connections (mutual likes with members)
    */
@@ -772,8 +818,8 @@ class CreatorService {
           filter: params.filter || 'all', // 'all', 'new', 'subscribed', 'high_value'
           sort: params.sort || 'recent',
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -796,7 +842,7 @@ class CreatorService {
   // ==========================================
   // SETTINGS
   // ==========================================
-  
+
   /**
    * Get creator settings
    */
@@ -830,7 +876,7 @@ class CreatorService {
         email_notifications: data.email_notifications,
         push_notifications: data.push_notifications,
         sms_notifications: data.sms_notifications,
-        notification_types: data.notification_types
+        notification_types: data.notification_types,
       });
       return response;
     } catch (error) {
@@ -848,7 +894,7 @@ class CreatorService {
         show_last_seen: data.show_last_seen,
         allow_screenshots: data.allow_screenshots,
         block_countries: data.block_countries,
-        blocked_users: data.blocked_users
+        blocked_users: data.blocked_users,
       });
       return response;
     } catch (error) {
@@ -859,76 +905,76 @@ class CreatorService {
   // ==========================================
   // HELPER METHODS
   // ==========================================
-  
+
   /**
    * Handle service errors
    */
   handleError(error) {
     if (error.response) {
       const { status, data } = error.response;
-      
+
       switch (status) {
         case 400:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: data.message || 'Invalid request',
-            errors: data.errors || {}
+            errors: data.errors || {},
           };
         case 401:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Unauthorized. Please login again.',
-            code: 'UNAUTHORIZED'
+            code: 'UNAUTHORIZED',
           };
         case 403:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'You do not have permission to perform this action.',
-            code: 'FORBIDDEN'
+            code: 'FORBIDDEN',
           };
         case 404:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Resource not found',
-            code: 'NOT_FOUND'
+            code: 'NOT_FOUND',
           };
         case 413:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'File size too large',
-            code: 'FILE_TOO_LARGE'
+            code: 'FILE_TOO_LARGE',
           };
         case 422:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Validation failed',
-            errors: data.errors || {}
+            errors: data.errors || {},
           };
         case 429:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Too many requests. Please try again later.',
-            code: 'RATE_LIMITED'
+            code: 'RATE_LIMITED',
           };
         default:
-          return { 
-            error: true, 
-            message: data.message || 'An error occurred'
+          return {
+            error: true,
+            message: data.message || 'An error occurred',
           };
       }
     }
-    
+
     if (!navigator.onLine) {
-      return { 
-        error: true, 
+      return {
+        error: true,
         message: 'No internet connection. Please check your network.',
-        code: 'OFFLINE'
+        code: 'OFFLINE',
       };
     }
-    
-    return { 
-      error: true, 
-      message: error.message || 'An unexpected error occurred'
+
+    return {
+      error: true,
+      message: error.message || 'An unexpected error occurred',
     };
   }
 }

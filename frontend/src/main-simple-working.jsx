@@ -6,17 +6,19 @@ console.log('🎯 Mounting Simple React App to root element...');
 
 function SimpleApp() {
   return (
-    <div style={{ 
-      padding: '20px', 
-      backgroundColor: '#0A0A0B', 
-      color: 'white', 
-      minHeight: '100vh',
-      fontFamily: 'Arial, sans-serif'
-    }}>
+    <div
+      style={{
+        padding: '20px',
+        backgroundColor: '#0A0A0B',
+        color: 'white',
+        minHeight: '100vh',
+        fontFamily: 'Arial, sans-serif',
+      }}
+    >
       <h1 style={{ color: '#FF006E' }}>🎉 SexySelfies React App is Working!</h1>
       <p>This confirms React is loading properly.</p>
       <p>Time: {new Date().toLocaleTimeString()}</p>
-      <button 
+      <button
         onClick={() => alert('Button clicked!')}
         style={{
           background: '#FF006E',
@@ -24,7 +26,7 @@ function SimpleApp() {
           border: 'none',
           padding: '10px 20px',
           borderRadius: '5px',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
       >
         Test Button

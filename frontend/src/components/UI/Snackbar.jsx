@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 
-const Snackbar = ({ 
-  open, 
-  onClose, 
-  message, 
+const Snackbar = ({
+  open,
+  onClose,
+  message,
   autoHideDuration = 6000,
   severity = 'info',
   children,
   className = '',
-  ...props 
+  ...props
 }) => {
   useEffect(() => {
     if (open && autoHideDuration && onClose) {
@@ -21,11 +21,9 @@ const Snackbar = ({
 
   return (
     <div className={`snackbar snackbar-${severity} ${className}`} {...props}>
-      <div className="snackbar-content">
-        {children || message}
-      </div>
+      <div className='snackbar-content'>{children || message}</div>
       {onClose && (
-        <button className="snackbar-close" onClick={onClose}>
+        <button className='snackbar-close' onClick={onClose}>
           ×
         </button>
       )}

@@ -1,8 +1,8 @@
 /* Admin Payouts Styles */
 .admin-payouts {
   padding: 24px;
-  background: var(--bg-900, #0A0A0A);
-  color: var(--text-primary, #FFFFFF);
+  background: var(--bg-900, #0a0a0a);
+  color: var(--text-primary, #ffffff);
   min-height: 100vh;
 }
 
@@ -12,7 +12,7 @@
   justify-content: center;
   height: 50vh;
   font-size: 18px;
-  color: var(--text-secondary, #C7C7CC);
+  color: var(--text-secondary, #c7c7cc);
 }
 
 /* Header Section */
@@ -23,7 +23,7 @@
 .payouts-header h1 {
   font-size: 32px;
   font-weight: 800;
-  color: var(--text-primary, #FFFFFF);
+  color: var(--text-primary, #ffffff);
   margin-bottom: 24px;
 }
 
@@ -35,8 +35,8 @@
 }
 
 .stat-card {
-  background: var(--surface-700, #1C1C1E);
-  border: 1px solid var(--border-600, #2A2A2C);
+  background: var(--surface-700, #1c1c1e);
+  border: 1px solid var(--border-600, #2a2a2c);
   border-radius: 16px;
   padding: 24px;
 }
@@ -44,7 +44,7 @@
 .stat-card h3 {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-secondary, #C7C7CC);
+  color: var(--text-secondary, #c7c7cc);
   margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -53,13 +53,13 @@
 .stat-number {
   font-size: 28px;
   font-weight: 700;
-  color: var(--brand, #17D2C2);
+  color: var(--brand, #17d2c2);
   margin-bottom: 4px;
 }
 
 .stat-card span {
   font-size: 14px;
-  color: var(--text-secondary, #C7C7CC);
+  color: var(--text-secondary, #c7c7cc);
 }
 
 /* Controls Section */
@@ -69,9 +69,9 @@
   align-items: center;
   margin-bottom: 24px;
   padding: 20px;
-  background: var(--surface-700, #1C1C1E);
+  background: var(--surface-700, #1c1c1e);
   border-radius: 16px;
-  border: 1px solid var(--border-600, #2A2A2C);
+  border: 1px solid var(--border-600, #2a2a2c);
 }
 
 .filters {
@@ -81,25 +81,25 @@
 
 .filters button {
   padding: 8px 16px;
-  border: 1px solid var(--border-600, #2A2A2C);
+  border: 1px solid var(--border-600, #2a2a2c);
   border-radius: 8px;
   background: transparent;
-  color: var(--text-secondary, #C7C7CC);
+  color: var(--text-secondary, #c7c7cc);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .filters button:hover {
-  background: var(--brand, #17D2C2);
-  color: var(--bg-900, #0A0A0A);
-  border-color: var(--brand, #17D2C2);
+  background: var(--brand, #17d2c2);
+  color: var(--bg-900, #0a0a0a);
+  border-color: var(--brand, #17d2c2);
 }
 
 .filters button.active {
-  background: var(--brand, #17D2C2);
-  color: var(--bg-900, #0A0A0A);
-  border-color: var(--brand, #17D2C2);
+  background: var(--brand, #17d2c2);
+  color: var(--bg-900, #0a0a0a);
+  border-color: var(--brand, #17d2c2);
 }
 
 .bulk-actions {
@@ -117,19 +117,19 @@
 
 .selection-info span {
   font-size: 14px;
-  color: var(--text-secondary, #C7C7CC);
+  color: var(--text-secondary, #c7c7cc);
 }
 
 .total-amount {
   font-weight: 600;
-  color: var(--brand, #17D2C2) !important;
+  color: var(--brand, #17d2c2) !important;
   font-size: 16px !important;
 }
 
 .bulk-payout-btn {
   padding: 12px 24px;
-  background: var(--brand, #17D2C2);
-  color: var(--bg-900, #0A0A0A);
+  background: var(--brand, #17d2c2);
+  color: var(--bg-900, #0a0a0a);
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -138,7 +138,7 @@
 }
 
 .bulk-payout-btn:hover:not(:disabled) {
-  background: var(--brand-600, #12B7AB);
+  background: var(--brand-600, #12b7ab);
   transform: translateY(-1px);
 }
 
@@ -150,8 +150,8 @@
 
 /* Table Styles */
 .creators-table {
-  background: var(--surface-700, #1C1C1E);
-  border: 1px solid var(--border-600, #2A2A2C);
+  background: var(--surface-700, #1c1c1e);
+  border: 1px solid var(--border-600, #2a2a2c);
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 32px;
@@ -163,10 +163,10 @@
   gap: 16px;
   padding: 20px;
   background: var(--bg-800, #121212);
-  border-bottom: 1px solid var(--border-600, #2A2A2C);
+  border-bottom: 1px solid var(--border-600, #2a2a2c);
   font-weight: 600;
   font-size: 14px;
-  color: var(--text-secondary, #C7C7CC);
+  color: var(--text-secondary, #c7c7cc);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -181,7 +181,7 @@
   grid-template-columns: 50px 1fr 120px 180px 100px 100px 120px;
   gap: 16px;
   padding: 20px;
-  border-bottom: 1px solid var(--border-600, #2A2A2C);
+  border-bottom: 1px solid var(--border-600, #2a2a2c);
   align-items: center;
   transition: all 0.2s ease;
 }
@@ -192,17 +192,17 @@
 
 .creator-row.selected {
   background: rgba(23, 210, 194, 0.1);
-  border-color: var(--brand, #17D2C2);
+  border-color: var(--brand, #17d2c2);
 }
 
 .creator-row:last-child {
   border-bottom: none;
 }
 
-.checkbox-col input[type="checkbox"] {
+.checkbox-col input[type='checkbox'] {
   width: 18px;
   height: 18px;
-  accent-color: var(--brand, #17D2C2);
+  accent-color: var(--brand, #17d2c2);
   cursor: pointer;
 }
 
@@ -217,18 +217,18 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--border-600, #2A2A2C);
+  border: 2px solid var(--border-600, #2a2a2c);
 }
 
 .creator-name {
   font-weight: 600;
-  color: var(--text-primary, #FFFFFF);
+  color: var(--text-primary, #ffffff);
   margin-bottom: 2px;
 }
 
 .creator-email {
   font-size: 13px;
-  color: var(--text-secondary, #C7C7CC);
+  color: var(--text-secondary, #c7c7cc);
 }
 
 .amount {
@@ -237,21 +237,21 @@
 }
 
 .amount.ready {
-  color: var(--success, #22C55E);
+  color: var(--success, #22c55e);
 }
 
 .amount.pending {
-  color: var(--warning, #F59E0B);
+  color: var(--warning, #f59e0b);
 }
 
 .has-paypal {
-  color: var(--text-primary, #FFFFFF);
+  color: var(--text-primary, #ffffff);
   font-family: monospace;
   font-size: 13px;
 }
 
 .no-paypal {
-  color: var(--error, #EF4444);
+  color: var(--error, #ef4444);
   font-style: italic;
 }
 
@@ -266,19 +266,19 @@
 
 .status.ready {
   background: rgba(34, 197, 94, 0.2);
-  color: var(--success, #22C55E);
+  color: var(--success, #22c55e);
 }
 
 .status.waiting {
   background: rgba(245, 158, 11, 0.2);
-  color: var(--warning, #F59E0B);
+  color: var(--warning, #f59e0b);
 }
 
 .individual-payout-btn {
   padding: 6px 12px;
   background: transparent;
-  color: var(--brand, #17D2C2);
-  border: 1px solid var(--brand, #17D2C2);
+  color: var(--brand, #17d2c2);
+  border: 1px solid var(--brand, #17d2c2);
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
@@ -287,8 +287,8 @@
 }
 
 .individual-payout-btn:hover:not(:disabled) {
-  background: var(--brand, #17D2C2);
-  color: var(--bg-900, #0A0A0A);
+  background: var(--brand, #17d2c2);
+  color: var(--bg-900, #0a0a0a);
 }
 
 .individual-payout-btn:disabled {
@@ -298,8 +298,8 @@
 
 /* Payout History */
 .payout-history {
-  background: var(--surface-700, #1C1C1E);
-  border: 1px solid var(--border-600, #2A2A2C);
+  background: var(--surface-700, #1c1c1e);
+  border: 1px solid var(--border-600, #2a2a2c);
   border-radius: 16px;
   padding: 24px;
 }
@@ -307,7 +307,7 @@
 .payout-history h2 {
   font-size: 20px;
   font-weight: 700;
-  color: var(--text-primary, #FFFFFF);
+  color: var(--text-primary, #ffffff);
   margin-bottom: 20px;
 }
 
@@ -334,11 +334,11 @@
 
 .history-info .creator-name {
   font-weight: 600;
-  color: var(--text-primary, #FFFFFF);
+  color: var(--text-primary, #ffffff);
 }
 
 .history-info .payout-amount {
-  color: var(--success, #22C55E);
+  color: var(--success, #22c55e);
   font-weight: 600;
 }
 
@@ -351,7 +351,7 @@
 
 .payout-date {
   font-size: 13px;
-  color: var(--text-secondary, #C7C7CC);
+  color: var(--text-secondary, #c7c7cc);
 }
 
 .payout-status {
@@ -364,17 +364,17 @@
 
 .payout-status.completed {
   background: rgba(34, 197, 94, 0.2);
-  color: var(--success, #22C55E);
+  color: var(--success, #22c55e);
 }
 
 .payout-status.pending {
   background: rgba(245, 158, 11, 0.2);
-  color: var(--warning, #F59E0B);
+  color: var(--warning, #f59e0b);
 }
 
 .payout-status.failed {
   background: rgba(239, 68, 68, 0.2);
-  color: var(--error, #EF4444);
+  color: var(--error, #ef4444);
 }
 
 /* Responsive Design */

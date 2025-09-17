@@ -12,14 +12,15 @@ const STATIC_ASSETS = [
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
-  '/offline.html'
+  '/offline.html',
 ];
 
 // Install Service Worker
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
   console.log('[SW] Installing Service Worker...');
   event.waitUntil(
-    caches.open(STATIC_CACHE_NAME)
+    caches
+      .open(STATIC_CACHE_NAME)
       .then(cache => {
         console.log('[SW] Precaching static assets');
         return cache.addAll(STATIC_ASSETS);
@@ -30,17 +31,19 @@ self.addEventListener('install', (event) => {
 });
 
 // Activate Service Worker
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
   console.log('[SW] Activating Service Worker...');
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames
           .filter(cacheName => {
-            return cacheName.startsWith('sexyselfies-') && 
-                   cacheName !== STATIC_CACHE_NAME &&
-                   cacheName !== DYNAMIC_CACHE_NAME &&
-                   cacheName !== IMAGE_CACHE_NAME;
+            return (
+              cacheName.startsWith('sexyselfies-') &&
+              cacheName !== STATIC_CACHE_NAME &&
+              cacheName !== DYNAMIC_CACHE_NAME &&
+              cacheName !== IMAGE_CACHE_NAME
+            );
           })
           .map(cacheName => {
             console.log('[SW] Removing old cache:', cacheName);
@@ -53,7 +56,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch Strategy: Network First with Cache Fallback
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
@@ -67,7 +70,8 @@ self.addEventListener('fetch', (event) => {
         .then(response => {
           // Clone response before caching
           const responseToCache = response.clone();
-          caches.open(DYNAMIC_CACHE_NAME)
+          caches
+            .open(DYNAMIC_CACHE_NAME)
             .then(cache => cache.put(request, responseToCache));
           return response;
         })
@@ -79,20 +83,25 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Images - Cache first, network fallback
-  if (request.destination === 'image' || url.pathname.match(/\.(jpg|jpeg|png|gif|webp|svg)$/)) {
+  if (
+    request.destination === 'image' ||
+    url.pathname.match(/\.(jpg|jpeg|png|gif|webp|svg)$/)
+  ) {
     event.respondWith(
-      caches.match(request)
+      caches
+        .match(request)
         .then(cachedResponse => {
           if (cachedResponse) return cachedResponse;
-          
+
           return fetch(request).then(response => {
             // Don't cache non-successful responses
             if (!response || response.status !== 200) {
               return response;
             }
-            
+
             const responseToCache = response.clone();
-            caches.open(IMAGE_CACHE_NAME)
+            caches
+              .open(IMAGE_CACHE_NAME)
               .then(cache => cache.put(request, responseToCache));
             return response;
           });
@@ -108,7 +117,8 @@ self.addEventListener('fetch', (event) => {
   // Static assets - Cache first
   if (url.pathname.match(/\.(js|css|woff2?)$/)) {
     event.respondWith(
-      caches.match(request)
+      caches
+        .match(request)
         .then(cachedResponse => cachedResponse || fetch(request))
     );
     return;
@@ -119,42 +129,42 @@ self.addEventListener('fetch', (event) => {
     fetch(request)
       .then(response => {
         const responseToCache = response.clone();
-        caches.open(DYNAMIC_CACHE_NAME)
+        caches
+          .open(DYNAMIC_CACHE_NAME)
           .then(cache => cache.put(request, responseToCache));
         return response;
       })
       .catch(() => {
-        return caches.match(request)
-          .then(cachedResponse => {
-            if (cachedResponse) return cachedResponse;
-            // Return offline page for navigation requests
-            if (request.mode === 'navigate') {
-              return caches.match('/offline.html');
-            }
-          });
+        return caches.match(request).then(cachedResponse => {
+          if (cachedResponse) return cachedResponse;
+          // Return offline page for navigation requests
+          if (request.mode === 'navigate') {
+            return caches.match('/offline.html');
+          }
+        });
       })
   );
 });
 
 // Background Sync for offline actions
-self.addEventListener('sync', (event) => {
+self.addEventListener('sync', event => {
   console.log('[SW] Background sync:', event.tag);
-  
+
   if (event.tag === 'sync-messages') {
     event.waitUntil(syncMessages());
   }
-  
+
   if (event.tag === 'sync-likes') {
     event.waitUntil(syncLikes());
   }
-  
+
   if (event.tag === 'sync-uploads') {
     event.waitUntil(syncUploads());
   }
 });
 
 // Push Notifications
-self.addEventListener('push', (event) => {
+self.addEventListener('push', event => {
   const options = {
     body: event.data ? event.data.text() : 'New notification from SexySelfies',
     icon: '/icons/icon-192x192.png',
@@ -162,35 +172,31 @@ self.addEventListener('push', (event) => {
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
-      primaryKey: 1
+      primaryKey: 1,
     },
     actions: [
       {
         action: 'view',
         title: 'View',
-        icon: '/icons/view-icon.png'
+        icon: '/icons/view-icon.png',
       },
       {
         action: 'close',
         title: 'Close',
-        icon: '/icons/close-icon.png'
-      }
-    ]
+        icon: '/icons/close-icon.png',
+      },
+    ],
   };
 
-  event.waitUntil(
-    self.registration.showNotification('SexySelfies', options)
-  );
+  event.waitUntil(self.registration.showNotification('SexySelfies', options));
 });
 
 // Notification click handler
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener('notificationclick', event => {
   event.notification.close();
-  
+
   if (event.action === 'view') {
-    event.waitUntil(
-      clients.openWindow('/')
-    );
+    event.waitUntil(clients.openWindow('/'));
   }
 });
 
@@ -221,7 +227,10 @@ async function trimCache(cacheName, maxItems) {
 }
 
 // Periodic cache cleanup
-setInterval(() => {
-  trimCache(IMAGE_CACHE_NAME, 50); // Keep only 50 images
-  trimCache(DYNAMIC_CACHE_NAME, 30); // Keep only 30 dynamic items
-}, 1000 * 60 * 60); // Run every hour
+setInterval(
+  () => {
+    trimCache(IMAGE_CACHE_NAME, 50); // Keep only 50 images
+    trimCache(DYNAMIC_CACHE_NAME, 30); // Keep only 30 dynamic items
+  },
+  1000 * 60 * 60
+); // Run every hour

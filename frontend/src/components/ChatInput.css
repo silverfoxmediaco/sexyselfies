@@ -37,14 +37,14 @@
 
 .reply-content span {
   font-size: 11px;
-  color: #17D2C2;
+  color: #17d2c2;
   display: block;
   font-weight: 500;
 }
 
 .reply-content p {
   font-size: 13px;
-  color: #C7C7CC;
+  color: #c7c7cc;
   margin: 2px 0 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -59,7 +59,7 @@
   justify-content: center;
   background: transparent;
   border: none;
-  color: #8E8E93;
+  color: #8e8e93;
   cursor: pointer;
   transition: all 0.2s;
   border-radius: 50%;
@@ -99,7 +99,7 @@
 }
 
 .attach-btn {
-  color: #8E8E93;
+  color: #8e8e93;
 }
 
 .attach-btn:not(:disabled):active {
@@ -107,7 +107,7 @@
 }
 
 .voice-btn {
-  color: #8E8E93;
+  color: #8e8e93;
 }
 
 .voice-btn:not(:disabled):active {
@@ -115,7 +115,7 @@
 }
 
 .send-btn {
-  background: #17D2C2;
+  background: #17d2c2;
   color: #001310;
 }
 
@@ -140,7 +140,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   padding: 8px 16px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 15px;
   line-height: 20px;
   outline: none;
@@ -148,11 +148,13 @@
   min-height: 36px;
   max-height: 100px;
   resize: none;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
 }
 
 .message-input::placeholder {
-  color: #8E8E93;
+  color: #8e8e93;
 }
 
 .message-input:focus {
@@ -175,7 +177,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Character Counter */
@@ -187,16 +191,16 @@
   background: rgba(28, 28, 30, 0.9);
   border-radius: 12px;
   font-size: 11px;
-  color: #8E8E93;
+  color: #8e8e93;
   animation: fadeIn 0.2s ease;
 }
 
 .character-counter.warning {
-  color: #FFD60A;
+  color: #ffd60a;
 }
 
 .character-counter.danger {
-  color: #EF4444;
+  color: #ef4444;
 }
 
 @keyframes fadeIn {
@@ -255,7 +259,7 @@
   }
 
   .send-btn:not(:disabled):hover {
-    background: #14C4B5;
+    background: #14c4b5;
   }
 
   .cancel-reply:hover {
@@ -266,12 +270,12 @@
 /* Focus Visible for Accessibility */
 .input-action-btn:focus-visible,
 .cancel-reply:focus-visible {
-  outline: 2px solid #17D2C2;
+  outline: 2px solid #17d2c2;
   outline-offset: 2px;
 }
 
 .message-input:focus-visible {
-  outline: 2px solid #17D2C2;
+  outline: 2px solid #17d2c2;
   outline-offset: -2px;
 }
 
@@ -295,7 +299,7 @@
   }
 
   .reply-content p {
-    color: #3C3C43;
+    color: #3c3c43;
   }
 
   .message-input {
@@ -305,16 +309,16 @@
   }
 
   .message-input::placeholder {
-    color: #8E8E93;
+    color: #8e8e93;
   }
 
   .attach-btn,
   .voice-btn {
-    color: #3C3C43;
+    color: #3c3c43;
   }
 
   .character-counter {
     background: rgba(240, 240, 240, 0.9);
-    color: #3C3C43;
+    color: #3c3c43;
   }
 }

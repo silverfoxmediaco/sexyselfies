@@ -1,16 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { 
-  ArrowLeft, Plus, Search, Filter, Grid, List, 
-  Eye, Edit, Trash2, Download, Share2, 
-  Image, Video, Calendar, DollarSign,
-  TrendingUp, Users, Heart, MessageSquare,
-  Settings, MoreVertical, Upload, AlertCircle, X
+import {
+  ArrowLeft,
+  Plus,
+  Search,
+  Filter,
+  Grid,
+  List,
+  Eye,
+  Edit,
+  Trash2,
+  Download,
+  Share2,
+  Image,
+  Video,
+  Calendar,
+  DollarSign,
+  TrendingUp,
+  Users,
+  Heart,
+  MessageSquare,
+  Settings,
+  MoreVertical,
+  Upload,
+  AlertCircle,
+  X,
 } from 'lucide-react';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsDesktop, useIsMobile, getUserRole } from '../utils/mobileDetection';
+import {
+  useIsDesktop,
+  useIsMobile,
+  getUserRole,
+} from '../utils/mobileDetection';
 import creatorService from '../services/creator.service';
 import './CreatorContentManagement.css';
 
@@ -20,7 +43,7 @@ const CreatorContentManagement = () => {
   const isDesktop = useIsDesktop();
   const isMobile = useIsMobile();
   const userRole = getUserRole();
-  
+
   // State management
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,9 +58,9 @@ const CreatorContentManagement = () => {
   const [editForm, setEditForm] = useState({
     title: '',
     description: '',
-    price: 0
+    price: 0,
   });
-  
+
   // Analytics state
   const [analytics, setAnalytics] = useState({
     totalContent: 0,
@@ -47,7 +70,7 @@ const CreatorContentManagement = () => {
     photoCount: 0,
     videoCount: 0,
     freeContent: 0,
-    paidContent: 0
+    paidContent: 0,
   });
 
   useEffect(() => {
@@ -84,17 +107,24 @@ const CreatorContentManagement = () => {
     setAnalytics({
       totalContent: content.length,
       totalViews: content.reduce((sum, item) => sum + (item.views || 0), 0),
-      totalEarnings: content.reduce((sum, item) => sum + (item.earnings || 0), 0),
+      totalEarnings: content.reduce(
+        (sum, item) => sum + (item.earnings || 0),
+        0
+      ),
       totalConnections: 0, // Will be implemented when connections API is ready
       photoCount: content.filter(item => item.type === 'photo').length,
       videoCount: content.filter(item => item.type === 'video').length,
       freeContent: content.filter(item => item.price === 0).length,
-      paidContent: content.filter(item => item.price > 0).length
+      paidContent: content.filter(item => item.price > 0).length,
     });
   };
 
-  const handleDeleteContent = async (contentId) => {
-    if (!window.confirm('Are you sure you want to delete this content? This action cannot be undone.')) {
+  const handleDeleteContent = async contentId => {
+    if (
+      !window.confirm(
+        'Are you sure you want to delete this content? This action cannot be undone.'
+      )
+    ) {
       return;
     }
 
@@ -110,13 +140,19 @@ const CreatorContentManagement = () => {
 
   const handleBulkDelete = async () => {
     if (selectedItems.length === 0) return;
-    
-    if (!window.confirm(`Are you sure you want to delete ${selectedItems.length} items? This action cannot be undone.`)) {
+
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${selectedItems.length} items? This action cannot be undone.`
+      )
+    ) {
       return;
     }
 
     try {
-      await Promise.all(selectedItems.map(id => creatorService.deleteContent(id)));
+      await Promise.all(
+        selectedItems.map(id => creatorService.deleteContent(id))
+      );
       setContent(content.filter(item => !selectedItems.includes(item._id)));
       setSelectedItems([]);
     } catch (err) {
@@ -125,12 +161,12 @@ const CreatorContentManagement = () => {
     }
   };
 
-  const handleEditContent = (item) => {
+  const handleEditContent = item => {
     setEditingContent(item);
     setEditForm({
       title: item.title || '',
       description: item.description || '',
-      price: item.price || 0
+      price: item.price || 0,
     });
     setShowEditModal(true);
   };
@@ -141,23 +177,36 @@ const CreatorContentManagement = () => {
     try {
       // Update price if changed
       if (editForm.price !== editingContent.price) {
-        await creatorService.updateContentPrice(editingContent._id, editForm.price);
+        await creatorService.updateContentPrice(
+          editingContent._id,
+          editForm.price
+        );
       }
 
       // Update other details if they exist (basic implementation)
-      if (editForm.title !== editingContent.title || editForm.description !== editingContent.description) {
+      if (
+        editForm.title !== editingContent.title ||
+        editForm.description !== editingContent.description
+      ) {
         await creatorService.updateContent(editingContent._id, {
           title: editForm.title,
-          description: editForm.description
+          description: editForm.description,
         });
       }
 
       // Update local state
-      setContent(content.map(item => 
-        item._id === editingContent._id 
-          ? { ...item, title: editForm.title, description: editForm.description, price: editForm.price }
-          : item
-      ));
+      setContent(
+        content.map(item =>
+          item._id === editingContent._id
+            ? {
+                ...item,
+                title: editForm.title,
+                description: editForm.description,
+                price: editForm.price,
+              }
+            : item
+        )
+      );
 
       setShowEditModal(false);
       setEditingContent(null);
@@ -173,11 +222,9 @@ const CreatorContentManagement = () => {
     setEditForm({ title: '', description: '', price: 0 });
   };
 
-  const toggleItemSelection = (id) => {
-    setSelectedItems(prev => 
-      prev.includes(id) 
-        ? prev.filter(item => item !== id)
-        : [...prev, id]
+  const toggleItemSelection = id => {
+    setSelectedItems(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
     );
   };
 
@@ -190,36 +237,36 @@ const CreatorContentManagement = () => {
     setSelectedItems([]);
   };
 
-  const getTypeIcon = (type) => {
+  const getTypeIcon = type => {
     return type === 'photo' ? <Image size={16} /> : <Video size={16} />;
   };
 
-  const getTypeLabel = (type) => {
+  const getTypeLabel = type => {
     return type === 'photo' ? 'Photo Set' : 'Video';
   };
 
-  const formatDate = (date) => {
+  const formatDate = date => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
-  const formatPrice = (price) => {
+  const formatPrice = price => {
     return price === 0 ? 'Free' : `$${price.toFixed(2)}`;
   };
 
-  const handleShareContent = async (item) => {
+  const handleShareContent = async item => {
     const shareUrl = `${window.location.origin}/content/${item._id}`;
-    
+
     if (navigator.share) {
       // Use native share API if available (mobile)
       try {
         await navigator.share({
           title: item.title || 'Check out my content!',
           text: `Check out "${item.title}" on SexySelfies`,
-          url: shareUrl
+          url: shareUrl,
         });
       } catch (error) {
         // User cancelled or error occurred, fallback to clipboard
@@ -231,7 +278,7 @@ const CreatorContentManagement = () => {
     }
   };
 
-  const copyToClipboard = async (text) => {
+  const copyToClipboard = async text => {
     try {
       await navigator.clipboard.writeText(text);
       alert('Link copied to clipboard!');
@@ -250,15 +297,17 @@ const CreatorContentManagement = () => {
   // Filter and sort content
   const filteredAndSortedContent = content
     .filter(item => {
-      const matchesType = filterType === 'all' || 
+      const matchesType =
+        filterType === 'all' ||
         (filterType === 'photo' && item.type === 'photo') ||
         (filterType === 'video' && item.type === 'video') ||
         (filterType === 'free' && item.price === 0) ||
         (filterType === 'paid' && item.price > 0);
-      
-      const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+
+      const matchesSearch =
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.description.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       return matchesType && matchesSearch;
     })
     .sort((a, b) => {
@@ -278,9 +327,9 @@ const CreatorContentManagement = () => {
 
   if (loading) {
     return (
-      <div className="content-mgmt-container">
-        <div className="content-mgmt-loading">
-          <div className="content-mgmt-loading-spinner"></div>
+      <div className='content-mgmt-container'>
+        <div className='content-mgmt-loading'>
+          <div className='content-mgmt-loading-spinner'></div>
           <p>Loading your content...</p>
         </div>
       </div>
@@ -290,105 +339,119 @@ const CreatorContentManagement = () => {
   return (
     <>
       <CreatorMainHeader />
-      
-      <div className="content-mgmt-container">
+
+      <div className='content-mgmt-container'>
         {/* Header */}
-        <header className="content-mgmt-header">
-          <div className="content-mgmt-header-content">
-            <button className="content-mgmt-back-btn" onClick={() => navigate(`/creator/${creatorId}/dashboard`)}>
+        <header className='content-mgmt-header'>
+          <div className='content-mgmt-header-content'>
+            <button
+              className='content-mgmt-back-btn'
+              onClick={() => navigate(`/creator/${creatorId}/dashboard`)}
+            >
               <ArrowLeft size={20} />
             </button>
             <h1>Content Management</h1>
-            <button className="content-mgmt-upload-btn" onClick={() => navigate(`/creator/${creatorId}/upload`)}>
+            <button
+              className='content-mgmt-upload-btn'
+              onClick={() => navigate(`/creator/${creatorId}/upload`)}
+            >
               <Plus size={20} />
             </button>
           </div>
         </header>
 
         {/* Analytics Summary */}
-        <div className="content-mgmt-analytics">
-          <div className="content-mgmt-stat-card">
-            <div className="content-mgmt-stat-icon">
+        <div className='content-mgmt-analytics'>
+          <div className='content-mgmt-stat-card'>
+            <div className='content-mgmt-stat-icon'>
               <Upload size={24} />
             </div>
-            <div className="content-mgmt-stat-info">
-              <span className="content-mgmt-stat-value">{analytics.totalContent}</span>
-              <span className="content-mgmt-stat-label">Total Content</span>
+            <div className='content-mgmt-stat-info'>
+              <span className='content-mgmt-stat-value'>
+                {analytics.totalContent}
+              </span>
+              <span className='content-mgmt-stat-label'>Total Content</span>
             </div>
           </div>
-          
-          <div className="content-mgmt-stat-card">
-            <div className="content-mgmt-stat-icon">
+
+          <div className='content-mgmt-stat-card'>
+            <div className='content-mgmt-stat-icon'>
               <Eye size={24} />
             </div>
-            <div className="content-mgmt-stat-info">
-              <span className="content-mgmt-stat-value">{analytics.totalViews.toLocaleString()}</span>
-              <span className="content-mgmt-stat-label">Total Views</span>
+            <div className='content-mgmt-stat-info'>
+              <span className='content-mgmt-stat-value'>
+                {analytics.totalViews.toLocaleString()}
+              </span>
+              <span className='content-mgmt-stat-label'>Total Views</span>
             </div>
           </div>
-          
-          <div className="content-mgmt-stat-card">
-            <div className="content-mgmt-stat-icon">
+
+          <div className='content-mgmt-stat-card'>
+            <div className='content-mgmt-stat-icon'>
               <DollarSign size={24} />
             </div>
-            <div className="content-mgmt-stat-info">
-              <span className="content-mgmt-stat-value">${analytics.totalEarnings.toFixed(2)}</span>
-              <span className="content-mgmt-stat-label">Total Earnings</span>
+            <div className='content-mgmt-stat-info'>
+              <span className='content-mgmt-stat-value'>
+                ${analytics.totalEarnings.toFixed(2)}
+              </span>
+              <span className='content-mgmt-stat-label'>Total Earnings</span>
             </div>
           </div>
-          
-          <div className="content-mgmt-stat-card">
-            <div className="content-mgmt-stat-icon">
+
+          <div className='content-mgmt-stat-card'>
+            <div className='content-mgmt-stat-icon'>
               <Users size={24} />
             </div>
-            <div className="content-mgmt-stat-info">
-              <span className="content-mgmt-stat-value">{analytics.totalConnections}</span>
-              <span className="content-mgmt-stat-label">Connections</span>
+            <div className='content-mgmt-stat-info'>
+              <span className='content-mgmt-stat-value'>
+                {analytics.totalConnections}
+              </span>
+              <span className='content-mgmt-stat-label'>Connections</span>
             </div>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="content-mgmt-controls">
-          <div className="content-mgmt-search-bar">
+        <div className='content-mgmt-controls'>
+          <div className='content-mgmt-search-bar'>
             <Search size={20} />
             <input
-              type="text"
-              placeholder="Search content..."
+              type='text'
+              placeholder='Search content...'
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
 
-          <div className="content-mgmt-filter-controls">
-            <div className="content-mgmt-filter-chips">
-              <button 
+          <div className='content-mgmt-filter-controls'>
+            <div className='content-mgmt-filter-chips'>
+              <button
                 className={`content-mgmt-chip ${filterType === 'all' ? 'active' : ''}`}
                 onClick={() => setFilterType('all')}
               >
                 All
               </button>
-              <button 
+              <button
                 className={`content-mgmt-chip ${filterType === 'photo' ? 'active' : ''}`}
                 onClick={() => setFilterType('photo')}
               >
                 <Image size={14} />
                 Photos
               </button>
-              <button 
+              <button
                 className={`content-mgmt-chip ${filterType === 'video' ? 'active' : ''}`}
                 onClick={() => setFilterType('video')}
               >
                 <Video size={14} />
                 Videos
               </button>
-              <button 
+              <button
                 className={`content-mgmt-chip ${filterType === 'free' ? 'active' : ''}`}
                 onClick={() => setFilterType('free')}
               >
                 Free
               </button>
-              <button 
+              <button
                 className={`content-mgmt-chip ${filterType === 'paid' ? 'active' : ''}`}
                 onClick={() => setFilterType('paid')}
               >
@@ -396,26 +459,26 @@ const CreatorContentManagement = () => {
               </button>
             </div>
 
-            <div className="content-mgmt-view-controls">
-              <select 
-                className="content-mgmt-sort-select"
+            <div className='content-mgmt-view-controls'>
+              <select
+                className='content-mgmt-sort-select'
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={e => setSortBy(e.target.value)}
               >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="popular">Most Popular</option>
-                <option value="earnings">Highest Earnings</option>
+                <option value='newest'>Newest First</option>
+                <option value='oldest'>Oldest First</option>
+                <option value='popular'>Most Popular</option>
+                <option value='earnings'>Highest Earnings</option>
               </select>
 
-              <div className="content-mgmt-view-toggle">
-                <button 
+              <div className='content-mgmt-view-toggle'>
+                <button
                   className={`content-mgmt-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
                   onClick={() => setViewMode('grid')}
                 >
                   <Grid size={18} />
                 </button>
-                <button 
+                <button
                   className={`content-mgmt-view-btn ${viewMode === 'list' ? 'active' : ''}`}
                   onClick={() => setViewMode('list')}
                 >
@@ -428,19 +491,18 @@ const CreatorContentManagement = () => {
 
         {/* Selection Controls */}
         {selectedItems.length > 0 && (
-          <div className="content-mgmt-selection-bar">
+          <div className='content-mgmt-selection-bar'>
             <span>{selectedItems.length} selected</span>
-            <div className="content-mgmt-selection-actions">
-              <button onClick={selectAllVisible}>
-                Select All Visible
-              </button>
-              <button onClick={handleBulkDelete} className="content-mgmt-delete-btn">
+            <div className='content-mgmt-selection-actions'>
+              <button onClick={selectAllVisible}>Select All Visible</button>
+              <button
+                onClick={handleBulkDelete}
+                className='content-mgmt-delete-btn'
+              >
                 <Trash2 size={16} />
                 Delete Selected
               </button>
-              <button onClick={clearSelection}>
-                Clear Selection
-              </button>
+              <button onClick={clearSelection}>Clear Selection</button>
             </div>
           </div>
         )}
@@ -448,18 +510,21 @@ const CreatorContentManagement = () => {
         {/* Content Grid/List */}
         <div className={`content-mgmt-content ${viewMode}`}>
           {filteredAndSortedContent.length === 0 ? (
-            <div className="content-mgmt-empty-state">
+            <div className='content-mgmt-empty-state'>
               <Upload size={48} />
-              <h3>{content.length === 0 ? 'No content uploaded yet' : 'No content found'}</h3>
+              <h3>
+                {content.length === 0
+                  ? 'No content uploaded yet'
+                  : 'No content found'}
+              </h3>
               <p>
-                {content.length === 0 
+                {content.length === 0
                   ? 'Start creating content to build your audience and earn money'
-                  : 'Try adjusting your filters or search term'
-                }
+                  : 'Try adjusting your filters or search term'}
               </p>
               {content.length === 0 && (
-                <button 
-                  className="content-mgmt-upload-first-btn"
+                <button
+                  className='content-mgmt-upload-first-btn'
                   onClick={() => navigate(`/creator/${creatorId}/upload`)}
                 >
                   <Plus size={20} />
@@ -470,116 +535,131 @@ const CreatorContentManagement = () => {
           ) : (
             <div className={`content-mgmt-items-${viewMode}`}>
               {filteredAndSortedContent.map(item => (
-                <div key={item._id} className={`content-mgmt-item ${selectedItems.includes(item._id) ? 'selected' : ''}`}>
-                  <div className="content-mgmt-item-checkbox">
+                <div
+                  key={item._id}
+                  className={`content-mgmt-item ${selectedItems.includes(item._id) ? 'selected' : ''}`}
+                >
+                  <div className='content-mgmt-item-checkbox'>
                     <input
-                      type="checkbox"
+                      type='checkbox'
                       checked={selectedItems.includes(item._id)}
                       onChange={() => toggleItemSelection(item._id)}
                     />
                   </div>
 
-                  <div className="content-mgmt-item-thumbnail">
+                  <div className='content-mgmt-item-thumbnail'>
                     {item.thumbnail || (item.media && item.media[0]?.url) ? (
-                      <img 
-                        src={item.thumbnail || item.media[0]?.url} 
+                      <img
+                        src={item.thumbnail || item.media[0]?.url}
                         alt={item.title || 'Content thumbnail'}
-                        onError={(e) => {
+                        onError={e => {
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'flex';
                         }}
                       />
                     ) : null}
-                    <div 
-                      className="content-mgmt-item-placeholder" 
+                    <div
+                      className='content-mgmt-item-placeholder'
                       style={{
-                        display: (item.thumbnail || (item.media && item.media[0]?.url)) ? 'none' : 'flex',
+                        display:
+                          item.thumbnail || (item.media && item.media[0]?.url)
+                            ? 'none'
+                            : 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         height: '100%',
                         backgroundColor: 'var(--surface-700)',
-                        color: 'var(--text-secondary)'
+                        color: 'var(--text-secondary)',
                       }}
                     >
-                      {item.type === 'photo' ? <Image size={32} /> : <Video size={32} />}
-                      <span style={{ marginTop: '8px', fontSize: '0.75rem' }}>No Preview</span>
+                      {item.type === 'photo' ? (
+                        <Image size={32} />
+                      ) : (
+                        <Video size={32} />
+                      )}
+                      <span style={{ marginTop: '8px', fontSize: '0.75rem' }}>
+                        No Preview
+                      </span>
                     </div>
-                    <div className="content-mgmt-item-type">
+                    <div className='content-mgmt-item-type'>
                       {getTypeIcon(item.type)}
                     </div>
                     {item.type === 'video' && item.duration && (
-                      <div className="content-mgmt-item-duration">{item.duration}</div>
+                      <div className='content-mgmt-item-duration'>
+                        {item.duration}
+                      </div>
                     )}
-                    <div className="content-mgmt-item-price-badge">
+                    <div className='content-mgmt-item-price-badge'>
                       {formatPrice(item.price)}
                     </div>
                   </div>
 
-                  <div className="content-mgmt-item-info">
+                  <div className='content-mgmt-item-info'>
                     <h3>{item.title}</h3>
-                    <p className="content-mgmt-item-description">
-                      {item.description && item.description.length > 100 
+                    <p className='content-mgmt-item-description'>
+                      {item.description && item.description.length > 100
                         ? `${item.description.substring(0, 100)}...`
-                        : item.description || 'No description'
-                      }
+                        : item.description || 'No description'}
                     </p>
-                    
-                    <div className="content-mgmt-item-meta">
-                      <span className="content-mgmt-item-date">
+
+                    <div className='content-mgmt-item-meta'>
+                      <span className='content-mgmt-item-date'>
                         <Calendar size={12} />
                         {formatDate(item.createdAt)}
                       </span>
-                      <span className="content-mgmt-item-type-label">
+                      <span className='content-mgmt-item-type-label'>
                         {getTypeLabel(item.type)}
                       </span>
                     </div>
 
-                    <div className="content-mgmt-item-stats">
-                      <span className="content-mgmt-stat">
+                    <div className='content-mgmt-item-stats'>
+                      <span className='content-mgmt-stat'>
                         <Eye size={12} />
                         {item.views || 0} views
                       </span>
-                      <span className="content-mgmt-stat">
+                      <span className='content-mgmt-stat'>
                         <Heart size={12} />
                         {item.likes || 0} likes
                       </span>
-                      <span className="content-mgmt-stat">
-                        <DollarSign size={12} />
-                        ${(item.earnings || 0).toFixed(2)}
+                      <span className='content-mgmt-stat'>
+                        <DollarSign size={12} />$
+                        {(item.earnings || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
 
-                  <div className="content-mgmt-item-actions">
-                    <button 
-                      className="content-mgmt-action-btn"
+                  <div className='content-mgmt-item-actions'>
+                    <button
+                      className='content-mgmt-action-btn'
                       onClick={() => handleEditContent(item)}
-                      title="Edit"
+                      title='Edit'
                     >
                       <Edit size={18} />
                     </button>
-                    
-                    <button 
-                      className="content-mgmt-action-btn"
-                      onClick={() => window.open(`/content/${item._id}`, '_blank')}
-                      title="View"
+
+                    <button
+                      className='content-mgmt-action-btn'
+                      onClick={() =>
+                        window.open(`/content/${item._id}`, '_blank')
+                      }
+                      title='View'
                     >
                       <Eye size={18} />
                     </button>
 
-                    <button 
-                      className="content-mgmt-action-btn"
+                    <button
+                      className='content-mgmt-action-btn'
                       onClick={() => handleShareContent(item)}
-                      title="Share"
+                      title='Share'
                     >
                       <Share2 size={18} />
                     </button>
 
-                    <button 
-                      className="content-mgmt-action-btn content-mgmt-delete-btn"
+                    <button
+                      className='content-mgmt-action-btn content-mgmt-delete-btn'
                       onClick={() => handleDeleteContent(item._id)}
-                      title="Delete"
+                      title='Delete'
                     >
                       <Trash2 size={18} />
                     </button>
@@ -593,64 +673,79 @@ const CreatorContentManagement = () => {
 
       {/* Edit Modal */}
       {showEditModal && (
-        <div className="content-mgmt-modal-overlay" onClick={handleCancelEdit}>
-          <div className="content-mgmt-edit-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="content-mgmt-modal-header">
+        <div className='content-mgmt-modal-overlay' onClick={handleCancelEdit}>
+          <div
+            className='content-mgmt-edit-modal'
+            onClick={e => e.stopPropagation()}
+          >
+            <div className='content-mgmt-modal-header'>
               <h3>Edit Content</h3>
-              <button className="content-mgmt-modal-close" onClick={handleCancelEdit}>
+              <button
+                className='content-mgmt-modal-close'
+                onClick={handleCancelEdit}
+              >
                 <X size={20} />
               </button>
             </div>
-            
-            <div className="content-mgmt-modal-content">
-              <div className="content-mgmt-form-group">
-                <label htmlFor="edit-title">Title</label>
+
+            <div className='content-mgmt-modal-content'>
+              <div className='content-mgmt-form-group'>
+                <label htmlFor='edit-title'>Title</label>
                 <input
-                  id="edit-title"
-                  type="text"
+                  id='edit-title'
+                  type='text'
                   value={editForm.title}
-                  onChange={(e) => setEditForm({...editForm, title: e.target.value})}
-                  placeholder="Enter content title"
-                  maxLength="100"
+                  onChange={e =>
+                    setEditForm({ ...editForm, title: e.target.value })
+                  }
+                  placeholder='Enter content title'
+                  maxLength='100'
                 />
               </div>
-              
-              <div className="content-mgmt-form-group">
-                <label htmlFor="edit-description">Description</label>
+
+              <div className='content-mgmt-form-group'>
+                <label htmlFor='edit-description'>Description</label>
                 <textarea
-                  id="edit-description"
+                  id='edit-description'
                   value={editForm.description}
-                  onChange={(e) => setEditForm({...editForm, description: e.target.value})}
-                  placeholder="Enter content description"
-                  maxLength="500"
-                  rows="3"
+                  onChange={e =>
+                    setEditForm({ ...editForm, description: e.target.value })
+                  }
+                  placeholder='Enter content description'
+                  maxLength='500'
+                  rows='3'
                 />
               </div>
-              
-              <div className="content-mgmt-form-group">
-                <label htmlFor="edit-price">Price ($)</label>
+
+              <div className='content-mgmt-form-group'>
+                <label htmlFor='edit-price'>Price ($)</label>
                 <input
-                  id="edit-price"
-                  type="number"
+                  id='edit-price'
+                  type='number'
                   value={editForm.price}
-                  onChange={(e) => setEditForm({...editForm, price: parseFloat(e.target.value) || 0})}
-                  min="0"
-                  max="99.99"
-                  step="0.01"
+                  onChange={e =>
+                    setEditForm({
+                      ...editForm,
+                      price: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                  min='0'
+                  max='99.99'
+                  step='0.01'
                 />
                 <small>Set to $0.00 to make content free</small>
               </div>
             </div>
-            
-            <div className="content-mgmt-modal-actions">
-              <button 
-                className="content-mgmt-btn content-mgmt-btn-secondary" 
+
+            <div className='content-mgmt-modal-actions'>
+              <button
+                className='content-mgmt-btn content-mgmt-btn-secondary'
                 onClick={handleCancelEdit}
               >
                 Cancel
               </button>
-              <button 
-                className="content-mgmt-btn content-mgmt-btn-primary" 
+              <button
+                className='content-mgmt-btn content-mgmt-btn-primary'
                 onClick={handleSaveEdit}
               >
                 Save Changes
@@ -661,7 +756,7 @@ const CreatorContentManagement = () => {
       )}
 
       {isDesktop && <CreatorMainFooter />}
-      
+
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </>

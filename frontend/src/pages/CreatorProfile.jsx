@@ -1,23 +1,65 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft, Heart, MessageCircle, Share2, MoreVertical,
-  Camera, Video, Lock, Unlock, Star, MapPin, Shield,
-  Users, Clock, TrendingUp, Calendar, ChevronLeft, ChevronRight,
-  Eye, EyeOff, DollarSign, ShoppingBag, Gift, Sparkles,
-  Instagram, Twitter, Link, Flag, UserX, Bell, BellOff,
-  Grid3x3, Play, Image, Film, Music, FileText, Download, User,
-  CheckCircle, XCircle, AlertCircle, Zap, Crown, Diamond, X
+import {
+  ArrowLeft,
+  Heart,
+  MessageCircle,
+  Share2,
+  MoreVertical,
+  Camera,
+  Video,
+  Lock,
+  Unlock,
+  Star,
+  MapPin,
+  Shield,
+  Users,
+  Clock,
+  TrendingUp,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  DollarSign,
+  ShoppingBag,
+  Gift,
+  Sparkles,
+  Instagram,
+  Twitter,
+  Link,
+  Flag,
+  UserX,
+  Bell,
+  BellOff,
+  Grid3x3,
+  Play,
+  Image,
+  Film,
+  Music,
+  FileText,
+  Download,
+  User,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Zap,
+  Crown,
+  Diamond,
+  X,
 } from 'lucide-react';
 import memberService from '../services/member.service.js';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsDesktop, useIsMobile, getUserRole } from '../utils/mobileDetection';
+import {
+  useIsDesktop,
+  useIsMobile,
+  getUserRole,
+} from '../utils/mobileDetection';
 
 import './CreatorProfile.css';
-
 
 const CreatorProfile = () => {
   const { username } = useParams();
@@ -25,7 +67,7 @@ const CreatorProfile = () => {
   const isDesktop = useIsDesktop();
   const isMobile = useIsMobile();
   const userRole = getUserRole();
-  
+
   // Profile states
   const [creator, setCreator] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,25 +75,24 @@ const CreatorProfile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [hasMatched, setHasMatched] = useState(false);
-  
+
   // Content states
   const [content, setContent] = useState([]);
   const [contentFilter, setContentFilter] = useState('all'); // all, photos, videos, locked
   const [selectedContent, setSelectedContent] = useState(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [purchasedContent, setPurchasedContent] = useState([]);
-  
+
   // UI states
   const [activeTab, setActiveTab] = useState('content'); // content, about, reviews
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [imageGalleryIndex, setImageGalleryIndex] = useState(0);
   const [showImageGallery, setShowImageGallery] = useState(false);
-  
+
   // User data
   const [userCredits, setUserCredits] = useState(100);
   const [viewHistory, setViewHistory] = useState([]);
-
 
   // Fetch creator profile
   useEffect(() => {
@@ -61,12 +102,15 @@ const CreatorProfile = () => {
       try {
         console.log('🔍 Fetching creator profile for username:', username);
         const response = await memberService.getCreatorProfile(username);
-        
+
         if (response.success && response.data?.creator) {
           const creatorData = response.data.creator;
-          console.log('✅ Creator profile loaded:', creatorData.username || creatorData.displayName);
+          console.log(
+            '✅ Creator profile loaded:',
+            creatorData.username || creatorData.displayName
+          );
           setCreator(creatorData);
-          
+
           // Set content if available
           if (response.data.content) {
             setContent(response.data.content);
@@ -94,31 +138,33 @@ const CreatorProfile = () => {
   }, [username]);
 
   // Handle content purchase
-  const handlePurchaseContent = async (contentItem) => {
+  const handlePurchaseContent = async contentItem => {
     if (userCredits < contentItem.price) {
       // Show insufficient credits modal
       alert('Insufficient credits. Please add more credits.');
       return;
     }
-    
+
     try {
       // Simulate purchase
       setUserCredits(prev => prev - contentItem.price);
       setPurchasedContent(prev => [...prev, contentItem.id]);
-      
+
       // Update content item
-      setContent(prev => prev.map(item => 
-        item.id === contentItem.id 
-          ? { ...item, isPurchased: true, isLocked: false }
-          : item
-      ));
-      
+      setContent(prev =>
+        prev.map(item =>
+          item.id === contentItem.id
+            ? { ...item, isPurchased: true, isLocked: false }
+            : item
+        )
+      );
+
       setShowPurchaseModal(false);
       setSelectedContent(null);
-      
+
       // Show success message
       alert(`Content unlocked for $${contentItem.price}!`);
-      
+
       // Actual API call would be:
       // const response = await axios.post(
       //   `/api/v1/purchases/content/${contentItem.id}`,
@@ -134,10 +180,10 @@ const CreatorProfile = () => {
   const handleFollow = async () => {
     try {
       console.log('🔗 Creating connection with creator:', creator.id);
-      
+
       // Call the swipe/like API to create connection
       const response = await memberService.swipeAction(creator.id, 'like');
-      
+
       if (response.success) {
         setIsFollowing(true);
         console.log('✅ Connection created successfully');
@@ -185,7 +231,7 @@ const CreatorProfile = () => {
   };
 
   // Calculate time ago
-  const getTimeAgo = (timestamp) => {
+  const getTimeAgo = timestamp => {
     const minutes = Math.floor((Date.now() - timestamp) / 60000);
     if (minutes < 1) return 'Just now';
     if (minutes < 60) return `${minutes}m ago`;
@@ -199,9 +245,9 @@ const CreatorProfile = () => {
     return (
       <>
         {isDesktop && <MainHeader />}
-        <div className="creator-profile-page">
-          <div className="profile-loading">
-            <div className="loading-spinner"></div>
+        <div className='creator-profile-page'>
+          <div className='profile-loading'>
+            <div className='loading-spinner'></div>
             <p>Loading creator profile...</p>
           </div>
         </div>
@@ -215,12 +261,12 @@ const CreatorProfile = () => {
     return (
       <>
         {isDesktop && <MainHeader />}
-        <div className="creator-profile-page">
-          <div className="profile-error">
+        <div className='creator-profile-page'>
+          <div className='profile-error'>
             <AlertCircle size={48} />
             <h3>Unable to load profile</h3>
             <p>{error || 'Creator not found'}</p>
-            <button onClick={() => navigate(-1)} className="back-btn">
+            <button onClick={() => navigate(-1)} className='back-btn'>
               Go Back
             </button>
           </div>
@@ -234,528 +280,554 @@ const CreatorProfile = () => {
   return (
     <>
       {isDesktop && <MainHeader />}
-      <div className="creator-profile-page">
-      
-      <div className="profile-container">
-        {/* Profile Header - FIXED: No duplicate header actions */}
-        <div className="profile-header">
-          {/* Cover Photo */}
-          <div className="cover-photo-container">
-            {creator.coverImage ? (
-              <img 
-                src={creator.coverImage} 
-                alt="Cover" 
-                className="cover-photo"
-              />
-            ) : (
-              <div className="cover-photo placeholder-cover"></div>
-            )}
-            <div className="cover-overlay"></div>
-            
-            {/* Floating Action Buttons - Mobile Only */}
-            {isMobile && (
-              <div className="floating-header-actions">
-                <button 
-                  className="floating-action-btn back-btn"
-                  onClick={() => navigate(-1)}
-                >
-                  <ArrowLeft size={20} />
-                </button>
-                <div className="floating-actions-right">
-                  <button 
-                    className="floating-action-btn"
-                    onClick={() => setShowShareMenu(!showShareMenu)}
+      <div className='creator-profile-page'>
+        <div className='profile-container'>
+          {/* Profile Header - FIXED: No duplicate header actions */}
+          <div className='profile-header'>
+            {/* Cover Photo */}
+            <div className='cover-photo-container'>
+              {creator.coverImage ? (
+                <img
+                  src={creator.coverImage}
+                  alt='Cover'
+                  className='cover-photo'
+                />
+              ) : (
+                <div className='cover-photo placeholder-cover'></div>
+              )}
+              <div className='cover-overlay'></div>
+
+              {/* Floating Action Buttons - Mobile Only */}
+              {isMobile && (
+                <div className='floating-header-actions'>
+                  <button
+                    className='floating-action-btn back-btn'
+                    onClick={() => navigate(-1)}
                   >
-                    <Share2 size={20} />
+                    <ArrowLeft size={20} />
                   </button>
-                  <button 
-                    className="floating-action-btn"
-                    onClick={() => setShowMoreMenu(!showMoreMenu)}
-                  >
-                    <MoreVertical size={20} />
-                  </button>
+                  <div className='floating-actions-right'>
+                    <button
+                      className='floating-action-btn'
+                      onClick={() => setShowShareMenu(!showShareMenu)}
+                    >
+                      <Share2 size={20} />
+                    </button>
+                    <button
+                      className='floating-action-btn'
+                      onClick={() => setShowMoreMenu(!showMoreMenu)}
+                    >
+                      <MoreVertical size={20} />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-            
-            {/* Profile Info Overlay - Moved to bottom of cover to save space */}
-            <div className="profile-info-overlay">
-              <div className="profile-avatar-section">
-                <div className="profile-avatar">
-                  <img
-                    src={creator.profileImage}
-                    alt={creator.displayName}
-                  />
-                  {creator.isOnline && <span className="online-indicator"></span>}
-                </div>
-              </div>
-              
-              <div className="profile-details">
-                <div className="profile-name-section">
-                  <h1 className="profile-name">
-                    {creator.displayName}
-                    {creator.verified && (
-                      <Shield className="verified-icon" size={20} />
+              )}
+
+              {/* Profile Info Overlay - Moved to bottom of cover to save space */}
+              <div className='profile-info-overlay'>
+                <div className='profile-avatar-section'>
+                  <div className='profile-avatar'>
+                    <img src={creator.profileImage} alt={creator.displayName} />
+                    {creator.isOnline && (
+                      <span className='online-indicator'></span>
                     )}
-                  </h1>
-                  <span className="profile-username">@{creator.username}</span>
+                  </div>
                 </div>
-                
-                <p className="profile-bio">{creator.bio}</p>
-                
-                <div className="profile-meta">
-                  <span className="meta-item">
-                    <MapPin size={14} />
-                    {creator.location?.country || 'Location not specified'}
-                  </span>
-                  <span className="meta-item">
-                    <Clock size={14} />
-                    {creator.isOnline ? 'Online now' : `Active ${getTimeAgo(creator.lastActive)}`}
-                  </span>
-                  {creator.createdAt && (
-                    <span className="meta-item">
-                      <Calendar size={14} />
-                      Joined {new Date(creator.createdAt).toLocaleDateString()}
+
+                <div className='profile-details'>
+                  <div className='profile-name-section'>
+                    <h1 className='profile-name'>
+                      {creator.displayName}
+                      {creator.verified && (
+                        <Shield className='verified-icon' size={20} />
+                      )}
+                    </h1>
+                    <span className='profile-username'>
+                      @{creator.username}
                     </span>
-                  )}
+                  </div>
+
+                  <p className='profile-bio'>{creator.bio}</p>
+
+                  <div className='profile-meta'>
+                    <span className='meta-item'>
+                      <MapPin size={14} />
+                      {creator.location?.country || 'Location not specified'}
+                    </span>
+                    <span className='meta-item'>
+                      <Clock size={14} />
+                      {creator.isOnline
+                        ? 'Online now'
+                        : `Active ${getTimeAgo(creator.lastActive)}`}
+                    </span>
+                    {creator.createdAt && (
+                      <span className='meta-item'>
+                        <Calendar size={14} />
+                        Joined{' '}
+                        {new Date(creator.createdAt).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <div className="profile-actions">
-                <button
-                  className={`follow-btn ${isFollowing ? 'following' : ''}`}
-                  onClick={handleFollow}
-                >
-                  {isFollowing ? (
-                    <>
-                      <CheckCircle size={18} />
-                      <span>Following</span>
-                    </>
-                  ) : (
-                    <>
-                      <Bell size={18} />
-                      <span>Follow</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  className={`like-btn ${hasMatched ? 'matched' : ''}`}
-                  onClick={handleLike}
-                >
-                  <Heart size={18} fill={hasMatched ? 'currentColor' : 'none'} />
-                </button>
-
-                <button
-                  className="message-btn"
-                  onClick={handleMessage}
-                  disabled={!hasMatched}
-                >
-                  <MessageCircle size={18} />
-                </button>
-              </div>
-
-            </div>
-          </div>
-        </div>
-        
-        {/* Stats Bar - Now outside of profile-header */}
-        <div className="profile-stats">
-          <div className="stat-item">
-            <span className="stat-value">{content?.length || 0}</span>
-            <span className="stat-label">Content</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-value">
-              {(creator.stats?.totalConnections || 0) > 1000 
-                ? `${((creator.stats?.totalConnections || 0) / 1000).toFixed(1)}k`
-                : creator.stats?.totalConnections || 0
-              }
-            </span>
-            <span className="stat-label">Connections</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-value">
-              {(creator.stats?.totalLikes || 0) > 1000 
-                ? `${((creator.stats?.totalLikes || 0) / 1000).toFixed(1)}k`
-                : creator.stats?.totalLikes || 0
-              }
-            </span>
-            <span className="stat-label">Likes</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-value">
-              <Star size={14} />
-              {creator.stats?.rating?.toFixed(1) || '0.0'}
-            </span>
-            <span className="stat-label">Rating</span>
-          </div>
-        </div>
-        
-        {/* Content Tabs */}
-        <div className="profile-tabs">
-          <button 
-            className={`tab-btn ${activeTab === 'content' ? 'active' : ''}`}
-            onClick={() => setActiveTab('content')}
-          >
-            <Grid3x3 size={18} />
-            <span>Content</span>
-          </button>
-          <button 
-            className={`tab-btn ${activeTab === 'about' ? 'active' : ''}`}
-            onClick={() => setActiveTab('about')}
-          >
-            <User size={18} />
-            <span>About</span>
-          </button>
-          <button 
-            className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
-            onClick={() => setActiveTab('reviews')}
-          >
-            <Star size={18} />
-            <span>Reviews</span>
-          </button>
-        </div>
-        
-        {/* Tab Content */}
-        <div className="tab-content">
-          {activeTab === 'content' && (
-            <>
-              {/* Content Filter */}
-              <div className="content-filter">
-                <button 
-                  className={`filter-option ${contentFilter === 'all' ? 'active' : ''}`}
-                  onClick={() => setContentFilter('all')}
-                >
-                  All ({content.length})
-                </button>
-                <button 
-                  className={`filter-option ${contentFilter === 'photos' ? 'active' : ''}`}
-                  onClick={() => setContentFilter('photos')}
-                >
-                  <Camera size={16} />
-                  Photos ({content.filter(c => c.type === 'photo').length})
-                </button>
-                <button 
-                  className={`filter-option ${contentFilter === 'videos' ? 'active' : ''}`}
-                  onClick={() => setContentFilter('videos')}
-                >
-                  <Video size={16} />
-                  Videos ({content.filter(c => c.type === 'video').length})
-                </button>
-                <button 
-                  className={`filter-option ${contentFilter === 'locked' ? 'active' : ''}`}
-                  onClick={() => setContentFilter('locked')}
-                >
-                  <Lock size={16} />
-                  Locked ({content.filter(c => c.isLocked && !c.isPurchased).length})
-                </button>
-              </div>
-              
-              {/* Content Grid */}
-              <div className="content-grid">
-                {getFilteredContent().map((item) => (
-                  <motion.div 
-                    key={item.id}
-                    className={`content-item ${item.isLocked && !item.isPurchased ? 'locked' : ''}`}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      if (item.isLocked && !item.isPurchased) {
-                        setSelectedContent(item);
-                        setShowPurchaseModal(true);
-                      } else {
-                        // View content
-                        setSelectedContent(item);
-                        setShowImageGallery(true);
-                      }
-                    }}
+                <div className='profile-actions'>
+                  <button
+                    className={`follow-btn ${isFollowing ? 'following' : ''}`}
+                    onClick={handleFollow}
                   >
-                    <div className="content-thumbnail">
-                      <img 
-                        src={item.thumbnail} 
-                        alt={item.title}
-                        className={item.isLocked && !item.isPurchased ? 'blurred' : ''}
-                      />
-                      
-                      {/* Content Type Indicator */}
-                      {item.type === 'video' && (
-                        <div className="content-type-indicator">
-                          <Play size={20} />
-                          <span>{item.duration}</span>
-                        </div>
-                      )}
-                      
-                      {/* Lock Overlay */}
-                      {item.isLocked && !item.isPurchased && (
-                        <div className="lock-overlay">
-                          <Lock size={24} />
-                          <span className="content-price">${item.price}</span>
-                        </div>
-                      )}
-                      
-                      {/* Purchased Badge */}
-                      {item.isPurchased && (
-                        <div className="purchased-badge">
-                          <CheckCircle size={16} />
-                        </div>
-                      )}
-                      
-                      {/* Free Badge */}
-                      {!item.isLocked && !item.isPurchased && (
-                        <div className="free-badge">FREE</div>
-                      )}
-                    </div>
-                    
-                    <div className="content-info">
-                      <span className="content-likes">
-                        <Heart size={12} />
-                        {item.likes}
-                      </span>
-                      <span className="content-date">
-                        {new Date(item.date).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </>
-          )}
-          
-          {activeTab === 'about' && (
-            <div className="about-section">
-              <div className="about-group">
-                <h3>Details</h3>
-                <div className="about-items">
-                  <div className="about-item">
-                    <span className="about-label">Age</span>
-                    <span className="about-value">{creator.age}</span>
-                  </div>
-                  <div className="about-item">
-                    <span className="about-label">Orientation</span>
-                    <span className="about-value">{creator.orientation}</span>
-                  </div>
-                  <div className="about-item">
-                    <span className="about-label">Gender</span>
-                    <span className="about-value">{creator.gender}</span>
-                  </div>
-                  <div className="about-item">
-                    <span className="about-label">Body Type</span>
-                    <span className="about-value">{creator.bodyType}</span>
-                  </div>
-                  <div className="about-item">
-                    <span className="about-label">Ethnicity</span>
-                    <span className="about-value">{creator.ethnicity}</span>
-                  </div>
-                  <div className="about-item">
-                    <span className="about-label">Height</span>
-                    <span className="about-value">{creator.height}</span>
-                  </div>
-                </div>
-              </div>
-              
-              
-              <div className="about-group">
-                <h3>Activity</h3>
-                <div className="activity-info">
-                  <span className="online-status">
-                    {creator.isOnline ? (
-                      <>🟢 Online now</>
+                    {isFollowing ? (
+                      <>
+                        <CheckCircle size={18} />
+                        <span>Following</span>
+                      </>
                     ) : (
-                      <>⚫ Last online: {creator.lastActive ? getTimeAgo(new Date(creator.lastActive)) : 'Unknown'}</>
+                      <>
+                        <Bell size={18} />
+                        <span>Follow</span>
+                      </>
                     )}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {activeTab === 'reviews' && (
-            <div className="reviews-section">
-              <div className="reviews-header">
-                <div className="overall-rating">
-                  <span className="rating-value">{creator.stats?.rating?.toFixed(1) || '0.0'}</span>
-                  <div className="rating-stars">
-                    {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        size={20} 
-                        fill={i < Math.floor(creator.stats?.rating || 0) ? 'currentColor' : 'none'}
-                      />
-                    ))}
-                  </div>
-                  <span className="review-count">
-                    {creator.stats.reviewCount} reviews
-                  </span>
-                </div>
-              </div>
-              
-              <div className="reviews-list">
-                <p className="reviews-placeholder">
-                  Reviews coming soon...
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        {/* Purchase Modal */}
-        <AnimatePresence>
-          {showPurchaseModal && selectedContent && (
-            <motion.div 
-              className="purchase-modal-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowPurchaseModal(false)}
-            >
-              <motion.div 
-                className="purchase-modal"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                onClick={e => e.stopPropagation()}
-              >
-                <button 
-                  className="modal-close"
-                  onClick={() => setShowPurchaseModal(false)}
-                >
-                  <X size={24} />
-                </button>
-                
-                <div className="purchase-content">
-                  <div className="purchase-preview">
-                    <img 
-                      src={selectedContent.thumbnail} 
-                      alt={selectedContent.title}
-                      className="blurred"
+                  </button>
+
+                  <button
+                    className={`like-btn ${hasMatched ? 'matched' : ''}`}
+                    onClick={handleLike}
+                  >
+                    <Heart
+                      size={18}
+                      fill={hasMatched ? 'currentColor' : 'none'}
                     />
-                    <div className="unlock-icon">
-                      <Unlock size={32} />
-                    </div>
-                  </div>
-                  
-                  <h3 className="purchase-title">Unlock This Content</h3>
-                  <p className="purchase-description">
-                    {selectedContent.title}
-                  </p>
-                  
-                  <div className="purchase-details">
-                    <div className="detail-item">
-                      <span className="detail-label">Type</span>
-                      <span className="detail-value">
-                        {selectedContent.type === 'photo' ? (
-                          <><Camera size={14} /> Photo</>
-                        ) : (
-                          <><Video size={14} /> Video</>
+                  </button>
+
+                  <button
+                    className='message-btn'
+                    onClick={handleMessage}
+                    disabled={!hasMatched}
+                  >
+                    <MessageCircle size={18} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Bar - Now outside of profile-header */}
+          <div className='profile-stats'>
+            <div className='stat-item'>
+              <span className='stat-value'>{content?.length || 0}</span>
+              <span className='stat-label'>Content</span>
+            </div>
+            <div className='stat-item'>
+              <span className='stat-value'>
+                {(creator.stats?.totalConnections || 0) > 1000
+                  ? `${((creator.stats?.totalConnections || 0) / 1000).toFixed(1)}k`
+                  : creator.stats?.totalConnections || 0}
+              </span>
+              <span className='stat-label'>Connections</span>
+            </div>
+            <div className='stat-item'>
+              <span className='stat-value'>
+                {(creator.stats?.totalLikes || 0) > 1000
+                  ? `${((creator.stats?.totalLikes || 0) / 1000).toFixed(1)}k`
+                  : creator.stats?.totalLikes || 0}
+              </span>
+              <span className='stat-label'>Likes</span>
+            </div>
+            <div className='stat-item'>
+              <span className='stat-value'>
+                <Star size={14} />
+                {creator.stats?.rating?.toFixed(1) || '0.0'}
+              </span>
+              <span className='stat-label'>Rating</span>
+            </div>
+          </div>
+
+          {/* Content Tabs */}
+          <div className='profile-tabs'>
+            <button
+              className={`tab-btn ${activeTab === 'content' ? 'active' : ''}`}
+              onClick={() => setActiveTab('content')}
+            >
+              <Grid3x3 size={18} />
+              <span>Content</span>
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'about' ? 'active' : ''}`}
+              onClick={() => setActiveTab('about')}
+            >
+              <User size={18} />
+              <span>About</span>
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+              onClick={() => setActiveTab('reviews')}
+            >
+              <Star size={18} />
+              <span>Reviews</span>
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          <div className='tab-content'>
+            {activeTab === 'content' && (
+              <>
+                {/* Content Filter */}
+                <div className='content-filter'>
+                  <button
+                    className={`filter-option ${contentFilter === 'all' ? 'active' : ''}`}
+                    onClick={() => setContentFilter('all')}
+                  >
+                    All ({content.length})
+                  </button>
+                  <button
+                    className={`filter-option ${contentFilter === 'photos' ? 'active' : ''}`}
+                    onClick={() => setContentFilter('photos')}
+                  >
+                    <Camera size={16} />
+                    Photos ({content.filter(c => c.type === 'photo').length})
+                  </button>
+                  <button
+                    className={`filter-option ${contentFilter === 'videos' ? 'active' : ''}`}
+                    onClick={() => setContentFilter('videos')}
+                  >
+                    <Video size={16} />
+                    Videos ({content.filter(c => c.type === 'video').length})
+                  </button>
+                  <button
+                    className={`filter-option ${contentFilter === 'locked' ? 'active' : ''}`}
+                    onClick={() => setContentFilter('locked')}
+                  >
+                    <Lock size={16} />
+                    Locked (
+                    {content.filter(c => c.isLocked && !c.isPurchased).length})
+                  </button>
+                </div>
+
+                {/* Content Grid */}
+                <div className='content-grid'>
+                  {getFilteredContent().map(item => (
+                    <motion.div
+                      key={item.id}
+                      className={`content-item ${item.isLocked && !item.isPurchased ? 'locked' : ''}`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        if (item.isLocked && !item.isPurchased) {
+                          setSelectedContent(item);
+                          setShowPurchaseModal(true);
+                        } else {
+                          // View content
+                          setSelectedContent(item);
+                          setShowImageGallery(true);
+                        }
+                      }}
+                    >
+                      <div className='content-thumbnail'>
+                        <img
+                          src={item.thumbnail}
+                          alt={item.title}
+                          className={
+                            item.isLocked && !item.isPurchased ? 'blurred' : ''
+                          }
+                        />
+
+                        {/* Content Type Indicator */}
+                        {item.type === 'video' && (
+                          <div className='content-type-indicator'>
+                            <Play size={20} />
+                            <span>{item.duration}</span>
+                          </div>
                         )}
-                      </span>
-                    </div>
-                    {selectedContent.duration && (
-                      <div className="detail-item">
-                        <span className="detail-label">Duration</span>
-                        <span className="detail-value">{selectedContent.duration}</span>
+
+                        {/* Lock Overlay */}
+                        {item.isLocked && !item.isPurchased && (
+                          <div className='lock-overlay'>
+                            <Lock size={24} />
+                            <span className='content-price'>${item.price}</span>
+                          </div>
+                        )}
+
+                        {/* Purchased Badge */}
+                        {item.isPurchased && (
+                          <div className='purchased-badge'>
+                            <CheckCircle size={16} />
+                          </div>
+                        )}
+
+                        {/* Free Badge */}
+                        {!item.isLocked && !item.isPurchased && (
+                          <div className='free-badge'>FREE</div>
+                        )}
                       </div>
-                    )}
-                    <div className="detail-item">
-                      <span className="detail-label">Quality</span>
-                      <span className="detail-value">{selectedContent.resolution}</span>
+
+                      <div className='content-info'>
+                        <span className='content-likes'>
+                          <Heart size={12} />
+                          {item.likes}
+                        </span>
+                        <span className='content-date'>
+                          {new Date(item.date).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {activeTab === 'about' && (
+              <div className='about-section'>
+                <div className='about-group'>
+                  <h3>Details</h3>
+                  <div className='about-items'>
+                    <div className='about-item'>
+                      <span className='about-label'>Age</span>
+                      <span className='about-value'>{creator.age}</span>
+                    </div>
+                    <div className='about-item'>
+                      <span className='about-label'>Orientation</span>
+                      <span className='about-value'>{creator.orientation}</span>
+                    </div>
+                    <div className='about-item'>
+                      <span className='about-label'>Gender</span>
+                      <span className='about-value'>{creator.gender}</span>
+                    </div>
+                    <div className='about-item'>
+                      <span className='about-label'>Body Type</span>
+                      <span className='about-value'>{creator.bodyType}</span>
+                    </div>
+                    <div className='about-item'>
+                      <span className='about-label'>Ethnicity</span>
+                      <span className='about-value'>{creator.ethnicity}</span>
+                    </div>
+                    <div className='about-item'>
+                      <span className='about-label'>Height</span>
+                      <span className='about-value'>{creator.height}</span>
                     </div>
                   </div>
-                  
-                  <div className="purchase-price">
-                    <span className="price-label">Price</span>
-                    <span className="price-value">${selectedContent.price}</span>
-                  </div>
-                  
-                  <div className="purchase-balance">
-                    <span className="balance-label">Your balance</span>
-                    <span className={`balance-value ${userCredits < selectedContent.price ? 'insufficient' : ''}`}>
-                      {userCredits} credits
+                </div>
+
+                <div className='about-group'>
+                  <h3>Activity</h3>
+                  <div className='activity-info'>
+                    <span className='online-status'>
+                      {creator.isOnline ? (
+                        <>🟢 Online now</>
+                      ) : (
+                        <>
+                          ⚫ Last online:{' '}
+                          {creator.lastActive
+                            ? getTimeAgo(new Date(creator.lastActive))
+                            : 'Unknown'}
+                        </>
+                      )}
                     </span>
                   </div>
-                  
-                  <div className="purchase-actions">
-                    <button 
-                      className="cancel-btn"
-                      onClick={() => setShowPurchaseModal(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      className="unlock-btn"
-                      onClick={() => handlePurchaseContent(selectedContent)}
-                      disabled={userCredits < selectedContent.price}
-                    >
-                      <Unlock size={18} />
-                      Unlock for ${selectedContent.price}
-                    </button>
-                  </div>
-                  
-                  {userCredits < selectedContent.price && (
-                    <button className="add-credits-btn">
-                      <DollarSign size={16} />
-                      Add Credits
-                    </button>
-                  )}
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <div className='reviews-section'>
+                <div className='reviews-header'>
+                  <div className='overall-rating'>
+                    <span className='rating-value'>
+                      {creator.stats?.rating?.toFixed(1) || '0.0'}
+                    </span>
+                    <div className='rating-stars'>
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          size={20}
+                          fill={
+                            i < Math.floor(creator.stats?.rating || 0)
+                              ? 'currentColor'
+                              : 'none'
+                          }
+                        />
+                      ))}
+                    </div>
+                    <span className='review-count'>
+                      {creator.stats.reviewCount} reviews
+                    </span>
+                  </div>
+                </div>
+
+                <div className='reviews-list'>
+                  <p className='reviews-placeholder'>Reviews coming soon...</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Purchase Modal */}
+          <AnimatePresence>
+            {showPurchaseModal && selectedContent && (
+              <motion.div
+                className='purchase-modal-overlay'
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowPurchaseModal(false)}
+              >
+                <motion.div
+                  className='purchase-modal'
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  <button
+                    className='modal-close'
+                    onClick={() => setShowPurchaseModal(false)}
+                  >
+                    <X size={24} />
+                  </button>
+
+                  <div className='purchase-content'>
+                    <div className='purchase-preview'>
+                      <img
+                        src={selectedContent.thumbnail}
+                        alt={selectedContent.title}
+                        className='blurred'
+                      />
+                      <div className='unlock-icon'>
+                        <Unlock size={32} />
+                      </div>
+                    </div>
+
+                    <h3 className='purchase-title'>Unlock This Content</h3>
+                    <p className='purchase-description'>
+                      {selectedContent.title}
+                    </p>
+
+                    <div className='purchase-details'>
+                      <div className='detail-item'>
+                        <span className='detail-label'>Type</span>
+                        <span className='detail-value'>
+                          {selectedContent.type === 'photo' ? (
+                            <>
+                              <Camera size={14} /> Photo
+                            </>
+                          ) : (
+                            <>
+                              <Video size={14} /> Video
+                            </>
+                          )}
+                        </span>
+                      </div>
+                      {selectedContent.duration && (
+                        <div className='detail-item'>
+                          <span className='detail-label'>Duration</span>
+                          <span className='detail-value'>
+                            {selectedContent.duration}
+                          </span>
+                        </div>
+                      )}
+                      <div className='detail-item'>
+                        <span className='detail-label'>Quality</span>
+                        <span className='detail-value'>
+                          {selectedContent.resolution}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className='purchase-price'>
+                      <span className='price-label'>Price</span>
+                      <span className='price-value'>
+                        ${selectedContent.price}
+                      </span>
+                    </div>
+
+                    <div className='purchase-balance'>
+                      <span className='balance-label'>Your balance</span>
+                      <span
+                        className={`balance-value ${userCredits < selectedContent.price ? 'insufficient' : ''}`}
+                      >
+                        {userCredits} credits
+                      </span>
+                    </div>
+
+                    <div className='purchase-actions'>
+                      <button
+                        className='cancel-btn'
+                        onClick={() => setShowPurchaseModal(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className='unlock-btn'
+                        onClick={() => handlePurchaseContent(selectedContent)}
+                        disabled={userCredits < selectedContent.price}
+                      >
+                        <Unlock size={18} />
+                        Unlock for ${selectedContent.price}
+                      </button>
+                    </div>
+
+                    {userCredits < selectedContent.price && (
+                      <button className='add-credits-btn'>
+                        <DollarSign size={16} />
+                        Add Credits
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        {/* Share Menu */}
-        <AnimatePresence>
-          {showShareMenu && (
-            <motion.div 
-              className="share-menu"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <button className="share-option">
-                <Link size={18} />
-                Copy Link
-              </button>
-              <button className="share-option">
-                <Instagram size={18} />
-                Share to Instagram
-              </button>
-              <button className="share-option">
-                <Twitter size={18} />
-                Share to Twitter
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        {/* More Menu */}
-        <AnimatePresence>
-          {showMoreMenu && (
-            <motion.div 
-              className="more-menu"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <button className="more-option">
-                <Flag size={18} />
-                Report Profile
-              </button>
-              <button className="more-option">
-                <UserX size={18} />
-                Block User
-              </button>
-              <button className="more-option">
-                <BellOff size={18} />
-                Mute Notifications
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+          </AnimatePresence>
+
+          {/* Share Menu */}
+          <AnimatePresence>
+            {showShareMenu && (
+              <motion.div
+                className='share-menu'
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <button className='share-option'>
+                  <Link size={18} />
+                  Copy Link
+                </button>
+                <button className='share-option'>
+                  <Instagram size={18} />
+                  Share to Instagram
+                </button>
+                <button className='share-option'>
+                  <Twitter size={18} />
+                  Share to Twitter
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* More Menu */}
+          <AnimatePresence>
+            {showMoreMenu && (
+              <motion.div
+                className='more-menu'
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <button className='more-option'>
+                  <Flag size={18} />
+                  Report Profile
+                </button>
+                <button className='more-option'>
+                  <UserX size={18} />
+                  Block User
+                </button>
+                <button className='more-option'>
+                  <BellOff size={18} />
+                  Mute Notifications
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-      </div>
-      
+
       {isDesktop && <MainFooter />}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </>

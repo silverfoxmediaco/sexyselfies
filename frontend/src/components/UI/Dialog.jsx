@@ -3,17 +3,19 @@ import React from 'react';
 const Dialog = ({ open, onClose, children, className = '', ...props }) => {
   if (!open) return null;
 
-  const handleBackdropClick = (e) => {
+  const handleBackdropClick = e => {
     if (e.target === e.currentTarget && onClose) {
       onClose();
     }
   };
 
   return (
-    <div className={`dialog-backdrop ${className}`} onClick={handleBackdropClick} {...props}>
-      <div className="dialog-container">
-        {children}
-      </div>
+    <div
+      className={`dialog-backdrop ${className}`}
+      onClick={handleBackdropClick}
+      {...props}
+    >
+      <div className='dialog-container'>{children}</div>
     </div>
   );
 };

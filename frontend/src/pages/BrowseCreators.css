@@ -84,7 +84,7 @@
 /* Discovery Action Buttons - UNIQUE */
 .browse-creators-action-buttons {
   position: fixed;
-  bottom: 40px;  /* Raised higher */
+  bottom: 40px; /* Raised higher */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -96,7 +96,6 @@
   width: 100%;
   max-width: 400px;
 }
-
 
 .browse-creators-action-btn {
   display: flex;
@@ -173,7 +172,7 @@
 }
 
 .browse-creators-no-more-cards svg {
-  color: #FFD700;
+  color: #ffd700;
   margin-bottom: 20px;
 }
 
@@ -200,7 +199,7 @@
 /* Mobile specific adjustments */
 @media (max-width: 480px) {
   .browse-creators-action-buttons {
-    bottom: 85px;  /* Raised higher on mobile */
+    bottom: 85px; /* Raised higher on mobile */
     gap: 10px;
     padding: 0 10px;
   }
@@ -250,7 +249,7 @@
     width: 100%;
     max-width: 400px;
   }
-  
+
   .browse-creators-action-btn.browse-creators-rewind,
   .browse-creators-action-btn.browse-creators-info {
     width: 48px;
@@ -296,13 +295,13 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 40px;
   margin-bottom: 100px; /* Space for bottom nav */
 }
 
 .browse-creators-no-results svg {
-  color: #17D2C2;
+  color: #17d2c2;
   margin-bottom: 20px;
 }
 
@@ -310,18 +309,18 @@
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 10px;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .browse-creators-no-results p {
-  color: #C7C7CC;
+  color: #c7c7cc;
   margin-bottom: 30px;
   font-size: 16px;
 }
 
 .browse-reset-filters-btn {
   padding: 16px 32px;
-  background: #17D2C2;
+  background: #17d2c2;
   color: #001310;
   border: none;
   border-radius: 16px;
@@ -342,13 +341,13 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 40px;
   margin-bottom: 100px; /* Space for bottom nav */
 }
 
 .browse-creators-no-more-cards svg {
-  color: #FFD700;
+  color: #ffd700;
   margin-bottom: 20px;
 }
 
@@ -356,11 +355,11 @@
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 10px;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .browse-creators-no-more-cards p {
-  color: #C7C7CC;
+  color: #c7c7cc;
   margin-bottom: 30px;
   font-size: 16px;
 }
@@ -370,7 +369,7 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   border-radius: 16px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
   font-size: 16px;

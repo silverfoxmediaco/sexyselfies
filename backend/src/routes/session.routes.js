@@ -3,14 +3,18 @@
 
 const express = require('express');
 const router = express.Router();
-const { protectWithSession, trackActivity, authorize } = require('../middleware/auth.middleware');
+const {
+  protectWithSession,
+  trackActivity,
+  authorize,
+} = require('../middleware/auth.middleware');
 
 const {
   getSessionAnalytics,
   getMyActiveSessions,
   endSession,
   endAllOtherSessions,
-  cleanupExpiredSessions
+  cleanupExpiredSessions,
 } = require('../controllers/session.controller');
 
 // ============================================
@@ -32,16 +36,16 @@ router.delete('/end-all-others', protectWithSession, endAllOtherSessions);
 
 // Platform-wide session analytics (admin only)
 router.get(
-  '/admin/analytics', 
-  protectWithSession, 
+  '/admin/analytics',
+  protectWithSession,
   authorize('admin'),
   getSessionAnalytics
 );
 
 // Clean up expired sessions (admin only)
 router.post(
-  '/admin/cleanup', 
-  protectWithSession, 
+  '/admin/cleanup',
+  protectWithSession,
   authorize('admin'),
   cleanupExpiredSessions
 );

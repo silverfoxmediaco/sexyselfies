@@ -9,16 +9,18 @@ const mongoose = require('mongoose');
 exports.getProfile = async (req, res) => {
   try {
     // Find creator by user ID
-    const creator = await Creator.findOne({ user: req.user.id })
-      .populate('user', 'email username');
-    
+    const creator = await Creator.findOne({ user: req.user.id }).populate(
+      'user',
+      'email username'
+    );
+
     if (!creator) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Creator not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Creator not found',
       });
     }
-    
+
     // Format profile data
     const profile = {
       _id: creator._id,
@@ -41,14 +43,14 @@ exports.getProfile = async (req, res) => {
         totalContent: 0,
         totalLikes: 0,
         rating: 0,
-        ratingCount: 0
+        ratingCount: 0,
       },
       preferences: creator.preferences,
       contentPrice: creator.contentPrice,
       galleries: creator.galleries || [],
-      isPaused: creator.isPaused || false
+      isPaused: creator.isPaused || false,
     };
-    
+
     res.json({
       success: true,
       profile,
@@ -56,14 +58,14 @@ exports.getProfile = async (req, res) => {
         totalViews: profile.stats.totalConnections,
         connections: profile.stats.totalConnections,
         earnings: profile.stats.totalEarnings,
-        rating: profile.stats.rating
-      }
+        rating: profile.stats.rating,
+      },
     });
   } catch (error) {
     console.error('Get profile error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching profile' 
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching profile',
     });
   }
 };
@@ -77,11 +79,11 @@ exports.setupProfile = async (req, res) => {
 
     // Find creator by user ID
     const creator = await Creator.findOne({ user: req.user.id });
-    
+
     if (!creator) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Creator not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Creator not found',
       });
     }
 
@@ -92,9 +94,9 @@ exports.setupProfile = async (req, res) => {
         formData = JSON.parse(req.body.data);
       } catch (e) {
         console.error('Error parsing form data:', e);
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Invalid form data' 
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid form data',
         });
       }
     }
@@ -106,13 +108,16 @@ exports.setupProfile = async (req, res) => {
     // Upload profile photo if provided
     if (req.files && req.files.profilePhoto && req.files.profilePhoto[0]) {
       try {
-        const result = await cloudinary.uploader.upload(req.files.profilePhoto[0].path, {
-          folder: 'sexyselfies/profiles',
-          public_id: `profile_${creator._id}_${Date.now()}`,
-          overwrite: true,
-          quality: 'auto',
-          fetch_format: 'auto'
-        });
+        const result = await cloudinary.uploader.upload(
+          req.files.profilePhoto[0].path,
+          {
+            folder: 'sexyselfies/profiles',
+            public_id: `profile_${creator._id}_${Date.now()}`,
+            overwrite: true,
+            quality: 'auto',
+            fetch_format: 'auto',
+          }
+        );
         profileImageUrl = result.secure_url;
         console.log('Profile image uploaded:', result.secure_url);
       } catch (uploadError) {
@@ -123,13 +128,16 @@ exports.setupProfile = async (req, res) => {
     // Upload cover image if provided
     if (req.files && req.files.coverImage && req.files.coverImage[0]) {
       try {
-        const result = await cloudinary.uploader.upload(req.files.coverImage[0].path, {
-          folder: 'sexyselfies/covers',
-          public_id: `cover_${creator._id}_${Date.now()}`,
-          overwrite: true,
-          quality: 'auto',
-          fetch_format: 'auto'
-        });
+        const result = await cloudinary.uploader.upload(
+          req.files.coverImage[0].path,
+          {
+            folder: 'sexyselfies/covers',
+            public_id: `cover_${creator._id}_${Date.now()}`,
+            overwrite: true,
+            quality: 'auto',
+            fetch_format: 'auto',
+          }
+        );
         coverImageUrl = result.secure_url;
         console.log('Cover image uploaded:', result.secure_url);
       } catch (uploadError) {
@@ -154,12 +162,12 @@ exports.setupProfile = async (req, res) => {
         minAge: formData.ageRange?.[0] || 18,
         maxAge: formData.ageRange?.[1] || 99,
         interestedIn: formData.interestedIn || ['everyone'],
-        showInBrowse: formData.showInBrowse !== false
+        showInBrowse: formData.showInBrowse !== false,
       },
       contentTypes: formData.contentTypes || {},
       pricing: formData.pricing || {},
       automation: formData.automation || {},
-      instantPayout: formData.instantPayout || false
+      instantPayout: formData.instantPayout || false,
     };
 
     const updatedCreator = await Creator.findByIdAndUpdate(
@@ -176,16 +184,15 @@ exports.setupProfile = async (req, res) => {
         displayName: updatedCreator.displayName,
         profileImage: updatedCreator.profileImage,
         coverImage: updatedCreator.coverImage,
-        profileComplete: updatedCreator.profileComplete
-      }
+        profileComplete: updatedCreator.profileComplete,
+      },
     });
-
   } catch (error) {
     console.error('Profile setup error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Error setting up profile',
-      error: error.message 
+      error: error.message,
     });
   }
 };
@@ -195,61 +202,70 @@ exports.updateProfile = async (req, res) => {
   try {
     const creatorId = req.user.id;
     const updates = req.body;
-    
+
     const profile = await CreatorProfile.findOne({ creator: creatorId });
-    
+
     if (!profile) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Profile not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Profile not found',
       });
     }
-    
+
     // Update branding
     if (updates.branding) {
       profile.branding = { ...profile.branding, ...updates.branding };
     }
-    
+
     // Update personalization
     if (updates.personalization) {
-      profile.personalization = { ...profile.personalization, ...updates.personalization };
+      profile.personalization = {
+        ...profile.personalization,
+        ...updates.personalization,
+      };
     }
-    
+
     // Update preferences
     if (updates.preferences) {
       profile.preferences = { ...profile.preferences, ...updates.preferences };
     }
-    
+
     // Handle profile image upload
     if (req.files && req.files.profileImage) {
-      const result = await cloudinary.uploader.upload(req.files.profileImage.path, {
-        folder: 'creators/profiles',
-        transformation: { width: 500, height: 500, crop: 'fill' }
-      });
+      const result = await cloudinary.uploader.upload(
+        req.files.profileImage.path,
+        {
+          folder: 'creators/profiles',
+          transformation: { width: 500, height: 500, crop: 'fill' },
+        }
+      );
       profile.branding.profileImage = result.secure_url;
     }
-    
+
     // Handle cover image upload
     if (req.files && req.files.coverImage) {
-      const result = await cloudinary.uploader.upload(req.files.coverImage.path, {
-        folder: 'creators/covers',
-        transformation: { width: 1920, height: 480, crop: 'fill' }
-      });
+      const result = await cloudinary.uploader.upload(
+        req.files.coverImage.path,
+        {
+          folder: 'creators/covers',
+          transformation: { width: 1920, height: 480, crop: 'fill' },
+        }
+      );
       profile.branding.coverImage = result.secure_url;
     }
-    
+
     await profile.save();
-    
+
     res.json({
       success: true,
       message: 'Profile updated successfully',
-      profile
+      profile,
     });
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error updating profile' 
+    res.status(500).json({
+      success: false,
+      message: 'Error updating profile',
     });
   }
 };
@@ -259,17 +275,17 @@ exports.getAnalytics = async (req, res) => {
   try {
     const creatorId = req.user.id;
     const { period = '7d' } = req.query;
-    
+
     const profile = await CreatorProfile.findOne({ creator: creatorId });
     const earnings = await CreatorEarnings.findOne({ creator: creatorId });
-    
+
     if (!profile) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Profile not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Profile not found',
       });
     }
-    
+
     // Get content performance
     const contentStats = await Content.aggregate([
       { $match: { creator: mongoose.Types.ObjectId(creatorId) } },
@@ -279,17 +295,17 @@ exports.getAnalytics = async (req, res) => {
           totalViews: { $sum: '$analytics.totalViews' },
           totalPurchases: { $sum: '$analytics.purchases' },
           avgRating: { $avg: '$analytics.rating' },
-          totalEarnings: { $sum: '$monetization.earnings.total' }
-        }
-      }
+          totalEarnings: { $sum: '$monetization.earnings.total' },
+        },
+      },
     ]);
-    
+
     // Calculate best performing content
     const topContent = await Content.find({ creator: creatorId })
       .sort('-monetization.earnings.total')
       .limit(5)
       .select('title contentType analytics monetization ai');
-    
+
     // Get audience insights
     const audienceInsights = {
       demographics: profile.analytics.audience.demographics,
@@ -297,25 +313,25 @@ exports.getAnalytics = async (req, res) => {
       engagement: {
         messageRate: profile.analytics.engagement.messageResponseRate,
         repeatPurchaseRate: calculateRepeatPurchaseRate(earnings),
-        avgSessionDuration: profile.analytics.engagement.avgSessionDuration
-      }
+        avgSessionDuration: profile.analytics.engagement.avgSessionDuration,
+      },
     };
-    
+
     // AI predictions
     const predictions = {
       nextWeekEarnings: earnings ? earnings.predictive.nextWeek.amount : 0,
       bestPostingTime: profile.ai.bestPostingTimes[0],
       growthOpportunities: await identifyGrowthOpportunities(profile, earnings),
-      contentRecommendations: profile.ai.contentSuggestions
+      contentRecommendations: profile.ai.contentSuggestions,
     };
-    
+
     res.json({
       success: true,
       analytics: {
         overview: profile.analytics,
         content: {
           stats: contentStats,
-          topPerformers: topContent
+          topPerformers: topContent,
         },
         audience: audienceInsights,
         predictions,
@@ -324,15 +340,15 @@ exports.getAnalytics = async (req, res) => {
           xp: profile.gamification.xp,
           nextLevelXp: profile.gamification.level * 1000,
           rank: profile.gamification.monthlyRank,
-          achievements: profile.gamification.achievements
-        }
-      }
+          achievements: profile.gamification.achievements,
+        },
+      },
     });
   } catch (error) {
     console.error('Get analytics error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching analytics' 
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching analytics',
     });
   }
 };
@@ -342,57 +358,57 @@ exports.updatePreferences = async (req, res) => {
   try {
     const creatorId = req.user.id;
     const { preferences } = req.body;
-    
+
     const profile = await CreatorProfile.findOne({ creator: creatorId });
-    
+
     if (!profile) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Profile not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Profile not found',
       });
     }
-    
+
     // Update content preferences
     if (preferences.contentTypes) {
       profile.preferences.contentTypes = preferences.contentTypes;
     }
-    
+
     // Update pricing strategy
     if (preferences.pricing) {
       profile.preferences.pricing = {
         ...profile.preferences.pricing,
-        ...preferences.pricing
+        ...preferences.pricing,
       };
     }
-    
+
     // Update automation settings
     if (preferences.automation) {
       profile.automation = {
         ...profile.automation,
-        ...preferences.automation
+        ...preferences.automation,
       };
     }
-    
+
     // Update notification preferences
     if (preferences.notifications) {
       profile.preferences.notifications = {
         ...profile.preferences.notifications,
-        ...preferences.notifications
+        ...preferences.notifications,
       };
     }
-    
+
     await profile.save();
-    
+
     res.json({
       success: true,
       message: 'Preferences updated successfully',
-      preferences: profile.preferences
+      preferences: profile.preferences,
     });
   } catch (error) {
     console.error('Update preferences error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error updating preferences' 
+    res.status(500).json({
+      success: false,
+      message: 'Error updating preferences',
     });
   }
 };
@@ -401,47 +417,51 @@ exports.updatePreferences = async (req, res) => {
 exports.getAIRecommendations = async (req, res) => {
   try {
     const creatorId = req.user.id;
-    
+
     const profile = await CreatorProfile.findOne({ creator: creatorId });
     const earnings = await CreatorEarnings.findOne({ creator: creatorId });
     const recentContent = await Content.find({ creator: creatorId })
       .sort('-createdAt')
       .limit(10);
-    
+
     // Generate personalized recommendations
     const recommendations = {
       content: {
         suggestions: profile.ai.contentSuggestions,
         bestPostingTimes: profile.ai.bestPostingTimes,
         trendingTopics: await getTrendingTopics(profile),
-        predictedPerformance: await predictContentPerformance(profile, recentContent)
+        predictedPerformance: await predictContentPerformance(
+          profile,
+          recentContent
+        ),
       },
       pricing: {
         optimalPrices: calculateOptimalPricing(earnings, profile),
         bundleRecommendations: generateBundleRecommendations(recentContent),
-        dynamicPricingOpportunities: identifyDynamicPricingOpportunities(profile)
+        dynamicPricingOpportunities:
+          identifyDynamicPricingOpportunities(profile),
       },
       audience: {
         growthOpportunities: profile.ai.audienceInsights,
         reEngagementTargets: identifyReEngagementTargets(earnings),
-        expansionMarkets: identifyExpansionMarkets(profile)
+        expansionMarkets: identifyExpansionMarkets(profile),
       },
       optimization: {
         profileCompleteness: calculateProfileCompleteness(profile),
         improvementAreas: identifyImprovementAreas(profile, earnings),
-        competitiveInsights: await getCompetitiveInsights(profile)
-      }
+        competitiveInsights: await getCompetitiveInsights(profile),
+      },
     };
-    
+
     res.json({
       success: true,
-      recommendations
+      recommendations,
     });
   } catch (error) {
     console.error('Get AI recommendations error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error generating recommendations' 
+    res.status(500).json({
+      success: false,
+      message: 'Error generating recommendations',
     });
   }
 };
@@ -451,20 +471,20 @@ exports.updateAchievements = async (req, res) => {
   try {
     const creatorId = req.user.id;
     const { action, value } = req.body;
-    
+
     const profile = await CreatorProfile.findOne({ creator: creatorId });
-    
+
     if (!profile) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Profile not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Profile not found',
       });
     }
-    
+
     const newAchievements = [];
-    
+
     // Check for achievement unlocks based on action
-    switch(action) {
+    switch (action) {
       case 'content_posted':
         profile.gamification.stats.totalPosts += 1;
         if (profile.gamification.stats.totalPosts === 100) {
@@ -474,11 +494,11 @@ exports.updateAchievements = async (req, res) => {
             description: 'Posted 100 pieces of content',
             icon: '💯',
             unlockedAt: new Date(),
-            xpReward: 500
+            xpReward: 500,
           });
         }
         break;
-        
+
       case 'earnings_milestone':
         if (value >= 1000 && !hasAchievement(profile, 'first_thousand')) {
           newAchievements.push({
@@ -487,11 +507,11 @@ exports.updateAchievements = async (req, res) => {
             description: 'Earned your first $1,000',
             icon: '💰',
             unlockedAt: new Date(),
-            xpReward: 1000
+            xpReward: 1000,
           });
         }
         break;
-        
+
       case 'fan_milestone':
         profile.gamification.stats.totalFans = value;
         if (value >= 100 && !hasAchievement(profile, 'century_fans')) {
@@ -501,18 +521,21 @@ exports.updateAchievements = async (req, res) => {
             description: 'Reached 100 fans',
             icon: '🌟',
             unlockedAt: new Date(),
-            xpReward: 750
+            xpReward: 750,
           });
         }
         break;
     }
-    
+
     // Add new achievements and XP
     if (newAchievements.length > 0) {
       profile.gamification.achievements.push(...newAchievements);
-      const totalXpGained = newAchievements.reduce((sum, a) => sum + a.xpReward, 0);
+      const totalXpGained = newAchievements.reduce(
+        (sum, a) => sum + a.xpReward,
+        0
+      );
       profile.gamification.xp += totalXpGained;
-      
+
       // Check for level up
       const newLevel = Math.floor(profile.gamification.xp / 1000) + 1;
       if (newLevel > profile.gamification.level) {
@@ -520,20 +543,20 @@ exports.updateAchievements = async (req, res) => {
         profile.gamification.lastLevelUp = new Date();
       }
     }
-    
+
     await profile.save();
-    
+
     res.json({
       success: true,
       newAchievements,
       currentLevel: profile.gamification.level,
-      currentXp: profile.gamification.xp
+      currentXp: profile.gamification.xp,
     });
   } catch (error) {
     console.error('Update achievements error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error updating achievements' 
+    res.status(500).json({
+      success: false,
+      message: 'Error updating achievements',
     });
   }
 };
@@ -557,20 +580,20 @@ async function generateAIContentSuggestions(profile) {
       type: 'timing',
       suggestion: 'Post at 8:47 PM for 3.2x more engagement',
       confidence: 92,
-      potentialIncrease: '320%'
+      potentialIncrease: '320%',
     },
     {
       type: 'content',
       suggestion: 'Your sunset photos earn 2.8x more than gym pics',
       confidence: 88,
-      potentialIncrease: '280%'
+      potentialIncrease: '280%',
     },
     {
       type: 'pricing',
       suggestion: 'Increase video prices to $4.99 for optimal revenue',
       confidence: 85,
-      potentialIncrease: '$450/month'
-    }
+      potentialIncrease: '$450/month',
+    },
   ];
 }
 
@@ -585,7 +608,7 @@ async function identifyGrowthOpportunities(profile, earnings) {
   return [
     'Enable bundle pricing to increase average order value by 45%',
     'Post 2 more times this week to maintain top 10 ranking',
-    'Your Thursday content performs 3x better - focus there'
+    'Your Thursday content performs 3x better - focus there',
   ];
 }
 
@@ -593,7 +616,7 @@ function calculateOptimalPricing(earnings, profile) {
   return {
     photos: { min: 0.99, optimal: 2.99, max: 4.99 },
     videos: { min: 2.99, optimal: 5.99, max: 9.99 },
-    bundles: { min: 9.99, optimal: 19.99, max: 29.99 }
+    bundles: { min: 9.99, optimal: 19.99, max: 29.99 },
   };
 }
 
@@ -603,15 +626,15 @@ function generateBundleRecommendations(content) {
       name: 'Weekly Special',
       items: 5,
       price: 14.99,
-      estimatedRevenue: 450
-    }
+      estimatedRevenue: 450,
+    },
   ];
 }
 
 function identifyDynamicPricingOpportunities(profile) {
   return [
     'Enable surge pricing during peak hours (8-10 PM)',
-    'Offer early bird discounts (6-8 AM) to boost morning sales'
+    'Offer early bird discounts (6-8 AM) to boost morning sales',
   ];
 }
 
@@ -620,18 +643,21 @@ function identifyReEngagementTargets(earnings) {
   return earnings.customerAnalytics.churnRisk.map(c => ({
     customerId: c.customerId,
     lastPurchase: c.lastPurchase,
-    suggestion: 'Send exclusive content offer'
+    suggestion: 'Send exclusive content offer',
   }));
 }
 
 function identifyExpansionMarkets(profile) {
-  return ['Consider targeting 25-34 age group', 'Expand to West Coast timezone'];
+  return [
+    'Consider targeting 25-34 age group',
+    'Expand to West Coast timezone',
+  ];
 }
 
 function calculateProfileCompleteness(profile) {
   let complete = 0;
   let total = 10;
-  
+
   if (profile.branding.profileImage) complete++;
   if (profile.branding.coverImage) complete++;
   if (profile.branding.bio) complete++;
@@ -642,13 +668,13 @@ function calculateProfileCompleteness(profile) {
   if (profile.preferences.pricing.strategy) complete++;
   if (profile.branding.displayName) complete++;
   if (profile.personalization.customCSS) complete++;
-  
+
   return (complete / total) * 100;
 }
 
 function identifyImprovementAreas(profile, earnings) {
   const areas = [];
-  
+
   if (!profile.branding.coverImage) {
     areas.push('Add a cover image to increase profile views by 40%');
   }
@@ -658,7 +684,7 @@ function identifyImprovementAreas(profile, earnings) {
   if (profile.analytics.engagement.messageResponseRate < 50) {
     areas.push('Improve message response rate for better fan retention');
   }
-  
+
   return areas;
 }
 
@@ -667,7 +693,7 @@ async function getCompetitiveInsights(profile) {
     ranking: profile.gamification.monthlyRank,
     percentile: `Top ${Math.min(100, profile.gamification.monthlyRank)}%`,
     strengths: ['High engagement rate', 'Consistent posting'],
-    opportunities: ['Increase video content', 'Expand posting times']
+    opportunities: ['Increase video content', 'Expand posting times'],
   };
 }
 
@@ -679,7 +705,7 @@ async function predictContentPerformance(profile, recentContent) {
   return {
     estimatedViews: 2500,
     estimatedEarnings: 340,
-    confidence: 87
+    confidence: 87,
   };
 }
 
@@ -687,25 +713,27 @@ async function predictContentPerformance(profile, recentContent) {
 exports.getProfileByUsername = async (req, res) => {
   try {
     const { username } = req.params;
-    
+
     // Find creator by username
     const creator = await Creator.findOne({ username })
       .populate('user', 'email username')
       .select('-verificationDocuments -payoutDetails'); // Exclude private fields
-    
+
     if (!creator) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Creator not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Creator not found',
       });
     }
 
     // Get creator's content (sample for preview)
-    const content = await Content.find({ 
-      creator: creator._id, 
-      isActive: true 
-    }).limit(20).select('type price thumbnails createdAt views likes');
-    
+    const content = await Content.find({
+      creator: creator._id,
+      isActive: true,
+    })
+      .limit(20)
+      .select('type price thumbnails createdAt views likes');
+
     // Format public profile data
     const publicProfile = {
       _id: creator._id,
@@ -715,29 +743,30 @@ exports.getProfileByUsername = async (req, res) => {
       bio: creator.bio,
       profileImage: creator.profileImage,
       coverImage: creator.coverImage,
-      location: creator.location?.country ? { country: creator.location.country } : null,
+      location: creator.location?.country
+        ? { country: creator.location.country }
+        : null,
       isVerified: creator.isVerified,
       stats: {
         totalLikes: creator.stats?.totalLikes || 0,
         rating: creator.stats?.rating || 0,
         ratingCount: creator.stats?.ratingCount || 0,
-        contentCount: content.length
+        contentCount: content.length,
       },
       contentPrice: creator.contentPrice,
       isPaused: creator.isPaused || false,
-      content: content
+      content: content,
     };
-    
-    res.json({ 
-      success: true, 
-      data: publicProfile 
+
+    res.json({
+      success: true,
+      data: publicProfile,
     });
-    
   } catch (error) {
     console.error('Get profile by username error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching creator profile' 
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching creator profile',
     });
   }
 };
@@ -754,11 +783,13 @@ exports.updateProfilePhoto = async (req, res) => {
     const creatorId = req.user.id;
 
     // Check if file was uploaded (handle both single file and fields middleware)
-    const file = req.file || (req.files && req.files.profilePhoto && req.files.profilePhoto[0]);
+    const file =
+      req.file ||
+      (req.files && req.files.profilePhoto && req.files.profilePhoto[0]);
     if (!file) {
       return res.status(400).json({
         success: false,
-        message: 'No file uploaded'
+        message: 'No file uploaded',
       });
     }
 
@@ -767,7 +798,7 @@ exports.updateProfilePhoto = async (req, res) => {
     if (!creator) {
       return res.status(404).json({
         success: false,
-        message: 'Creator not found'
+        message: 'Creator not found',
       });
     }
 
@@ -777,8 +808,8 @@ exports.updateProfilePhoto = async (req, res) => {
       public_id: `profile_${Date.now()}`,
       transformation: [
         { width: 400, height: 400, crop: 'fill', gravity: 'face' },
-        { quality: 'auto', fetch_format: 'auto' }
-      ]
+        { quality: 'auto', fetch_format: 'auto' },
+      ],
     });
 
     // Update creator profile image
@@ -791,10 +822,9 @@ exports.updateProfilePhoto = async (req, res) => {
       success: true,
       message: 'Profile photo updated successfully',
       data: {
-        profileImage: uploadResult.secure_url
-      }
+        profileImage: uploadResult.secure_url,
+      },
     });
-
   } catch (error) {
     console.error('Update profile photo error:', error);
     console.error('Error details:', error.message);
@@ -802,7 +832,10 @@ exports.updateProfilePhoto = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error updating profile photo',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      error:
+        process.env.NODE_ENV === 'development'
+          ? error.message
+          : 'Internal server error',
     });
   }
 };

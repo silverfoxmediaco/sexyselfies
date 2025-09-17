@@ -6,14 +6,14 @@ const AUTH_STATES = {
   LOADING: 'LOADING',
   AUTHENTICATED: 'AUTHENTICATED',
   UNAUTHENTICATED: 'UNAUTHENTICATED',
-  ERROR: 'ERROR'
+  ERROR: 'ERROR',
 };
 
 // User Roles
 const USER_ROLES = {
   CREATOR: 'creator',
   MEMBER: 'member',
-  ADMIN: 'admin'
+  ADMIN: 'admin',
 };
 
 // Initial State
@@ -23,7 +23,7 @@ const initialState = {
   role: null,
   token: null,
   error: null,
-  isInitialized: false
+  isInitialized: false,
 };
 
 // Action Types
@@ -33,7 +33,7 @@ const actionTypes = {
   AUTH_LOGOUT: 'AUTH_LOGOUT',
   AUTH_ERROR: 'AUTH_ERROR',
   USER_UPDATE: 'USER_UPDATE',
-  CLEAR_ERROR: 'CLEAR_ERROR'
+  CLEAR_ERROR: 'CLEAR_ERROR',
 };
 
 // Reducer
@@ -42,12 +42,14 @@ function authReducer(state, action) {
     case actionTypes.AUTH_INITIALIZE:
       return {
         ...state,
-        status: action.payload.user ? AUTH_STATES.AUTHENTICATED : AUTH_STATES.UNAUTHENTICATED,
+        status: action.payload.user
+          ? AUTH_STATES.AUTHENTICATED
+          : AUTH_STATES.UNAUTHENTICATED,
         user: action.payload.user,
         role: action.payload.role,
         token: action.payload.token,
         isInitialized: true,
-        error: null
+        error: null,
       };
 
     case actionTypes.AUTH_LOGIN_SUCCESS:
@@ -57,7 +59,7 @@ function authReducer(state, action) {
         user: action.payload.user,
         role: action.payload.role,
         token: action.payload.token,
-        error: null
+        error: null,
       };
 
     case actionTypes.AUTH_LOGOUT:
@@ -67,28 +69,30 @@ function authReducer(state, action) {
         user: null,
         role: null,
         token: null,
-        error: null
+        error: null,
       };
 
     case actionTypes.AUTH_ERROR:
       return {
         ...state,
         status: AUTH_STATES.UNAUTHENTICATED,
-        error: action.payload.error
+        error: action.payload.error,
         // Don't reset user/role/token - let them remain for retry attempts
       };
 
     case actionTypes.USER_UPDATE:
       return {
         ...state,
-        user: { ...state.user, ...action.payload.updates }
+        user: { ...state.user, ...action.payload.updates },
       };
 
     case actionTypes.CLEAR_ERROR:
       return {
         ...state,
         error: null,
-        status: state.user ? AUTH_STATES.AUTHENTICATED : AUTH_STATES.UNAUTHENTICATED
+        status: state.user
+          ? AUTH_STATES.AUTHENTICATED
+          : AUTH_STATES.UNAUTHENTICATED,
       };
 
     default:
@@ -116,7 +120,7 @@ export const AuthProvider = ({ children }) => {
       if (!token || !role) {
         dispatch({
           type: actionTypes.AUTH_INITIALIZE,
-          payload: { user: null, role: null, token: null }
+          payload: { user: null, role: null, token: null },
         });
         return;
       }
@@ -128,7 +132,7 @@ export const AuthProvider = ({ children }) => {
         if (response && response.data) {
           user = {
             ...response.data,
-            role: role
+            role: role,
           };
         }
       } catch (error) {
@@ -140,12 +144,12 @@ export const AuthProvider = ({ children }) => {
 
       dispatch({
         type: actionTypes.AUTH_INITIALIZE,
-        payload: { user, role, token: user ? token : null }
+        payload: { user, role, token: user ? token : null },
       });
     } catch (error) {
       dispatch({
         type: actionTypes.AUTH_ERROR,
-        payload: { error: error.message }
+        payload: { error: error.message },
       });
     }
   };
@@ -153,13 +157,25 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials, userRole) => {
     try {
       let response;
-      
+
       if (userRole === USER_ROLES.CREATOR) {
-        response = await authService.creatorLogin(credentials.email, credentials.password, credentials.rememberMe);
+        response = await authService.creatorLogin(
+          credentials.email,
+          credentials.password,
+          credentials.rememberMe
+        );
       } else if (userRole === USER_ROLES.MEMBER) {
-        response = await authService.memberLogin(credentials.email, credentials.password, credentials.rememberMe);
+        response = await authService.memberLogin(
+          credentials.email,
+          credentials.password,
+          credentials.rememberMe
+        );
       } else if (userRole === USER_ROLES.ADMIN) {
-        response = await authService.adminLogin(credentials.email, credentials.password, credentials.twoFactorCode);
+        response = await authService.adminLogin(
+          credentials.email,
+          credentials.password,
+          credentials.twoFactorCode
+        );
       } else {
         throw new Error('Invalid user role');
       }
@@ -171,17 +187,17 @@ export const AuthProvider = ({ children }) => {
           payload: {
             user: { ...response.user, role: userRole },
             role: userRole,
-            token: response.token
-          }
+            token: response.token,
+          },
         });
 
-        return { 
-          success: true, 
+        return {
+          success: true,
           user: response.user,
           redirectTo: response.redirectTo,
           isVerified: response.isVerified,
           profileComplete: response.profileComplete,
-          needsIdVerification: response.needsIdVerification
+          needsIdVerification: response.needsIdVerification,
         };
       } else {
         throw new Error('Invalid login response');
@@ -201,30 +217,32 @@ export const AuthProvider = ({ children }) => {
       console.error('Logout error:', error);
     } finally {
       dispatch({
-        type: actionTypes.AUTH_LOGOUT
+        type: actionTypes.AUTH_LOGOUT,
       });
     }
   };
 
-  const updateUser = (updates) => {
+  const updateUser = updates => {
     dispatch({
       type: actionTypes.USER_UPDATE,
-      payload: { updates }
+      payload: { updates },
     });
   };
 
   const clearError = () => {
     dispatch({
-      type: actionTypes.CLEAR_ERROR
+      type: actionTypes.CLEAR_ERROR,
     });
   };
 
   // Computed values
-  const isAuthenticated = state.status === AUTH_STATES.AUTHENTICATED && state.user;
+  const isAuthenticated =
+    state.status === AUTH_STATES.AUTHENTICATED && state.user;
   const isCreator = state.role === USER_ROLES.CREATOR;
   const isMember = state.role === USER_ROLES.MEMBER;
   const isAdmin = state.role === USER_ROLES.ADMIN;
-  const isLoading = state.status === AUTH_STATES.LOADING || !state.isInitialized;
+  const isLoading =
+    state.status === AUTH_STATES.LOADING || !state.isInitialized;
 
   const value = {
     // State
@@ -233,7 +251,7 @@ export const AuthProvider = ({ children }) => {
     token: state.token,
     error: state.error,
     status: state.status,
-    
+
     // Computed
     isAuthenticated,
     isCreator,
@@ -241,23 +259,19 @@ export const AuthProvider = ({ children }) => {
     isAdmin,
     isLoading,
     isInitialized: state.isInitialized,
-    
+
     // Actions
     login,
     logout,
     updateUser,
     clearError,
-    
+
     // Constants
     AUTH_STATES,
-    USER_ROLES
+    USER_ROLES,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 // Hook

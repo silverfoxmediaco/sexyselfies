@@ -1,14 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Settings, User, Shield, Bell, BarChart3, Palette,
-  ChevronRight, ChevronLeft, Save, Check, X, AlertTriangle,
-  Download, Trash2, Menu, Eye, EyeOff
+import {
+  Settings,
+  User,
+  Shield,
+  Bell,
+  BarChart3,
+  Palette,
+  ChevronRight,
+  ChevronLeft,
+  Save,
+  Check,
+  X,
+  AlertTriangle,
+  Download,
+  Trash2,
+  Menu,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
-import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import {
+  useIsMobile,
+  useIsDesktop,
+  getUserRole,
+} from '../utils/mobileDetection';
 import authService from '../services/auth.service';
 import creatorService from '../services/creator.service';
 import './CreatorSettingsPage.css';
@@ -25,19 +43,19 @@ const CreatorSettingsPage = () => {
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
-    
+
     // Profile & Branding
     displayName: '',
     bio: '',
     accentColor: '#17D2C2', // Use app's primary color
-    
+
     // Privacy & Safety
     profileVisibility: 'public',
     allowMessages: 'subscribers',
     showOnlineStatus: true,
     allowTips: true,
     contentFiltering: true,
-    
+
     // Notifications
     emailNotifications: {
       newSubscribers: true,
@@ -45,21 +63,20 @@ const CreatorSettingsPage = () => {
       messages: true,
       tips: true,
       analytics: false,
-      marketing: false
+      marketing: false,
     },
     pushNotifications: {
       newSubscribers: true,
       purchases: true,
       messages: true,
       tips: false,
-      liveStreams: true
+      liveStreams: true,
     },
-    
-    
+
     // Analytics & Insights
     analyticsEnabled: true,
     performanceTracking: true,
-    dataExport: 'monthly'
+    dataExport: 'monthly',
   });
 
   const [unsavedChanges, setUnsavedChanges] = useState(false);
@@ -74,7 +91,7 @@ const CreatorSettingsPage = () => {
       icon: User,
       description: 'Login, password, 2FA',
       priority: 'high',
-      items: 4
+      items: 4,
     },
     {
       id: 'profile',
@@ -82,7 +99,7 @@ const CreatorSettingsPage = () => {
       icon: Palette,
       description: 'Display name, bio, branding',
       priority: 'medium',
-      items: 2
+      items: 2,
     },
     {
       id: 'privacy',
@@ -90,7 +107,7 @@ const CreatorSettingsPage = () => {
       icon: Shield,
       description: 'Who can see your content',
       priority: 'high',
-      items: 5
+      items: 5,
     },
     {
       id: 'notifications',
@@ -98,7 +115,7 @@ const CreatorSettingsPage = () => {
       icon: Bell,
       description: 'Email & push alerts',
       priority: 'medium',
-      items: 8
+      items: 8,
     },
     {
       id: 'analytics',
@@ -106,8 +123,8 @@ const CreatorSettingsPage = () => {
       icon: BarChart3,
       description: 'Performance & privacy',
       priority: 'low',
-      items: 3
-    }
+      items: 3,
+    },
   ];
 
   // Load creator data on component mount
@@ -118,32 +135,33 @@ const CreatorSettingsPage = () => {
   const loadCreatorData = async () => {
     try {
       setLoading(true);
-      
+
       // Get current user data (email, role, etc.)
       const userData = await authService.getCurrentUser();
-      
+
       // Get creator profile data (displayName, bio, etc.)
       const profileData = await creatorService.getProfile();
-      
+
       // Debug: Log the API responses to understand structure
       console.log('Auth API Response:', userData);
       console.log('Profile API Response:', profileData);
-      
+
       // Handle different possible response structures
-      const userEmail = userData.user?.email || userData.data?.user?.email || '';
+      const userEmail =
+        userData.user?.email || userData.data?.user?.email || '';
       const profile = profileData.profile || profileData.data || profileData;
-      
+
       // Update settings with real data
       setSettings(prevSettings => ({
         ...prevSettings,
         // From user data (auth API response)
         email: userEmail,
-        
+
         // From creator profile (creator profile API response)
         username: profile?.username || profile?.user?.username || '',
         displayName: profile?.displayName || '',
         bio: profile?.bio || '',
-        
+
         // Load notification preferences from localStorage (temporary until backend ready)
         ...(() => {
           try {
@@ -151,12 +169,17 @@ const CreatorSettingsPage = () => {
             if (savedPrefs) {
               const prefs = JSON.parse(savedPrefs);
               return {
-                emailNotifications: prefs.emailNotifications || prevSettings.emailNotifications,
-                pushNotifications: prefs.pushNotifications || prevSettings.pushNotifications
+                emailNotifications:
+                  prefs.emailNotifications || prevSettings.emailNotifications,
+                pushNotifications:
+                  prefs.pushNotifications || prevSettings.pushNotifications,
               };
             }
           } catch (error) {
-            console.warn('Failed to load notification preferences from localStorage:', error);
+            console.warn(
+              'Failed to load notification preferences from localStorage:',
+              error
+            );
           }
           // Fallback to defaults
           return {
@@ -167,7 +190,7 @@ const CreatorSettingsPage = () => {
               messages: true,
               tips: true,
               analytics: false,
-              marketing: false
+              marketing: false,
             },
             pushNotifications: {
               ...prevSettings.pushNotifications,
@@ -175,29 +198,36 @@ const CreatorSettingsPage = () => {
               purchases: true,
               messages: true,
               tips: false,
-              liveStreams: true
-            }
+              liveStreams: true,
+            },
           };
         })(),
-        
+
         // Load analytics preferences from localStorage (temporary until backend ready)
         ...(() => {
           try {
-            const savedAnalytics = localStorage.getItem('creatorAnalyticsPrefs');
+            const savedAnalytics = localStorage.getItem(
+              'creatorAnalyticsPrefs'
+            );
             if (savedAnalytics) {
               const prefs = JSON.parse(savedAnalytics);
               return {
-                analyticsEnabled: prefs.analyticsEnabled ?? prevSettings.analyticsEnabled,
-                performanceTracking: prefs.performanceTracking ?? prevSettings.performanceTracking,
-                dataExport: prefs.dataExport ?? prevSettings.dataExport
+                analyticsEnabled:
+                  prefs.analyticsEnabled ?? prevSettings.analyticsEnabled,
+                performanceTracking:
+                  prefs.performanceTracking ?? prevSettings.performanceTracking,
+                dataExport: prefs.dataExport ?? prevSettings.dataExport,
               };
             }
           } catch (error) {
-            console.warn('Failed to load analytics preferences from localStorage:', error);
+            console.warn(
+              'Failed to load analytics preferences from localStorage:',
+              error
+            );
           }
           // Fallback to defaults (already set in initial state)
           return {};
-        })()
+        })(),
       }));
     } catch (error) {
       console.error('Failed to load creator data:', error);
@@ -213,13 +243,13 @@ const CreatorSettingsPage = () => {
         ...prev,
         [section]: {
           ...prev[section],
-          [key]: value
-        }
+          [key]: value,
+        },
       }));
     } else {
       setSettings(prev => ({
         ...prev,
-        [key]: value
+        [key]: value,
       }));
     }
     setUnsavedChanges(true);
@@ -231,39 +261,48 @@ const CreatorSettingsPage = () => {
       // Save profile updates
       const profileUpdates = {
         displayName: settings.displayName,
-        bio: settings.bio
+        bio: settings.bio,
       };
-      
+
       await creatorService.updateProfile(profileUpdates);
-      
+
       // Save notification preferences to localStorage temporarily
       // (will be moved to backend when /creator/settings/notifications is implemented)
       const notificationPrefs = {
         emailNotifications: settings.emailNotifications,
         pushNotifications: settings.pushNotifications,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       };
-      localStorage.setItem('creatorNotificationPrefs', JSON.stringify(notificationPrefs));
-      
+      localStorage.setItem(
+        'creatorNotificationPrefs',
+        JSON.stringify(notificationPrefs)
+      );
+
       // Save analytics preferences to localStorage temporarily
       const analyticsPrefs = {
         analyticsEnabled: settings.analyticsEnabled,
         performanceTracking: settings.performanceTracking,
         dataExport: settings.dataExport,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       };
-      localStorage.setItem('creatorAnalyticsPrefs', JSON.stringify(analyticsPrefs));
-      
+      localStorage.setItem(
+        'creatorAnalyticsPrefs',
+        JSON.stringify(analyticsPrefs)
+      );
+
       // TODO: Future settings updates (when backend endpoints are implemented)
-      // - Email changes need to be handled separately (usually requires verification) 
+      // - Email changes need to be handled separately (usually requires verification)
       // - Username changes need special validation
       // - Notification preferences (save to backend via /creator/settings/notifications)
       // - Privacy settings (endpoints return 501 - not implemented yet)
       // - Two-factor authentication (not implemented)
       // - Delete account (not implemented)
-      
-      console.log('Settings saved successfully:', { profileUpdates, notificationPrefs });
-      
+
+      console.log('Settings saved successfully:', {
+        profileUpdates,
+        notificationPrefs,
+      });
+
       setSaveStatus('saved');
       setUnsavedChanges(false);
       setTimeout(() => setSaveStatus('idle'), 2000);
@@ -282,8 +321,8 @@ const CreatorSettingsPage = () => {
 
   // Mobile-first: Main settings menu
   const renderMainMenu = () => (
-    <div className="settings-main-menu">
-      <div className="settings-menu-grid">
+    <div className='settings-main-menu'>
+      <div className='settings-menu-grid'>
         {settingSections.map((section, index) => (
           <motion.button
             key={section.id}
@@ -294,20 +333,20 @@ const CreatorSettingsPage = () => {
             transition={{ delay: index * 0.1 }}
             whileTap={{ scale: 0.98 }}
           >
-            <div className="menu-item-header">
-              <div className="menu-item-icon">
+            <div className='menu-item-header'>
+              <div className='menu-item-icon'>
                 <section.icon size={24} />
               </div>
               {section.priority === 'high' && (
-                <div className="priority-badge">!</div>
+                <div className='priority-badge'>!</div>
               )}
             </div>
-            <div className="menu-item-content">
+            <div className='menu-item-content'>
               <h3>{section.title}</h3>
               <p>{section.description}</p>
-              <span className="item-count">{section.items} settings</span>
+              <span className='item-count'>{section.items} settings</span>
             </div>
-            <ChevronRight size={20} className="menu-chevron" />
+            <ChevronRight size={20} className='menu-chevron' />
           </motion.button>
         ))}
       </div>
@@ -318,127 +357,134 @@ const CreatorSettingsPage = () => {
   const renderAccountSection = () => {
     if (isMobile) {
       return (
-        <div className="settings-mobile-section">
-          <div className="mobile-settings-group">
+        <div className='settings-mobile-section'>
+          <div className='mobile-settings-group'>
             <h4>Login Information</h4>
-            <div className="mobile-setting-item">
+            <div className='mobile-setting-item'>
               <label>Email Address</label>
               <input
-                type="email"
+                type='email'
                 value={settings.email}
-                onChange={(e) => updateSetting(null, 'email', e.target.value)}
-                className="mobile-input"
+                onChange={e => updateSetting(null, 'email', e.target.value)}
+                className='mobile-input'
               />
             </div>
-            <div className="mobile-setting-item">
+            <div className='mobile-setting-item'>
               <label>Username</label>
               <input
-                type="text"
+                type='text'
                 value={settings.username}
-                onChange={(e) => updateSetting(null, 'username', e.target.value)}
-                className="mobile-input"
-                placeholder="Loading..."
+                onChange={e => updateSetting(null, 'username', e.target.value)}
+                className='mobile-input'
+                placeholder='Loading...'
               />
             </div>
           </div>
 
-          <div className="mobile-settings-group">
+          <div className='mobile-settings-group'>
             <h4>Security</h4>
-            <div className="mobile-toggle-item">
-              <div className="toggle-content">
-                <div className="toggle-header">
+            <div className='mobile-toggle-item'>
+              <div className='toggle-content'>
+                <div className='toggle-header'>
                   <Shield size={20} />
                   <span>Two-Factor Authentication</span>
                 </div>
                 <p>Add extra security to your account (Coming Soon)</p>
               </div>
-              <label className="mobile-toggle">
-                <input
-                  type="checkbox"
-                  checked={false}
-                  disabled={true}
-                />
-                <span className="toggle-slider"></span>
+              <label className='mobile-toggle'>
+                <input type='checkbox' checked={false} disabled={true} />
+                <span className='toggle-slider'></span>
               </label>
             </div>
           </div>
 
-          <div className="mobile-settings-group danger">
+          <div className='mobile-settings-group danger'>
             <h4>Danger Zone</h4>
-            <button 
-              className="mobile-danger-btn"
+            <button
+              className='mobile-danger-btn'
               disabled={true}
               onClick={() => {}}
             >
               <Trash2 size={18} />
               Delete Account (Coming Soon)
             </button>
-            <p className="danger-warning">Account deletion feature coming soon</p>
+            <p className='danger-warning'>
+              Account deletion feature coming soon
+            </p>
           </div>
         </div>
       );
     }
-    
+
     // Desktop version
     return (
-      <div className="desktop-settings-section">
-        <div className="desktop-settings-group">
+      <div className='desktop-settings-section'>
+        <div className='desktop-settings-group'>
           <h3>Login Information</h3>
-          <div className="desktop-form-grid">
-            <div className="desktop-form-field">
-              <label className="desktop-label">Email Address</label>
+          <div className='desktop-form-grid'>
+            <div className='desktop-form-field'>
+              <label className='desktop-label'>Email Address</label>
               <input
-                type="email"
+                type='email'
                 value={settings.email}
-                onChange={(e) => updateSetting(null, 'email', e.target.value)}
-                className="desktop-input"
+                onChange={e => updateSetting(null, 'email', e.target.value)}
+                className='desktop-input'
               />
             </div>
-            <div className="desktop-form-field">
-              <label className="desktop-label">Username</label>
+            <div className='desktop-form-field'>
+              <label className='desktop-label'>Username</label>
               <input
-                type="text"
+                type='text'
                 value={settings.username}
-                onChange={(e) => updateSetting(null, 'username', e.target.value)}
-                className="desktop-input"
-                placeholder="Loading..."
+                onChange={e => updateSetting(null, 'username', e.target.value)}
+                className='desktop-input'
+                placeholder='Loading...'
               />
             </div>
           </div>
         </div>
-        
-        <div className="desktop-settings-group">
+
+        <div className='desktop-settings-group'>
           <h3>Security</h3>
-          <div className="desktop-toggle-item">
-            <div className="desktop-toggle-content">
-              <div className="desktop-toggle-header">
+          <div className='desktop-toggle-item'>
+            <div className='desktop-toggle-content'>
+              <div className='desktop-toggle-header'>
                 <Shield size={20} />
                 <div>
-                  <span className="desktop-toggle-title">Two-Factor Authentication</span>
-                  <p className="desktop-toggle-desc">Add extra security to your account</p>
+                  <span className='desktop-toggle-title'>
+                    Two-Factor Authentication
+                  </span>
+                  <p className='desktop-toggle-desc'>
+                    Add extra security to your account
+                  </p>
                 </div>
               </div>
             </div>
-            <label className="desktop-toggle">
+            <label className='desktop-toggle'>
               <input
-                type="checkbox"
+                type='checkbox'
                 checked={settings.twoFactorEnabled}
-                onChange={(e) => updateSetting(null, 'twoFactorEnabled', e.target.checked)}
+                onChange={e =>
+                  updateSetting(null, 'twoFactorEnabled', e.target.checked)
+                }
               />
-              <span className="desktop-toggle-slider"></span>
+              <span className='desktop-toggle-slider'></span>
             </label>
           </div>
         </div>
-        
-        <div className="desktop-settings-group danger">
+
+        <div className='desktop-settings-group danger'>
           <h3>Danger Zone</h3>
-          <div className="desktop-danger-section">
-            <div className="desktop-danger-content">
+          <div className='desktop-danger-section'>
+            <div className='desktop-danger-content'>
               <h4>Delete Account</h4>
-              <p>This will permanently delete your account, content, and earnings. This action cannot be undone.</p>
+              <p>
+                This will permanently delete your account, content, and
+                earnings. This action cannot be undone.
+              </p>
             </div>
-            <button 
-              className="desktop-danger-btn"
+            <button
+              className='desktop-danger-btn'
               onClick={() => setShowDeleteDialog(true)}
             >
               <Trash2 size={18} />
@@ -451,70 +497,74 @@ const CreatorSettingsPage = () => {
   };
 
   const renderPrivacySection = () => (
-    <div className="settings-mobile-section">
-      <div className="mobile-settings-group">
+    <div className='settings-mobile-section'>
+      <div className='mobile-settings-group'>
         <h4>Profile Visibility</h4>
-        <div className="mobile-setting-item">
+        <div className='mobile-setting-item'>
           <label>Who can see your profile?</label>
           <select
             value={settings.profileVisibility}
-            onChange={(e) => updateSetting(null, 'profileVisibility', e.target.value)}
-            className="mobile-select"
+            onChange={e =>
+              updateSetting(null, 'profileVisibility', e.target.value)
+            }
+            className='mobile-select'
           >
-            <option value="public">Everyone</option>
-            <option value="subscribers">Subscribers only</option>
-            <option value="private">Private</option>
+            <option value='public'>Everyone</option>
+            <option value='subscribers'>Subscribers only</option>
+            <option value='private'>Private</option>
           </select>
         </div>
-        <div className="mobile-setting-item">
+        <div className='mobile-setting-item'>
           <label>Who can message you?</label>
           <select
             value={settings.allowMessages}
-            onChange={(e) => updateSetting(null, 'allowMessages', e.target.value)}
-            className="mobile-select"
+            onChange={e => updateSetting(null, 'allowMessages', e.target.value)}
+            className='mobile-select'
           >
-            <option value="everyone">Everyone</option>
-            <option value="subscribers">Subscribers only</option>
-            <option value="none">No one</option>
+            <option value='everyone'>Everyone</option>
+            <option value='subscribers'>Subscribers only</option>
+            <option value='none'>No one</option>
           </select>
         </div>
       </div>
 
-      <div className="mobile-settings-group">
+      <div className='mobile-settings-group'>
         <h4>Privacy Controls</h4>
-        <div className="mobile-toggle-item">
-          <div className="toggle-content">
-            <div className="toggle-header">
+        <div className='mobile-toggle-item'>
+          <div className='toggle-content'>
+            <div className='toggle-header'>
               <Eye size={20} />
               <span>Show online status</span>
             </div>
             <p>Let others see when you're active</p>
           </div>
-          <label className="mobile-toggle">
+          <label className='mobile-toggle'>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={settings.showOnlineStatus}
-              onChange={(e) => updateSetting(null, 'showOnlineStatus', e.target.checked)}
+              onChange={e =>
+                updateSetting(null, 'showOnlineStatus', e.target.checked)
+              }
             />
-            <span className="toggle-slider"></span>
+            <span className='toggle-slider'></span>
           </label>
         </div>
-        
-        <div className="mobile-toggle-item">
-          <div className="toggle-content">
-            <div className="toggle-header">
+
+        <div className='mobile-toggle-item'>
+          <div className='toggle-content'>
+            <div className='toggle-header'>
               <DollarSign size={20} />
               <span>Allow tips</span>
             </div>
             <p>Enable fans to send you tips</p>
           </div>
-          <label className="mobile-toggle">
+          <label className='mobile-toggle'>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={settings.allowTips}
-              onChange={(e) => updateSetting(null, 'allowTips', e.target.checked)}
+              onChange={e => updateSetting(null, 'allowTips', e.target.checked)}
             />
-            <span className="toggle-slider"></span>
+            <span className='toggle-slider'></span>
           </label>
         </div>
       </div>
@@ -522,44 +572,57 @@ const CreatorSettingsPage = () => {
   );
 
   const renderNotificationsSection = () => (
-    <div className="settings-mobile-section">
-      <div className="notification-disclaimer">
-        <p><strong>Note:</strong> Notification preferences are saved locally and will be fully functional when backend integration is completed.</p>
+    <div className='settings-mobile-section'>
+      <div className='notification-disclaimer'>
+        <p>
+          <strong>Note:</strong> Notification preferences are saved locally and
+          will be fully functional when backend integration is completed.
+        </p>
       </div>
-      
-      <div className="mobile-settings-group">
+
+      <div className='mobile-settings-group'>
         <h4>Email Notifications</h4>
         {Object.entries(settings.emailNotifications).map(([key, value]) => (
-          <div key={key} className="mobile-toggle-item">
-            <div className="toggle-content">
-              <span>{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}</span>
+          <div key={key} className='mobile-toggle-item'>
+            <div className='toggle-content'>
+              <span>
+                {key.charAt(0).toUpperCase() +
+                  key.slice(1).replace(/([A-Z])/g, ' $1')}
+              </span>
             </div>
-            <label className="mobile-toggle">
+            <label className='mobile-toggle'>
               <input
-                type="checkbox"
+                type='checkbox'
                 checked={value}
-                onChange={(e) => updateSetting('emailNotifications', key, e.target.checked)}
+                onChange={e =>
+                  updateSetting('emailNotifications', key, e.target.checked)
+                }
               />
-              <span className="toggle-slider"></span>
+              <span className='toggle-slider'></span>
             </label>
           </div>
         ))}
       </div>
 
-      <div className="mobile-settings-group">
+      <div className='mobile-settings-group'>
         <h4>Push Notifications</h4>
         {Object.entries(settings.pushNotifications).map(([key, value]) => (
-          <div key={key} className="mobile-toggle-item">
-            <div className="toggle-content">
-              <span>{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}</span>
+          <div key={key} className='mobile-toggle-item'>
+            <div className='toggle-content'>
+              <span>
+                {key.charAt(0).toUpperCase() +
+                  key.slice(1).replace(/([A-Z])/g, ' $1')}
+              </span>
             </div>
-            <label className="mobile-toggle">
+            <label className='mobile-toggle'>
               <input
-                type="checkbox"
+                type='checkbox'
                 checked={value}
-                onChange={(e) => updateSetting('pushNotifications', key, e.target.checked)}
+                onChange={e =>
+                  updateSetting('pushNotifications', key, e.target.checked)
+                }
               />
-              <span className="toggle-slider"></span>
+              <span className='toggle-slider'></span>
             </label>
           </div>
         ))}
@@ -567,26 +630,25 @@ const CreatorSettingsPage = () => {
     </div>
   );
 
-
   const renderProfileSection = () => (
-    <div className="settings-mobile-section">
-      <div className="mobile-settings-group">
+    <div className='settings-mobile-section'>
+      <div className='mobile-settings-group'>
         <h4>Profile Information</h4>
-        <div className="mobile-setting-item">
+        <div className='mobile-setting-item'>
           <label>Display Name</label>
           <input
-            type="text"
+            type='text'
             value={settings.displayName}
-            onChange={(e) => updateSetting(null, 'displayName', e.target.value)}
-            className="mobile-input"
+            onChange={e => updateSetting(null, 'displayName', e.target.value)}
+            className='mobile-input'
           />
         </div>
-        <div className="mobile-setting-item">
+        <div className='mobile-setting-item'>
           <label>Bio</label>
           <textarea
             value={settings.bio}
-            onChange={(e) => updateSetting(null, 'bio', e.target.value)}
-            className="mobile-textarea"
+            onChange={e => updateSetting(null, 'bio', e.target.value)}
+            className='mobile-textarea'
             rows={4}
             maxLength={500}
           />
@@ -600,19 +662,19 @@ const CreatorSettingsPage = () => {
   const handleDataExport = async () => {
     try {
       setSaveStatus('saving');
-      
+
       // Call the actual data export API
       const response = await creatorService.exportAnalyticsData({
         format: 'json',
         period: '30d',
-        sections: 'all'
+        sections: 'all',
       });
-      
+
       // Create downloadable file
       const blob = new Blob([JSON.stringify(response, null, 2)], {
-        type: 'application/json'
+        type: 'application/json',
       });
-      
+
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -621,10 +683,9 @@ const CreatorSettingsPage = () => {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 2000);
-      
     } catch (error) {
       console.error('Data export failed:', error);
       setSaveStatus('error');
@@ -633,43 +694,50 @@ const CreatorSettingsPage = () => {
   };
 
   const renderAnalyticsSection = () => (
-    <div className="settings-mobile-section">
-      <div className="notification-disclaimer">
-        <p><strong>Note:</strong> Analytics preferences are saved locally. Data export downloads your actual analytics data from the server.</p>
+    <div className='settings-mobile-section'>
+      <div className='notification-disclaimer'>
+        <p>
+          <strong>Note:</strong> Analytics preferences are saved locally. Data
+          export downloads your actual analytics data from the server.
+        </p>
       </div>
-      
-      <div className="mobile-settings-group">
+
+      <div className='mobile-settings-group'>
         <h4>Data Collection</h4>
-        <div className="mobile-toggle-item">
-          <div className="toggle-content">
-            <div className="toggle-header">
+        <div className='mobile-toggle-item'>
+          <div className='toggle-content'>
+            <div className='toggle-header'>
               <BarChart3 size={20} />
               <span>Enable analytics</span>
             </div>
             <p>Collect data to improve performance (Local Setting)</p>
           </div>
-          <label className="mobile-toggle">
+          <label className='mobile-toggle'>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={settings.analyticsEnabled}
-              onChange={(e) => updateSetting(null, 'analyticsEnabled', e.target.checked)}
+              onChange={e =>
+                updateSetting(null, 'analyticsEnabled', e.target.checked)
+              }
             />
-            <span className="toggle-slider"></span>
+            <span className='toggle-slider'></span>
           </label>
         </div>
       </div>
-      
-      <div className="mobile-settings-group">
+
+      <div className='mobile-settings-group'>
         <h4>Data Export</h4>
-        <button 
-          className="mobile-action-btn"
+        <button
+          className='mobile-action-btn'
           onClick={handleDataExport}
           disabled={saveStatus === 'saving'}
         >
           <Download size={18} />
           {saveStatus === 'saving' ? 'Exporting...' : 'Export My Data'}
         </button>
-        <p className="action-description">Download your analytics data as JSON</p>
+        <p className='action-description'>
+          Download your analytics data as JSON
+        </p>
       </div>
     </div>
   );
@@ -680,37 +748,42 @@ const CreatorSettingsPage = () => {
   };
 
   const renderActiveSection = () => {
-    switch(activeSection) {
-      case 'account': return renderAccountSection();
-      case 'profile': return renderProfileSection();
-      case 'privacy': return renderPrivacySection();
-      case 'notifications': return renderNotificationsSection();
-      case 'analytics': return renderAnalyticsSection();
-      default: return renderMainMenu();
+    switch (activeSection) {
+      case 'account':
+        return renderAccountSection();
+      case 'profile':
+        return renderProfileSection();
+      case 'privacy':
+        return renderPrivacySection();
+      case 'notifications':
+        return renderNotificationsSection();
+      case 'analytics':
+        return renderAnalyticsSection();
+      default:
+        return renderMainMenu();
     }
   };
 
   return (
-    <div className="CreatorSettingsPage-container">
+    <div className='CreatorSettingsPage-container'>
       {/* Desktop Header */}
       {isDesktop && <CreatorMainHeader />}
 
       {/* Main Content Wrapper */}
       <div className={`creator-settings ${isMobile ? 'mobile' : 'desktop'}`}>
         {loading ? (
-          <div className="settings-loading">
-            <div className="loading-spinner"></div>
+          <div className='settings-loading'>
+            <div className='loading-spinner'></div>
             <p>Loading your settings...</p>
           </div>
-        ) : (
-          isMobile ? (
+        ) : isMobile ? (
           // Mobile Layout
           <>
             {/* Mobile Header */}
-            <div className="mobile-header">
-              <div className="mobile-header-content">
+            <div className='mobile-header'>
+              <div className='mobile-header-content'>
                 {activeSection ? (
-                  <button className="mobile-back-btn" onClick={goBack}>
+                  <button className='mobile-back-btn' onClick={goBack}>
                     <ChevronLeft size={24} />
                   </button>
                 ) : (
@@ -718,12 +791,12 @@ const CreatorSettingsPage = () => {
                 )}
                 <h1>{getSectionTitle()}</h1>
                 {unsavedChanges && (
-                  <button 
+                  <button
                     className={`mobile-save-btn ${saveStatus}`}
                     onClick={saveSettings}
                     disabled={saveStatus === 'saving'}
                   >
-                    {saveStatus === 'saving' && <div className="spinner" />}
+                    {saveStatus === 'saving' && <div className='spinner' />}
                     {saveStatus === 'saved' && <Check size={18} />}
                     {saveStatus === 'error' && <X size={18} />}
                     {saveStatus === 'idle' && <Save size={18} />}
@@ -733,8 +806,8 @@ const CreatorSettingsPage = () => {
             </div>
 
             {/* Mobile Content */}
-            <div className="mobile-content">
-              <AnimatePresence mode="wait">
+            <div className='mobile-content'>
+              <AnimatePresence mode='wait'>
                 <motion.div
                   key={activeSection || 'main'}
                   initial={{ x: 20, opacity: 0 }}
@@ -749,20 +822,24 @@ const CreatorSettingsPage = () => {
 
             {/* Save Button - Sticky Bottom */}
             {unsavedChanges && (
-              <div className="mobile-save-bar">
-                <button 
+              <div className='mobile-save-bar'>
+                <button
                   className={`mobile-save-bar-btn ${saveStatus}`}
                   onClick={saveSettings}
                   disabled={saveStatus === 'saving'}
                 >
-                  {saveStatus === 'saving' && <div className="spinner" />}
+                  {saveStatus === 'saving' && <div className='spinner' />}
                   {saveStatus === 'saved' && <Check size={20} />}
                   {saveStatus === 'error' && <X size={20} />}
                   {saveStatus === 'idle' && <Save size={20} />}
                   <span>
-                    {saveStatus === 'saving' ? 'Saving...' :
-                     saveStatus === 'saved' ? 'Saved!' :
-                     saveStatus === 'error' ? 'Error' : 'Save Changes'}
+                    {saveStatus === 'saving'
+                      ? 'Saving...'
+                      : saveStatus === 'saved'
+                        ? 'Saved!'
+                        : saveStatus === 'error'
+                          ? 'Error'
+                          : 'Save Changes'}
                   </span>
                 </button>
               </div>
@@ -770,10 +847,10 @@ const CreatorSettingsPage = () => {
           </>
         ) : (
           // Desktop Layout - Show section content or main menu
-          <div className="desktop-settings-content">
+          <div className='desktop-settings-content'>
             {!activeSection ? (
               <>
-                <div className="desktop-settings-header">
+                <div className='desktop-settings-header'>
                   <Settings size={28} />
                   <h1>Settings</h1>
                   <p>Manage your account, privacy, and platform preferences</p>
@@ -781,32 +858,36 @@ const CreatorSettingsPage = () => {
                 {renderMainMenu()}
               </>
             ) : (
-              <div className="desktop-section-view">
-                <div className="desktop-section-header">
-                  <button className="desktop-back-btn" onClick={goBack}>
+              <div className='desktop-section-view'>
+                <div className='desktop-section-header'>
+                  <button className='desktop-back-btn' onClick={goBack}>
                     <ChevronLeft size={24} />
                     <span>Back to Settings</span>
                   </button>
                   <h2>{getSectionTitle()}</h2>
                 </div>
-                <div className="desktop-section-content">
+                <div className='desktop-section-content'>
                   {renderActiveSection()}
                 </div>
                 {unsavedChanges && (
-                  <div className="desktop-save-section">
-                    <button 
+                  <div className='desktop-save-section'>
+                    <button
                       className={`desktop-save-btn ${saveStatus}`}
                       onClick={saveSettings}
                       disabled={saveStatus === 'saving'}
                     >
-                      {saveStatus === 'saving' && <div className="spinner" />}
+                      {saveStatus === 'saving' && <div className='spinner' />}
                       {saveStatus === 'saved' && <Check size={20} />}
                       {saveStatus === 'error' && <X size={20} />}
                       {saveStatus === 'idle' && <Save size={20} />}
                       <span>
-                        {saveStatus === 'saving' ? 'Saving...' :
-                         saveStatus === 'saved' ? 'Saved!' :
-                         saveStatus === 'error' ? 'Error' : 'Save Changes'}
+                        {saveStatus === 'saving'
+                          ? 'Saving...'
+                          : saveStatus === 'saved'
+                            ? 'Saved!'
+                            : saveStatus === 'error'
+                              ? 'Error'
+                              : 'Save Changes'}
                       </span>
                     </button>
                   </div>
@@ -814,31 +895,33 @@ const CreatorSettingsPage = () => {
               </div>
             )}
           </div>
-        )
         )}
 
         {/* Delete Dialog */}
         {showDeleteDialog && (
-          <div className="modal-overlay">
-            <div className="delete-dialog">
-              <div className="dialog-header">
-                <AlertTriangle size={32} className="warning-icon" />
+          <div className='modal-overlay'>
+            <div className='delete-dialog'>
+              <div className='dialog-header'>
+                <AlertTriangle size={32} className='warning-icon' />
                 <h3>Delete Account?</h3>
               </div>
-              <div className="dialog-content">
-                <p>This will permanently delete your account, content, and earnings.</p>
-                <p><strong>This action cannot be undone.</strong></p>
+              <div className='dialog-content'>
+                <p>
+                  This will permanently delete your account, content, and
+                  earnings.
+                </p>
+                <p>
+                  <strong>This action cannot be undone.</strong>
+                </p>
               </div>
-              <div className="dialog-actions">
-                <button 
-                  className="dialog-btn secondary"
+              <div className='dialog-actions'>
+                <button
+                  className='dialog-btn secondary'
                   onClick={() => setShowDeleteDialog(false)}
                 >
                   Cancel
                 </button>
-                <button className="dialog-btn danger">
-                  Delete Forever
-                </button>
+                <button className='dialog-btn danger'>Delete Forever</button>
               </div>
             </div>
           </div>
@@ -847,7 +930,7 @@ const CreatorSettingsPage = () => {
 
       {/* Desktop Footer */}
       {isDesktop && <CreatorMainFooter />}
-      
+
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>

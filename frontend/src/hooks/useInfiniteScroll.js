@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 /**
  * useInfiniteScroll Hook
  * Handles infinite scrolling with automatic pagination
- * 
+ *
  * @param {Function} fetchMore - Function to fetch more data
  * @param {Object} options - Configuration options
  * @returns {Object} - Hook state and methods
@@ -20,7 +20,7 @@ export const useInfiniteScroll = (fetchMore, options = {}) => {
     retryDelay = 1000,
     onError = null,
     onSuccess = null,
-    enabled = true
+    enabled = true,
   } = options;
 
   // State
@@ -44,78 +44,91 @@ export const useInfiniteScroll = (fetchMore, options = {}) => {
   /**
    * Load more items
    */
-  const loadMore = useCallback(async (isRefresh = false) => {
-    if (loadingRef.current || (!hasMore && !isRefresh) || !enabled) return;
+  const loadMore = useCallback(
+    async (isRefresh = false) => {
+      if (loadingRef.current || (!hasMore && !isRefresh) || !enabled) return;
 
-    loadingRef.current = true;
-    setLoading(true);
-    setError(null);
+      loadingRef.current = true;
+      setLoading(true);
+      setError(null);
 
-    const currentPage = isRefresh ? 1 : page;
+      const currentPage = isRefresh ? 1 : page;
 
-    try {
-      const result = await fetchMore({
-        page: currentPage,
-        pageSize,
-        isRefresh
-      });
+      try {
+        const result = await fetchMore({
+          page: currentPage,
+          pageSize,
+          isRefresh,
+        });
 
-      if (result) {
-        const {
-          data = [],
-          hasMore: moreAvailable = false,
-          total = 0,
-          totalPages: pages = 0,
-          error: fetchError = null
-        } = result;
+        if (result) {
+          const {
+            data = [],
+            hasMore: moreAvailable = false,
+            total = 0,
+            totalPages: pages = 0,
+            error: fetchError = null,
+          } = result;
 
-        if (fetchError) {
-          throw new Error(fetchError);
+          if (fetchError) {
+            throw new Error(fetchError);
+          }
+
+          if (isRefresh) {
+            setItems(data);
+            setPage(2);
+          } else {
+            setItems(prev => [...prev, ...data]);
+            setPage(prev => prev + 1);
+          }
+
+          setHasMore(moreAvailable);
+          setTotalItems(total);
+          setTotalPages(pages);
+          retryCountRef.current = 0;
+
+          if (onSuccess) {
+            onSuccess({
+              items: data,
+              page: currentPage,
+              total,
+              isRefresh,
+            });
+          }
         }
+      } catch (err) {
+        console.error('Infinite scroll error:', err);
+        setError(err.message || 'Failed to load items');
 
-        if (isRefresh) {
-          setItems(data);
-          setPage(2);
+        // Retry logic
+        if (retryCountRef.current < retryAttempts) {
+          retryCountRef.current++;
+          setTimeout(() => {
+            loadMore(isRefresh);
+          }, retryDelay * retryCountRef.current);
         } else {
-          setItems(prev => [...prev, ...data]);
-          setPage(prev => prev + 1);
+          if (onError) {
+            onError(err);
+          }
         }
-
-        setHasMore(moreAvailable);
-        setTotalItems(total);
-        setTotalPages(pages);
-        retryCountRef.current = 0;
-
-        if (onSuccess) {
-          onSuccess({ 
-            items: data, 
-            page: currentPage, 
-            total,
-            isRefresh 
-          });
-        }
+      } finally {
+        loadingRef.current = false;
+        setLoading(false);
+        setRefreshing(false);
       }
-    } catch (err) {
-      console.error('Infinite scroll error:', err);
-      setError(err.message || 'Failed to load items');
-
-      // Retry logic
-      if (retryCountRef.current < retryAttempts) {
-        retryCountRef.current++;
-        setTimeout(() => {
-          loadMore(isRefresh);
-        }, retryDelay * retryCountRef.current);
-      } else {
-        if (onError) {
-          onError(err);
-        }
-      }
-    } finally {
-      loadingRef.current = false;
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [page, hasMore, fetchMore, pageSize, enabled, onSuccess, onError, retryAttempts, retryDelay]);
+    },
+    [
+      page,
+      hasMore,
+      fetchMore,
+      pageSize,
+      enabled,
+      onSuccess,
+      onError,
+      retryAttempts,
+      retryDelay,
+    ]
+  );
 
   /**
    * Refresh items (reload from page 1)
@@ -157,10 +170,11 @@ export const useInfiniteScroll = (fetchMore, options = {}) => {
 
       if (direction === 'vertical') {
         if (scrollContainer === window) {
-          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const scrollTop =
+            window.pageYOffset || document.documentElement.scrollTop;
           const scrollHeight = document.documentElement.scrollHeight;
           const clientHeight = window.innerHeight;
-          
+
           shouldLoad = scrollTop + clientHeight >= scrollHeight - threshold;
           lastScrollPosition.current = scrollTop;
         } else if (scrollContainer) {
@@ -171,10 +185,11 @@ export const useInfiniteScroll = (fetchMore, options = {}) => {
       } else {
         // Horizontal scrolling
         if (scrollContainer === window) {
-          const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+          const scrollLeft =
+            window.pageXOffset || document.documentElement.scrollLeft;
           const scrollWidth = document.documentElement.scrollWidth;
           const clientWidth = window.innerWidth;
-          
+
           shouldLoad = scrollLeft + clientWidth >= scrollWidth - threshold;
           lastScrollPosition.current = scrollLeft;
         } else if (scrollContainer) {
@@ -188,51 +203,66 @@ export const useInfiniteScroll = (fetchMore, options = {}) => {
         loadMore();
       }
     }, debounceDelay);
-  }, [container, direction, threshold, loading, hasMore, enabled, loadMore, debounceDelay]);
+  }, [
+    container,
+    direction,
+    threshold,
+    loading,
+    hasMore,
+    enabled,
+    loadMore,
+    debounceDelay,
+  ]);
 
   /**
    * Setup Intersection Observer for better performance
    */
-  const setupIntersectionObserver = useCallback((targetElement) => {
-    if (!targetElement || !enabled) return;
+  const setupIntersectionObserver = useCallback(
+    targetElement => {
+      if (!targetElement || !enabled) return;
 
-    // Disconnect existing observer
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-    }
+      // Disconnect existing observer
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
 
-    const options = {
-      root: container,
-      rootMargin: `${threshold}px`,
-      threshold: 0.1
-    };
+      const options = {
+        root: container,
+        rootMargin: `${threshold}px`,
+        threshold: 0.1,
+      };
 
-    observerRef.current = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && hasMore && !loading) {
-          loadMore();
-        }
-      });
-    }, options);
+      observerRef.current = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && hasMore && !loading) {
+            loadMore();
+          }
+        });
+      }, options);
 
-    observerRef.current.observe(targetElement);
-  }, [container, threshold, hasMore, loading, enabled, loadMore]);
+      observerRef.current.observe(targetElement);
+    },
+    [container, threshold, hasMore, loading, enabled, loadMore]
+  );
 
   /**
    * Set the last element for Intersection Observer
    */
-  const setLastElement = useCallback((element) => {
-    if (element) {
-      setupIntersectionObserver(element);
-    }
-  }, [setupIntersectionObserver]);
+  const setLastElement = useCallback(
+    element => {
+      if (element) {
+        setupIntersectionObserver(element);
+      }
+    },
+    [setupIntersectionObserver]
+  );
 
   /**
    * Scroll to top
    */
   const scrollToTop = useCallback(() => {
     const scrollContainer = container || window;
-    
+
     if (direction === 'vertical') {
       if (scrollContainer === window) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -258,23 +288,26 @@ export const useInfiniteScroll = (fetchMore, options = {}) => {
   /**
    * Restore scroll position
    */
-  const restoreScrollPosition = useCallback((position) => {
-    const scrollContainer = container || window;
-    
-    if (direction === 'vertical') {
-      if (scrollContainer === window) {
-        window.scrollTo({ top: position, behavior: 'auto' });
-      } else if (scrollContainer) {
-        scrollContainer.scrollTop = position;
+  const restoreScrollPosition = useCallback(
+    position => {
+      const scrollContainer = container || window;
+
+      if (direction === 'vertical') {
+        if (scrollContainer === window) {
+          window.scrollTo({ top: position, behavior: 'auto' });
+        } else if (scrollContainer) {
+          scrollContainer.scrollTop = position;
+        }
+      } else {
+        if (scrollContainer === window) {
+          window.scrollTo({ left: position, behavior: 'auto' });
+        } else if (scrollContainer) {
+          scrollContainer.scrollLeft = position;
+        }
       }
-    } else {
-      if (scrollContainer === window) {
-        window.scrollTo({ left: position, behavior: 'auto' });
-      } else if (scrollContainer) {
-        scrollContainer.scrollLeft = position;
-      }
-    }
-  }, [container, direction]);
+    },
+    [container, direction]
+  );
 
   /**
    * Setup scroll listener
@@ -283,9 +316,11 @@ export const useInfiniteScroll = (fetchMore, options = {}) => {
     if (!enabled) return;
 
     const scrollContainer = container || window;
-    
+
     if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+      scrollContainer.addEventListener('scroll', handleScroll, {
+        passive: true,
+      });
     }
 
     return () => {
@@ -328,7 +363,7 @@ export const useInfiniteScroll = (fetchMore, options = {}) => {
     page,
     totalItems,
     totalPages,
-    
+
     // Methods
     loadMore: () => loadMore(false),
     refresh,
@@ -337,11 +372,11 @@ export const useInfiniteScroll = (fetchMore, options = {}) => {
     scrollToTop,
     getScrollPosition,
     restoreScrollPosition,
-    
+
     // Utils
     isEmpty: items.length === 0,
     isLastPage: page >= totalPages,
-    itemCount: items.length
+    itemCount: items.length,
   };
 };
 

@@ -9,15 +9,15 @@
 
 /* Settings Variables */
 .creator-settings {
-  --settings-primary: #FF1B6B;
-  --settings-primary-hover: #E91E63;
-  --settings-bg: #0A0B0F;
-  --settings-surface: #1A1D29;
+  --settings-primary: #ff1b6b;
+  --settings-primary-hover: #e91e63;
+  --settings-bg: #0a0b0f;
+  --settings-surface: #1a1d29;
   --settings-surface-hover: #242938;
-  --settings-border: #2A2F3F;
-  --settings-text: #FFFFFF;
-  --settings-text-secondary: #9CA3AF;
-  --settings-text-muted: #6B7280;
+  --settings-border: #2a2f3f;
+  --settings-text: #ffffff;
+  --settings-text-secondary: #9ca3af;
+  --settings-text-muted: #6b7280;
 }
 
 /* ==========================================
@@ -43,8 +43,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* ==========================================
@@ -79,15 +83,19 @@
 }
 
 .creator-settings {
-  --settings-success: #10B981;
-  --settings-warning: #F59E0B;
-  --settings-error: #EF4444;
-  
+  --settings-success: #10b981;
+  --settings-warning: #f59e0b;
+  --settings-error: #ef4444;
+
   width: 100%;
   min-height: 100vh;
   background: var(--settings-bg);
   color: var(--settings-text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   position: relative;
 }
 
@@ -417,7 +425,7 @@
 
 .toggle-slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 24px;
   width: 24px;
   left: 4px;
@@ -537,8 +545,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Mobile Modal */
@@ -643,31 +655,31 @@
     max-width: 600px;
     margin: 0 auto;
   }
-  
+
   .mobile-content {
     padding: 24px;
   }
-  
+
   .settings-menu-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
-  
+
   /* Ensure consistent sizing in 2-column layout */
   .settings-menu-item {
     min-width: 0;
     max-width: none;
   }
-  
+
   .mobile-settings-group {
     padding: 24px;
   }
-  
+
   .dialog-actions {
     flex-direction: row;
     justify-content: space-between;
   }
-  
+
   .dialog-btn {
     flex: 1;
   }
@@ -677,7 +689,7 @@
   .settings-menu-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   /* Ensure consistent sizing in 3-column layout */
   .settings-menu-item {
     min-width: 0;
@@ -695,7 +707,11 @@
   width: 100%;
   background: var(--settings-bg);
   color: var(--settings-text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   padding: 32px;
   margin-top: 50px;
 }
@@ -926,7 +942,7 @@
 }
 
 .delete-dialog .dialog-btn.danger:hover {
-  background: #DC2626;
+  background: #dc2626;
 }
 
 /* Responsive adjustments */
@@ -935,11 +951,11 @@
     height: auto;
     min-height: calc(100vh - 120px);
   }
-  
+
   .settings-sidebar {
     width: 240px;
   }
-  
+
   .desktop-content-body {
     padding: 24px;
   }
@@ -1126,7 +1142,7 @@
 }
 
 .desktop-danger-btn:hover {
-  background: #DC2626;
+  background: #dc2626;
 }
 
 /* Responsive desktop form */
@@ -1134,13 +1150,13 @@
   .desktop-form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .desktop-danger-section {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
   }
-  
+
   .desktop-danger-btn {
     align-self: flex-start;
   }

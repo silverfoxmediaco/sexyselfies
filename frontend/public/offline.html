@@ -1,495 +1,528 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#17D2C2">
-  <title>SexySelfies - Offline</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background: #0A0A0B;
-      color: #FFFFFF;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    
-    .offline-container {
-      text-align: center;
-      max-width: 400px;
-      width: 100%;
-      animation: fadeIn 0.5s ease;
-    }
-    
-    @keyframes fadeIn {
-      from { 
-        opacity: 0; 
-        transform: translateY(20px); 
-      }
-      to { 
-        opacity: 1; 
-        transform: translateY(0); 
-      }
-    }
-    
-    .offline-logo {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto 32px;
-      position: relative;
-    }
-    
-    .offline-icon {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-shadow: 0 10px 40px rgba(23, 210, 194, 0.3);
-    }
-    
-    .offline-icon::before {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
-      filter: blur(20px);
-      opacity: 0.5;
-      z-index: -1;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.5; }
-      50% { transform: scale(1.1); opacity: 0.3; }
-    }
-    
-    .wifi-icon {
-      width: 50px;
-      height: 50px;
-      position: relative;
-    }
-    
-    .wifi-icon svg {
-      width: 100%;
-      height: 100%;
-      fill: #001310;
-    }
-    
-    .offline-icon .slash {
-      position: absolute;
-      width: 3px;
-      height: 70px;
-      background: #001310;
-      transform: rotate(-45deg);
-      border-radius: 2px;
-    }
-    
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #17D2C2 0%, #47E0D2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.5px;
-    }
-    
-    .subtitle {
-      font-size: 16px;
-      color: #C7C7CC;
-      margin-bottom: 32px;
-      line-height: 1.5;
-      padding: 0 20px;
-    }
-    
-    .retry-btn {
-      background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%);
-      color: #000;
-      border: none;
-      padding: 16px 40px;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 180px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(23, 210, 194, 0.3);
-    }
-    
-    .retry-btn:active {
-      transform: scale(0.95);
-    }
-    
-    .retry-btn::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-    
-    .retry-btn:active::before {
-      width: 300px;
-      height: 300px;
-    }
-    
-    .status-indicator {
-      margin-top: 48px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .status-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 0;
-      font-size: 14px;
-    }
-    
-    .status-label {
-      color: #8E8E93;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .status-value {
-      color: #C7C7CC;
-      font-weight: 500;
-    }
-    
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #EF4444;
-      animation: blink 1.5s ease-in-out infinite;
-    }
-    
-    .status-dot.checking {
-      background: #F59E0B;
-    }
-    
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-    
-    .cached-content {
-      margin-top: 48px;
-      padding-top: 48px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .cached-title {
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 20px;
-      color: #8E8E93;
-      font-weight: 600;
-    }
-    
-    .cached-items {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    
-    .cached-item {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 16px;
-      border-radius: 12px;
-      text-decoration: none;
-      color: #C7C7CC;
-      transition: all 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid transparent;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .cached-item:active {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(23, 210, 194, 0.3);
-      transform: scale(0.98);
-    }
-    
-    .cached-item-icon {
-      font-size: 24px;
-      margin-bottom: 4px;
-    }
-    
-    .cached-item-label {
-      font-size: 12px;
-      font-weight: 500;
-    }
-    
-    .loading-spinner {
-      display: none;
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(23, 210, 194, 0.2);
-      border-top-color: #17D2C2;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 16px;
-    }
-    
-    .loading-spinner.active {
-      display: block;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    .connection-info {
-      margin-top: 32px;
-      font-size: 12px;
-      color: #6B7280;
-    }
-    
-    /* Mobile specific styles */
-    @media (max-width: 640px) {
-      h1 {
-        font-size: 24px;
-      }
-      
-      .subtitle {
-        font-size: 14px;
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#17D2C2" />
+    <title>SexySelfies - Offline</title>
+    <style>
+      * {
+        margin: 0;
         padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
       }
-      
-      .cached-items {
-        grid-template-columns: repeat(3, 1fr);
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+          sans-serif;
+        background: #0a0a0b;
+        color: #ffffff;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .offline-container {
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+        animation: fadeIn 0.5s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .offline-logo {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 32px;
+        position: relative;
+      }
+
+      .offline-icon {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          #12b7ab 0%,
+          #17d2c2 50%,
+          #47e0d2 100%
+        );
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-shadow: 0 10px 40px rgba(23, 210, 194, 0.3);
+      }
+
+      .offline-icon::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          #12b7ab 0%,
+          #17d2c2 50%,
+          #47e0d2 100%
+        );
+        filter: blur(20px);
+        opacity: 0.5;
+        z-index: -1;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.3;
+        }
+      }
+
+      .wifi-icon {
+        width: 50px;
+        height: 50px;
+        position: relative;
+      }
+
+      .wifi-icon svg {
+        width: 100%;
+        height: 100%;
+        fill: #001310;
+      }
+
+      .offline-icon .slash {
+        position: absolute;
+        width: 3px;
+        height: 70px;
+        background: #001310;
+        transform: rotate(-45deg);
+        border-radius: 2px;
+      }
+
+      h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, #17d2c2 0%, #47e0d2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.5px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+        color: #c7c7cc;
+        margin-bottom: 32px;
+        line-height: 1.5;
+        padding: 0 20px;
+      }
+
+      .retry-btn {
+        background: linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%);
+        color: #000;
+        border: none;
+        padding: 16px 40px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 180px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(23, 210, 194, 0.3);
+      }
+
+      .retry-btn:active {
+        transform: scale(0.95);
+      }
+
+      .retry-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.6s,
+          height 0.6s;
+      }
+
+      .retry-btn:active::before {
+        width: 300px;
+        height: 300px;
+      }
+
+      .status-indicator {
+        margin-top: 48px;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+      }
+
+      .status-label {
+        color: #8e8e93;
+        display: flex;
+        align-items: center;
         gap: 8px;
       }
-      
-      .cached-item {
-        padding: 12px 8px;
-      }
-      
-      .cached-item-icon {
-        font-size: 20px;
-      }
-      
-      .cached-item-label {
-        font-size: 11px;
-      }
-    }
-    
-    /* Dark mode support */
-    @media (prefers-color-scheme: light) {
-      body {
-        background: #FFFFFF;
-        color: #0A0A0B;
-      }
-      
-      .subtitle {
-        color: #3C3C43;
-      }
-      
-      .status-label {
-        color: #6B7280;
-      }
-      
+
       .status-value {
-        color: #3C3C43;
+        color: #c7c7cc;
+        font-weight: 500;
       }
-      
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ef4444;
+        animation: blink 1.5s ease-in-out infinite;
+      }
+
+      .status-dot.checking {
+        background: #f59e0b;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      .cached-content {
+        margin-top: 48px;
+        padding-top: 48px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .cached-title {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+        color: #8e8e93;
+        font-weight: 600;
+      }
+
+      .cached-items {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
       .cached-item {
-        background: rgba(0, 0, 0, 0.03);
-        color: #3C3C43;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 16px;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #c7c7cc;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid transparent;
+        position: relative;
+        overflow: hidden;
       }
-      
+
       .cached-item:active {
-        background: rgba(0, 0, 0, 0.05);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(23, 210, 194, 0.3);
+        transform: scale(0.98);
       }
-      
-      .retry-btn {
-        box-shadow: 0 4px 15px rgba(23, 210, 194, 0.5);
+
+      .cached-item-icon {
+        font-size: 24px;
+        margin-bottom: 4px;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="offline-container">
-    <div class="offline-logo">
-      <div class="offline-icon">
-        <div class="wifi-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.65-4.34-1.65-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
-          </svg>
+
+      .cached-item-label {
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .loading-spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(23, 210, 194, 0.2);
+        border-top-color: #17d2c2;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 16px;
+      }
+
+      .loading-spinner.active {
+        display: block;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .connection-info {
+        margin-top: 32px;
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      /* Mobile specific styles */
+      @media (max-width: 640px) {
+        h1 {
+          font-size: 24px;
+        }
+
+        .subtitle {
+          font-size: 14px;
+          padding: 0;
+        }
+
+        .cached-items {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+        }
+
+        .cached-item {
+          padding: 12px 8px;
+        }
+
+        .cached-item-icon {
+          font-size: 20px;
+        }
+
+        .cached-item-label {
+          font-size: 11px;
+        }
+      }
+
+      /* Dark mode support */
+      @media (prefers-color-scheme: light) {
+        body {
+          background: #ffffff;
+          color: #0a0a0b;
+        }
+
+        .subtitle {
+          color: #3c3c43;
+        }
+
+        .status-label {
+          color: #6b7280;
+        }
+
+        .status-value {
+          color: #3c3c43;
+        }
+
+        .cached-item {
+          background: rgba(0, 0, 0, 0.03);
+          color: #3c3c43;
+        }
+
+        .cached-item:active {
+          background: rgba(0, 0, 0, 0.05);
+        }
+
+        .retry-btn {
+          box-shadow: 0 4px 15px rgba(23, 210, 194, 0.5);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="offline-container">
+      <div class="offline-logo">
+        <div class="offline-icon">
+          <div class="wifi-icon">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.65-4.34-1.65-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"
+              />
+            </svg>
+          </div>
+          <div class="slash"></div>
         </div>
-        <div class="slash"></div>
       </div>
+
+      <h1>You're Offline</h1>
+      <p class="subtitle">
+        Check your internet connection to continue swiping and matching
+      </p>
+
+      <div class="loading-spinner" id="loadingSpinner"></div>
+
+      <button class="retry-btn" onclick="retryConnection()">Try Again</button>
+
+      <div class="status-indicator">
+        <div class="status-row">
+          <span class="status-label">
+            <span class="status-dot" id="statusDot"></span>
+            Connection
+          </span>
+          <span class="status-value" id="connectionStatus">Offline</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Last online</span>
+          <span class="status-value" id="lastOnline">Just now</span>
+        </div>
+      </div>
+
+      <div class="cached-content">
+        <h2 class="cached-title">Available Offline</h2>
+        <div class="cached-items">
+          <a href="/" class="cached-item">
+            <span class="cached-item-icon">🏠</span>
+            <span class="cached-item-label">Home</span>
+          </a>
+          <a href="/member/profile" class="cached-item">
+            <span class="cached-item-icon">👤</span>
+            <span class="cached-item-label">Profile</span>
+          </a>
+          <a href="/member/purchased" class="cached-item">
+            <span class="cached-item-icon">💎</span>
+            <span class="cached-item-label">Purchased</span>
+          </a>
+        </div>
+      </div>
+
+      <p class="connection-info" id="connectionInfo">
+        Attempting to reconnect...
+      </p>
     </div>
-    
-    <h1>You're Offline</h1>
-    <p class="subtitle">
-      Check your internet connection to continue swiping and matching
-    </p>
-    
-    <div class="loading-spinner" id="loadingSpinner"></div>
-    
-    <button class="retry-btn" onclick="retryConnection()">
-      Try Again
-    </button>
-    
-    <div class="status-indicator">
-      <div class="status-row">
-        <span class="status-label">
-          <span class="status-dot" id="statusDot"></span>
-          Connection
-        </span>
-        <span class="status-value" id="connectionStatus">Offline</span>
-      </div>
-      <div class="status-row">
-        <span class="status-label">Last online</span>
-        <span class="status-value" id="lastOnline">Just now</span>
-      </div>
-    </div>
-    
-    <div class="cached-content">
-      <h2 class="cached-title">Available Offline</h2>
-      <div class="cached-items">
-        <a href="/" class="cached-item">
-          <span class="cached-item-icon">🏠</span>
-          <span class="cached-item-label">Home</span>
-        </a>
-        <a href="/member/profile" class="cached-item">
-          <span class="cached-item-icon">👤</span>
-          <span class="cached-item-label">Profile</span>
-        </a>
-        <a href="/member/purchased" class="cached-item">
-          <span class="cached-item-icon">💎</span>
-          <span class="cached-item-label">Purchased</span>
-        </a>
-      </div>
-    </div>
-    
-    <p class="connection-info" id="connectionInfo">
-      Attempting to reconnect...
-    </p>
-  </div>
-  
-  <script>
-    let retryCount = 0;
-    let lastOnlineTime = new Date();
-    
-    // Update last online time
-    function updateLastOnline() {
-      const now = new Date();
-      const diff = Math.floor((now - lastOnlineTime) / 1000);
-      
-      let timeStr = 'Just now';
-      if (diff > 60) {
-        const minutes = Math.floor(diff / 60);
-        timeStr = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+
+    <script>
+      let retryCount = 0;
+      let lastOnlineTime = new Date();
+
+      // Update last online time
+      function updateLastOnline() {
+        const now = new Date();
+        const diff = Math.floor((now - lastOnlineTime) / 1000);
+
+        let timeStr = 'Just now';
+        if (diff > 60) {
+          const minutes = Math.floor(diff / 60);
+          timeStr = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+        }
+        if (diff > 3600) {
+          const hours = Math.floor(diff / 3600);
+          timeStr = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+        }
+
+        document.getElementById('lastOnline').textContent = timeStr;
       }
-      if (diff > 3600) {
-        const hours = Math.floor(diff / 3600);
-        timeStr = `${hours} hour${hours > 1 ? 's' : ''} ago`;
-      }
-      
-      document.getElementById('lastOnline').textContent = timeStr;
-    }
-    
-    // Retry connection
-    function retryConnection() {
-      retryCount++;
-      const spinner = document.getElementById('loadingSpinner');
-      const statusDot = document.getElementById('statusDot');
-      const connectionStatus = document.getElementById('connectionStatus');
-      const connectionInfo = document.getElementById('connectionInfo');
-      
-      spinner.classList.add('active');
-      statusDot.classList.add('checking');
-      connectionStatus.textContent = 'Checking...';
-      connectionInfo.textContent = `Attempt ${retryCount} - Connecting...`;
-      
-      // Try to fetch a small resource
-      fetch('/api/health', { method: 'HEAD' })
-        .then(() => {
-          // Success - we're back online
-          connectionStatus.textContent = 'Connected!';
-          connectionInfo.textContent = 'Redirecting...';
-          setTimeout(() => {
-            window.location.reload();
-          }, 500);
-        })
-        .catch(() => {
-          // Still offline
-          spinner.classList.remove('active');
-          statusDot.classList.remove('checking');
-          connectionStatus.textContent = 'Offline';
-          connectionInfo.textContent = `Failed after ${retryCount} attempt${retryCount > 1 ? 's' : ''}`;
-        });
-    }
-    
-    // Check connection status periodically
-    function checkConnection() {
-      if (navigator.onLine) {
+
+      // Retry connection
+      function retryConnection() {
+        retryCount++;
+        const spinner = document.getElementById('loadingSpinner');
+        const statusDot = document.getElementById('statusDot');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const connectionInfo = document.getElementById('connectionInfo');
+
+        spinner.classList.add('active');
+        statusDot.classList.add('checking');
+        connectionStatus.textContent = 'Checking...';
+        connectionInfo.textContent = `Attempt ${retryCount} - Connecting...`;
+
+        // Try to fetch a small resource
         fetch('/api/health', { method: 'HEAD' })
           .then(() => {
-            window.location.reload();
+            // Success - we're back online
+            connectionStatus.textContent = 'Connected!';
+            connectionInfo.textContent = 'Redirecting...';
+            setTimeout(() => {
+              window.location.reload();
+            }, 500);
           })
           .catch(() => {
-            console.log('API not reachable');
+            // Still offline
+            spinner.classList.remove('active');
+            statusDot.classList.remove('checking');
+            connectionStatus.textContent = 'Offline';
+            connectionInfo.textContent = `Failed after ${retryCount} attempt${retryCount > 1 ? 's' : ''}`;
           });
       }
-    }
-    
-    // Listen for online event
-    window.addEventListener('online', () => {
-      document.getElementById('connectionStatus').textContent = 'Connecting...';
-      document.getElementById('connectionInfo').textContent = 'Connection restored, loading...';
-      setTimeout(() => window.location.reload(), 1000);
-    });
-    
-    // Update last online time every second
-    setInterval(updateLastOnline, 1000);
-    
-    // Check connection every 5 seconds
-    setInterval(checkConnection, 5000);
-    
-    // Initial check after 2 seconds
-    setTimeout(checkConnection, 2000);
-  </script>
-</body>
+
+      // Check connection status periodically
+      function checkConnection() {
+        if (navigator.onLine) {
+          fetch('/api/health', { method: 'HEAD' })
+            .then(() => {
+              window.location.reload();
+            })
+            .catch(() => {
+              console.log('API not reachable');
+            });
+        }
+      }
+
+      // Listen for online event
+      window.addEventListener('online', () => {
+        document.getElementById('connectionStatus').textContent =
+          'Connecting...';
+        document.getElementById('connectionInfo').textContent =
+          'Connection restored, loading...';
+        setTimeout(() => window.location.reload(), 1000);
+      });
+
+      // Update last online time every second
+      setInterval(updateLastOnline, 1000);
+
+      // Check connection every 5 seconds
+      setInterval(checkConnection, 5000);
+
+      // Initial check after 2 seconds
+      setTimeout(checkConnection, 2000);
+    </script>
+  </body>
 </html>

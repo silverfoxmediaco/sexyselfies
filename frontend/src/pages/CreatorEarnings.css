@@ -1,20 +1,20 @@
 /* CreatorEarnings.css */
 .creator-earnings {
-  --earnings-primary: #10B981;
+  --earnings-primary: #10b981;
   --earnings-primary-hover: #059669;
-  --earnings-secondary: #34D399;
-  --earnings-accent: #F59E0B;
-  --earnings-bg: #0A0B0F;
-  --earnings-surface: #1A1D29;
+  --earnings-secondary: #34d399;
+  --earnings-accent: #f59e0b;
+  --earnings-bg: #0a0b0f;
+  --earnings-surface: #1a1d29;
   --earnings-surface-hover: #242938;
-  --earnings-border: #2A2F3F;
-  --earnings-text: #FFFFFF;
-  --earnings-text-secondary: #9CA3AF;
-  --earnings-success: #10B981;
-  --earnings-warning: #F59E0B;
-  --earnings-error: #EF4444;
-  --earnings-info: #38BDF8;
-  
+  --earnings-border: #2a2f3f;
+  --earnings-text: #ffffff;
+  --earnings-text-secondary: #9ca3af;
+  --earnings-success: #10b981;
+  --earnings-warning: #f59e0b;
+  --earnings-error: #ef4444;
+  --earnings-info: #38bdf8;
+
   width: 100%;
   min-height: 100vh;
   background: var(--earnings-bg);
@@ -44,8 +44,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Header */
@@ -173,19 +177,19 @@
 }
 
 .overview-card.total-earnings .card-icon {
-  background: linear-gradient(135deg, #10B981, #059669);
+  background: linear-gradient(135deg, #10b981, #059669);
 }
 
 .overview-card.pending-payout .card-icon {
-  background: linear-gradient(135deg, #F59E0B, #D97706);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 .overview-card.month-earnings .card-icon {
-  background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
 }
 
 .overview-card.daily-avg .card-icon {
-  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
 }
 
 .card-title {
@@ -529,7 +533,11 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--earnings-primary), var(--earnings-secondary));
+  background: linear-gradient(
+    90deg,
+    var(--earnings-primary),
+    var(--earnings-secondary)
+  );
   transition: width 0.3s ease;
 }
 
@@ -714,51 +722,51 @@
   .creator-earnings {
     padding: 12px;
   }
-  
+
   .header-content {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .earnings-header-actions {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .period-selector {
     justify-content: center;
   }
-  
+
   .period-btn {
     padding: 6px 12px;
     font-size: 13px;
   }
-  
+
   .overview-cards {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .breakdown-cards {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .content-grid {
     grid-template-columns: 1fr;
     gap: 24px;
   }
-  
+
   .goal-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .payout-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .progress-stats {
     flex-direction: column;
     gap: 8px;
@@ -770,34 +778,34 @@
   .overview-cards {
     grid-template-columns: 1fr;
   }
-  
+
   .breakdown-cards {
     grid-template-columns: 1fr;
   }
-  
+
   .actions-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .period-selector {
     flex-wrap: wrap;
     gap: 4px;
     padding: 2px;
   }
-  
+
   .period-btn {
     padding: 6px 8px;
     font-size: 12px;
     min-width: auto;
     flex: 1;
   }
-  
+
   .transaction-item,
   .earner-item {
     flex-wrap: wrap;
     gap: 12px;
   }
-  
+
   .transaction-amount,
   .earner-earnings {
     order: -1;
@@ -812,7 +820,7 @@
     font-size: 11px;
     font-weight: 500;
   }
-  
+
   .period-selector {
     gap: 2px;
     padding: 2px;

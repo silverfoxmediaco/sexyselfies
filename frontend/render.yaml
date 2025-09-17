@@ -10,6 +10,6 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://sexyselfies-api.onrender.com/api
+        value: https://sexyselfies-api.onrender.com/api/v1
       - key: VITE_SOCKET_URL
         value: wss://sexyselfies-api.onrender.com

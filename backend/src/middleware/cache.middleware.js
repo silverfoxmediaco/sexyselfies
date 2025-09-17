@@ -48,7 +48,7 @@ const cacheMiddleware = (duration = 'medium') => {
     const originalJson = res.json.bind(res);
 
     // Override res.json to cache successful responses
-    res.json = (body) => {
+    res.json = body => {
       // Only cache successful responses
       if (res.statusCode === 200) {
         cache.set(key, body);
@@ -62,24 +62,24 @@ const cacheMiddleware = (duration = 'medium') => {
 };
 
 // Specific cache middleware exports
-exports.cacheMiddleware = cacheMiddleware;  // Add this line for compatibility
+exports.cacheMiddleware = cacheMiddleware; // Add this line for compatibility
 exports.cache = cacheMiddleware;
 exports.shortCache = cacheMiddleware('short');
 exports.mediumCache = cacheMiddleware('medium');
 exports.longCache = cacheMiddleware('long');
 
 // Clear cache function
-exports.clearCache = (pattern) => {
+exports.clearCache = pattern => {
   if (pattern) {
     // Clear specific keys matching pattern
     const shortKeys = shortCache.keys().filter(key => key.includes(pattern));
     const mediumKeys = mediumCache.keys().filter(key => key.includes(pattern));
     const longKeys = longCache.keys().filter(key => key.includes(pattern));
-    
+
     shortKeys.forEach(key => shortCache.del(key));
     mediumKeys.forEach(key => mediumCache.del(key));
     longKeys.forEach(key => longCache.del(key));
-    
+
     console.log(`Cleared cache for pattern: ${pattern}`);
   } else {
     // Clear all caches
@@ -91,11 +91,11 @@ exports.clearCache = (pattern) => {
 };
 
 // Cache invalidation middleware
-exports.invalidateCache = (pattern) => {
+exports.invalidateCache = pattern => {
   return (req, res, next) => {
     // Invalidate cache after successful write operations
     const originalJson = res.json.bind(res);
-    res.json = (body) => {
+    res.json = body => {
       if (res.statusCode < 300) {
         exports.clearCache(pattern || req.baseUrl);
       }
@@ -116,13 +116,13 @@ if (process.env.REDIS_URL || process.env.REDIS_HOST) {
       host: process.env.REDIS_HOST || 'localhost',
       port: process.env.REDIS_PORT || 6379,
       password: process.env.REDIS_PASSWORD,
-      retryStrategy: (times) => {
+      retryStrategy: times => {
         if (times > 3) {
           console.log('Redis cache connection failed, using memory cache');
           return null;
         }
         return Math.min(times * 50, 2000);
-      }
+      },
     });
 
     redis.on('connect', () => {
@@ -130,7 +130,7 @@ if (process.env.REDIS_URL || process.env.REDIS_HOST) {
       redisCache = redis;
     });
 
-    redis.on('error', (err) => {
+    redis.on('error', err => {
       console.error('Redis cache error:', err);
       redisCache = null;
     });
@@ -171,10 +171,11 @@ exports.redisCache = (duration = 300) => {
       const originalJson = res.json.bind(res);
 
       // Override res.json to cache successful responses
-      res.json = (body) => {
+      res.json = body => {
         // Only cache successful responses
         if (res.statusCode === 200) {
-          redisCache.setex(key, duration, JSON.stringify(body))
+          redisCache
+            .setex(key, duration, JSON.stringify(body))
             .then(() => console.log(`Redis cached response for: ${key}`))
             .catch(err => console.error('Redis cache set error:', err));
         }
@@ -196,11 +197,11 @@ exports.cacheHeaders = (maxAge = 300) => {
     if (req.method === 'GET') {
       res.set({
         'Cache-Control': `public, max-age=${maxAge}`,
-        'Vary': 'Accept-Encoding'
+        Vary: 'Accept-Encoding',
       });
     } else {
       res.set({
-        'Cache-Control': 'no-store, no-cache, must-revalidate, private'
+        'Cache-Control': 'no-store, no-cache, must-revalidate, private',
       });
     }
     next();
@@ -210,34 +211,34 @@ exports.cacheHeaders = (maxAge = 300) => {
 // Conditional request handling (ETags)
 exports.etag = () => {
   const crypto = require('crypto');
-  
+
   return (req, res, next) => {
     const originalJson = res.json.bind(res);
-    
-    res.json = (body) => {
+
+    res.json = body => {
       // Generate ETag
       const etag = crypto
         .createHash('md5')
         .update(JSON.stringify(body))
         .digest('hex');
-      
+
       res.set('ETag', `"${etag}"`);
-      
+
       // Check if client has matching ETag
       const clientEtag = req.headers['if-none-match'];
       if (clientEtag === `"${etag}"`) {
         return res.status(304).end();
       }
-      
+
       return originalJson(body);
     };
-    
+
     next();
   };
 };
 
 // Cache warming function
-exports.warmCache = async (routes) => {
+exports.warmCache = async routes => {
   console.log('Warming cache for specified routes...');
   // Implementation would make requests to specified routes
   // to populate the cache
@@ -249,19 +250,19 @@ exports.getCacheStats = () => {
     short: {
       hits: shortCache.getStats().hits,
       misses: shortCache.getStats().misses,
-      keys: shortCache.keys().length
+      keys: shortCache.keys().length,
     },
     medium: {
       hits: mediumCache.getStats().hits,
       misses: mediumCache.getStats().misses,
-      keys: mediumCache.keys().length
+      keys: mediumCache.keys().length,
     },
     long: {
       hits: longCache.getStats().hits,
       misses: longCache.getStats().misses,
-      keys: longCache.keys().length
+      keys: longCache.keys().length,
     },
-    redis: redisCache ? 'connected' : 'not available'
+    redis: redisCache ? 'connected' : 'not available',
   };
 };
 
@@ -270,5 +271,5 @@ exports.caches = {
   short: shortCache,
   medium: mediumCache,
   long: longCache,
-  redis: redisCache
+  redis: redisCache,
 };

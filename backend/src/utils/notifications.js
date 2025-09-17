@@ -20,7 +20,7 @@ exports.sendNotification = async (userId, notification) => {
       actionUrl: notification.actionUrl,
       icon: notification.icon || getIconForType(notification.type),
       read: false,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
 
     // Send push notification if user has push tokens
@@ -42,7 +42,7 @@ exports.sendNotification = async (userId, notification) => {
     emitSocketNotification(userId, newNotification);
 
     console.log(`Notification sent to user ${userId}:`, notification.title);
-    
+
     return newNotification;
   } catch (error) {
     console.error('Error sending notification:', error);
@@ -57,12 +57,12 @@ exports.sendBulkNotifications = async (userIds, notification) => {
   const results = await Promise.allSettled(
     userIds.map(userId => exports.sendNotification(userId, notification))
   );
-  
+
   const successful = results.filter(r => r.status === 'fulfilled').length;
   const failed = results.filter(r => r.status === 'rejected').length;
-  
+
   console.log(`Bulk notifications: ${successful} sent, ${failed} failed`);
-  
+
   return { successful, failed, total: userIds.length };
 };
 
@@ -74,7 +74,7 @@ async function sendPushNotification(userId, notification) {
     // This would integrate with FCM, APNS, or other push services
     // For now, just log it
     console.log(`Push notification would be sent to user ${userId}`);
-    
+
     // Example FCM implementation:
     /*
     const fcm = require('fcm-node');
@@ -112,7 +112,7 @@ async function sendEmailNotification(userId, notification) {
   try {
     // This would integrate with email service (SendGrid, Mailgun, etc.)
     console.log(`Email notification would be sent to user ${userId}`);
-    
+
     // Example implementation:
     /*
     const nodemailer = require('nodemailer');
@@ -154,7 +154,7 @@ async function sendSMSNotification(userId, notification) {
   try {
     // This would integrate with Twilio or similar
     console.log(`SMS notification would be sent to user ${userId}`);
-    
+
     // Example Twilio implementation:
     /*
     const twilio = require('twilio');
@@ -183,7 +183,7 @@ function emitSocketNotification(userId, notification) {
     // This would emit through Socket.io
     // For now, just log it
     console.log(`Socket notification would be emitted to user ${userId}`);
-    
+
     // Example Socket.io implementation:
     /*
     const io = require('../sockets/socket').getIO();
@@ -211,9 +211,9 @@ function getIconForType(type) {
     success: '✅',
     error: '❌',
     info: 'ℹ️',
-    general: '🔔'
+    general: '🔔',
   };
-  
+
   return icons[type] || icons.general;
 }
 
@@ -222,39 +222,39 @@ function getIconForType(type) {
  */
 exports.notificationTemplates = {
   // Connection notifications
-  newConnection: (connectorName) => ({
+  newConnection: connectorName => ({
     type: 'connection',
     title: 'New Connection! 💕',
     body: `You connected with ${connectorName}!`,
     priority: 'high',
-    push: true
+    push: true,
   }),
-  
-  connectionRequest: (requesterName) => ({
+
+  connectionRequest: requesterName => ({
     type: 'connection',
     title: 'Someone likes you!',
     body: `${requesterName} wants to connect with you`,
     priority: 'normal',
-    push: true
+    push: true,
   }),
-  
+
   // Message notifications
   newMessage: (senderName, preview) => ({
     type: 'message',
     title: `New message from ${senderName}`,
     body: preview || 'You have a new message',
     priority: 'normal',
-    push: true
+    push: true,
   }),
-  
+
   unlockedMessage: (buyerName, amount) => ({
     type: 'payment',
     title: 'Message Unlocked! 💰',
     body: `${buyerName} unlocked your message for $${amount}`,
     priority: 'high',
-    push: true
+    push: true,
   }),
-  
+
   // Payment notifications
   contentPurchased: (buyerName, contentTitle, amount) => ({
     type: 'payment',
@@ -262,60 +262,62 @@ exports.notificationTemplates = {
     body: `${buyerName} purchased "${contentTitle}" for $${amount}`,
     priority: 'high',
     push: true,
-    email: true
+    email: true,
   }),
-  
+
   tipReceived: (tipperName, amount, message) => ({
     type: 'tip',
     title: `${tipperName} sent you a tip! 💵`,
-    body: message ? `$${amount} - "${message}"` : `You received a $${amount} tip`,
+    body: message
+      ? `$${amount} - "${message}"`
+      : `You received a $${amount} tip`,
     priority: 'high',
-    push: true
+    push: true,
   }),
-  
+
   payoutProcessed: (amount, method) => ({
     type: 'payment',
     title: 'Payout Processed',
     body: `Your $${amount} payout via ${method} has been processed`,
     priority: 'high',
     push: true,
-    email: true
+    email: true,
   }),
-  
+
   // Engagement notifications
-  newFollower: (followerName) => ({
+  newFollower: followerName => ({
     type: 'follow',
     title: 'New Follower',
     body: `${followerName} started following you`,
     priority: 'low',
-    push: false
+    push: false,
   }),
-  
+
   contentLiked: (likerName, contentTitle) => ({
     type: 'like',
     title: 'Someone liked your content',
     body: `${likerName} liked "${contentTitle}"`,
     priority: 'low',
-    push: false
+    push: false,
   }),
-  
+
   // Achievement notifications
   achievementUnlocked: (achievementName, reward) => ({
     type: 'achievement',
     title: 'Achievement Unlocked! 🏆',
     body: `You earned "${achievementName}"${reward ? ` and received ${reward}` : ''}`,
     priority: 'normal',
-    push: true
+    push: true,
   }),
-  
-  milestoneReached: (milestone) => ({
+
+  milestoneReached: milestone => ({
     type: 'achievement',
     title: 'Milestone Reached! 🎉',
     body: `Congratulations on reaching ${milestone}!`,
     priority: 'normal',
-    push: true
+    push: true,
   }),
-  
+
   // System notifications
   verificationApproved: () => ({
     type: 'success',
@@ -323,42 +325,42 @@ exports.notificationTemplates = {
     body: 'Your account has been verified',
     priority: 'high',
     push: true,
-    email: true
+    email: true,
   }),
-  
-  verificationRejected: (reason) => ({
+
+  verificationRejected: reason => ({
     type: 'warning',
     title: 'Verification Issue',
     body: reason || 'Please resubmit your verification documents',
     priority: 'high',
     push: true,
-    email: true
+    email: true,
   }),
-  
-  contentRemoved: (reason) => ({
+
+  contentRemoved: reason => ({
     type: 'warning',
     title: 'Content Removed',
     body: reason || 'Your content violated community guidelines',
     priority: 'high',
     push: true,
-    email: true
+    email: true,
   }),
-  
-  accountWarning: (reason) => ({
+
+  accountWarning: reason => ({
     type: 'warning',
     title: 'Account Warning ⚠️',
     body: reason,
     priority: 'critical',
     push: true,
     email: true,
-    sms: true
-  })
+    sms: true,
+  }),
 };
 
 /**
  * Mark notification as read
  */
-exports.markAsRead = async (notificationId) => {
+exports.markAsRead = async notificationId => {
   try {
     const notification = await Notification.findByIdAndUpdate(
       notificationId,
@@ -375,7 +377,7 @@ exports.markAsRead = async (notificationId) => {
 /**
  * Mark multiple notifications as read
  */
-exports.markMultipleAsRead = async (notificationIds) => {
+exports.markMultipleAsRead = async notificationIds => {
   try {
     const result = await Notification.updateMany(
       { _id: { $in: notificationIds } },
@@ -395,12 +397,12 @@ exports.cleanupOldNotifications = async (daysToKeep = 30) => {
   try {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
-    
+
     const result = await Notification.deleteMany({
       createdAt: { $lt: cutoffDate },
-      read: true
+      read: true,
     });
-    
+
     console.log(`Deleted ${result.deletedCount} old notifications`);
     return result.deletedCount;
   } catch (error) {
@@ -412,11 +414,11 @@ exports.cleanupOldNotifications = async (daysToKeep = 30) => {
 /**
  * Get unread notification count
  */
-exports.getUnreadCount = async (userId) => {
+exports.getUnreadCount = async userId => {
   try {
     const count = await Notification.countDocuments({
       recipient: userId,
-      read: false
+      read: false,
     });
     return count;
   } catch (error) {
@@ -432,15 +434,15 @@ exports.scheduleNotification = async (userId, notification, scheduledFor) => {
   try {
     // This would integrate with a job queue like Bull or Agenda
     console.log(`Notification scheduled for ${scheduledFor}`);
-    
+
     // For now, create with scheduled status
     const scheduledNotification = await Notification.create({
       recipient: userId,
       ...notification,
       status: 'scheduled',
-      scheduledFor: scheduledFor
+      scheduledFor: scheduledFor,
     });
-    
+
     return scheduledNotification;
   } catch (error) {
     console.error('Error scheduling notification:', error);

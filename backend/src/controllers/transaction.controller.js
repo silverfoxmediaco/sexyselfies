@@ -12,7 +12,7 @@ exports.getTransactions = async (req, res, next) => {
   try {
     const { page = 1, limit = 20, type, status } = req.query;
     const userRole = req.user.role;
-    
+
     let query = {};
 
     if (userRole === 'member') {
@@ -41,12 +41,12 @@ exports.getTransactions = async (req, res, next) => {
       count: transactions.length,
       total: count,
       pages: Math.ceil(count / limit),
-      data: transactions
+      data: transactions,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -64,7 +64,7 @@ exports.getTransaction = async (req, res, next) => {
     if (!transaction) {
       return res.status(404).json({
         success: false,
-        error: 'Transaction not found'
+        error: 'Transaction not found',
       });
     }
 
@@ -83,18 +83,18 @@ exports.getTransaction = async (req, res, next) => {
     if (!hasAccess && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
-        error: 'Not authorized to view this transaction'
+        error: 'Not authorized to view this transaction',
       });
     }
 
     res.status(200).json({
       success: true,
-      data: transaction
+      data: transaction,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -111,7 +111,7 @@ exports.createPurchase = async (req, res, next) => {
     if (!content) {
       return res.status(404).json({
         success: false,
-        error: 'Content not found'
+        error: 'Content not found',
       });
     }
 
@@ -120,13 +120,13 @@ exports.createPurchase = async (req, res, next) => {
       member: member._id,
       content: content._id,
       type: 'content_purchase',
-      status: 'completed'
+      status: 'completed',
     });
 
     if (alreadyPurchased) {
       return res.status(400).json({
         success: false,
-        error: 'Content already purchased'
+        error: 'Content already purchased',
       });
     }
 
@@ -135,7 +135,7 @@ exports.createPurchase = async (req, res, next) => {
       if (member.credits < content.price) {
         return res.status(400).json({
           success: false,
-          error: 'Insufficient credits'
+          error: 'Insufficient credits',
         });
       }
 
@@ -151,7 +151,7 @@ exports.createPurchase = async (req, res, next) => {
       type: 'content_purchase',
       amount: content.price,
       paymentMethod,
-      status: 'completed'
+      status: 'completed',
     });
 
     // Update content and creator stats
@@ -166,12 +166,12 @@ exports.createPurchase = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      data: transaction
+      data: transaction,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -188,14 +188,14 @@ exports.createTip = async (req, res, next) => {
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator not found'
+        error: 'Creator not found',
       });
     }
 
     if (member.credits < amount) {
       return res.status(400).json({
         success: false,
-        error: 'Insufficient credits'
+        error: 'Insufficient credits',
       });
     }
 
@@ -210,7 +210,7 @@ exports.createTip = async (req, res, next) => {
       type: 'tip',
       amount,
       status: 'completed',
-      notes: message
+      notes: message,
     });
 
     // Update creator earnings
@@ -222,12 +222,12 @@ exports.createTip = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      data: transaction
+      data: transaction,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -243,7 +243,7 @@ exports.getEarningsReport = async (req, res, next) => {
     const query = {
       creator: creator._id,
       status: 'completed',
-      type: { $in: ['content_purchase', 'tip', 'message_unlock'] }
+      type: { $in: ['content_purchase', 'tip', 'message_unlock'] },
     };
 
     if (startDate || endDate) {
@@ -258,28 +258,31 @@ exports.getEarningsReport = async (req, res, next) => {
       .sort({ createdAt: -1 });
 
     // Calculate totals
-    const summary = transactions.reduce((acc, t) => {
-      acc.totalRevenue += t.amount;
-      acc.totalEarnings += t.creatorEarnings;
-      acc.totalFees += t.platformFee;
-      acc[t.type] = (acc[t.type] || 0) + t.creatorEarnings;
-      return acc;
-    }, {
-      totalRevenue: 0,
-      totalEarnings: 0,
-      totalFees: 0
-    });
+    const summary = transactions.reduce(
+      (acc, t) => {
+        acc.totalRevenue += t.amount;
+        acc.totalEarnings += t.creatorEarnings;
+        acc.totalFees += t.platformFee;
+        acc[t.type] = (acc[t.type] || 0) + t.creatorEarnings;
+        return acc;
+      },
+      {
+        totalRevenue: 0,
+        totalEarnings: 0,
+        totalFees: 0,
+      }
+    );
 
     res.status(200).json({
       success: true,
       summary,
       transactions: transactions.length,
-      data: transactions
+      data: transactions,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -297,7 +300,7 @@ exports.requestPayout = async (req, res, next) => {
     if (amount < MIN_PAYOUT) {
       return res.status(400).json({
         success: false,
-        error: `Minimum payout amount is $${MIN_PAYOUT}`
+        error: `Minimum payout amount is $${MIN_PAYOUT}`,
       });
     }
 
@@ -305,7 +308,7 @@ exports.requestPayout = async (req, res, next) => {
     const pendingPayouts = await Transaction.find({
       creator: creator._id,
       type: 'payout',
-      status: 'pending'
+      status: 'pending',
     });
 
     const pendingAmount = pendingPayouts.reduce((sum, p) => sum + p.amount, 0);
@@ -315,7 +318,7 @@ exports.requestPayout = async (req, res, next) => {
       return res.status(400).json({
         success: false,
         error: 'Insufficient available balance',
-        availableBalance
+        availableBalance,
       });
     }
 
@@ -326,18 +329,18 @@ exports.requestPayout = async (req, res, next) => {
       amount,
       paymentMethod,
       status: 'pending',
-      metadata: { accountDetails }
+      metadata: { accountDetails },
     });
 
     res.status(201).json({
       success: true,
       message: 'Payout request submitted',
-      data: payout
+      data: payout,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -351,15 +354,14 @@ exports.getPayoutHistory = async (req, res, next) => {
 
     const payouts = await Transaction.find({
       creator: creator._id,
-      type: 'payout'
-    })
-    .sort({ createdAt: -1 });
+      type: 'payout',
+    }).sort({ createdAt: -1 });
 
     const summary = {
       totalPaidOut: 0,
       pending: 0,
       completed: 0,
-      failed: 0
+      failed: 0,
     };
 
     payouts.forEach(p => {
@@ -372,12 +374,12 @@ exports.getPayoutHistory = async (req, res, next) => {
     res.status(200).json({
       success: true,
       summary,
-      data: payouts
+      data: payouts,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -393,11 +395,11 @@ exports.handleCCBillWebhook = async (req, res, next) => {
     // - RenewalSuccess
     // - Cancellation
     // - Refund
-    
+
     const { eventType, subscriptionId, transactionId, amount } = req.body;
-    
+
     console.log('CCBill Webhook received:', eventType);
-    
+
     // Process based on event type
     switch (eventType) {
       case 'NewSaleSuccess':
@@ -421,7 +423,7 @@ exports.handleCCBillWebhook = async (req, res, next) => {
     console.error('CCBill webhook error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };

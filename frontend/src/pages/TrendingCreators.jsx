@@ -1,16 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  TrendingUp, Flame, Star, Heart, MessageCircle, Users, 
-  MapPin, ArrowLeft, Filter, Loader, AlertCircle,
-  Sparkles, Crown, Zap, Trophy
+import {
+  TrendingUp,
+  Flame,
+  Star,
+  Heart,
+  MessageCircle,
+  Users,
+  MapPin,
+  ArrowLeft,
+  Filter,
+  Loader,
+  AlertCircle,
+  Sparkles,
+  Crown,
+  Zap,
+  Trophy,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import {
+  useIsMobile,
+  useIsDesktop,
+  getUserRole,
+} from '../utils/mobileDetection';
 import './TrendingCreators.css';
 
 const TrendingCreators = () => {
@@ -18,14 +34,14 @@ const TrendingCreators = () => {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
-  
+
   // State management
   const [trendingCreators, setTrendingCreators] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingError, setLoadingError] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState('week'); // week, month, all-time
   const [selectedCategory, setSelectedCategory] = useState('all'); // all, earnings, engagement, growth
-  
+
   // Filter states
   const [showFilters, setShowFilters] = useState(false);
   const [filters] = useState({
@@ -33,7 +49,7 @@ const TrendingCreators = () => {
     newCreators: false,
     location: '',
     minAge: 18,
-    maxAge: 35
+    maxAge: 35,
   });
 
   // Load trending creators on component mount and when period/category changes
@@ -45,7 +61,6 @@ const TrendingCreators = () => {
   const loadTrendingCreators = async () => {
     setIsLoading(true);
     setLoadingError(null);
-    
 
     // Production API call
     try {
@@ -55,18 +70,22 @@ const TrendingCreators = () => {
         params: {
           period: selectedPeriod,
           category: selectedCategory,
-          ...filters
-        }
+          ...filters,
+        },
       });
 
       if (response.data.success) {
         setTrendingCreators(response.data.creators);
       } else {
-        throw new Error(response.data.message || 'Failed to load trending creators');
+        throw new Error(
+          response.data.message || 'Failed to load trending creators'
+        );
       }
     } catch (error) {
       console.error('Error loading trending creators:', error);
-      setLoadingError(error.response?.data?.message || 'Failed to load trending creators');
+      setLoadingError(
+        error.response?.data?.message || 'Failed to load trending creators'
+      );
       setTrendingCreators([]);
     } finally {
       setIsLoading(false);
@@ -74,7 +93,7 @@ const TrendingCreators = () => {
   };
 
   // Handle creator card click
-  const handleCreatorClick = (creator) => {
+  const handleCreatorClick = creator => {
     navigate(`/creator/${creator.username}`);
   };
 
@@ -112,13 +131,13 @@ const TrendingCreators = () => {
   };
 
   // Format numbers for display
-  const formatNumber = (num) => {
+  const formatNumber = num => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
     return num.toString();
   };
 
-  const formatEarnings = (earnings) => {
+  const formatEarnings = earnings => {
     if (earnings >= 1000) return `$${formatNumber(earnings)}`;
     return `$${earnings}`;
   };
@@ -126,9 +145,9 @@ const TrendingCreators = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="trending-creators-page">
-        <div className="trending-loading">
-          <Loader className="spinner" size={32} />
+      <div className='trending-creators-page'>
+        <div className='trending-loading'>
+          <Loader className='spinner' size={32} />
           <span>Loading trending creators...</span>
         </div>
       </div>
@@ -138,12 +157,12 @@ const TrendingCreators = () => {
   // Error state
   if (loadingError) {
     return (
-      <div className="trending-creators-page">
-        <div className="trending-error">
+      <div className='trending-creators-page'>
+        <div className='trending-error'>
           <AlertCircle size={48} />
           <h3>Error Loading Trending</h3>
           <p>{loadingError}</p>
-          <button onClick={loadTrendingCreators} className="retry-btn">
+          <button onClick={loadTrendingCreators} className='retry-btn'>
             Try Again
           </button>
         </div>
@@ -152,25 +171,22 @@ const TrendingCreators = () => {
   }
 
   return (
-    <div className="trending-creators-page">
+    <div className='trending-creators-page'>
       {/* Desktop Header */}
       {isDesktop && <MainHeader />}
       {/* Header */}
-      <div className="trending-header">
-        <button 
-          className="trending-back-btn"
-          onClick={() => navigate(-1)}
-        >
+      <div className='trending-header'>
+        <button className='trending-back-btn' onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
         </button>
-        
-        <div className="trending-title">
-          <Flame className="trending-icon" size={24} />
+
+        <div className='trending-title'>
+          <Flame className='trending-icon' size={24} />
           <h1>Trending Creators</h1>
         </div>
-        
+
         <button
-          className="filter-toggle-btn"
+          className='filter-toggle-btn'
           onClick={() => setShowFilters(!showFilters)}
         >
           <Filter size={20} />
@@ -178,12 +194,12 @@ const TrendingCreators = () => {
       </div>
 
       {/* Period & Category Filters */}
-      <div className="trending-controls">
-        <div className="period-tabs">
+      <div className='trending-controls'>
+        <div className='period-tabs'>
           {[
             { key: 'week', label: 'This Week' },
             { key: 'month', label: 'This Month' },
-            { key: 'all-time', label: 'All Time' }
+            { key: 'all-time', label: 'All Time' },
           ].map(period => (
             <button
               key={period.key}
@@ -195,12 +211,12 @@ const TrendingCreators = () => {
           ))}
         </div>
 
-        <div className="category-tabs">
+        <div className='category-tabs'>
           {[
             { key: 'all', label: 'All', icon: TrendingUp },
             { key: 'earnings', label: 'Top Earners', icon: Crown },
             { key: 'engagement', label: 'Most Popular', icon: Heart },
-            { key: 'growth', label: 'Rising Stars', icon: Zap }
+            { key: 'growth', label: 'Rising Stars', icon: Zap },
           ].map(category => {
             const Icon = category.icon;
             return (
@@ -218,26 +234,26 @@ const TrendingCreators = () => {
       </div>
 
       {/* Trending List */}
-      <div className="trending-list">
+      <div className='trending-list'>
         {trendingCreators.map((creator, index) => {
           const badge = getTrendingBadge(creator, index);
           const BadgeIcon = badge?.icon;
-          
+
           return (
             <motion.div
               key={creator._id}
-              className="trending-creator-card"
+              className='trending-creator-card'
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               onClick={() => handleCreatorClick(creator)}
             >
               {/* Rank & Badge */}
-              <div className="creator-rank">
-                <span className="rank-number">#{index + 1}</span>
+              <div className='creator-rank'>
+                <span className='rank-number'>#{index + 1}</span>
                 {badge && (
-                  <div 
-                    className="trending-badge"
+                  <div
+                    className='trending-badge'
                     style={{ backgroundColor: badge.color }}
                   >
                     <BadgeIcon size={12} />
@@ -247,36 +263,33 @@ const TrendingCreators = () => {
               </div>
 
               {/* Profile Image */}
-              <div className="creator-image">
-                <img
-                  src={creator.profileImage}
-                  alt={creator.displayName}
-                />
-                {creator.isOnline && <span className="online-indicator"></span>}
+              <div className='creator-image'>
+                <img src={creator.profileImage} alt={creator.displayName} />
+                {creator.isOnline && <span className='online-indicator'></span>}
                 {creator.verified && (
-                  <span className="verified-badge">
+                  <span className='verified-badge'>
                     <Sparkles size={12} />
                   </span>
                 )}
               </div>
 
               {/* Creator Info */}
-              <div className="creator-info">
-                <div className="creator-main">
-                  <h3 className="creator-name">{creator.displayName}</h3>
-                  <p className="creator-username">@{creator.username}</p>
-                  <p className="creator-bio">{creator.bio}</p>
+              <div className='creator-info'>
+                <div className='creator-main'>
+                  <h3 className='creator-name'>{creator.displayName}</h3>
+                  <p className='creator-username'>@{creator.username}</p>
+                  <p className='creator-bio'>{creator.bio}</p>
                 </div>
 
-                <div className="creator-meta">
-                  <span className="creator-age">{creator.age}</span>
+                <div className='creator-meta'>
+                  <span className='creator-age'>{creator.age}</span>
                   {creator.location && (
-                    <span className="creator-location">
+                    <span className='creator-location'>
                       <MapPin size={12} />
                       {creator.location.city}
                     </span>
                   )}
-                  <span className="creator-rating">
+                  <span className='creator-rating'>
                     <Star size={12} />
                     {creator.stats.rating.toFixed(1)}
                   </span>
@@ -284,40 +297,47 @@ const TrendingCreators = () => {
               </div>
 
               {/* Stats */}
-              <div className="creator-stats">
-                <div className="stat-item">
+              <div className='creator-stats'>
+                <div className='stat-item'>
                   <Users size={14} />
                   <span>{formatNumber(creator.stats.followers)} followers</span>
                 </div>
-                <div className="stat-item">
+                <div className='stat-item'>
                   <TrendingUp size={14} />
-                  <span>+{(creator.stats.growthRate * 100).toFixed(0)}% growth</span>
+                  <span>
+                    +{(creator.stats.growthRate * 100).toFixed(0)}% growth
+                  </span>
                 </div>
-                <div className="stat-item">
+                <div className='stat-item'>
                   <Heart size={14} />
-                  <span>{(creator.stats.engagementRate * 100).toFixed(0)}% engagement</span>
+                  <span>
+                    {(creator.stats.engagementRate * 100).toFixed(0)}%
+                    engagement
+                  </span>
                 </div>
                 {selectedCategory === 'earnings' && (
-                  <div className="stat-item earnings">
+                  <div className='stat-item earnings'>
                     <Crown size={14} />
-                    <span>{formatEarnings(creator.stats.totalEarnings)}/mo</span>
+                    <span>
+                      {formatEarnings(creator.stats.totalEarnings)}/mo
+                    </span>
                   </div>
                 )}
               </div>
 
               {/* Actions */}
-              <div className="creator-actions">
+              <div className='creator-actions'>
                 <button
-                  className="action-btn like-btn"
-                  onClick={(e) => handleLikeCreator(creator._id, e)}
-                  aria-label="Like"
+                  className='action-btn like-btn'
+                  onClick={e => handleLikeCreator(creator._id, e)}
+                  aria-label='Like'
                 >
                   <Heart size={16} />
                 </button>
                 <button
-                  className="action-btn message-btn"
-                  onClick={(e) => handleMessageCreator(creator._id, e)}
-                  aria-label="Message"
+                  className='action-btn message-btn'
+                  onClick={e => handleMessageCreator(creator._id, e)}
+                  aria-label='Message'
                 >
                   <MessageCircle size={16} />
                 </button>
@@ -329,7 +349,7 @@ const TrendingCreators = () => {
 
       {/* Empty State */}
       {trendingCreators.length === 0 && !isLoading && (
-        <div className="trending-empty">
+        <div className='trending-empty'>
           <TrendingUp size={64} />
           <h2>No Trending Creators</h2>
           <p>Check back later for trending creators</p>
@@ -338,7 +358,7 @@ const TrendingCreators = () => {
 
       {/* Desktop Footer */}
       {isDesktop && <MainFooter />}
-      
+
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>

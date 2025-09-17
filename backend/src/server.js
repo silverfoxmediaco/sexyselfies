@@ -44,24 +44,28 @@ app.set('trust proxy', 1);
 
 // Render.com specific optimizations for Starter instance
 app.use((req, res, next) => {
-  // Disable response timeout for auth endpoints, let server handle it  
+  // Disable response timeout for auth endpoints, let server handle it
   if (req.url.includes('/auth/')) {
     // No res.setTimeout for auth routes - let server keepAliveTimeout handle it
     console.log('🔧 Auth route detected, using server timeout settings');
   } else {
     // Set reasonable timeout for non-auth routes
     res.setTimeout(90000, () => {
-      console.error('Response timeout after 90s for:', req.method, req.originalUrl);
+      console.error(
+        'Response timeout after 90s for:',
+        req.method,
+        req.originalUrl
+      );
       if (!res.headersSent) {
         return res.status(408).json({
           success: false,
           error: 'Request timeout - please try again',
-          code: 'TIMEOUT'
+          code: 'TIMEOUT',
         });
       }
     });
   }
-  
+
   // Add headers safely
   try {
     if (!res.headersSent) {
@@ -72,7 +76,7 @@ app.use((req, res, next) => {
   } catch (headerError) {
     console.error('Header setting error:', headerError);
   }
-  
+
   // Disable Nagle's algorithm for faster response
   try {
     if (req.socket && req.socket.setNoDelay) {
@@ -81,7 +85,7 @@ app.use((req, res, next) => {
   } catch (socketError) {
     console.error('Socket optimization error:', socketError);
   }
-  
+
   next();
 });
 
@@ -97,39 +101,46 @@ const connectDB = async () => {
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 45000,
       });
-      
+
       console.log(`MongoDB Connected: ${conn.connection.host}`);
       console.log(`Database Name: ${conn.connection.name}`);
-      
+
       // Reset retry counter on successful connection
       connectionRetries = 0;
-      
+
       // Set up connection event handlers
-      mongoose.connection.on('error', (err) => {
+      mongoose.connection.on('error', err => {
         console.error('MongoDB connection error:', err);
       });
-      
+
       mongoose.connection.on('disconnected', () => {
         console.log('MongoDB disconnected. Attempting to reconnect...');
         setTimeout(attemptConnection, retryDelay);
       });
-      
+
       return true;
     } catch (error) {
-      console.error(`MongoDB connection attempt ${connectionRetries + 1} failed:`, error.message);
+      console.error(
+        `MongoDB connection attempt ${connectionRetries + 1} failed:`,
+        error.message
+      );
       connectionRetries++;
-      
+
       if (connectionRetries >= maxRetries) {
-        console.error('Max MongoDB connection retries reached. Server will continue but database operations will fail.');
+        console.error(
+          'Max MongoDB connection retries reached. Server will continue but database operations will fail.'
+        );
         return false;
       }
-      
-      console.log(`Retrying MongoDB connection in ${retryDelay / 1000} seconds...`);
+
+      console.log(
+        `Retrying MongoDB connection in ${retryDelay / 1000} seconds...`
+      );
       await new Promise(resolve => setTimeout(resolve, retryDelay));
       return attemptConnection();
     }
   };
-  
+
   return attemptConnection();
 };
 
@@ -139,16 +150,17 @@ connectDB();
 // Database health check middleware
 const checkDatabaseConnection = (req, res, next) => {
   console.log('DATABASE CHECK for:', req.originalUrl);
-  
+
   if (mongoose.connection.readyState !== 1) {
     console.log('DATABASE CHECK FAILED - Connection not ready');
     return res.status(503).json({
       success: false,
-      error: 'Database service temporarily unavailable. Please try again later.',
-      code: 'DB_UNAVAILABLE'
+      error:
+        'Database service temporarily unavailable. Please try again later.',
+      code: 'DB_UNAVAILABLE',
     });
   }
-  
+
   console.log('DATABASE CHECK PASSED');
   next();
 };
@@ -158,21 +170,34 @@ const checkDatabaseConnection = (req, res, next) => {
 // ==========================================
 
 // Helmet for security headers with PWA-specific config
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "blob:"],
-      connectSrc: ["'self'", "wss:", "ws:", "https:", process.env.CLIENT_URL || "http://localhost:5173"],
-      mediaSrc: ["'self'", "https://res.cloudinary.com", "blob:"],
-      manifestSrc: ["'self'"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          'https://cdn.jsdelivr.net',
+        ],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com', 'blob:'],
+        connectSrc: [
+          "'self'",
+          'wss:',
+          'ws:',
+          'https:',
+          process.env.CLIENT_URL || 'http://localhost:5173',
+        ],
+        mediaSrc: ["'self'", 'https://res.cloudinary.com', 'blob:'],
+        manifestSrc: ["'self'"],
+      },
     },
-  },
-  crossOriginEmbedderPolicy: false,
-}));
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 // CORS configuration with multiple origins
 const corsOptions = {
@@ -184,12 +209,12 @@ const corsOptions = {
       'https://sexyselfies-frontend.onrender.com',
       process.env.CLIENT_URL,
       process.env.ADMIN_URL,
-      process.env.MOBILE_URL
+      process.env.MOBILE_URL,
     ].filter(Boolean);
-    
+
     // Allow requests with no origin (mobile apps, Postman, etc)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -199,7 +224,7 @@ const corsOptions = {
   },
   credentials: true,
   optionsSuccessStatus: 200,
-  exposedHeaders: ['X-Total-Count', 'X-Page-Count']
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
 };
 
 app.use(cors(corsOptions));
@@ -216,7 +241,9 @@ const defaultLimiter = rateLimit({
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10, // Increased from 5 to 10 for testing
-  message: { error: 'Too many authentication attempts, please try again later.' },
+  message: {
+    error: 'Too many authentication attempts, please try again later.',
+  },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   skipSuccessfulRequests: true,
@@ -235,30 +262,36 @@ const uploadLimiter = rateLimit({
 // ==========================================
 
 // Body parser middleware with size limits
-app.use(express.json({ 
-  limit: '10mb',
-  verify: (req, res, buf) => {
-    if (req.originalUrl.startsWith('/api/webhooks/')) {
-      req.rawBody = buf.toString('utf8');
-    }
-  }
-}));
+app.use(
+  express.json({
+    limit: '10mb',
+    verify: (req, res, buf) => {
+      if (req.originalUrl.startsWith('/api/webhooks/')) {
+        req.rawBody = buf.toString('utf8');
+      }
+    },
+  })
+);
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
 // Prevent parameter pollution
-app.use(hpp({
-  whitelist: ['sort', 'fields', 'page', 'limit']
-}));
+app.use(
+  hpp({
+    whitelist: ['sort', 'fields', 'page', 'limit'],
+  })
+);
 
 // Compression middleware with immediate response
-app.use(compression({
-  threshold: 0,  // Compress all responses
-  level: 1,      // Fast compression level
-  flush: require('zlib').constants.Z_SYNC_FLUSH  // Immediate flush
-}));
+app.use(
+  compression({
+    threshold: 0, // Compress all responses
+    level: 1, // Fast compression level
+    flush: require('zlib').constants.Z_SYNC_FLUSH, // Immediate flush
+  })
+);
 
 // ==========================================
 // LOGGING
@@ -268,7 +301,9 @@ app.use(compression({
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 } else {
-  app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
+  app.use(
+    morgan(':method :url :status :res[content-length] - :response-time ms')
+  );
 }
 
 // Custom request logger
@@ -281,7 +316,7 @@ if (process.env.NODE_ENV === 'development') {
       method: req.method,
       url: req.url,
       body: req.body,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
     next();
   });
@@ -296,27 +331,27 @@ const API_V1 = '/api/v1';
 
 // Root route for health checks and basic API info
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     name: 'SexySelfies API',
     version: '1.0.0',
-    status: 'OK', 
+    status: 'OK',
     message: 'API server is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     endpoints: {
       health: '/health',
-      api: '/api/v1'
-    }
+      api: '/api/v1',
+    },
   });
 });
 
 // Health checks (no rate limiting)
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     message: 'Server is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
   });
 });
 
@@ -324,31 +359,32 @@ app.get('/health', (req, res) => {
 app.get(`${API_V1}/health`, async (req, res) => {
   try {
     const dbState = mongoose.connection.readyState;
-    const dbStatus = {
-      0: 'disconnected',
-      1: 'connected',
-      2: 'connecting',
-      3: 'disconnecting'
-    }[dbState] || 'unknown';
-    
-    res.status(dbState === 1 ? 200 : 503).json({ 
+    const dbStatus =
+      {
+        0: 'disconnected',
+        1: 'connected',
+        2: 'connecting',
+        3: 'disconnecting',
+      }[dbState] || 'unknown';
+
+    res.status(dbState === 1 ? 200 : 503).json({
       status: dbState === 1 ? 'OK' : 'DEGRADED',
       api: 'v1',
       database: {
         status: dbStatus,
         isOperational: dbState === 1,
         host: mongoose.connection.host || 'not connected',
-        name: mongoose.connection.name || 'not connected'
+        name: mongoose.connection.name || 'not connected',
       },
       uptime: process.uptime(),
       memory: process.memoryUsage(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    res.status(503).json({ 
+    res.status(503).json({
       status: 'ERROR',
       message: 'Service unavailable',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -365,7 +401,7 @@ app.use('/api/v1/upload/', uploadLimiter);
 console.log('Configuring database checks for auth routes...');
 // Temporarily disabled database checks to debug timeout issue
 // app.use(`${API_V1}/auth/register`, checkDatabaseConnection);
-// app.use(`${API_V1}/auth/login`, checkDatabaseConnection);  
+// app.use(`${API_V1}/auth/login`, checkDatabaseConnection);
 // app.use(`${API_V1}/auth/creator/register`, checkDatabaseConnection);
 // app.use(`${API_V1}/auth/creator/login`, checkDatabaseConnection);
 
@@ -375,7 +411,11 @@ console.log('Mounting API routes...');
 // Add a test endpoint to verify routing works
 app.post(`${API_V1}/auth/test`, (req, res) => {
   console.log('Test endpoint hit successfully');
-  res.json({ success: true, message: 'Test endpoint working', timestamp: new Date().toISOString() });
+  res.json({
+    success: true,
+    message: 'Test endpoint working',
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Core routes
@@ -404,9 +444,11 @@ app.use(`${API_V1}/connections`, connectionRoutes);
 console.log('Connections routes mounted at:', `${API_V1}/connections`);
 
 // Debug route registration
-console.log('🔧 Registered API routes:', app._router.stack
-  .filter(r => r.route?.path?.includes('/api'))
-  .map(r => ({ path: r.route.path, methods: Object.keys(r.route.methods) }))
+console.log(
+  '🔧 Registered API routes:',
+  app._router.stack
+    .filter(r => r.route?.path?.includes('/api'))
+    .map(r => ({ path: r.route.path, methods: Object.keys(r.route.methods) }))
 );
 app.use(`${API_V1}/transactions`, transactionRoutes);
 app.use(`${API_V1}/upload`, uploadRoutes);
@@ -429,12 +471,12 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
       console.log(' Seeding endpoint called...');
       const { seedCreators } = require('./scripts/seedCreators');
       const result = await seedCreators();
-      
+
       res.json({
         success: true,
         message: 'Database seeded successfully!',
         timestamp: new Date(),
-        ...result
+        ...result,
       });
     } catch (error) {
       console.error('Seeding error:', error);
@@ -442,11 +484,11 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
         success: false,
         message: 'Failed to seed database',
         error: error.message,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     }
   });
-  
+
   app.get(`${API_V1}/dev/seed-data`, (req, res) => {
     res.json({
       success: true,
@@ -455,8 +497,13 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
       data: {
         creators: 7,
         members: 10,
-        includes: ['User records', 'Creator profiles', 'Member profiles', 'Cloudinary images']
-      }
+        includes: [
+          'User records',
+          'Creator profiles',
+          'Member profiles',
+          'Cloudinary images',
+        ],
+      },
     });
   });
 }
@@ -474,7 +521,7 @@ app.use('/api', (req, res, next) => {
     success: false,
     error: 'API endpoint not found',
     path: req.originalUrl,
-    method: req.method
+    method: req.method,
   });
 });
 
@@ -484,42 +531,49 @@ app.use('/api', (req, res, next) => {
 
 // IMPORTANT: Frontend serving MUST come AFTER all API routes
 if (process.env.NODE_ENV === 'production') {
-  const frontendBuildPath = path.join(__dirname, '..', '..', 'frontend', 'dist');
-  
+  const frontendBuildPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'frontend',
+    'dist'
+  );
+
   console.log('Serving frontend from:', frontendBuildPath);
-  
+
   // Serve static files
-  app.use(express.static(frontendBuildPath, {
-    maxAge: '1d',
-    setHeaders: (res, filePath) => {
-      if (filePath.endsWith('.html')) {
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      }
-      else if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
-        res.setHeader('Cache-Control', 'public, max-age=31536000');
-      }
-    }
-  }));
-  
+  app.use(
+    express.static(frontendBuildPath, {
+      maxAge: '1d',
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        } else if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000');
+        }
+      },
+    })
+  );
+
   // PWA specific files
   app.get('/manifest.json', (req, res) => {
     res.sendFile(path.join(frontendBuildPath, 'manifest.json'));
   });
-  
+
   app.get('/service-worker.js', (req, res) => {
     res.sendFile(path.join(frontendBuildPath, 'service-worker.js'));
   });
-  
+
   // Catch-all for frontend routes - MUST be last
   app.get('*', (req, res) => {
     // Double-check this isn't an API route
     if (req.path.startsWith('/api/') || req.path.startsWith('/webhooks/')) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         error: 'API endpoint not found',
-        path: req.path 
+        path: req.path,
       });
     }
-    
+
     // Serve the React app for all other routes
     res.sendFile(path.join(frontendBuildPath, 'index.html'));
   });
@@ -555,7 +609,7 @@ server.on('request', (req, res) => {
   // Only set headers if not already sent
   if (req.url && req.url.includes('/auth/') && !res.headersSent) {
     try {
-      res.setHeader('X-Accel-Buffering', 'no');  // Nginx
+      res.setHeader('X-Accel-Buffering', 'no'); // Nginx
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     } catch (err) {
       // Silently ignore if headers already sent
@@ -566,7 +620,7 @@ const io = new Server(server, {
   cors: corsOptions, // Use same CORS config
   transports: ['websocket', 'polling'],
   pingTimeout: 60000,
-  pingInterval: 25000
+  pingInterval: 25000,
 });
 
 // Make io globally available
@@ -574,15 +628,19 @@ global.io = io;
 
 // Import and initialize socket handlers
 try {
-  const { initializeCreatorSalesSockets } = require('./sockets/creatorSales.socket');
-  const { initializeMemberActivitySockets } = require('./sockets/memberActivity.socket');
+  const {
+    initializeCreatorSalesSockets,
+  } = require('./sockets/creatorSales.socket');
+  const {
+    initializeMemberActivitySockets,
+  } = require('./sockets/memberActivity.socket');
   const { initializeMessagingSockets } = require('./sockets/messaging.socket');
 
   // Initialize socket namespaces
   initializeCreatorSalesSockets(io);
   initializeMemberActivitySockets(io);
   initializeMessagingSockets(io);
-  
+
   console.log('WebSocket handlers initialized');
 } catch (error) {
   console.warn('WebSocket initialization error:', error.message);
@@ -601,9 +659,13 @@ try {
 // Start the server
 server.listen(PORT, () => {
   console.log('========================================');
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode`);
+  console.log(
+    `Server running in ${process.env.NODE_ENV || 'development'} mode`
+  );
   console.log(`Port: ${PORT}`);
-  console.log(`URL: ${process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : `http://localhost:${PORT}`}`);
+  console.log(
+    `URL: ${process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : `http://localhost:${PORT}`}`
+  );
   console.log(`Health Check: /health`);
   console.log(`API Base: /api/v1`);
   console.log(`Socket.io: Enabled with real-time messaging`);
@@ -635,7 +697,7 @@ server.listen(PORT, () => {
 // Duplicate handlers removed - using more detailed versions below
 
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
+process.on('unhandledRejection', err => {
   console.error('UNHANDLED PROMISE REJECTION!');
   console.error('Error name:', err.name);
   console.error('Error message:', err.message);
@@ -650,7 +712,7 @@ process.on('unhandledRejection', (err) => {
 });
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', err => {
   console.error('UNCAUGHT EXCEPTION!');
   console.error('Error name:', err.name);
   console.error('Error message:', err.message);
@@ -660,7 +722,9 @@ process.on('uncaughtException', (err) => {
     console.log('Shutting down due to uncaught exception...');
     process.exit(1);
   } else {
-    console.log('Continuing in production mode - double header error handled...');
+    console.log(
+      'Continuing in production mode - double header error handled...'
+    );
   }
 });
 

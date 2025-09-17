@@ -14,15 +14,15 @@ export function ProtectedCreatorRoute({ children }) {
   if (DEV_MODE) {
     return children;
   }
-  
+
   const token = localStorage.getItem('token');
   const userRole = localStorage.getItem('userRole');
-  
+
   if (!token || userRole !== 'creator') {
     // Redirect to login if not authenticated
-    return <Navigate to="/creator/login" replace />;
+    return <Navigate to='/creator/login' replace />;
   }
-  
+
   return children;
 }
 
@@ -32,49 +32,65 @@ export function ProtectedMemberRoute({ children }) {
   if (DEV_MODE) {
     return children;
   }
-  
+
   const token = localStorage.getItem('token');
   const userRole = localStorage.getItem('userRole');
-  
+
   if (!token || userRole !== 'member') {
     // Redirect to login if not authenticated
-    return <Navigate to="/member/login" replace />;
+    return <Navigate to='/member/login' replace />;
   }
-  
+
   return children;
 }
 
 // Temporary placeholder component for routes that don't exist yet
 export function ComingSoon({ title }) {
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#0A0A0A',
-      color: '#FFFFFF',
-      fontFamily: 'Poppins, sans-serif'
-    }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#0A0A0A',
+        color: '#FFFFFF',
+        fontFamily: 'Poppins, sans-serif',
+      }}
+    >
       {DEV_MODE && (
-        <div style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          background: '#FF6B6B',
-          color: 'white',
-          padding: '8px 16px',
-          borderRadius: '8px',
-          fontSize: '14px',
-          fontWeight: '600'
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: '#FF6B6B',
+            color: 'white',
+            padding: '8px 16px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: '600',
+          }}
+        >
           🔧 DEV MODE
         </div>
       )}
-      <h1 style={{ fontSize: '48px', marginBottom: '16px', background: 'linear-gradient(135deg, #17D2C2, #12B7AB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{title}</h1>
-      <p style={{ fontSize: '18px', color: '#C7C7CC', marginBottom: '32px' }}>This feature is coming soon!</p>
-      <button 
+      <h1
+        style={{
+          fontSize: '48px',
+          marginBottom: '16px',
+          background: 'linear-gradient(135deg, #17D2C2, #12B7AB)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+        }}
+      >
+        {title}
+      </h1>
+      <p style={{ fontSize: '18px', color: '#C7C7CC', marginBottom: '32px' }}>
+        This feature is coming soon!
+      </p>
+      <button
         onClick={() => window.history.back()}
         style={{
           padding: '12px 24px',
@@ -85,10 +101,10 @@ export function ComingSoon({ title }) {
           fontSize: '16px',
           fontWeight: '600',
           cursor: 'pointer',
-          transition: 'transform 0.2s'
+          transition: 'transform 0.2s',
         }}
-        onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
-        onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+        onMouseOver={e => (e.target.style.transform = 'translateY(-2px)')}
+        onMouseOut={e => (e.target.style.transform = 'translateY(0)')}
       >
         Go Back
       </button>
@@ -100,22 +116,22 @@ export function ComingSoon({ title }) {
 export function DevModeIndicator() {
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
-  
+
   if (!DEV_MODE) return null;
-  
+
   // Function to switch roles and navigate
   const switchRole = () => {
     const roles = ['creator', 'member', 'admin'];
     const currentRole = localStorage.getItem('userRole') || 'creator';
     const currentIndex = roles.indexOf(currentRole);
     const nextRole = roles[(currentIndex + 1) % roles.length];
-    
+
     // Update role
     localStorage.setItem('userRole', nextRole);
-    
+
     // Navigate to appropriate default page for the new role
     let targetPath = '/';
-    switch(nextRole) {
+    switch (nextRole) {
       case 'member':
         targetPath = '/member/browse-creators'; // Member homepage
         break;
@@ -126,69 +142,74 @@ export function DevModeIndicator() {
         targetPath = '/admin/dashboard'; // Admin dashboard
         break;
     }
-    
-    console.log(`🔧 DEV MODE: Switched to ${nextRole} role, navigating to ${targetPath}`);
-    
+
+    console.log(
+      `🔧 DEV MODE: Switched to ${nextRole} role, navigating to ${targetPath}`
+    );
+
     // Navigate to the new page
     navigate(targetPath);
-    
+
     // Force a page reload to ensure everything updates properly
     setTimeout(() => {
       window.location.reload();
     }, 100);
   };
-  
+
   // Minimized version - just a small floating button
   if (!isExpanded) {
     return (
-      <div style={{
-        position: 'fixed',
-        top: '10px',
-        left: '10px',
-        background: 'linear-gradient(135deg, #FF6B6B, #FF8E53)',
-        color: 'white',
-        width: '40px',
-        height: '40px',
-        borderRadius: '20px',
-        fontSize: '20px',
-        fontWeight: '600',
-        zIndex: 9999,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer'
-      }}
-      onClick={() => setIsExpanded(true)}
-      title="Dev Mode Active - Click to expand"
+      <div
+        style={{
+          position: 'fixed',
+          top: '10px',
+          left: '10px',
+          background: 'linear-gradient(135deg, #FF6B6B, #FF8E53)',
+          color: 'white',
+          width: '40px',
+          height: '40px',
+          borderRadius: '20px',
+          fontSize: '20px',
+          fontWeight: '600',
+          zIndex: 9999,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+        }}
+        onClick={() => setIsExpanded(true)}
+        title='Dev Mode Active - Click to expand'
       >
         🔧
       </div>
     );
   }
-  
+
   // Expanded version
   return (
-    <div style={{
-      position: 'fixed',
-      top: '10px',
-      left: '10px',
-      background: 'linear-gradient(135deg, #FF6B6B, #FF8E53)',
-      color: 'white',
-      padding: '12px 20px',
-      borderRadius: '12px',
-      fontSize: '14px',
-      fontWeight: '600',
-      zIndex: 9999,
-      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px'
-    }}>
-      <span 
+    <div
+      style={{
+        position: 'fixed',
+        top: '10px',
+        left: '10px',
+        background: 'linear-gradient(135deg, #FF6B6B, #FF8E53)',
+        color: 'white',
+        padding: '12px 20px',
+        borderRadius: '12px',
+        fontSize: '14px',
+        fontWeight: '600',
+        zIndex: 9999,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+      }}
+    >
+      <span
         style={{ cursor: 'pointer' }}
         onClick={() => setIsExpanded(false)}
-        title="Click to minimize"
+        title='Click to minimize'
       >
         🔧
       </span>
@@ -208,7 +229,7 @@ export function DevModeIndicator() {
           borderRadius: '6px',
           color: 'white',
           fontSize: '12px',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
       >
         Switch Role
@@ -224,9 +245,9 @@ export function DevModeIndicator() {
           color: 'white',
           fontSize: '16px',
           cursor: 'pointer',
-          lineHeight: 1
+          lineHeight: 1,
         }}
-        title="Minimize"
+        title='Minimize'
       >
         ×
       </button>

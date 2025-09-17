@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  ChevronLeft, RotateCcw, Check, MapPin, Users,
-  Calendar, Sliders, Sparkles
+  ChevronLeft,
+  RotateCcw,
+  Check,
+  MapPin,
+  Users,
+  Calendar,
+  Sliders,
+  Sparkles,
 } from 'lucide-react';
 import axios from 'axios';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import {
+  useIsMobile,
+  useIsDesktop,
+  getUserRole,
+} from '../utils/mobileDetection';
 import './BrowseFilters.css';
 
 const BrowseFilters = () => {
@@ -17,17 +27,17 @@ const BrowseFilters = () => {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
-  
+
   // Check if this is first-time setup from login
   const isFirstTimeSetup = location.state?.isFirstTime || false;
-  
+
   // State for all filter options
   const [filters, setFilters] = useState({
     ageRange: { min: 18, max: 99 },
     location: '', // Country
     bodyTypes: [],
     onlineOnly: false,
-    newMembersOnly: false
+    newMembersOnly: false,
   });
 
   const [hasChanges, setHasChanges] = useState(false);
@@ -36,14 +46,37 @@ const BrowseFilters = () => {
 
   // Filter options
   const bodyTypeOptions = [
-    'Slim', 'Slender', 'Athletic', 'Average', 'Curvy', 
-    'Plus Size', 'BBW', 'Muscular', 'Dad Bod', 'Mom Bod'
+    'Slim',
+    'Slender',
+    'Athletic',
+    'Average',
+    'Curvy',
+    'Plus Size',
+    'BBW',
+    'Muscular',
+    'Dad Bod',
+    'Mom Bod',
   ];
 
   const countryOptions = [
-    'United States', 'Canada', 'United Kingdom', 'Australia', 'Germany',
-    'France', 'Italy', 'Spain', 'Netherlands', 'Sweden', 'Norway', 'Denmark',
-    'Japan', 'South Korea', 'Brazil', 'Mexico', 'Argentina', 'Other'
+    'United States',
+    'Canada',
+    'United Kingdom',
+    'Australia',
+    'Germany',
+    'France',
+    'Italy',
+    'Spain',
+    'Netherlands',
+    'Sweden',
+    'Norway',
+    'Denmark',
+    'Japan',
+    'South Korea',
+    'Brazil',
+    'Mexico',
+    'Argentina',
+    'Other',
   ];
 
   useEffect(() => {
@@ -61,28 +94,37 @@ const BrowseFilters = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get('/api/v1/members/browse/preferences', {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          
+          const response = await axios.get(
+            '/api/v1/members/browse/preferences',
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
           if (response.data.success && response.data.preferences) {
             setFilters(response.data.preferences);
             // Also save to localStorage for offline access
-            localStorage.setItem('browseFilters', JSON.stringify(response.data.preferences));
+            localStorage.setItem(
+              'browseFilters',
+              JSON.stringify(response.data.preferences)
+            );
             setIsLoading(false);
             return;
           }
         } catch (apiError) {
-          console.warn('Failed to load filters from server, trying localStorage:', apiError);
+          console.warn(
+            'Failed to load filters from server, trying localStorage:',
+            apiError
+          );
         }
       }
-      
+
       // Fallback to localStorage
       const savedFilters = localStorage.getItem('browseFilters');
       if (savedFilters) {
         setFilters(JSON.parse(savedFilters));
       }
-      
+
       setIsLoading(false);
     } catch (error) {
       console.error('Error loading filters:', error);
@@ -114,16 +156,16 @@ const BrowseFilters = () => {
       ...prev,
       ageRange: {
         ...prev.ageRange,
-        [type]: parseInt(value)
-      }
+        [type]: parseInt(value),
+      },
     }));
     setHasChanges(true);
   };
 
-  const handleLocationChange = (value) => {
+  const handleLocationChange = value => {
     setFilters(prev => ({
       ...prev,
-      location: value
+      location: value,
     }));
     setHasChanges(true);
   };
@@ -134,23 +176,22 @@ const BrowseFilters = () => {
       const newArray = array.includes(value)
         ? array.filter(item => item !== value)
         : [...array, value];
-      
+
       return {
         ...prev,
-        [filterType]: newArray
+        [filterType]: newArray,
       };
     });
     setHasChanges(true);
   };
 
-  const toggleBooleanFilter = (filterType) => {
+  const toggleBooleanFilter = filterType => {
     setFilters(prev => ({
       ...prev,
-      [filterType]: !prev[filterType]
+      [filterType]: !prev[filterType],
     }));
     setHasChanges(true);
   };
-
 
   const resetAllFilters = () => {
     const defaultFilters = {
@@ -158,7 +199,7 @@ const BrowseFilters = () => {
       location: '',
       bodyTypes: [],
       onlineOnly: false,
-      newMembersOnly: false
+      newMembersOnly: false,
     };
 
     setFilters(defaultFilters);
@@ -169,25 +210,25 @@ const BrowseFilters = () => {
     try {
       // Save to localStorage for immediate use
       localStorage.setItem('browseFilters', JSON.stringify(filters));
-      
+
       // Save to API for persistence
       const token = localStorage.getItem('token');
       if (token) {
         try {
           await axios.post('/api/v1/members/browse/preferences', filters, {
-            headers: { 
+            headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+              'Content-Type': 'application/json',
+            },
           });
         } catch (apiError) {
           console.warn('Failed to save filters to server:', apiError);
           // Continue anyway since localStorage is saved
         }
       }
-      
+
       setHasChanges(false);
-      
+
       // Navigate based on context
       if (isFirstTimeSetup) {
         // Complete first-time setup and go to browse creators
@@ -206,14 +247,18 @@ const BrowseFilters = () => {
       const token = localStorage.getItem('token');
       if (token) {
         // Mark profile as complete
-        await axios.post('/api/v1/members/complete-profile', {}, {
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
+        await axios.post(
+          '/api/v1/members/complete-profile',
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
           }
-        });
+        );
       }
-      
+
       // Navigate to browse creators
       navigate('/member/browse-creators', { replace: true });
     } catch (error) {
@@ -223,14 +268,13 @@ const BrowseFilters = () => {
     }
   };
 
-
   if (isLoading) {
     return (
-      <div className="bf-container">
+      <div className='bf-container'>
         {/* Desktop Header */}
         {isDesktop && <MainHeader />}
-        <div className="bf-loading">
-          <div className="bf-loading-spinner"></div>
+        <div className='bf-loading'>
+          <div className='bf-loading-spinner'></div>
           <p>Loading preferences...</p>
         </div>
         {/* Desktop Footer */}
@@ -240,30 +284,32 @@ const BrowseFilters = () => {
   }
 
   return (
-    <div className="bf-container">
+    <div className='bf-container'>
       {/* Desktop Header */}
       {isDesktop && <MainHeader />}
       {/* Header */}
-      <header className="bf-header">
-        <button 
-          className="bf-back-btn"
+      <header className='bf-header'>
+        <button
+          className='bf-back-btn'
           onClick={() => navigate(-1)}
-          aria-label="Go back"
+          aria-label='Go back'
         >
           <ChevronLeft size={24} />
         </button>
-        
-        <h1 className="bf-title">
+
+        <h1 className='bf-title'>
           {isFirstTimeSetup ? 'Complete Your Setup' : 'Browse Preferences'}
         </h1>
         {isFirstTimeSetup && (
-          <p className="bf-subtitle">Set your preferences to find the perfect creators</p>
+          <p className='bf-subtitle'>
+            Set your preferences to find the perfect creators
+          </p>
         )}
-        
-        <button 
-          className="bf-reset-btn"
+
+        <button
+          className='bf-reset-btn'
           onClick={resetAllFilters}
-          aria-label="Reset all filters"
+          aria-label='Reset all filters'
         >
           <RotateCcw size={20} />
         </button>
@@ -271,69 +317,69 @@ const BrowseFilters = () => {
 
       {/* Active Filters Count */}
       {activeFilterCount > 0 && (
-        <div className="bf-active-count">
-          <span className="bf-count-badge">{activeFilterCount}</span>
-          <span className="bf-count-text">active filters</span>
+        <div className='bf-active-count'>
+          <span className='bf-count-badge'>{activeFilterCount}</span>
+          <span className='bf-count-text'>active filters</span>
         </div>
       )}
 
       {/* Filter Sections */}
-      <div className="bf-content">
+      <div className='bf-content'>
         {/* Age Range */}
-        <section className="bf-section">
-          <h2 className="bf-section-title">
+        <section className='bf-section'>
+          <h2 className='bf-section-title'>
             <Calendar size={18} />
             Age Range
           </h2>
-          <div className="bf-age-range">
-            <div className="bf-age-inputs">
-              <div className="bf-age-input-group">
+          <div className='bf-age-range'>
+            <div className='bf-age-inputs'>
+              <div className='bf-age-input-group'>
                 <label>Min</label>
                 <input
-                  type="number"
-                  min="18"
-                  max="99"
+                  type='number'
+                  min='18'
+                  max='99'
                   value={filters.ageRange.min}
-                  onChange={(e) => handleAgeChange('min', e.target.value)}
-                  className="bf-age-input"
+                  onChange={e => handleAgeChange('min', e.target.value)}
+                  className='bf-age-input'
                 />
               </div>
-              <span className="bf-age-separator">to</span>
-              <div className="bf-age-input-group">
+              <span className='bf-age-separator'>to</span>
+              <div className='bf-age-input-group'>
                 <label>Max</label>
                 <input
-                  type="number"
-                  min="18"
-                  max="99"
+                  type='number'
+                  min='18'
+                  max='99'
                   value={filters.ageRange.max}
-                  onChange={(e) => handleAgeChange('max', e.target.value)}
-                  className="bf-age-input"
+                  onChange={e => handleAgeChange('max', e.target.value)}
+                  className='bf-age-input'
                 />
               </div>
             </div>
-            <div className="bf-range-slider">
+            <div className='bf-range-slider'>
               <input
-                type="range"
-                min="18"
-                max="99"
+                type='range'
+                min='18'
+                max='99'
                 value={filters.ageRange.min}
-                onChange={(e) => handleAgeChange('min', e.target.value)}
-                className="bf-slider bf-slider-min"
+                onChange={e => handleAgeChange('min', e.target.value)}
+                className='bf-slider bf-slider-min'
               />
               <input
-                type="range"
-                min="18"
-                max="99"
+                type='range'
+                min='18'
+                max='99'
                 value={filters.ageRange.max}
-                onChange={(e) => handleAgeChange('max', e.target.value)}
-                className="bf-slider bf-slider-max"
+                onChange={e => handleAgeChange('max', e.target.value)}
+                className='bf-slider bf-slider-max'
               />
-              <div className="bf-slider-track"></div>
-              <div 
-                className="bf-slider-fill"
+              <div className='bf-slider-track'></div>
+              <div
+                className='bf-slider-fill'
                 style={{
                   left: `${((filters.ageRange.min - 18) / 81) * 100}%`,
-                  width: `${((filters.ageRange.max - filters.ageRange.min) / 81) * 100}%`
+                  width: `${((filters.ageRange.max - filters.ageRange.min) / 81) * 100}%`,
                 }}
               ></div>
             </div>
@@ -341,18 +387,18 @@ const BrowseFilters = () => {
         </section>
 
         {/* Location/Country */}
-        <section className="bf-section">
-          <h2 className="bf-section-title">
+        <section className='bf-section'>
+          <h2 className='bf-section-title'>
             <MapPin size={18} />
             Location
           </h2>
-          <div className="bf-location">
+          <div className='bf-location'>
             <select
               value={filters.location}
-              onChange={(e) => handleLocationChange(e.target.value)}
-              className="bf-location-select"
+              onChange={e => handleLocationChange(e.target.value)}
+              className='bf-location-select'
             >
-              <option value="">Any Country</option>
+              <option value=''>Any Country</option>
               {countryOptions.map(country => (
                 <option key={country} value={country}>
                   {country}
@@ -363,12 +409,12 @@ const BrowseFilters = () => {
         </section>
 
         {/* Body Type */}
-        <section className="bf-section">
-          <h2 className="bf-section-title">
+        <section className='bf-section'>
+          <h2 className='bf-section-title'>
             <Users size={18} />
             Body Type
           </h2>
-          <div className="bf-chip-grid">
+          <div className='bf-chip-grid'>
             {bodyTypeOptions.map(type => (
               <button
                 key={type}
@@ -382,39 +428,42 @@ const BrowseFilters = () => {
           </div>
         </section>
 
-
         {/* Quick Filters */}
-        <section className="bf-section">
-          <h2 className="bf-section-title">
+        <section className='bf-section'>
+          <h2 className='bf-section-title'>
             <Sliders size={18} />
             Quick Filters
           </h2>
-          <div className="bf-toggle-list">
-            <div className="bf-toggle-item">
-              <div className="bf-toggle-info">
-                <span className="bf-toggle-label">Online Now Only</span>
-                <span className="bf-toggle-description">Show only active users</span>
+          <div className='bf-toggle-list'>
+            <div className='bf-toggle-item'>
+              <div className='bf-toggle-info'>
+                <span className='bf-toggle-label'>Online Now Only</span>
+                <span className='bf-toggle-description'>
+                  Show only active users
+                </span>
               </div>
               <button
                 className={`bf-toggle ${filters.onlineOnly ? 'bf-active' : ''}`}
                 onClick={() => toggleBooleanFilter('onlineOnly')}
-                aria-label="Toggle online only"
+                aria-label='Toggle online only'
               >
-                <div className="bf-toggle-handle"></div>
+                <div className='bf-toggle-handle'></div>
               </button>
             </div>
 
-            <div className="bf-toggle-item">
-              <div className="bf-toggle-info">
-                <span className="bf-toggle-label">New Members</span>
-                <span className="bf-toggle-description">Joined in the last 30 days</span>
+            <div className='bf-toggle-item'>
+              <div className='bf-toggle-info'>
+                <span className='bf-toggle-label'>New Members</span>
+                <span className='bf-toggle-description'>
+                  Joined in the last 30 days
+                </span>
               </div>
               <button
                 className={`bf-toggle ${filters.newMembersOnly ? 'bf-active' : ''}`}
                 onClick={() => toggleBooleanFilter('newMembersOnly')}
-                aria-label="Toggle new members only"
+                aria-label='Toggle new members only'
               >
-                <div className="bf-toggle-handle"></div>
+                <div className='bf-toggle-handle'></div>
               </button>
             </div>
           </div>
@@ -422,14 +471,14 @@ const BrowseFilters = () => {
       </div>
 
       {/* Apply Button */}
-      <div className="bf-footer">
+      <div className='bf-footer'>
         {isFirstTimeSetup && (
-          <div className="bf-setup-message">
+          <div className='bf-setup-message'>
             <Sparkles size={16} />
             <span>Complete your setup to start discovering creators!</span>
           </div>
         )}
-        <button 
+        <button
           className={`bf-apply-btn ${isFirstTimeSetup ? 'bf-setup-btn' : ''}`}
           onClick={applyFilters}
           disabled={!hasChanges && !isFirstTimeSetup}
@@ -443,16 +492,16 @@ const BrowseFilters = () => {
             <>
               Apply Filters
               {activeFilterCount > 0 && (
-                <span className="bf-apply-count">{activeFilterCount}</span>
+                <span className='bf-apply-count'>{activeFilterCount}</span>
               )}
             </>
           )}
         </button>
       </div>
-      
+
       {/* Desktop Footer */}
       {isDesktop && <MainFooter />}
-      
+
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>

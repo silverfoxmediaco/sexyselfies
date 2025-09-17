@@ -15,8 +15,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Modal Container - Using modern centering approach */
@@ -28,12 +32,12 @@
   max-width: 380px;
   height: fit-content;
   max-height: 90vh;
-  background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%);
+  background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
   border-radius: 24px;
   padding: 60px 24px 24px;
   z-index: 9999;
   text-align: center;
-  box-shadow: 
+  box-shadow:
     0 25px 50px rgba(0, 0, 0, 0.5),
     0 0 100px rgba(23, 210, 194, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -59,7 +63,7 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #FFFFFF;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -72,7 +76,7 @@
 .close-button svg {
   width: 20px;
   height: 20px;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .close-button:hover {
@@ -129,26 +133,29 @@
 
 /* Premium variant */
 .connection-modal.premium {
-  background: linear-gradient(135deg, #2A1F3D 0%, #3D2A4D 100%);
+  background: linear-gradient(135deg, #2a1f3d 0%, #3d2a4d 100%);
   border: 1px solid rgba(255, 215, 0, 0.3);
-  box-shadow: 
+  box-shadow:
     0 25px 50px rgba(0, 0, 0, 0.5),
     0 0 100px rgba(255, 215, 0, 0.2);
 }
 
 /* Highlight variant with glow */
 .connection-modal.highlight {
-  animation: modalPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), modalGlow 3s ease-in-out infinite;
+  animation:
+    modalPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    modalGlow 3s ease-in-out infinite;
 }
 
 @keyframes modalGlow {
-  0%, 100% { 
-    box-shadow: 
+  0%,
+  100% {
+    box-shadow:
       0 25px 50px rgba(0, 0, 0, 0.5),
       0 0 80px rgba(23, 210, 194, 0.2);
   }
-  50% { 
-    box-shadow: 
+  50% {
+    box-shadow:
       0 25px 50px rgba(0, 0, 0, 0.5),
       0 0 120px rgba(23, 210, 194, 0.3);
   }
@@ -164,11 +171,11 @@
   height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  border: 4px solid #17D2C2;
-  box-shadow: 
+  border: 4px solid #17d2c2;
+  box-shadow:
     0 8px 32px rgba(23, 210, 194, 0.4),
     0 0 60px rgba(23, 210, 194, 0.2);
-  background: #1C1C1E;
+  background: #1c1c1e;
   z-index: 10;
 }
 
@@ -186,19 +193,18 @@
   right: -4px;
   bottom: -4px;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    #17D2C2,
-    transparent
-  );
+  background: conic-gradient(from 0deg, transparent, #17d2c2, transparent);
   animation: rotateGlow 3s linear infinite;
   opacity: 0.6;
 }
 
 @keyframes rotateGlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Icon Container (when no photo) */
@@ -213,7 +219,7 @@
 }
 
 .connection-icon {
-  color: #17D2C2;
+  color: #17d2c2;
   position: relative;
   z-index: 2;
   filter: drop-shadow(0 0 20px rgba(23, 210, 194, 0.5));
@@ -225,12 +231,13 @@
 }
 
 @keyframes lightningFlash {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
     filter: drop-shadow(0 0 20px rgba(23, 210, 194, 0.5));
   }
-  50% { 
+  50% {
     opacity: 0.8;
     transform: scale(1.1);
     filter: drop-shadow(0 0 40px rgba(23, 210, 194, 0.8));
@@ -243,8 +250,13 @@
 }
 
 @keyframes iconPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
 }
 
 .connection-icon.bounce {
@@ -252,8 +264,13 @@
 }
 
 @keyframes iconBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .connection-icon.spin {
@@ -261,8 +278,12 @@
 }
 
 @keyframes iconSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .connection-icon.sparkle {
@@ -270,11 +291,12 @@
 }
 
 @keyframes iconSparkle {
-  0%, 100% { 
+  0%,
+  100% {
     transform: scale(1) rotate(0deg);
     filter: brightness(1) drop-shadow(0 0 20px rgba(23, 210, 194, 0.5));
   }
-  50% { 
+  50% {
     transform: scale(1.2) rotate(180deg);
     filter: brightness(1.5) drop-shadow(0 0 30px rgba(23, 210, 194, 0.8));
   }
@@ -288,17 +310,22 @@
   transform: translate(-50%, -50%);
   width: 100px;
   height: 100px;
-  background: radial-gradient(circle, rgba(23, 210, 194, 0.2) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(23, 210, 194, 0.2) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
   animation: bgPulse 2s ease-in-out infinite;
 }
 
 @keyframes bgPulse {
-  0%, 100% { 
+  0%,
+  100% {
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.5;
   }
-  50% { 
+  50% {
     transform: translate(-50%, -50%) scale(1.5);
     opacity: 0;
   }
@@ -312,7 +339,7 @@
 .connection-title {
   font-size: 26px;
   font-weight: 700;
-  color: #17D2C2;
+  color: #17d2c2;
   margin: 0 0 12px 0;
   text-shadow: 0 0 30px rgba(23, 210, 194, 0.5);
   letter-spacing: -0.5px;
@@ -321,14 +348,14 @@
 .connection-subtitle {
   font-size: 18px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0 0 12px 0;
   line-height: 1.3;
 }
 
 .connection-description {
   font-size: 14px;
-  color: #C7C7CC;
+  color: #c7c7cc;
   margin: 0;
   line-height: 1.5;
 }
@@ -349,7 +376,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #17D2C2;
+  color: #17d2c2;
   font-weight: 600;
   font-size: 14px;
 }
@@ -375,7 +402,7 @@
 }
 
 .connection-btn.primary {
-  background: linear-gradient(135deg, #17D2C2, #12B7AB);
+  background: linear-gradient(135deg, #17d2c2, #12b7ab);
   color: #001310;
   box-shadow: 0 4px 20px rgba(23, 210, 194, 0.3);
 }
@@ -387,13 +414,23 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
   animation: buttonShine 3s ease-in-out infinite;
 }
 
 @keyframes buttonShine {
-  0% { left: -100%; }
-  50%, 100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+  50%,
+  100% {
+    left: 100%;
+  }
 }
 
 .connection-btn.primary:active {
@@ -402,7 +439,7 @@
 
 .connection-btn.secondary {
   background: rgba(255, 255, 255, 0.05);
-  color: #C7C7CC;
+  color: #c7c7cc;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -428,18 +465,20 @@
 
 .compatibility-fill {
   height: 100%;
-  background: linear-gradient(90deg, #17D2C2, #47E0D2);
+  background: linear-gradient(90deg, #17d2c2, #47e0d2);
   border-radius: 3px;
   animation: fillBar 1.5s ease-out;
 }
 
 @keyframes fillBar {
-  from { width: 0; }
+  from {
+    width: 0;
+  }
 }
 
 .compatibility-text {
   font-size: 12px;
-  color: #17D2C2;
+  color: #17d2c2;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -449,7 +488,7 @@
 .tap-hint {
   margin-top: 16px;
   font-size: 11px;
-  color: #8E8E93;
+  color: #8e8e93;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   opacity: 0.7;
@@ -483,36 +522,36 @@
   position: absolute;
   width: 10px;
   height: 10px;
-  background: #17D2C2;
+  background: #17d2c2;
   animation: confettiFall 3s ease-out forwards;
 }
 
-.confetti-0 { 
-  background: #17D2C2; 
+.confetti-0 {
+  background: #17d2c2;
   left: 10%;
   animation-delay: 0s;
   transform: rotate(0deg);
 }
-.confetti-1 { 
-  background: #FF006E; 
+.confetti-1 {
+  background: #ff006e;
   left: 30%;
   animation-delay: 0.2s;
   transform: rotate(45deg);
 }
-.confetti-2 { 
-  background: #FFD700; 
+.confetti-2 {
+  background: #ffd700;
   left: 50%;
   animation-delay: 0.4s;
   transform: rotate(90deg);
 }
-.confetti-3 { 
-  background: #8B5CF6; 
+.confetti-3 {
+  background: #8b5cf6;
   left: 70%;
   animation-delay: 0.6s;
   transform: rotate(135deg);
 }
-.confetti-4 { 
-  background: #34C759; 
+.confetti-4 {
+  background: #34c759;
   left: 90%;
   animation-delay: 0.8s;
   transform: rotate(180deg);
@@ -535,15 +574,15 @@
     padding: 70px 32px 32px;
     max-width: 420px;
   }
-  
+
   .connection-title {
     font-size: 30px;
   }
-  
+
   .connection-subtitle {
     font-size: 20px;
   }
-  
+
   .connection-btn {
     padding: 16px 32px;
     font-size: 17px;
@@ -555,18 +594,18 @@
   .connection-modal {
     max-width: 450px;
   }
-  
+
   .connection-btn:hover {
     transform: translateY(-2px);
   }
-  
+
   .connection-btn.primary:hover {
     box-shadow: 0 6px 30px rgba(23, 210, 194, 0.4);
   }
-  
+
   .connection-btn.secondary:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: #FFFFFF;
+    color: #ffffff;
   }
 }
 
@@ -579,7 +618,7 @@
   .confetti {
     animation: none !important;
   }
-  
+
   .photo-glow {
     display: none;
   }

@@ -24,7 +24,10 @@ try {
 }
 
 // Import upload middleware with correct exports
-let profileImageUpload, contentImagesUpload, contentVideoUpload, contentWithThumbnailUpload;
+let profileImageUpload,
+  contentImagesUpload,
+  contentVideoUpload,
+  contentWithThumbnailUpload;
 try {
   const uploadMiddleware = require('../middleware/upload.middleware');
   profileImageUpload = uploadMiddleware.profileImageUpload;
@@ -46,9 +49,9 @@ try {
 
 // Health check for creators route
 router.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'Creator routes are working'
+  res.json({
+    status: 'OK',
+    message: 'Creator routes are working',
   });
 });
 
@@ -88,7 +91,11 @@ router.post('/profile/avatar', profileImageUpload, (req, res) => {
 });
 
 // Profile photo upload - FIXED: removed duplicate 'protect' middleware
-router.post('/profile/photo', profileImageUpload, creatorProfileController.updateProfilePhoto);
+router.post(
+  '/profile/photo',
+  profileImageUpload,
+  creatorProfileController.updateProfilePhoto
+);
 
 // Cover image upload (using same profile image middleware)
 router.post('/profile/cover', profileImageUpload, (req, res) => {
@@ -104,7 +111,11 @@ router.put('/profile/privacy', (req, res) => {
 });
 
 // Profile setup endpoint - Initial profile creation with images
-router.post('/profile/setup', profileImageUpload, creatorProfileController.setupProfile);
+router.post(
+  '/profile/setup',
+  profileImageUpload,
+  creatorProfileController.setupProfile
+);
 
 // ==========================================
 // CONTENT MANAGEMENT
@@ -125,7 +136,11 @@ router.get('/content/:contentId', (req, res) => {
 
 // Content upload with correct middleware for images
 if (creatorContentController.uploadContent) {
-  router.post('/content/images', contentImagesUpload, creatorContentController.uploadContent);
+  router.post(
+    '/content/images',
+    contentImagesUpload,
+    creatorContentController.uploadContent
+  );
 } else {
   router.post('/content/images', contentImagesUpload, (req, res) => {
     res.status(501).json({ message: 'Content image upload coming soon' });
@@ -133,7 +148,11 @@ if (creatorContentController.uploadContent) {
 }
 
 // Add the route that frontend expects - using upload controller with custom thumbnail support
-router.post('/content/upload', contentWithThumbnailUpload, uploadController.uploadContent);
+router.post(
+  '/content/upload',
+  contentWithThumbnailUpload,
+  uploadController.uploadContent
+);
 
 // Content upload with correct middleware for video
 router.post('/content/video', contentVideoUpload, (req, res) => {
@@ -160,7 +179,10 @@ if (creatorContentController.deleteContent) {
 
 // Update content pricing
 if (creatorContentController.updateContentPricing) {
-  router.patch('/content/:contentId/price', creatorContentController.updateContentPricing);
+  router.patch(
+    '/content/:contentId/price',
+    creatorContentController.updateContentPricing
+  );
 } else {
   router.patch('/content/:contentId/price', (req, res) => {
     res.status(501).json({ message: 'Price update coming soon' });
@@ -169,7 +191,10 @@ if (creatorContentController.updateContentPricing) {
 
 // Content analytics
 if (creatorContentController.getContentAnalytics) {
-  router.get('/content/:contentId/analytics', creatorContentController.getContentAnalytics);
+  router.get(
+    '/content/:contentId/analytics',
+    creatorContentController.getContentAnalytics
+  );
 } else {
   router.get('/content/:contentId/analytics', (req, res) => {
     res.status(501).json({ message: 'Content analytics coming soon' });
@@ -213,12 +238,19 @@ if (creatorMessageController.deleteMessage) {
 // Upload message media (can be image or video)
 if (creatorMessageController.uploadMessageMedia) {
   // For messages, we'll use the content image upload middleware
-  router.post('/messages/media', contentImagesUpload, creatorMessageController.uploadMessageMedia);
+  router.post(
+    '/messages/media',
+    contentImagesUpload,
+    creatorMessageController.uploadMessageMedia
+  );
 }
 
 // Get message analytics
 if (creatorMessageController.getMessageAnalytics) {
-  router.get('/messages/analytics', creatorMessageController.getMessageAnalytics);
+  router.get(
+    '/messages/analytics',
+    creatorMessageController.getMessageAnalytics
+  );
 }
 
 // ==========================================
@@ -227,7 +259,10 @@ if (creatorMessageController.getMessageAnalytics) {
 
 // Get connection stack
 if (creatorConnectionController.getConnectionStack) {
-  router.get('/connections/stack', creatorConnectionController.getConnectionStack);
+  router.get(
+    '/connections/stack',
+    creatorConnectionController.getConnectionStack
+  );
 } else {
   router.get('/connections/stack', (req, res) => {
     res.status(501).json({ message: 'Connection stack coming soon' });
@@ -278,7 +313,10 @@ if (creatorEarningsController.getEarningsDashboard) {
 
 // Get transaction history
 if (creatorEarningsController.getTransactions) {
-  router.get('/earnings/transactions', creatorEarningsController.getTransactions);
+  router.get(
+    '/earnings/transactions',
+    creatorEarningsController.getTransactions
+  );
 }
 
 // Request payout
@@ -303,7 +341,10 @@ if (creatorEarningsController.updateFinancialGoals) {
 
 // Get earnings insights
 if (creatorEarningsController.getEarningsInsights) {
-  router.get('/earnings/insights', creatorEarningsController.getEarningsInsights);
+  router.get(
+    '/earnings/insights',
+    creatorEarningsController.getEarningsInsights
+  );
 }
 
 // ==========================================
@@ -317,7 +358,10 @@ if (creatorAnalyticsController.getAnalyticsDashboard) {
 
 // Get content analytics - added missing route
 if (creatorAnalyticsController.getContentAnalytics) {
-  router.get('/analytics/content', creatorAnalyticsController.getContentAnalytics);
+  router.get(
+    '/analytics/content',
+    creatorAnalyticsController.getContentAnalytics
+  );
 } else {
   router.get('/analytics/content', (req, res) => {
     res.status(501).json({ message: 'Content analytics coming soon' });
@@ -326,17 +370,26 @@ if (creatorAnalyticsController.getContentAnalytics) {
 
 // Get real-time analytics
 if (creatorAnalyticsController.getRealTimeAnalytics) {
-  router.get('/analytics/realtime', creatorAnalyticsController.getRealTimeAnalytics);
+  router.get(
+    '/analytics/realtime',
+    creatorAnalyticsController.getRealTimeAnalytics
+  );
 }
 
 // Get traffic analytics
 if (creatorAnalyticsController.getTrafficAnalytics) {
-  router.get('/analytics/traffic', creatorAnalyticsController.getTrafficAnalytics);
+  router.get(
+    '/analytics/traffic',
+    creatorAnalyticsController.getTrafficAnalytics
+  );
 }
 
 // Get funnel analytics
 if (creatorAnalyticsController.getFunnelAnalytics) {
-  router.get('/analytics/funnel', creatorAnalyticsController.getFunnelAnalytics);
+  router.get(
+    '/analytics/funnel',
+    creatorAnalyticsController.getFunnelAnalytics
+  );
 }
 
 // Get heatmap data
@@ -346,22 +399,34 @@ if (creatorAnalyticsController.getHeatmapData) {
 
 // Get competitor analysis
 if (creatorAnalyticsController.getCompetitorAnalysis) {
-  router.get('/analytics/competitors', creatorAnalyticsController.getCompetitorAnalysis);
+  router.get(
+    '/analytics/competitors',
+    creatorAnalyticsController.getCompetitorAnalysis
+  );
 }
 
 // Get A/B test results
 if (creatorAnalyticsController.getABTestResults) {
-  router.get('/analytics/experiments', creatorAnalyticsController.getABTestResults);
+  router.get(
+    '/analytics/experiments',
+    creatorAnalyticsController.getABTestResults
+  );
 }
 
 // Create new A/B test
 if (creatorAnalyticsController.createABTest) {
-  router.post('/analytics/experiments', creatorAnalyticsController.createABTest);
+  router.post(
+    '/analytics/experiments',
+    creatorAnalyticsController.createABTest
+  );
 }
 
 // Get predictive analytics
 if (creatorAnalyticsController.getPredictiveAnalytics) {
-  router.get('/analytics/predictions', creatorAnalyticsController.getPredictiveAnalytics);
+  router.get(
+    '/analytics/predictions',
+    creatorAnalyticsController.getPredictiveAnalytics
+  );
 }
 
 // Export analytics data
@@ -405,18 +470,24 @@ router.get('/members/discover', async (req, res) => {
 
     // Get the requesting creator's information and preferences
     const creatorId = req.user.id; // Assuming auth middleware provides user ID
-    const creator = await Creator.findOne({ user: creatorId })
-      .populate('user', 'email');
+    const creator = await Creator.findOne({ user: creatorId }).populate(
+      'user',
+      'email'
+    );
 
     if (!creator) {
       return res.status(404).json({
         success: false,
-        message: 'Creator profile not found'
+        message: 'Creator profile not found',
       });
     }
 
-    console.log(`🎯 Creator ${creator.username || creator.displayName} browsing members`);
-    console.log(`📋 Creator preferences: interested in ${creator.preferences?.interestedIn || ['everyone']}`);
+    console.log(
+      `🎯 Creator ${creator.username || creator.displayName} browsing members`
+    );
+    console.log(
+      `📋 Creator preferences: interested in ${creator.preferences?.interestedIn || ['everyone']}`
+    );
 
     // Helper function to check preference compatibility
     const isCompatible = (member, creator) => {
@@ -428,8 +499,12 @@ router.get('/members/discover', async (req, res) => {
       const memberInterestedIn = member.preferences?.interestedIn || [];
 
       console.log(`🔍 Checking compatibility:`);
-      console.log(`   Creator: ${creatorGender} interested in [${creatorInterestedIn.join(', ')}]`);
-      console.log(`   Member: ${memberGender} interested in [${memberInterestedIn.join(', ')}]`);
+      console.log(
+        `   Creator: ${creatorGender} interested in [${creatorInterestedIn.join(', ')}]`
+      );
+      console.log(
+        `   Member: ${memberGender} interested in [${memberInterestedIn.join(', ')}]`
+      );
 
       // If gender fields are missing, we can't properly filter
       if (!creatorGender || !memberGender) {
@@ -438,12 +513,14 @@ router.get('/members/discover', async (req, res) => {
       }
 
       // Check if creator is interested in member's gender
-      const creatorWantsMember = creatorInterestedIn.includes('everyone') ||
-                                 creatorInterestedIn.includes(memberGender);
+      const creatorWantsMember =
+        creatorInterestedIn.includes('everyone') ||
+        creatorInterestedIn.includes(memberGender);
 
       // Check if member is interested in creator's gender
-      const memberWantsCreator = memberInterestedIn.includes('everyone') ||
-                                 memberInterestedIn.includes(creatorGender);
+      const memberWantsCreator =
+        memberInterestedIn.includes('everyone') ||
+        memberInterestedIn.includes(creatorGender);
 
       // Both parties must be interested in each other's gender
       const compatible = creatorWantsMember && memberWantsCreator;
@@ -462,9 +539,13 @@ router.get('/members/discover', async (req, res) => {
       .limit(50); // Get more members
 
     // Filter members based on compatibility
-    const compatibleMembers = allMembers.filter(member => isCompatible(member, creator));
+    const compatibleMembers = allMembers.filter(member =>
+      isCompatible(member, creator)
+    );
 
-    console.log(`📊 Found ${allMembers.length} total members, ${compatibleMembers.length} compatible members`);
+    console.log(
+      `📊 Found ${allMembers.length} total members, ${compatibleMembers.length} compatible members`
+    );
 
     if (compatibleMembers.length === 0) {
       return res.json({
@@ -475,8 +556,8 @@ router.get('/members/discover', async (req, res) => {
         filters: {
           spendingTiers: ['whale', 'high', 'medium', 'low', 'new'],
           activityLevels: ['very-active', 'active', 'moderate', 'inactive'],
-          timeframes: ['today', 'week', 'month', 'all']
-        }
+          timeframes: ['today', 'week', 'month', 'all'],
+        },
       });
     }
 
@@ -487,8 +568,10 @@ router.get('/members/discover', async (req, res) => {
       .sort({ 'spending.totalSpent': -1 });
 
     // Filter profiles to only include compatible members
-    const compatibleProfiles = memberProfiles.filter(profile =>
-      profile.member && compatibleMemberIds.some(id => id.equals(profile.member._id))
+    const compatibleProfiles = memberProfiles.filter(
+      profile =>
+        profile.member &&
+        compatibleMemberIds.some(id => id.equals(profile.member._id))
     );
 
     // Create a map of member profiles by member ID for quick lookup
@@ -508,7 +591,8 @@ router.get('/members/discover', async (req, res) => {
         // Member has a profile - use rich data
         return {
           id: member._id,
-          username: member.username || `Member_${member._id.toString().slice(-4)}`,
+          username:
+            member.username || `Member_${member._id.toString().slice(-4)}`,
           isOnline: false, // Would need real-time tracking for this
           lastActive: member.lastActive || user?.lastLogin || new Date(),
           joinDate: user?.createdAt || new Date(),
@@ -519,22 +603,23 @@ router.get('/members/discover', async (req, res) => {
             averagePurchase: profile.spending.averagePurchase,
             contentPurchases: profile.activity.contentPurchases,
             messagesExchanged: profile.activity.messagesExchanged,
-            tipsGiven: profile.activity.tipsGiven
+            tipsGiven: profile.activity.tipsGiven,
           },
           activity: {
             lastPurchase: profile.spending.lastPurchaseDate || new Date(),
             purchaseFrequency: profile.spending.purchaseFrequency,
             engagementLevel: profile.activity.engagementLevel,
             hasSubscribed: profile.subscription.hasSubscribed,
-            subscriptionTier: profile.subscription.subscriptionTier
+            subscriptionTier: profile.subscription.subscriptionTier,
           },
-          badges: profile.badges || []
+          badges: profile.badges || [],
         };
       } else {
         // Member has no profile - use basic data
         return {
           id: member._id,
-          username: member.username || `Member_${member._id.toString().slice(-4)}`,
+          username:
+            member.username || `Member_${member._id.toString().slice(-4)}`,
           isOnline: false,
           lastActive: member.lastActive || user?.lastLogin || new Date(),
           joinDate: user?.createdAt || new Date(),
@@ -545,18 +630,20 @@ router.get('/members/discover', async (req, res) => {
             averagePurchase: 0,
             contentPurchases: member.purchasedContent?.length || 0,
             messagesExchanged: 0,
-            tipsGiven: 0
+            tipsGiven: 0,
           },
           activity: {
-            lastPurchase: member.purchasedContent && member.purchasedContent.length > 0
-              ? member.purchasedContent[member.purchasedContent.length - 1].purchaseDate
-              : null,
+            lastPurchase:
+              member.purchasedContent && member.purchasedContent.length > 0
+                ? member.purchasedContent[member.purchasedContent.length - 1]
+                    .purchaseDate
+                : null,
             purchaseFrequency: 'inactive',
             engagementLevel: 'inactive',
             hasSubscribed: false,
-            subscriptionTier: null
+            subscriptionTier: null,
           },
-          badges: ['newcomer']
+          badges: ['newcomer'],
         };
       }
     });
@@ -583,16 +670,15 @@ router.get('/members/discover', async (req, res) => {
       filters: {
         spendingTiers: ['whale', 'high', 'medium', 'low', 'new'],
         activityLevels: ['very-active', 'active', 'moderate', 'inactive'],
-        timeframes: ['today', 'week', 'month', 'all']
-      }
+        timeframes: ['today', 'week', 'month', 'all'],
+      },
     });
-
   } catch (error) {
     console.error('Error fetching members for discovery:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to load members',
-      error: error.message
+      error: error.message,
     });
   }
 });

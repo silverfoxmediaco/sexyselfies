@@ -34,7 +34,7 @@ router.get('/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
   });
 });
 
@@ -44,12 +44,12 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
     try {
       const { seedCreators } = require('../scripts/seedCreators');
       const result = await seedCreators();
-      
+
       res.json({
         success: true,
         message: 'Database seeded successfully!',
         timestamp: new Date(),
-        result
+        result,
       });
     } catch (error) {
       console.error('Seeding error:', error);
@@ -57,11 +57,11 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
         success: false,
         message: 'Failed to seed database',
         error: error.message,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     }
   });
-  
+
   router.get('/dev/seed-data', (req, res) => {
     res.json({
       success: true,
@@ -70,8 +70,13 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
       data: {
         creators: 7,
         members: 10,
-        includes: ['User records', 'Creator profiles', 'Member profiles', 'Cloudinary images']
-      }
+        includes: [
+          'User records',
+          'Creator profiles',
+          'Member profiles',
+          'Cloudinary images',
+        ],
+      },
     });
   });
 }
@@ -82,7 +87,7 @@ router.get('/version', (req, res) => {
     success: true,
     version: '1.0.0',
     api: 'SexySelfies API',
-    documentation: '/api/v1/docs'
+    documentation: '/api/v1/docs',
   });
 });
 
@@ -111,8 +116,8 @@ router.get('/docs', (req, res) => {
           'POST /login',
           'POST /logout',
           'GET /me',
-          'PUT /updatepassword'
-        ]
+          'PUT /updatepassword',
+        ],
       },
       creator: {
         base: '/api/v1/creator',
@@ -126,8 +131,8 @@ router.get('/docs', (req, res) => {
           'GET /analytics',
           'GET /browse-members',
           'GET /connections',
-          'POST /connections/:connectionId/accept'
-        ]
+          'POST /connections/:connectionId/accept',
+        ],
       },
       member: {
         base: '/api/v1/member',
@@ -139,8 +144,8 @@ router.get('/docs', (req, res) => {
           'GET /messages',
           'POST /messages',
           'POST /purchase/:contentId',
-          'GET /library'
-        ]
+          'GET /library',
+        ],
       },
       connections: {
         base: '/api/v1/connections',
@@ -168,8 +173,8 @@ router.get('/docs', (req, res) => {
           '--- Legacy Support ---',
           'GET /matches - Get all matches (legacy)',
           'GET /:connectionId - Get connection details',
-          'DELETE /:connectionId - Disconnect/Unmatch'
-        ]
+          'DELETE /:connectionId - Disconnect/Unmatch',
+        ],
       },
       admin: {
         base: '/api/v1/admin',
@@ -182,8 +187,8 @@ router.get('/docs', (req, res) => {
           'GET /analytics',
           'GET /verifications',
           'POST /verifications/:id/approve',
-          'POST /verifications/:id/reject'
-        ]
+          'POST /verifications/:id/reject',
+        ],
       },
       public: {
         base: '/api/v1/public',
@@ -192,8 +197,8 @@ router.get('/docs', (req, res) => {
           'GET /creator',
           'GET /creator/:username',
           'GET /categories',
-          'GET /search'
-        ]
+          'GET /search',
+        ],
       },
       upload: {
         base: '/api/v1/upload',
@@ -202,8 +207,8 @@ router.get('/docs', (req, res) => {
           'POST /content-images',
           'POST /content-video',
           'POST /message-media',
-          'POST /verification-documents'
-        ]
+          'POST /verification-documents',
+        ],
       },
       payment: {
         base: '/api/v1/payment',
@@ -214,10 +219,10 @@ router.get('/docs', (req, res) => {
           'POST /subscription',
           'GET /history',
           'POST /payout/request',
-          'GET /payout/status'
-        ]
-      }
-    }
+          'GET /payout/status',
+        ],
+      },
+    },
   });
 });
 
@@ -232,7 +237,7 @@ router.use((req, res, next) => {
     message: 'API endpoint not found',
     path: req.originalUrl,
     method: req.method,
-    timestamp: new Date()
+    timestamp: new Date(),
   });
 });
 
@@ -244,40 +249,40 @@ router.use((error, req, res, next) => {
     path: req.path,
     method: req.method,
     body: req.body,
-    user: req.user?.id
+    user: req.user?.id,
   });
-  
+
   // Handle specific error types
   if (error.name === 'ValidationError') {
     return res.status(400).json({
       success: false,
       message: 'Validation error',
-      errors: Object.values(error.errors).map(e => e.message)
+      errors: Object.values(error.errors).map(e => e.message),
     });
   }
-  
+
   if (error.name === 'UnauthorizedError') {
     return res.status(401).json({
       success: false,
-      message: 'Unauthorized access'
+      message: 'Unauthorized access',
     });
   }
-  
+
   if (error.name === 'MulterError') {
     return res.status(400).json({
       success: false,
       message: 'File upload error',
-      error: error.message
+      error: error.message,
     });
   }
-  
+
   // Default error response
   const isDevelopment = process.env.NODE_ENV === 'development';
-  
+
   res.status(error.status || 500).json({
     success: false,
     message: error.message || 'Internal server error',
-    ...(isDevelopment && { stack: error.stack })
+    ...(isDevelopment && { stack: error.stack }),
   });
 });
 

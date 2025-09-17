@@ -10,7 +10,7 @@ const {
   getEarningsReport,
   requestPayout,
   getPayoutHistory,
-  handleCCBillWebhook
+  handleCCBillWebhook,
 } = require('../controllers/transaction.controller');
 
 router.use(protect);
@@ -27,6 +27,10 @@ router.post('/payout/request', authorize('creator'), requestPayout);
 router.get('/payout/history', authorize('creator'), getPayoutHistory);
 
 // Webhook (no auth needed)
-router.post('/webhook/ccbill', express.raw({ type: 'application/json' }), handleCCBillWebhook);
+router.post(
+  '/webhook/ccbill',
+  express.raw({ type: 'application/json' }),
+  handleCCBillWebhook
+);
 
 module.exports = router;

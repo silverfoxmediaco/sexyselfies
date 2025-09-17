@@ -28,7 +28,7 @@
   .VerificationModal-overlay {
     padding: 0;
   }
-  
+
   .VerificationModal-content {
     border-radius: 0;
     max-width: 100%;
@@ -384,27 +384,27 @@
   .VerificationModal-infoGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .VerificationModal-documentsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .VerificationModal-actions {
     flex-direction: column;
   }
-  
+
   .VerificationModal-rejectActions {
     flex-direction: column;
   }
-  
+
   .VerificationModal-keyboardHints {
     flex-wrap: wrap;
   }
-  
+
   .VerificationModal-documentViewer {
     padding: var(--space-md);
   }
-  
+
   .VerificationModal-documentClose {
     top: -40px;
     font-size: 28px;

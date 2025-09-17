@@ -1,11 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Users, Search, Filter, Star, DollarSign, Calendar,
-  MapPin, Eye, MessageCircle, Gift, MoreHorizontal,
-  TrendingUp, Clock, Award, Zap, SortAsc, SortDesc,
-  UserPlus, ChevronRight, Activity, Crown, Heart
+import {
+  Users,
+  Search,
+  Filter,
+  Star,
+  DollarSign,
+  Calendar,
+  MapPin,
+  Eye,
+  MessageCircle,
+  Gift,
+  MoreHorizontal,
+  TrendingUp,
+  Clock,
+  Award,
+  Zap,
+  SortAsc,
+  SortDesc,
+  UserPlus,
+  ChevronRight,
+  Activity,
+  Crown,
+  Heart,
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, getUserRole } from '../utils/mobileDetection';
@@ -26,7 +44,7 @@ const CreatorManageMembers = () => {
     totalMembers: 0,
     activeMembers: 0,
     totalRevenue: 0,
-    avgSpending: 0
+    avgSpending: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -35,14 +53,14 @@ const CreatorManageMembers = () => {
     { value: 'premium', label: 'Premium' },
     { value: 'active', label: 'Active' },
     { value: 'high-spenders', label: 'High Spenders' },
-    { value: 'recent', label: 'Recently Joined' }
+    { value: 'recent', label: 'Recently Joined' },
   ];
 
   const sortOptions = [
     { value: 'totalSpent', label: 'Total Spent' },
     { value: 'lastActive', label: 'Last Active' },
     { value: 'joinedDate', label: 'Join Date' },
-    { value: 'name', label: 'Name' }
+    { value: 'name', label: 'Name' },
   ];
 
   useEffect(() => {
@@ -52,15 +70,17 @@ const CreatorManageMembers = () => {
   const loadMembers = async () => {
     setLoading(true);
     try {
-      const isDevelopment = import.meta.env.DEV || localStorage.getItem('token') === 'dev-token-12345';
-      
+      const isDevelopment =
+        import.meta.env.DEV ||
+        localStorage.getItem('token') === 'dev-token-12345';
+
       if (isDevelopment) {
         // Mock data for member management
         const mockStats = {
           totalMembers: 347,
           activeMembers: 89,
           totalRevenue: 12450.75,
-          avgSpending: 35.85
+          avgSpending: 35.85,
         };
 
         const mockMembers = [
@@ -74,13 +94,13 @@ const CreatorManageMembers = () => {
             lastActive: '5 min ago',
             isOnline: true,
             isPremium: true,
-            totalSpent: 1245.50,
+            totalSpent: 1245.5,
             purchasesCount: 23,
             rating: 5,
             tier: 'VIP',
             favoriteContent: 'Photos',
             lastPurchase: '2 hours ago',
-            status: 'active'
+            status: 'active',
           },
           {
             id: 2,
@@ -98,7 +118,7 @@ const CreatorManageMembers = () => {
             tier: 'Regular',
             favoriteContent: 'Videos',
             lastPurchase: '1 day ago',
-            status: 'active'
+            status: 'active',
           },
           {
             id: 3,
@@ -110,13 +130,13 @@ const CreatorManageMembers = () => {
             lastActive: '1 day ago',
             isOnline: false,
             isPremium: true,
-            totalSpent: 2340.00,
+            totalSpent: 2340.0,
             purchasesCount: 45,
             rating: 5,
             tier: 'VIP',
             favoriteContent: 'Custom Content',
             lastPurchase: '3 hours ago',
-            status: 'active'
+            status: 'active',
           },
           {
             id: 4,
@@ -134,7 +154,7 @@ const CreatorManageMembers = () => {
             tier: 'New',
             favoriteContent: 'Messages',
             lastPurchase: '1 week ago',
-            status: 'inactive'
+            status: 'inactive',
           },
           {
             id: 5,
@@ -152,7 +172,7 @@ const CreatorManageMembers = () => {
             tier: 'Premium',
             favoriteContent: 'Live Shows',
             lastPurchase: '30 min ago',
-            status: 'active'
+            status: 'active',
           },
           {
             id: 6,
@@ -164,14 +184,14 @@ const CreatorManageMembers = () => {
             lastActive: '12 hours ago',
             isOnline: false,
             isPremium: true,
-            totalSpent: 1567.50,
+            totalSpent: 1567.5,
             purchasesCount: 31,
             rating: 4,
             tier: 'VIP',
             favoriteContent: 'Photos',
             lastPurchase: '4 hours ago',
-            status: 'active'
-          }
+            status: 'active',
+          },
         ];
 
         setTimeout(() => {
@@ -194,12 +214,16 @@ const CreatorManageMembers = () => {
 
   const filteredAndSortedMembers = members
     .filter(member => {
-      const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = filterBy === 'all' || 
-                           (filterBy === 'premium' && member.isPremium) ||
-                           (filterBy === 'active' && member.status === 'active') ||
-                           (filterBy === 'high-spenders' && member.totalSpent > 500) ||
-                           (filterBy === 'recent' && new Date(member.joinedDate) > new Date('2024-01-10'));
+      const matchesSearch = member.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesFilter =
+        filterBy === 'all' ||
+        (filterBy === 'premium' && member.isPremium) ||
+        (filterBy === 'active' && member.status === 'active') ||
+        (filterBy === 'high-spenders' && member.totalSpent > 500) ||
+        (filterBy === 'recent' &&
+          new Date(member.joinedDate) > new Date('2024-01-10'));
       return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
@@ -220,24 +244,29 @@ const CreatorManageMembers = () => {
       return sortOrder === 'desc' ? -comparison : comparison;
     });
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount);
   };
 
-  const getTierBadgeClass = (tier) => {
+  const getTierBadgeClass = tier => {
     switch (tier) {
-      case 'VIP': return 'tier-vip';
-      case 'Premium': return 'tier-premium';
-      case 'Regular': return 'tier-regular';
-      case 'New': return 'tier-new';
-      default: return 'tier-regular';
+      case 'VIP':
+        return 'tier-vip';
+      case 'Premium':
+        return 'tier-premium';
+      case 'Regular':
+        return 'tier-regular';
+      case 'New':
+        return 'tier-new';
+      default:
+        return 'tier-regular';
     }
   };
 
-  const getRatingStars = (rating) => {
+  const getRatingStars = rating => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
@@ -249,25 +278,25 @@ const CreatorManageMembers = () => {
 
   if (loading) {
     return (
-      <div className="members-loading">
-        <div className="loading-spinner"></div>
+      <div className='members-loading'>
+        <div className='loading-spinner'></div>
         <p>Loading your members...</p>
       </div>
     );
   }
 
   return (
-    <div className="creator-manage-members">
+    <div className='creator-manage-members'>
       {/* Header */}
-      <div className="members-header">
-        <div className="members-header-content">
+      <div className='members-header'>
+        <div className='members-header-content'>
           <h1>
             <Users size={24} />
             Manage Members
           </h1>
-          <div className="members-header-actions">
+          <div className='members-header-actions'>
             <button
-              className="members-filter-btn"
+              className='members-filter-btn'
               onClick={() => setShowFilters(!showFilters)}
             >
               <Filter size={18} />
@@ -277,87 +306,91 @@ const CreatorManageMembers = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className="members-overview">
-        <div className="members-stats-grid">
-          <motion.div 
-            className="members-stat-card"
+      <div className='members-overview'>
+        <div className='members-stats-grid'>
+          <motion.div
+            className='members-stat-card'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <div className="members-stat-icon total">
+            <div className='members-stat-icon total'>
               <Users size={20} />
             </div>
-            <div className="members-stat-content">
-              <span className="members-stat-value">{stats.totalMembers}</span>
-              <span className="members-stat-label">Total Members</span>
+            <div className='members-stat-content'>
+              <span className='members-stat-value'>{stats.totalMembers}</span>
+              <span className='members-stat-label'>Total Members</span>
             </div>
           </motion.div>
 
-          <motion.div 
-            className="members-stat-card"
+          <motion.div
+            className='members-stat-card'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="members-stat-icon active">
+            <div className='members-stat-icon active'>
               <Activity size={20} />
             </div>
-            <div className="members-stat-content">
-              <span className="members-stat-value">{stats.activeMembers}</span>
-              <span className="members-stat-label">Active Members</span>
+            <div className='members-stat-content'>
+              <span className='members-stat-value'>{stats.activeMembers}</span>
+              <span className='members-stat-label'>Active Members</span>
             </div>
           </motion.div>
 
-          <motion.div 
-            className="members-stat-card"
+          <motion.div
+            className='members-stat-card'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className="members-stat-icon revenue">
+            <div className='members-stat-icon revenue'>
               <DollarSign size={20} />
             </div>
-            <div className="members-stat-content">
-              <span className="members-stat-value">{formatCurrency(stats.totalRevenue)}</span>
-              <span className="members-stat-label">Total Revenue</span>
+            <div className='members-stat-content'>
+              <span className='members-stat-value'>
+                {formatCurrency(stats.totalRevenue)}
+              </span>
+              <span className='members-stat-label'>Total Revenue</span>
             </div>
           </motion.div>
 
-          <motion.div 
-            className="members-stat-card"
+          <motion.div
+            className='members-stat-card'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <div className="members-stat-icon average">
+            <div className='members-stat-icon average'>
               <TrendingUp size={20} />
             </div>
-            <div className="members-stat-content">
-              <span className="members-stat-value">{formatCurrency(stats.avgSpending)}</span>
-              <span className="members-stat-label">Avg Spending</span>
+            <div className='members-stat-content'>
+              <span className='members-stat-value'>
+                {formatCurrency(stats.avgSpending)}
+              </span>
+              <span className='members-stat-label'>Avg Spending</span>
             </div>
           </motion.div>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="members-controls">
-        <div className="members-search-bar">
+      <div className='members-controls'>
+        <div className='members-search-bar'>
           <Search size={20} />
           <input
-            type="text"
-            placeholder="Search members..."
+            type='text'
+            placeholder='Search members...'
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className="members-filters">
+        <div className='members-filters'>
           <select
             value={filterBy}
-            onChange={(e) => setFilterBy(e.target.value)}
-            className="members-filter-select"
+            onChange={e => setFilterBy(e.target.value)}
+            className='members-filter-select'
           >
             {filterOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -368,8 +401,8 @@ const CreatorManageMembers = () => {
 
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="members-sort-select"
+            onChange={e => setSortBy(e.target.value)}
+            className='members-sort-select'
           >
             {sortOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -379,18 +412,22 @@ const CreatorManageMembers = () => {
           </select>
 
           <button
-            className="members-sort-order-btn"
+            className='members-sort-order-btn'
             onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
           >
-            {sortOrder === 'asc' ? <SortAsc size={18} /> : <SortDesc size={18} />}
+            {sortOrder === 'asc' ? (
+              <SortAsc size={18} />
+            ) : (
+              <SortDesc size={18} />
+            )}
           </button>
         </div>
       </div>
 
       {/* Members List */}
-      <div className="members-list">
+      <div className='members-list'>
         {filteredAndSortedMembers.length === 0 ? (
-          <div className="members-empty">
+          <div className='members-empty'>
             <Users size={64} />
             <h3>No members found</h3>
             <p>Start connecting with members to see them here!</p>
@@ -399,101 +436,109 @@ const CreatorManageMembers = () => {
           filteredAndSortedMembers.map((member, index) => (
             <motion.div
               key={member.id}
-              className="members-item"
+              className='members-item'
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
               onClick={() => navigate(`/creator/member/${member.id}`)}
             >
-              <div className="members-avatar">
+              <div className='members-avatar'>
                 {member.avatar ? (
                   <img src={member.avatar} alt={member.name} />
                 ) : (
-                  <div className="members-avatar-placeholder">
+                  <div className='members-avatar-placeholder'>
                     {member.name.charAt(0)}
                   </div>
                 )}
-                {member.isOnline && <div className="members-online-indicator"></div>}
+                {member.isOnline && (
+                  <div className='members-online-indicator'></div>
+                )}
                 {member.isPremium && (
-                  <div className="members-premium-badge">
+                  <div className='members-premium-badge'>
                     <Crown size={12} />
                   </div>
                 )}
               </div>
 
-              <div className="members-info">
-                <div className="members-main-info">
-                  <div className="members-name-section">
+              <div className='members-info'>
+                <div className='members-main-info'>
+                  <div className='members-name-section'>
                     <h3>{member.name}</h3>
-                    <div className={`members-tier-badge ${getTierBadgeClass(member.tier)}`}>
+                    <div
+                      className={`members-tier-badge ${getTierBadgeClass(member.tier)}`}
+                    >
                       {member.tier}
                     </div>
-                    <div className="members-rating">
+                    <div className='members-rating'>
                       {getRatingStars(member.rating)}
                     </div>
                   </div>
-                  <div className="members-meta">
-                    <span className="members-age">{member.age}</span>
-                    <span className="members-location">
+                  <div className='members-meta'>
+                    <span className='members-age'>{member.age}</span>
+                    <span className='members-location'>
                       <MapPin size={12} />
                       {member.location}
                     </span>
                   </div>
                 </div>
 
-                <div className="members-stats-row">
-                  <div className="members-spent">
+                <div className='members-stats-row'>
+                  <div className='members-spent'>
                     <DollarSign size={14} />
-                    <span className="amount">{formatCurrency(member.totalSpent)}</span>
-                    <span className="count">({member.purchasesCount} purchases)</span>
+                    <span className='amount'>
+                      {formatCurrency(member.totalSpent)}
+                    </span>
+                    <span className='count'>
+                      ({member.purchasesCount} purchases)
+                    </span>
                   </div>
-                  <div className="members-activity">
+                  <div className='members-activity'>
                     <Clock size={14} />
                     <span>Last active: {member.lastActive}</span>
                   </div>
                 </div>
 
-                <div className="members-details-row">
-                  <div className="members-joined">
+                <div className='members-details-row'>
+                  <div className='members-joined'>
                     <Calendar size={14} />
                     <span>Joined {member.joinedDate}</span>
                   </div>
-                  <div className="members-favorite">
+                  <div className='members-favorite'>
                     <Heart size={14} />
                     <span>Loves: {member.favoriteContent}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="members-actions">
-                <button 
-                  className="members-action-btn"
-                  onClick={(e) => {
+              <div className='members-actions'>
+                <button
+                  className='members-action-btn'
+                  onClick={e => {
                     e.stopPropagation();
                     navigate(`/creator/chat/${member.id}`);
                   }}
                 >
                   <MessageCircle size={18} />
                 </button>
-                <button 
-                  className="members-action-btn"
-                  onClick={(e) => {
+                <button
+                  className='members-action-btn'
+                  onClick={e => {
                     e.stopPropagation();
                     // Handle send offer
                   }}
                 >
                   <Gift size={18} />
                 </button>
-                <button 
-                  className="members-action-btn"
-                  onClick={(e) => {
+                <button
+                  className='members-action-btn'
+                  onClick={e => {
                     e.stopPropagation();
                     // Handle more actions
                   }}
                 >
                   <MoreHorizontal size={18} />
                 </button>
-                <ChevronRight size={20} className="members-chevron" />
+                <ChevronRight size={20} className='members-chevron' />
               </div>
             </motion.div>
           ))
@@ -501,11 +546,11 @@ const CreatorManageMembers = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="members-quick-actions">
+      <div className='members-quick-actions'>
         <h3>Quick Actions</h3>
-        <div className="members-actions-grid">
+        <div className='members-actions-grid'>
           <motion.button
-            className="members-quick-action-btn"
+            className='members-quick-action-btn'
             onClick={() => navigate('/creator/analytics')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -515,7 +560,7 @@ const CreatorManageMembers = () => {
           </motion.button>
 
           <motion.button
-            className="members-quick-action-btn"
+            className='members-quick-action-btn'
             onClick={() => navigate('/creator/content-upload')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -525,7 +570,7 @@ const CreatorManageMembers = () => {
           </motion.button>
 
           <motion.button
-            className="members-quick-action-btn"
+            className='members-quick-action-btn'
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -534,7 +579,7 @@ const CreatorManageMembers = () => {
           </motion.button>
 
           <motion.button
-            className="members-quick-action-btn"
+            className='members-quick-action-btn'
             onClick={() => navigate('/creator/earnings')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -544,7 +589,7 @@ const CreatorManageMembers = () => {
           </motion.button>
         </div>
       </div>
-      
+
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>

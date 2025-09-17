@@ -28,8 +28,8 @@ if (EMAIL_USER && EMAIL_PASS) {
         secure: EMAIL_PORT == 465, // true for 465, false for other ports
         auth: {
           user: EMAIL_USER,
-          pass: EMAIL_PASS
-        }
+          pass: EMAIL_PASS,
+        },
       });
     } else {
       // Use service preset (gmail, outlook, etc.)
@@ -37,13 +37,13 @@ if (EMAIL_USER && EMAIL_PASS) {
         service: EMAIL_SERVICE,
         auth: {
           user: EMAIL_USER,
-          pass: EMAIL_PASS
-        }
+          pass: EMAIL_PASS,
+        },
       });
     }
-    
+
     // Verify transporter configuration
-    emailTransporter.verify(function(error, success) {
+    emailTransporter.verify(function (error, success) {
       if (error) {
         console.error('Email transporter verification failed:', error);
         emailTransporter = null; // Disable if verification fails
@@ -56,7 +56,9 @@ if (EMAIL_USER && EMAIL_PASS) {
     emailTransporter = null;
   }
 } else {
-  console.log('⚠️ Email service not configured. Set EMAIL_USER and EMAIL_PASS in .env file');
+  console.log(
+    '⚠️ Email service not configured. Set EMAIL_USER and EMAIL_PASS in .env file'
+  );
 }
 
 // Configure web push (keep existing code)
@@ -76,20 +78,28 @@ if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
  * Send welcome email with login link
  * This is the main function called during registration
  */
-exports.sendVerificationEmail = async (email, verificationToken, username, userRole = 'member') => {
+exports.sendVerificationEmail = async (
+  email,
+  verificationToken,
+  username,
+  userRole = 'member'
+) => {
   // For development, just log if email is not configured
   if (!emailTransporter) {
-    console.log(`📧 [DEV MODE] Would send welcome email to: ${email} for user: ${username} (${userRole})`);
+    console.log(
+      `📧 [DEV MODE] Would send welcome email to: ${email} for user: ${username} (${userRole})`
+    );
     return { success: true, dev: true };
   }
 
-  const APP_URL = process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5174';
+  const APP_URL =
+    process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5174';
   const APP_NAME = process.env.APP_NAME || 'SexySelfies';
-  
+
   // Determine correct login page based on user role
   const loginPath = userRole === 'creator' ? '/creator/login' : '/member/login';
   const loginUrl = `${APP_URL}${loginPath}`;
-  
+
   const mailOptions = {
     from: `${APP_NAME} <${EMAIL_USER}>`,
     to: email,
@@ -134,9 +144,9 @@ exports.sendVerificationEmail = async (email, verificationToken, username, userR
         </div>
       </body>
       </html>
-    `
+    `,
   };
-  
+
   try {
     const result = await emailTransporter.sendMail(mailOptions);
     console.log('✅ Welcome email sent successfully to:', email);

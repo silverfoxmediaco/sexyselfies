@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 /**
  * usePullToRefresh Hook
  * Implements pull-to-refresh functionality for mobile
- * 
+ *
  * @param {Function} onRefresh - Function to call when refreshing
  * @param {Object} options - Configuration options
  * @returns {Object} - Hook state and methods
@@ -22,7 +22,7 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
     onPullStart = null,
     onPullMove = null,
     onPullEnd = null,
-    onRefreshComplete = null
+    onRefreshComplete = null,
   } = options;
 
   // State
@@ -54,75 +54,89 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
   /**
    * Handle touch start
    */
-  const handleTouchStart = useCallback((e) => {
-    if (disabled || isRefreshing) return;
-    
-    if (!checkScrollPosition()) return;
+  const handleTouchStart = useCallback(
+    e => {
+      if (disabled || isRefreshing) return;
 
-    const touch = e.touches[0];
-    startYRef.current = touch.clientY;
-    setIsPulling(true);
+      if (!checkScrollPosition()) return;
 
-    if (onPullStart) {
-      onPullStart();
-    }
-  }, [disabled, isRefreshing, checkScrollPosition, onPullStart]);
+      const touch = e.touches[0];
+      startYRef.current = touch.clientY;
+      setIsPulling(true);
+
+      if (onPullStart) {
+        onPullStart();
+      }
+    },
+    [disabled, isRefreshing, checkScrollPosition, onPullStart]
+  );
 
   /**
    * Handle touch move
    */
-  const handleTouchMove = useCallback((e) => {
-    if (disabled || isRefreshing || !isPulling) return;
-    if (!isScrolledToTopRef.current) return;
+  const handleTouchMove = useCallback(
+    e => {
+      if (disabled || isRefreshing || !isPulling) return;
+      if (!isScrolledToTopRef.current) return;
 
-    const touch = e.touches[0];
-    currentYRef.current = touch.clientY;
-    
-    const diff = currentYRef.current - startYRef.current;
-    
-    if (diff > 0) {
-      e.preventDefault();
-      
-      // Apply resistance
-      const adjustedDistance = diff / resistance;
-      const actualDistance = Math.min(adjustedDistance, maxPull);
-      
-      setPullDistance(actualDistance);
-      
-      // Calculate progress (0 to 1)
-      const progress = Math.min(actualDistance / threshold, 1);
-      setPullProgress(progress);
-      
-      // Check if can refresh
-      setCanRefresh(actualDistance >= threshold);
-      
-      // Apply transform to content
-      if (contentRef.current) {
-        contentRef.current.style.transform = `translateY(${actualDistance}px)`;
-        contentRef.current.style.transition = 'none';
-      }
-      
-      // Update indicator
-      if (indicatorRef.current) {
-        indicatorRef.current.style.transform = `translateY(${actualDistance}px)`;
-        indicatorRef.current.style.opacity = progress;
-        
-        // Rotate spinner based on progress
-        const spinner = indicatorRef.current.querySelector('.ptr-spinner');
-        if (spinner) {
-          spinner.style.transform = `rotate(${progress * 360}deg)`;
+      const touch = e.touches[0];
+      currentYRef.current = touch.clientY;
+
+      const diff = currentYRef.current - startYRef.current;
+
+      if (diff > 0) {
+        e.preventDefault();
+
+        // Apply resistance
+        const adjustedDistance = diff / resistance;
+        const actualDistance = Math.min(adjustedDistance, maxPull);
+
+        setPullDistance(actualDistance);
+
+        // Calculate progress (0 to 1)
+        const progress = Math.min(actualDistance / threshold, 1);
+        setPullProgress(progress);
+
+        // Check if can refresh
+        setCanRefresh(actualDistance >= threshold);
+
+        // Apply transform to content
+        if (contentRef.current) {
+          contentRef.current.style.transform = `translateY(${actualDistance}px)`;
+          contentRef.current.style.transition = 'none';
+        }
+
+        // Update indicator
+        if (indicatorRef.current) {
+          indicatorRef.current.style.transform = `translateY(${actualDistance}px)`;
+          indicatorRef.current.style.opacity = progress;
+
+          // Rotate spinner based on progress
+          const spinner = indicatorRef.current.querySelector('.ptr-spinner');
+          if (spinner) {
+            spinner.style.transform = `rotate(${progress * 360}deg)`;
+          }
+        }
+
+        if (onPullMove) {
+          onPullMove({
+            distance: actualDistance,
+            progress,
+            canRefresh: actualDistance >= threshold,
+          });
         }
       }
-
-      if (onPullMove) {
-        onPullMove({
-          distance: actualDistance,
-          progress,
-          canRefresh: actualDistance >= threshold
-        });
-      }
-    }
-  }, [disabled, isRefreshing, isPulling, maxPull, threshold, resistance, onPullMove]);
+    },
+    [
+      disabled,
+      isRefreshing,
+      isPulling,
+      maxPull,
+      threshold,
+      resistance,
+      onPullMove,
+    ]
+  );
 
   /**
    * Handle touch end
@@ -135,20 +149,20 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
     if (onPullEnd) {
       onPullEnd({
         distance: pullDistance,
-        canRefresh
+        canRefresh,
       });
     }
 
     if (canRefresh && pullDistance >= threshold) {
       // Start refreshing
       setIsRefreshing(true);
-      
+
       // Snap to refresh position
       if (contentRef.current) {
         contentRef.current.style.transform = `translateY(${indicatorHeight}px)`;
         contentRef.current.style.transition = `transform ${snapbackDuration}ms ease`;
       }
-      
+
       if (indicatorRef.current) {
         indicatorRef.current.style.transform = `translateY(${indicatorHeight}px)`;
         indicatorRef.current.classList.add('refreshing');
@@ -171,7 +185,19 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
       // Snap back
       resetPosition();
     }
-  }, [disabled, isRefreshing, isPulling, pullDistance, canRefresh, threshold, indicatorHeight, snapbackDuration, onPullEnd, onRefresh, refreshTimeout]);
+  }, [
+    disabled,
+    isRefreshing,
+    isPulling,
+    pullDistance,
+    canRefresh,
+    threshold,
+    indicatorHeight,
+    snapbackDuration,
+    onPullEnd,
+    onRefresh,
+    refreshTimeout,
+  ]);
 
   /**
    * Complete refresh
@@ -179,7 +205,7 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
   const completeRefresh = useCallback(() => {
     setIsRefreshing(false);
     setCanRefresh(false);
-    
+
     // Clear timeout
     if (refreshTimeoutRef.current) {
       clearTimeout(refreshTimeoutRef.current);
@@ -204,12 +230,12 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
   const resetPosition = useCallback(() => {
     setPullDistance(0);
     setPullProgress(0);
-    
+
     if (contentRef.current) {
       contentRef.current.style.transform = 'translateY(0)';
       contentRef.current.style.transition = `transform ${snapbackDuration}ms ease`;
     }
-    
+
     if (indicatorRef.current) {
       indicatorRef.current.style.transform = 'translateY(0)';
       indicatorRef.current.style.opacity = '0';
@@ -242,7 +268,7 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
       </div>
       <div class="ptr-text">Pull to refresh</div>
     `;
-    
+
     // Apply styles
     indicator.style.cssText = `
       position: fixed;
@@ -267,7 +293,7 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
   /**
    * Set container element
    */
-  const setContainer = useCallback((element) => {
+  const setContainer = useCallback(element => {
     containerRef.current = element;
     contentRef.current = element;
   }, []);
@@ -279,7 +305,7 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
     if (isRefreshing || disabled) return;
 
     setIsRefreshing(true);
-    
+
     try {
       await onRefresh();
     } catch (error) {
@@ -296,15 +322,19 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
     if (disabled) return;
 
     const element = containerRef.current || document.body;
-    
+
     // Touch events
-    element.addEventListener('touchstart', handleTouchStart, { passive: false });
+    element.addEventListener('touchstart', handleTouchStart, {
+      passive: false,
+    });
     element.addEventListener('touchmove', handleTouchMove, { passive: false });
     element.addEventListener('touchend', handleTouchEnd, { passive: true });
-    
+
     // Scroll listener
     const scrollElement = container || window;
-    scrollElement.addEventListener('scroll', checkScrollPosition, { passive: true });
+    scrollElement.addEventListener('scroll', checkScrollPosition, {
+      passive: true,
+    });
 
     // Create and append indicator
     if (showIndicator && !indicatorRef.current) {
@@ -327,7 +357,16 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
         clearTimeout(refreshTimeoutRef.current);
       }
     };
-  }, [disabled, container, handleTouchStart, handleTouchMove, handleTouchEnd, checkScrollPosition, showIndicator, createIndicator]);
+  }, [
+    disabled,
+    container,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    checkScrollPosition,
+    showIndicator,
+    createIndicator,
+  ]);
 
   return {
     // State
@@ -336,14 +375,14 @@ export const usePullToRefresh = (onRefresh, options = {}) => {
     pullDistance,
     pullProgress,
     canRefresh,
-    
+
     // Methods
     triggerRefresh,
     setContainer,
-    
+
     // Utils
     isActive: isPulling || isRefreshing,
-    progressPercentage: Math.round(pullProgress * 100)
+    progressPercentage: Math.round(pullProgress * 100),
   };
 };
 

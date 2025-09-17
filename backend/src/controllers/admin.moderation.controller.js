@@ -12,21 +12,21 @@ const Transaction = require('../models/Transaction');
 // @access  Private - Admin
 exports.getPendingReports = async (req, res) => {
   try {
-    const { 
+    const {
       status = 'pending',
       severity,
       reportType,
       page = 1,
       limit = 20,
-      sortBy = '-createdAt'
+      sortBy = '-createdAt',
     } = req.query;
-    
+
     const query = {};
-    
+
     if (status) query.status = status;
     if (severity) query.severity = severity;
     if (reportType) query.reportType = reportType;
-    
+
     const reports = await AdminReport.find(query)
       .populate('reportedUser', 'email role')
       .populate('reportedBy', 'email')
@@ -35,26 +35,25 @@ exports.getPendingReports = async (req, res) => {
       .sort(sortBy)
       .limit(limit * 1)
       .skip((page - 1) * limit);
-    
+
     const total = await AdminReport.countDocuments(query);
-    
+
     // Get statistics
     const stats = await AdminReport.getDashboardStats();
-    
+
     res.status(200).json({
       success: true,
       count: reports.length,
       total,
       pages: Math.ceil(total / limit),
       stats,
-      data: reports
+      data: reports,
     });
-    
   } catch (error) {
     console.error('Get pending reports error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch reports'
+      error: 'Failed to fetch reports',
     });
   }
 };
@@ -66,78 +65,80 @@ exports.resolveReport = async (req, res) => {
   try {
     const { reportId } = req.params;
     const { action, reason, details, strikeIssued } = req.body;
-    
-    const report = await AdminReport.findById(reportId)
-      .populate('reportedUser');
-    
+
+    const report =
+      await AdminReport.findById(reportId).populate('reportedUser');
+
     if (!report) {
       return res.status(404).json({
         success: false,
-        error: 'Report not found'
+        error: 'Report not found',
       });
     }
-    
+
     // Resolve the report
     await report.resolve(req.admin.id, {
       action,
       reason,
-      details
+      details,
     });
-    
+
     // Get or create user violation record
-    let userViolation = await UserViolation.findOne({ user: report.reportedUser._id });
-    
+    let userViolation = await UserViolation.findOne({
+      user: report.reportedUser._id,
+    });
+
     if (!userViolation) {
       userViolation = await UserViolation.create({
         user: report.reportedUser._id,
-        userType: report.reportedUser.role
+        userType: report.reportedUser.role,
       });
     }
-    
+
     // Handle different actions
-    switch(action) {
+    switch (action) {
       case 'user_warned':
         await userViolation.addWarning(reason, 'caution', req.admin.id);
         break;
-        
+
       case 'user_suspended_24h':
         await userViolation.suspend(24, reason, req.admin.id);
         break;
-        
+
       case 'user_suspended_7d':
         await userViolation.suspend(7 * 24, reason, req.admin.id);
         if (strikeIssued) {
           await userViolation.addStrike(reason, req.admin.id);
         }
         break;
-        
+
       case 'user_suspended_30d':
         await userViolation.suspend(30 * 24, reason, req.admin.id);
         if (strikeIssued) {
           await userViolation.addStrike(reason, req.admin.id);
         }
         break;
-        
+
       case 'user_banned':
         await userViolation.ban(reason, req.admin.id);
         break;
-        
+
       case 'content_removed':
         if (report.reportedContent) {
           await Content.findByIdAndUpdate(report.reportedContent, {
             isActive: false,
             removedBy: req.admin.id,
             removedReason: reason,
-            removedAt: new Date()
+            removedAt: new Date(),
           });
         }
         break;
-        
+
       case 'payout_frozen':
         await userViolation.freezePayouts(30, req.admin.id);
         break;
     }
-    
+
     // Add violation record
     if (action !== 'no_action' && action !== 'false_report') {
       userViolation.violations.push({
@@ -145,25 +146,24 @@ exports.resolveReport = async (req, res) => {
         type: report.reportType,
         severity: report.severity,
         description: reason,
-        issuedBy: req.admin.id
+        issuedBy: req.admin.id,
       });
       await userViolation.save();
     }
-    
+
     // Send notification to user (implement email/notification service)
     // await notificationService.sendViolationNotice(report.reportedUser, action, reason);
-    
+
     res.status(200).json({
       success: true,
       message: 'Report resolved successfully',
-      data: report
+      data: report,
     });
-    
   } catch (error) {
     console.error('Resolve report error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to resolve report'
+      error: 'Failed to resolve report',
     });
   }
 };
@@ -174,24 +174,24 @@ exports.resolveReport = async (req, res) => {
 exports.getUserViolations = async (req, res) => {
   try {
     const { userId } = req.params;
-    
+
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'User not found'
+        error: 'User not found',
       });
     }
-    
+
     const violations = await UserViolation.findOne({ user: userId })
       .populate('violations.issuedBy', 'name')
       .populate('suspensions.issuedBy', 'name')
       .populate('warnings.issuedBy', 'name');
-    
+
     const reports = await AdminReport.find({ reportedUser: userId })
       .sort('-createdAt')
       .limit(50);
-    
+
     res.status(200).json({
       success: true,
       data: {
@@ -199,18 +199,21 @@ exports.getUserViolations = async (req, res) => {
           id: user._id,
           email: user.email,
           role: user.role,
-          createdAt: user.createdAt
+          createdAt: user.createdAt,
         },
-        violations: violations || { strikes: { current: 0 }, violations: [], warnings: [] },
-        recentReports: reports
-      }
+        violations: violations || {
+          strikes: { current: 0 },
+          violations: [],
+          warnings: [],
+        },
+        recentReports: reports,
+      },
     });
-    
   } catch (error) {
     console.error('Get user violations error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch user violations'
+      error: 'Failed to fetch user violations',
     });
   }
 };
@@ -222,47 +225,46 @@ exports.suspendUser = async (req, res) => {
   try {
     const { userId } = req.params;
     const { duration, reason, freezePayouts } = req.body;
-    
+
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'User not found'
+        error: 'User not found',
       });
     }
-    
+
     let userViolation = await UserViolation.findOne({ user: userId });
-    
+
     if (!userViolation) {
       userViolation = await UserViolation.create({
         user: userId,
-        userType: user.role
+        userType: user.role,
       });
     }
-    
+
     // Suspend the user
     await userViolation.suspend(duration, reason, req.admin.id);
-    
+
     // Freeze payouts if requested
     if (freezePayouts && user.role === 'creator') {
       await userViolation.freezePayouts(duration / 24, req.admin.id);
     }
-    
+
     // Update user status
     user.status = 'suspended';
     await user.save();
-    
+
     res.status(200).json({
       success: true,
       message: `User suspended for ${duration} hours`,
-      data: userViolation
+      data: userViolation,
     });
-    
   } catch (error) {
     console.error('Suspend user error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to suspend user'
+      error: 'Failed to suspend user',
     });
   }
 };
@@ -274,57 +276,56 @@ exports.banUser = async (req, res) => {
   try {
     const { userId } = req.params;
     const { reason, deleteContent } = req.body;
-    
+
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'User not found'
+        error: 'User not found',
       });
     }
-    
+
     let userViolation = await UserViolation.findOne({ user: userId });
-    
+
     if (!userViolation) {
       userViolation = await UserViolation.create({
         user: userId,
-        userType: user.role
+        userType: user.role,
       });
     }
-    
+
     // Ban the user
     await userViolation.ban(reason, req.admin.id);
-    
+
     // Update user status
     user.status = 'banned';
     user.bannedAt = new Date();
     user.bannedReason = reason;
     await user.save();
-    
+
     // Delete or hide all content if requested
     if (deleteContent) {
       await Content.updateMany(
         { creator: userId },
-        { 
+        {
           isActive: false,
           removedBy: req.admin.id,
           removedReason: 'User banned',
-          removedAt: new Date()
+          removedAt: new Date(),
         }
       );
     }
-    
+
     res.status(200).json({
       success: true,
       message: 'User banned successfully',
-      data: userViolation
+      data: userViolation,
     });
-    
   } catch (error) {
     console.error('Ban user error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to ban user'
+      error: 'Failed to ban user',
     });
   }
 };
@@ -336,36 +337,35 @@ exports.liftSuspension = async (req, res) => {
   try {
     const { userId } = req.params;
     const { reason } = req.body;
-    
+
     const userViolation = await UserViolation.findOne({ user: userId });
-    
+
     if (!userViolation) {
       return res.status(404).json({
         success: false,
-        error: 'No violation record found'
+        error: 'No violation record found',
       });
     }
-    
+
     await userViolation.liftSuspension(req.admin.id, reason);
-    
+
     // Update user status
     const user = await User.findById(userId);
     if (user) {
       user.status = 'active';
       await user.save();
     }
-    
+
     res.status(200).json({
       success: true,
       message: 'Suspension lifted successfully',
-      data: userViolation
+      data: userViolation,
     });
-    
   } catch (error) {
     console.error('Lift suspension error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to lift suspension'
+      error: 'Failed to lift suspension',
     });
   }
 };
@@ -377,24 +377,23 @@ exports.removeContent = async (req, res) => {
   try {
     const { contentId } = req.params;
     const { reason, notifyCreator } = req.body;
-    
-    const content = await Content.findById(contentId)
-      .populate('creator');
-    
+
+    const content = await Content.findById(contentId).populate('creator');
+
     if (!content) {
       return res.status(404).json({
         success: false,
-        error: 'Content not found'
+        error: 'Content not found',
       });
     }
-    
+
     // Soft delete the content
     content.isActive = false;
     content.removedBy = req.admin.id;
     content.removedReason = reason;
     content.removedAt = new Date();
     await content.save();
-    
+
     // Create report if doesn't exist
     await AdminReport.create({
       reportedContent: contentId,
@@ -405,28 +404,27 @@ exports.removeContent = async (req, res) => {
       reviewedBy: req.admin.id,
       decision: {
         action: 'content_removed',
-        reason: reason
+        reason: reason,
       },
       metadata: {
-        source: 'manual_review'
-      }
+        source: 'manual_review',
+      },
     });
-    
+
     // Notify creator if requested
     if (notifyCreator) {
       // Implement notification
     }
-    
+
     res.status(200).json({
       success: true,
-      message: 'Content removed successfully'
+      message: 'Content removed successfully',
     });
-    
   } catch (error) {
     console.error('Remove content error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to remove content'
+      error: 'Failed to remove content',
     });
   }
 };
@@ -437,9 +435,9 @@ exports.removeContent = async (req, res) => {
 exports.getModerationStats = async (req, res) => {
   try {
     const { period = '7d' } = req.query;
-    
+
     let dateFilter = new Date();
-    switch(period) {
+    switch (period) {
       case '24h':
         dateFilter.setHours(dateFilter.getHours() - 24);
         break;
@@ -450,82 +448,86 @@ exports.getModerationStats = async (req, res) => {
         dateFilter.setDate(dateFilter.getDate() - 30);
         break;
     }
-    
+
     const stats = await AdminReport.aggregate([
       {
         $facet: {
           totalReports: [
             { $match: { createdAt: { $gte: dateFilter } } },
-            { $count: 'total' }
+            { $count: 'total' },
           ],
           pendingReports: [
             { $match: { status: 'pending' } },
-            { $count: 'total' }
+            { $count: 'total' },
           ],
           resolvedReports: [
-            { $match: { status: 'resolved', reviewCompletedAt: { $gte: dateFilter } } },
-            { $count: 'total' }
+            {
+              $match: {
+                status: 'resolved',
+                reviewCompletedAt: { $gte: dateFilter },
+              },
+            },
+            { $count: 'total' },
           ],
           byType: [
             { $match: { createdAt: { $gte: dateFilter } } },
-            { $group: { _id: '$reportType', count: { $sum: 1 } } }
+            { $group: { _id: '$reportType', count: { $sum: 1 } } },
           ],
           bySeverity: [
             { $match: { status: 'pending' } },
-            { $group: { _id: '$severity', count: { $sum: 1 } } }
+            { $group: { _id: '$severity', count: { $sum: 1 } } },
           ],
           avgResolutionTime: [
             {
               $match: {
                 status: 'resolved',
-                reviewCompletedAt: { $gte: dateFilter }
-              }
+                reviewCompletedAt: { $gte: dateFilter },
+              },
             },
             {
               $project: {
                 resolutionTime: {
-                  $subtract: ['$reviewCompletedAt', '$createdAt']
-                }
-              }
+                  $subtract: ['$reviewCompletedAt', '$createdAt'],
+                },
+              },
             },
             {
               $group: {
                 _id: null,
-                avgTime: { $avg: '$resolutionTime' }
-              }
-            }
-          ]
-        }
-      }
+                avgTime: { $avg: '$resolutionTime' },
+              },
+            },
+          ],
+        },
+      },
     ]);
-    
+
     // Get high risk users
     const highRiskUsers = await UserViolation.getHighRiskUsers(10);
-    
+
     // Get recent bans
     const recentBans = await UserViolation.find({
       currentStatus: 'banned',
-      bannedAt: { $gte: dateFilter }
+      bannedAt: { $gte: dateFilter },
     })
-    .populate('user', 'email')
-    .sort('-bannedAt')
-    .limit(10);
-    
+      .populate('user', 'email')
+      .sort('-bannedAt')
+      .limit(10);
+
     res.status(200).json({
       success: true,
       data: {
         period,
         stats: stats[0],
         highRiskUsers,
-        recentBans
-      }
+        recentBans,
+      },
     });
-    
   } catch (error) {
     console.error('Get moderation stats error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch statistics'
+      error: 'Failed to fetch statistics',
     });
   }
 };
@@ -535,63 +537,63 @@ exports.getModerationStats = async (req, res) => {
 // @access  Private - Admin
 exports.searchUsers = async (req, res) => {
   try {
-    const { 
+    const {
       query,
       role,
       status,
       hasViolations,
       page = 1,
-      limit = 20
+      limit = 20,
     } = req.query;
-    
+
     const searchQuery = {};
-    
+
     if (query) {
       searchQuery.$or = [
         { email: { $regex: query, $options: 'i' } },
-        { username: { $regex: query, $options: 'i' } }
+        { username: { $regex: query, $options: 'i' } },
       ];
     }
-    
+
     if (role) searchQuery.role = role;
     if (status) searchQuery.status = status;
-    
+
     const users = await User.find(searchQuery)
       .select('-password')
       .sort('-createdAt')
       .limit(limit * 1)
       .skip((page - 1) * limit);
-    
+
     // Get violation info for each user
     const userIds = users.map(u => u._id);
-    const violations = await UserViolation.find({ user: { $in: userIds } })
-      .select('user strikes currentStatus riskScore');
-    
+    const violations = await UserViolation.find({
+      user: { $in: userIds },
+    }).select('user strikes currentStatus riskScore');
+
     const violationMap = {};
     violations.forEach(v => {
       violationMap[v.user.toString()] = v;
     });
-    
+
     const usersWithViolations = users.map(user => ({
       ...user.toObject(),
-      violations: violationMap[user._id.toString()] || null
+      violations: violationMap[user._id.toString()] || null,
     }));
-    
+
     const total = await User.countDocuments(searchQuery);
-    
+
     res.status(200).json({
       success: true,
       count: users.length,
       total,
       pages: Math.ceil(total / limit),
-      data: usersWithViolations
+      data: usersWithViolations,
     });
-    
   } catch (error) {
     console.error('Search users error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to search users'
+      error: 'Failed to search users',
     });
   }
 };
@@ -603,60 +605,59 @@ exports.freezePayouts = async (req, res) => {
   try {
     const { userId } = req.params;
     const { days, reason } = req.body;
-    
+
     const user = await User.findById(userId);
     if (!user || user.role !== 'creator') {
       return res.status(404).json({
         success: false,
-        error: 'Creator not found'
+        error: 'Creator not found',
       });
     }
-    
+
     let userViolation = await UserViolation.findOne({ user: userId });
-    
+
     if (!userViolation) {
       userViolation = await UserViolation.create({
         user: userId,
-        userType: 'creator'
+        userType: 'creator',
       });
     }
-    
+
     await userViolation.freezePayouts(days, req.admin.id);
-    
+
     // Calculate frozen amount
     const pendingPayouts = await Transaction.aggregate([
       {
         $match: {
           creator: userId,
           status: 'pending',
-          type: 'payout'
-        }
+          type: 'payout',
+        },
       },
       {
         $group: {
           _id: null,
-          total: { $sum: '$amount' }
-        }
-      }
+          total: { $sum: '$amount' },
+        },
+      },
     ]);
-    
+
     userViolation.restrictions.frozenAmount = pendingPayouts[0]?.total || 0;
     await userViolation.save();
-    
+
     res.status(200).json({
       success: true,
       message: `Payouts frozen for ${days} days`,
       data: {
         frozenUntil: userViolation.restrictions.frozenUntil,
-        frozenAmount: userViolation.restrictions.frozenAmount
-      }
+        frozenAmount: userViolation.restrictions.frozenAmount,
+      },
     });
-    
   } catch (error) {
     console.error('Freeze payouts error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to freeze payouts'
+      error: 'Failed to freeze payouts',
     });
   }
 };

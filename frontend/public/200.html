@@ -1,16 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <title>SexySelfies - Loading...</title>
     <style>
       body {
         margin: 0;
         padding: 0;
-        background: #0A0A0B;
+        background: #0a0a0b;
         color: white;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -23,13 +27,15 @@
         width: 40px;
         height: 40px;
         border: 3px solid rgba(255, 0, 110, 0.1);
-        border-top-color: #FF006E;
+        border-top-color: #ff006e;
         border-radius: 50%;
         animation: spin 1s linear infinite;
         margin: 0 auto 20px;
       }
       @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+          transform: rotate(360deg);
+        }
       }
     </style>
   </head>
@@ -40,7 +46,10 @@
     </div>
     <script>
       // Store the path and redirect to index.html
-      sessionStorage.setItem('redirectPath', window.location.pathname + window.location.search + window.location.hash);
+      sessionStorage.setItem(
+        'redirectPath',
+        window.location.pathname + window.location.search + window.location.hash
+      );
       window.location.replace('/index.html');
     </script>
   </body>

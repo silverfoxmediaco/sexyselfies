@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Mail, Lock, Eye, EyeOff, LogIn, AlertCircle,
-  Heart, Shield, Star, Users, Sparkles, 
-  ChevronRight, Check, ArrowLeft
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  LogIn,
+  AlertCircle,
+  Heart,
+  Shield,
+  Star,
+  Users,
+  Sparkles,
+  ChevronRight,
+  Check,
+  ArrowLeft,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import MainHeader from '../components/MainHeader';
@@ -22,7 +33,7 @@ const MemberLogin = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    rememberMe: false
+    rememberMe: false,
   });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -46,34 +57,38 @@ const MemberLogin = () => {
     // Load remembered email
     const rememberedEmail = localStorage.getItem('rememberedEmail');
     if (rememberedEmail) {
-      setFormData(prev => ({ ...prev, email: rememberedEmail, rememberMe: true }));
+      setFormData(prev => ({
+        ...prev,
+        email: rememberedEmail,
+        rememberMe: true,
+      }));
     }
   }, [navigate, from]);
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
     // Clear error for this field
     if (errors[name]) {
@@ -82,43 +97,46 @@ const MemberLogin = () => {
     setLoginError('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
     setLoginError('');
-    
+
     try {
       const credentials = {
         email: formData.email,
         password: formData.password,
-        rememberMe: formData.rememberMe
+        rememberMe: formData.rememberMe,
       };
 
       const result = await login(credentials, USER_ROLES.MEMBER);
-      
+
       if (result.success) {
         console.log('Login successful:', result);
-        
+
         // Handle remember me
         if (formData.rememberMe) {
           localStorage.setItem('rememberedEmail', formData.email);
         } else {
           localStorage.removeItem('rememberedEmail');
         }
-        
+
         // Use backend's redirect logic or default
         const redirectPath = result.user.redirectTo || from;
         console.log('Redirecting to:', redirectPath);
-        
+
         // Pass first-time setup flag if applicable
         const navigationOptions = { replace: true };
-        if (result.user.isFirstTimeSetup && redirectPath === '/member/filters') {
+        if (
+          result.user.isFirstTimeSetup &&
+          redirectPath === '/member/filters'
+        ) {
           navigationOptions.state = { isFirstTime: true };
         }
-        
+
         navigate(redirectPath, navigationOptions);
       } else {
         console.error('Login failed:', result.error);
@@ -126,7 +144,7 @@ const MemberLogin = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      
+
       if (error.error) {
         // Handle auth service errors
         if (error.code === 'INVALID_CREDENTIALS') {
@@ -144,16 +162,16 @@ const MemberLogin = () => {
     }
   };
 
-  const handleForgotPassword = async (e) => {
+  const handleForgotPassword = async e => {
     e.preventDefault();
-    
+
     if (!resetEmail || !/\S+@\S+\.\S+/.test(resetEmail)) {
       setErrors({ resetEmail: 'Please enter a valid email' });
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       setResetSent(true);
@@ -165,7 +183,7 @@ const MemberLogin = () => {
     setFormData({
       email: 'demo@sexyselfies.com',
       password: 'demo123',
-      rememberMe: false
+      rememberMe: false,
     });
     setTimeout(() => {
       handleSubmit({ preventDefault: () => {} });
@@ -173,133 +191,159 @@ const MemberLogin = () => {
   };
 
   const features = [
-    { icon: Heart, text: 'Unlimited Connections', subtext: 'Connect with creators you love' },
-    { icon: Shield, text: 'Verified Profiles', subtext: 'All creators are ID verified' },
-    { icon: Lock, text: 'Exclusive Content', subtext: 'Access members-only content' },
-    { icon: Sparkles, text: 'Direct Messaging', subtext: 'Chat directly with creators' }
+    {
+      icon: Heart,
+      text: 'Unlimited Connections',
+      subtext: 'Connect with creators you love',
+    },
+    {
+      icon: Shield,
+      text: 'Verified Profiles',
+      subtext: 'All creators are ID verified',
+    },
+    {
+      icon: Lock,
+      text: 'Exclusive Content',
+      subtext: 'Access members-only content',
+    },
+    {
+      icon: Sparkles,
+      text: 'Direct Messaging',
+      subtext: 'Chat directly with creators',
+    },
   ];
 
   const stats = [
     { label: 'Active Creators', value: '10K+' },
     { label: 'Daily Connections', value: '50K+' },
     { label: 'Content Created', value: '1M+' },
-    { label: 'Member Rating', value: '4.9★' }
+    { label: 'Member Rating', value: '4.9★' },
   ];
 
   return (
-    <div className="memberlogin-page">
+    <div className='memberlogin-page'>
       {/* Main Header - Desktop and Tablet Only */}
       {!isMobile && <MainHeader />}
-      
-      <div className="memberlogin-container">
-        <div className="memberlogin-content">
+
+      <div className='memberlogin-container'>
+        <div className='memberlogin-content'>
           {/* Login Form Section - Full width on mobile */}
-          <div className="memberlogin-form-section">
-            <div className="memberlogin-form-wrapper">
+          <div className='memberlogin-form-section'>
+            <div className='memberlogin-form-wrapper'>
               {/* Welcome Header */}
-              <div className="memberlogin-header">
-                <div className="memberlogin-logo">
+              <div className='memberlogin-header'>
+                <div className='memberlogin-logo'>
                   <Sparkles />
                   <h1>Welcome Back</h1>
                 </div>
-                <p className="memberlogin-subtitle">Sign in to discover amazing creators</p>
+                <p className='memberlogin-subtitle'>
+                  Sign in to discover amazing creators
+                </p>
               </div>
 
               {/* Main Form or Forgot Password */}
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode='wait'>
                 {!showForgotPassword ? (
                   <motion.div
-                    key="login"
+                    key='login'
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ duration: 0.3 }}
                   >
                     {/* Login Form */}
-                    <form onSubmit={handleSubmit} className="memberlogin-form">
+                    <form onSubmit={handleSubmit} className='memberlogin-form'>
                       {loginError && (
-                        <div className="memberlogin-error-box">
+                        <div className='memberlogin-error-box'>
                           <AlertCircle size={18} />
                           <span>{loginError}</span>
                         </div>
                       )}
-                      
-                      <div className="memberlogin-form-group">
-                        <label className="memberlogin-label">
+
+                      <div className='memberlogin-form-group'>
+                        <label className='memberlogin-label'>
                           <Mail size={18} />
                           <span>Email Address</span>
                         </label>
                         <input
-                          type="email"
-                          name="email"
+                          type='email'
+                          name='email'
                           value={formData.email}
                           onChange={handleChange}
-                          placeholder="Enter your email"
+                          placeholder='Enter your email'
                           className={`memberlogin-input ${errors.email ? 'error' : ''}`}
                           disabled={isLoading}
                         />
                         {errors.email && (
-                          <span className="memberlogin-error-text">{errors.email}</span>
+                          <span className='memberlogin-error-text'>
+                            {errors.email}
+                          </span>
                         )}
                       </div>
-                      
-                      <div className="memberlogin-form-group">
-                        <label className="memberlogin-label">
+
+                      <div className='memberlogin-form-group'>
+                        <label className='memberlogin-label'>
                           <Lock size={18} />
                           <span>Password</span>
                         </label>
-                        <div className="memberlogin-input-wrapper">
+                        <div className='memberlogin-input-wrapper'>
                           <input
                             type={showPassword ? 'text' : 'password'}
-                            name="password"
+                            name='password'
                             value={formData.password}
                             onChange={handleChange}
-                            placeholder="Enter your password"
+                            placeholder='Enter your password'
                             className={`memberlogin-input ${errors.password ? 'error' : ''}`}
                             disabled={isLoading}
                           />
                           <button
-                            type="button"
+                            type='button'
                             onClick={() => setShowPassword(!showPassword)}
-                            className="memberlogin-input-toggle"
+                            className='memberlogin-input-toggle'
                             tabIndex={-1}
                           >
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            {showPassword ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
                           </button>
                         </div>
                         {errors.password && (
-                          <span className="memberlogin-error-text">{errors.password}</span>
+                          <span className='memberlogin-error-text'>
+                            {errors.password}
+                          </span>
                         )}
                       </div>
-                      
-                      <div className="memberlogin-form-options">
-                        <label className="memberlogin-checkbox">
+
+                      <div className='memberlogin-form-options'>
+                        <label className='memberlogin-checkbox'>
                           <input
-                            type="checkbox"
-                            name="rememberMe"
+                            type='checkbox'
+                            name='rememberMe'
                             checked={formData.rememberMe}
                             onChange={handleChange}
                           />
-                          <div className="checkbox-custom"></div>
+                          <div className='checkbox-custom'></div>
                           <span>Remember me</span>
                         </label>
-                        
+
                         <button
-                          type="button"
+                          type='button'
                           onClick={() => setShowForgotPassword(true)}
-                          className="memberlogin-forgot-link"
+                          className='memberlogin-forgot-link'
                         >
                           Forgot password?
                         </button>
                       </div>
-                      
+
                       <button
-                        type="submit"
+                        type='submit'
                         disabled={isLoading}
-                        className="memberlogin-btn-primary"
+                        className='memberlogin-btn-primary'
                       >
                         {isLoading ? (
-                          <div className="memberlogin-spinner"></div>
+                          <div className='memberlogin-spinner'></div>
                         ) : (
                           <>
                             <LogIn size={18} />
@@ -307,22 +351,25 @@ const MemberLogin = () => {
                           </>
                         )}
                       </button>
-                      
+
                       <button
-                        type="button"
+                        type='button'
                         onClick={handleDemoLogin}
-                        className="memberlogin-demo-btn"
+                        className='memberlogin-demo-btn'
                       >
                         <Sparkles size={18} />
                         <span>Use Demo Account</span>
                       </button>
                     </form>
-                    
+
                     {/* Sign Up Link */}
-                    <div className="memberlogin-signup-link">
+                    <div className='memberlogin-signup-link'>
                       <p>
                         Don't have an account?{' '}
-                        <Link to="/member/register" className="memberlogin-link">
+                        <Link
+                          to='/member/register'
+                          className='memberlogin-link'
+                        >
                           Join Free <ChevronRight size={16} />
                         </Link>
                       </p>
@@ -331,53 +378,62 @@ const MemberLogin = () => {
                 ) : (
                   /* Forgot Password Form */
                   <motion.div
-                    key="forgot"
+                    key='forgot'
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
                   >
                     {!resetSent ? (
-                      <form onSubmit={handleForgotPassword} className="memberlogin-form">
+                      <form
+                        onSubmit={handleForgotPassword}
+                        className='memberlogin-form'
+                      >
                         <button
-                          type="button"
+                          type='button'
                           onClick={() => setShowForgotPassword(false)}
-                          className="memberlogin-btn-secondary"
+                          className='memberlogin-btn-secondary'
                         >
                           <ArrowLeft size={18} />
                           <span>Back to login</span>
                         </button>
-                        
+
                         <div>
-                          <h2 className="memberlogin-reset-title">Reset Password</h2>
-                          <p className="memberlogin-reset-text">Enter your email and we'll send you a reset link</p>
+                          <h2 className='memberlogin-reset-title'>
+                            Reset Password
+                          </h2>
+                          <p className='memberlogin-reset-text'>
+                            Enter your email and we'll send you a reset link
+                          </p>
                         </div>
-                        
-                        <div className="memberlogin-form-group">
-                          <label className="memberlogin-label">
+
+                        <div className='memberlogin-form-group'>
+                          <label className='memberlogin-label'>
                             <Mail size={18} />
                             <span>Email Address</span>
                           </label>
                           <input
-                            type="email"
+                            type='email'
                             value={resetEmail}
-                            onChange={(e) => setResetEmail(e.target.value)}
-                            placeholder="Enter your email"
+                            onChange={e => setResetEmail(e.target.value)}
+                            placeholder='Enter your email'
                             className={`memberlogin-input ${errors.resetEmail ? 'error' : ''}`}
                             disabled={isLoading}
                           />
                           {errors.resetEmail && (
-                            <span className="memberlogin-error-text">{errors.resetEmail}</span>
+                            <span className='memberlogin-error-text'>
+                              {errors.resetEmail}
+                            </span>
                           )}
                         </div>
-                        
+
                         <button
-                          type="submit"
+                          type='submit'
                           disabled={isLoading}
-                          className="memberlogin-btn-primary"
+                          className='memberlogin-btn-primary'
                         >
                           {isLoading ? (
-                            <div className="memberlogin-spinner"></div>
+                            <div className='memberlogin-spinner'></div>
                           ) : (
                             <>
                               <Mail size={18} />
@@ -387,7 +443,7 @@ const MemberLogin = () => {
                         </button>
                       </form>
                     ) : (
-                      <div className="memberlogin-reset-success">
+                      <div className='memberlogin-reset-success'>
                         <Check size={32} />
                         <h3>Check Your Email</h3>
                         <p>We've sent a password reset link to:</p>
@@ -398,7 +454,7 @@ const MemberLogin = () => {
                             setResetSent(false);
                             setResetEmail('');
                           }}
-                          className="memberlogin-btn-primary"
+                          className='memberlogin-btn-primary'
                         >
                           Back to Login
                         </button>
@@ -411,29 +467,32 @@ const MemberLogin = () => {
           </div>
 
           {/* Features Section - Hidden on mobile, visible on tablet/desktop */}
-          <div className="memberlogin-features-section">
-            <div className="memberlogin-hero">
-              <h2 className="memberlogin-hero-title">Discover Sexy Creators World Wide</h2>
-              <p className="memberlogin-hero-subtitle">
-                Join thousands of members connecting with amazing creators every day
+          <div className='memberlogin-features-section'>
+            <div className='memberlogin-hero'>
+              <h2 className='memberlogin-hero-title'>
+                Discover Sexy Creators World Wide
+              </h2>
+              <p className='memberlogin-hero-subtitle'>
+                Join thousands of members connecting with amazing creators every
+                day
               </p>
             </div>
-            
+
             {/* Stats Grid */}
-            <div className="memberlogin-stats">
+            <div className='memberlogin-stats'>
               {stats.map((stat, index) => (
-                <div key={index} className="memberlogin-stat-card">
-                  <div className="stat-icon">
+                <div key={index} className='memberlogin-stat-card'>
+                  <div className='stat-icon'>
                     <Star size={20} />
                   </div>
-                  <div className="stat-value">{stat.value}</div>
-                  <div className="stat-label">{stat.label}</div>
+                  <div className='stat-value'>{stat.value}</div>
+                  <div className='stat-label'>{stat.label}</div>
                 </div>
               ))}
             </div>
-            
+
             {/* Features List */}
-            <div className="memberlogin-features-list">
+            <div className='memberlogin-features-list'>
               {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
@@ -442,12 +501,12 @@ const MemberLogin = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="memberlogin-feature-item"
+                    className='memberlogin-feature-item'
                   >
-                    <div className="feature-icon-wrapper">
+                    <div className='feature-icon-wrapper'>
                       <Icon size={24} />
                     </div>
-                    <div className="feature-content">
+                    <div className='feature-content'>
                       <h3>{feature.text}</h3>
                       <p>{feature.subtext}</p>
                     </div>
@@ -455,31 +514,30 @@ const MemberLogin = () => {
                 );
               })}
             </div>
-            
-            
+
             {/* App Download */}
-            <div className="memberlogin-app-download">
+            <div className='memberlogin-app-download'>
               <div>
                 <h4>Download Our App </h4>
                 <p>Available as a Progressive Web App Free</p>
               </div>
-              <button className="download-btn">
+              <button className='download-btn'>
                 Download <ChevronRight size={16} />
               </button>
             </div>
-            
+
             {/* Trust Badge */}
-            <div className="memberlogin-trust-badge">
+            <div className='memberlogin-trust-badge'>
               <Shield size={16} />
               <span>256-bit SSL Secured • Privacy Protected</span>
             </div>
           </div>
         </div>
       </div>
-      
+
       {/* Main Footer - Desktop and Tablet Only */}
       {!isMobile && <MainFooter />}
-      
+
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>

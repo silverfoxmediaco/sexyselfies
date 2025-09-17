@@ -1,15 +1,31 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Eye, Heart, MessageCircle, DollarSign, 
-  Camera, Video, Download, Filter,
-  BarChart3, Activity,
-  Target, Award, Zap, ArrowUp, ArrowDown, Minus
+import {
+  Eye,
+  Heart,
+  MessageCircle,
+  DollarSign,
+  Camera,
+  Video,
+  Download,
+  Filter,
+  BarChart3,
+  Activity,
+  Target,
+  Award,
+  Zap,
+  ArrowUp,
+  ArrowDown,
+  Minus,
 } from 'lucide-react';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import {
+  useIsMobile,
+  useIsDesktop,
+  getUserRole,
+} from '../utils/mobileDetection';
 import api from '../services/api.config';
 import './CreatorAnalytics.css';
 
@@ -25,7 +41,7 @@ const CreatorAnalytics = () => {
     { value: '7d', label: '7 Days' },
     { value: '30d', label: '30 Days' },
     { value: '90d', label: '90 Days' },
-    { value: '1y', label: '1 Year' }
+    { value: '1y', label: '1 Year' },
   ];
 
   useEffect(() => {
@@ -36,9 +52,13 @@ const CreatorAnalytics = () => {
     setLoading(true);
     try {
       // Check if in development mode
-      const isDevelopment = import.meta.env.DEV || localStorage.getItem('token') === 'dev-token-12345';
-      
-      const response = await api.get(`/creator/analytics?period=${selectedPeriod}&compare=false`);
+      const isDevelopment =
+        import.meta.env.DEV ||
+        localStorage.getItem('token') === 'dev-token-12345';
+
+      const response = await api.get(
+        `/creator/analytics?period=${selectedPeriod}&compare=false`
+      );
       setAnalyticsData(response);
     } catch (error) {
       console.error('Error loading analytics:', error);
@@ -52,31 +72,31 @@ const CreatorAnalytics = () => {
           totalConnections: 0,
           connectionsChange: 0,
           conversionRate: 0,
-          conversionChange: 0
+          conversionChange: 0,
         },
         performance: {
           topContent: [],
-          recentActivity: []
+          recentActivity: [],
         },
         insights: {
           bestPerformingDay: 'Monday',
           peakHours: '8-10 PM',
-          topContentType: 'photos'
-        }
+          topContentType: 'photos',
+        },
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount);
   };
 
-  const formatNumber = (num) => {
+  const formatNumber = num => {
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + 'M';
     }
@@ -86,24 +106,24 @@ const CreatorAnalytics = () => {
     return num.toLocaleString();
   };
 
-  const renderChangeIndicator = (change) => {
+  const renderChangeIndicator = change => {
     if (change > 0) {
       return (
-        <span className="change-indicator positive">
+        <span className='change-indicator positive'>
           <ArrowUp size={14} />
           {change}%
         </span>
       );
     } else if (change < 0) {
       return (
-        <span className="change-indicator negative">
+        <span className='change-indicator negative'>
           <ArrowDown size={14} />
           {Math.abs(change)}%
         </span>
       );
     } else {
       return (
-        <span className="change-indicator neutral">
+        <span className='change-indicator neutral'>
           <Minus size={14} />
           0%
         </span>
@@ -113,8 +133,8 @@ const CreatorAnalytics = () => {
 
   if (loading) {
     return (
-      <div className="analytics-loading">
-        <div className="loading-spinner"></div>
+      <div className='analytics-loading'>
+        <div className='loading-spinner'></div>
         <p>Loading analytics...</p>
       </div>
     );
@@ -122,7 +142,7 @@ const CreatorAnalytics = () => {
 
   if (!analyticsData) {
     return (
-      <div className="analytics-error">
+      <div className='analytics-error'>
         <Activity size={48} />
         <p>Unable to load analytics data</p>
       </div>
@@ -130,17 +150,17 @@ const CreatorAnalytics = () => {
   }
 
   return (
-    <div className="creator-analytics">
+    <div className='creator-analytics'>
       {/* Desktop Header */}
       {isDesktop && <CreatorMainHeader />}
       {/* Header */}
-      <div className="analytics-header">
-        <div className="analytics-header-content">
+      <div className='analytics-header'>
+        <div className='analytics-header-content'>
           <h1>
             <BarChart3 size={24} />
             Analytics Dashboard
           </h1>
-          <div className="analytics-period-selector">
+          <div className='analytics-period-selector'>
             {periods.map(period => (
               <button
                 key={period.value}
@@ -155,157 +175,176 @@ const CreatorAnalytics = () => {
       </div>
 
       {/* Overview Cards */}
-      <div className="overview-section">
-        <div className="overview-cards">
-          <motion.div 
-            className="overview-card earnings"
+      <div className='overview-section'>
+        <div className='overview-cards'>
+          <motion.div
+            className='overview-card earnings'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <div className="card-header">
-              <div className="card-icon">
+            <div className='card-header'>
+              <div className='card-icon'>
                 <DollarSign size={20} />
               </div>
-              <span className="card-title">Total Earnings</span>
+              <span className='card-title'>Total Earnings</span>
             </div>
-            <div className="card-value">
+            <div className='card-value'>
               {formatCurrency(analyticsData.overview.totalEarnings)}
             </div>
-            <div className="card-change">
+            <div className='card-change'>
               {renderChangeIndicator(analyticsData.overview.earningsChange)}
-              <span className="change-label">vs last period</span>
+              <span className='change-label'>vs last period</span>
             </div>
           </motion.div>
 
-          <motion.div 
-            className="overview-card views"
+          <motion.div
+            className='overview-card views'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="card-header">
-              <div className="card-icon">
+            <div className='card-header'>
+              <div className='card-icon'>
                 <Eye size={20} />
               </div>
-              <span className="card-title">Profile Views</span>
+              <span className='card-title'>Profile Views</span>
             </div>
-            <div className="card-value">
+            <div className='card-value'>
               {formatNumber(analyticsData.overview.totalViews)}
             </div>
-            <div className="card-change">
+            <div className='card-change'>
               {renderChangeIndicator(analyticsData.overview.viewsChange)}
-              <span className="change-label">vs last period</span>
+              <span className='change-label'>vs last period</span>
             </div>
           </motion.div>
 
-          <motion.div 
-            className="overview-card matches"
+          <motion.div
+            className='overview-card matches'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className="card-header">
-              <div className="card-icon">
+            <div className='card-header'>
+              <div className='card-icon'>
                 <Heart size={20} />
               </div>
-              <span className="card-title">New Matches</span>
+              <span className='card-title'>New Matches</span>
             </div>
-            <div className="card-value">
+            <div className='card-value'>
               {formatNumber(analyticsData.overview.totalConnections)}
             </div>
-            <div className="card-change">
+            <div className='card-change'>
               {renderChangeIndicator(analyticsData.overview.connectionsChange)}
-              <span className="change-label">vs last period</span>
+              <span className='change-label'>vs last period</span>
             </div>
           </motion.div>
 
-          <motion.div 
-            className="overview-card conversion"
+          <motion.div
+            className='overview-card conversion'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <div className="card-header">
-              <div className="card-icon">
+            <div className='card-header'>
+              <div className='card-icon'>
                 <Target size={20} />
               </div>
-              <span className="card-title">Conversion Rate</span>
+              <span className='card-title'>Conversion Rate</span>
             </div>
-            <div className="card-value">
+            <div className='card-value'>
               {analyticsData.overview.conversionRate}%
             </div>
-            <div className="card-change">
+            <div className='card-change'>
               {renderChangeIndicator(analyticsData.overview.conversionChange)}
-              <span className="change-label">vs last period</span>
+              <span className='change-label'>vs last period</span>
             </div>
           </motion.div>
         </div>
       </div>
 
       {/* Revenue Breakdown */}
-      <div className="revenue-section">
+      <div className='revenue-section'>
         <h2>Revenue Breakdown</h2>
-        <div className="revenue-cards">
-          <div className="revenue-card">
-            <div className="revenue-header">
+        <div className='revenue-cards'>
+          <div className='revenue-card'>
+            <div className='revenue-header'>
               <Camera size={18} />
               <span>Photos</span>
             </div>
-            <div className="revenue-amount">
+            <div className='revenue-amount'>
               {formatCurrency(analyticsData.revenue.photos)}
             </div>
-            <div className="revenue-percentage">
-              {Math.round((analyticsData.revenue.photos / analyticsData.overview.totalEarnings) * 100)}% of total
+            <div className='revenue-percentage'>
+              {Math.round(
+                (analyticsData.revenue.photos /
+                  analyticsData.overview.totalEarnings) *
+                  100
+              )}
+              % of total
             </div>
           </div>
 
-          <div className="revenue-card">
-            <div className="revenue-header">
+          <div className='revenue-card'>
+            <div className='revenue-header'>
               <Video size={18} />
               <span>Videos</span>
             </div>
-            <div className="revenue-amount">
+            <div className='revenue-amount'>
               {formatCurrency(analyticsData.revenue.videos)}
             </div>
-            <div className="revenue-percentage">
-              {Math.round((analyticsData.revenue.videos / analyticsData.overview.totalEarnings) * 100)}% of total
+            <div className='revenue-percentage'>
+              {Math.round(
+                (analyticsData.revenue.videos /
+                  analyticsData.overview.totalEarnings) *
+                  100
+              )}
+              % of total
             </div>
           </div>
 
-          <div className="revenue-card">
-            <div className="revenue-header">
+          <div className='revenue-card'>
+            <div className='revenue-header'>
               <MessageCircle size={18} />
               <span>Messages</span>
             </div>
-            <div className="revenue-amount">
+            <div className='revenue-amount'>
               {formatCurrency(analyticsData.revenue.messages)}
             </div>
-            <div className="revenue-percentage">
-              {Math.round((analyticsData.revenue.messages / analyticsData.overview.totalEarnings) * 100)}% of total
+            <div className='revenue-percentage'>
+              {Math.round(
+                (analyticsData.revenue.messages /
+                  analyticsData.overview.totalEarnings) *
+                  100
+              )}
+              % of total
             </div>
           </div>
         </div>
       </div>
 
       {/* Top Content */}
-      <div className="content-section">
+      <div className='content-section'>
         <h2>Top Performing Content</h2>
-        <div className="content-list">
+        <div className='content-list'>
           {analyticsData.topContent.map((content, index) => (
-            <div key={content.id} className="content-item">
-              <div className="content-rank">#{index + 1}</div>
-              <div className="content-type">
-                {content.type === 'photo' ? <Camera size={16} /> : <Video size={16} />}
+            <div key={content.id} className='content-item'>
+              <div className='content-rank'>#{index + 1}</div>
+              <div className='content-type'>
+                {content.type === 'photo' ? (
+                  <Camera size={16} />
+                ) : (
+                  <Video size={16} />
+                )}
               </div>
-              <div className="content-info">
-                <span className="content-title">{content.title}</span>
-                <div className="content-stats">
+              <div className='content-info'>
+                <span className='content-title'>{content.title}</span>
+                <div className='content-stats'>
                   <span>{formatNumber(content.views)} views</span>
                   <span>{content.engagement}% engagement</span>
                 </div>
               </div>
-              <div className="content-earnings">
+              <div className='content-earnings'>
                 {formatCurrency(content.earnings)}
               </div>
             </div>
@@ -314,59 +353,68 @@ const CreatorAnalytics = () => {
       </div>
 
       {/* Goals Progress */}
-      <div className="goals-section">
+      <div className='goals-section'>
         <h2>Performance Goals</h2>
-        <div className="goals-grid">
-          <div className="goal-card">
-            <div className="goal-header">
+        <div className='goals-grid'>
+          <div className='goal-card'>
+            <div className='goal-header'>
               <DollarSign size={18} />
               <span>Monthly Earnings</span>
             </div>
-            <div className="goal-progress">
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill"
-                  style={{ width: `${analyticsData.goals.monthlyEarnings.progress}%` }}
+            <div className='goal-progress'>
+              <div className='progress-bar'>
+                <div
+                  className='progress-fill'
+                  style={{
+                    width: `${analyticsData.goals.monthlyEarnings.progress}%`,
+                  }}
                 ></div>
               </div>
-              <span className="progress-text">
-                {formatCurrency(analyticsData.goals.monthlyEarnings.current)} / {formatCurrency(analyticsData.goals.monthlyEarnings.target)}
+              <span className='progress-text'>
+                {formatCurrency(analyticsData.goals.monthlyEarnings.current)} /{' '}
+                {formatCurrency(analyticsData.goals.monthlyEarnings.target)}
               </span>
             </div>
           </div>
 
-          <div className="goal-card">
-            <div className="goal-header">
+          <div className='goal-card'>
+            <div className='goal-header'>
               <Eye size={18} />
               <span>Weekly Views</span>
             </div>
-            <div className="goal-progress">
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill"
-                  style={{ width: `${analyticsData.goals.weeklyViews.progress}%` }}
+            <div className='goal-progress'>
+              <div className='progress-bar'>
+                <div
+                  className='progress-fill'
+                  style={{
+                    width: `${analyticsData.goals.weeklyViews.progress}%`,
+                  }}
                 ></div>
               </div>
-              <span className="progress-text">
-                {formatNumber(analyticsData.goals.weeklyViews.current)} / {formatNumber(analyticsData.goals.weeklyViews.target)}
+              <span className='progress-text'>
+                {formatNumber(analyticsData.goals.weeklyViews.current)} /{' '}
+                {formatNumber(analyticsData.goals.weeklyViews.target)}
               </span>
             </div>
           </div>
 
-          <div className="goal-card">
-            <div className="goal-header">
+          <div className='goal-card'>
+            <div className='goal-header'>
               <Target size={18} />
               <span>Conversion Rate</span>
             </div>
-            <div className="goal-progress">
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill"
-                  style={{ width: `${analyticsData.goals.conversionRate.progress}%` }}
+            <div className='goal-progress'>
+              <div className='progress-bar'>
+                <div
+                  className='progress-fill'
+                  style={{
+                    width: `${analyticsData.goals.conversionRate.progress}%`,
+                  }}
                 ></div>
               </div>
-              <span className="progress-text">
-                {analyticsData.goals.conversionRate.current}% / {analyticsData.goals.conversionRate.target}%
+              <span className='progress-text'>
+                {analyticsData.goals.conversionRate.current}% /{' '}
+                {analyticsData.goals.conversionRate.target}%
               </span>
             </div>
           </div>
@@ -374,36 +422,38 @@ const CreatorAnalytics = () => {
       </div>
 
       {/* Demographics */}
-      <div className="demographics-section">
+      <div className='demographics-section'>
         <h2>Audience Demographics</h2>
-        <div className="demographics-grid">
-          <div className="demo-card">
+        <div className='demographics-grid'>
+          <div className='demo-card'>
             <h3>Age Groups</h3>
-            <div className="age-groups">
+            <div className='age-groups'>
               {analyticsData.demographics.ageGroups.map(group => (
-                <div key={group.range} className="age-group">
-                  <div className="age-range">{group.range}</div>
-                  <div className="age-bar">
-                    <div 
-                      className="age-fill"
+                <div key={group.range} className='age-group'>
+                  <div className='age-range'>{group.range}</div>
+                  <div className='age-bar'>
+                    <div
+                      className='age-fill'
                       style={{ width: `${group.percentage}%` }}
                     ></div>
                   </div>
-                  <div className="age-percentage">{group.percentage}%</div>
+                  <div className='age-percentage'>{group.percentage}%</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="demo-card">
+          <div className='demo-card'>
             <h3>Top Locations</h3>
-            <div className="location-list">
+            <div className='location-list'>
               {analyticsData.demographics.topLocations.map(location => (
-                <div key={location.country} className="location-item">
-                  <span className="location-name">{location.country}</span>
-                  <div className="location-stats">
-                    <span className="location-count">{location.count}</span>
-                    <span className="location-percentage">{location.percentage}%</span>
+                <div key={location.country} className='location-item'>
+                  <span className='location-name'>{location.country}</span>
+                  <div className='location-stats'>
+                    <span className='location-count'>{location.count}</span>
+                    <span className='location-percentage'>
+                      {location.percentage}%
+                    </span>
                   </div>
                 </div>
               ))}
@@ -413,11 +463,11 @@ const CreatorAnalytics = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="actions-section">
+      <div className='actions-section'>
         <h2>Quick Actions</h2>
-        <div className="actions-grid">
-          <motion.button 
-            className="action-btn"
+        <div className='actions-grid'>
+          <motion.button
+            className='action-btn'
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -425,8 +475,8 @@ const CreatorAnalytics = () => {
             <span>Export Report</span>
           </motion.button>
 
-          <motion.button 
-            className="action-btn"
+          <motion.button
+            className='action-btn'
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -434,8 +484,8 @@ const CreatorAnalytics = () => {
             <span>Custom Filters</span>
           </motion.button>
 
-          <motion.button 
-            className="action-btn"
+          <motion.button
+            className='action-btn'
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -443,8 +493,8 @@ const CreatorAnalytics = () => {
             <span>Set Goals</span>
           </motion.button>
 
-          <motion.button 
-            className="action-btn primary"
+          <motion.button
+            className='action-btn primary'
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -456,7 +506,7 @@ const CreatorAnalytics = () => {
 
       {/* Desktop Footer */}
       {isDesktop && <CreatorMainFooter />}
-      
+
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>

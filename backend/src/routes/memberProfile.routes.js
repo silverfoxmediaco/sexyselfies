@@ -3,21 +3,21 @@
 const router = require('express').Router();
 const memberProfileController = require('../controllers/memberProfile.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
-const { 
+const {
   verifiedCreatorOnly,
-  checkVerificationLevel 
+  checkVerificationLevel,
 } = require('../middleware/verification.middleware');
 const {
   checkDailyInteractionLimit,
   checkMessageQuota,
   preventSpam,
-  bulkActionLimits
+  bulkActionLimits,
 } = require('../middleware/salesLimits.middleware');
 const {
   anonymizeMemberData,
   checkMemberOptIn,
   respectBlockList,
-  dataVisibilityRules
+  dataVisibilityRules,
 } = require('../middleware/privacy.middleware');
 
 // ====================================

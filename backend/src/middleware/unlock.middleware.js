@@ -5,6 +5,7 @@ const Transaction = require('../models/Transaction');
 const Content = require('../models/Content');
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
+const Message = require('../models/Message');
 
 /**
  * Check if member has unlocked specific content
@@ -19,12 +20,12 @@ const checkContentUnlock = async (req, res, next) => {
     if (!content) {
       return res.status(404).json({
         success: false,
-        message: 'Content not found'
+        message: 'Content not found',
       });
     }
 
     // Creator always has access to their own content
-    if (content.creatorId.toString() === memberId) {
+    if (content.creator.toString() === memberId) {
       req.hasAccess = true;
       return next();
     }
@@ -34,7 +35,7 @@ const checkContentUnlock = async (req, res, next) => {
       memberId,
       contentId,
       type: 'content_unlock',
-      status: 'completed'
+      status: 'completed',
     });
 
     if (transaction) {
@@ -50,7 +51,7 @@ const checkContentUnlock = async (req, res, next) => {
     console.error('Content unlock check error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error checking content access'
+      message: 'Error checking content access',
     });
   }
 };
@@ -74,7 +75,7 @@ const checkProfileUnlock = async (req, res, next) => {
       memberId,
       creatorId,
       type: { $in: ['content_unlock', 'profile_unlock', 'message_unlock'] },
-      status: 'completed'
+      status: 'completed',
     });
 
     req.hasUnlockedContent = !!unlockedContent;
@@ -82,7 +83,7 @@ const checkProfileUnlock = async (req, res, next) => {
       memberId,
       creatorId,
       type: { $in: ['content_unlock', 'profile_unlock', 'message_unlock'] },
-      status: 'completed'
+      status: 'completed',
     });
 
     next();
@@ -90,7 +91,7 @@ const checkProfileUnlock = async (req, res, next) => {
     console.error('Profile unlock check error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error checking profile access'
+      message: 'Error checking profile access',
     });
   }
 };
@@ -107,7 +108,7 @@ const checkSpendingLimit = async (req, res, next) => {
     if (!member) {
       return res.status(404).json({
         success: false,
-        message: 'Member not found'
+        message: 'Member not found',
       });
     }
 
@@ -121,26 +122,29 @@ const checkSpendingLimit = async (req, res, next) => {
           $match: {
             memberId: member._id,
             status: 'completed',
-            createdAt: { $gte: today }
-          }
+            createdAt: { $gte: today },
+          },
         },
         {
           $group: {
             _id: null,
-            total: { $sum: '$amount' }
-          }
-        }
+            total: { $sum: '$amount' },
+          },
+        },
       ]);
 
       const currentSpending = todaySpending[0]?.total || 0;
-      
+
       if (currentSpending + amount > member.settings.dailySpendingLimit) {
         return res.status(403).json({
           success: false,
           message: 'Daily spending limit reached',
           limit: member.settings.dailySpendingLimit,
           spent: currentSpending,
-          remaining: Math.max(0, member.settings.dailySpendingLimit - currentSpending)
+          remaining: Math.max(
+            0,
+            member.settings.dailySpendingLimit - currentSpending
+          ),
         });
       }
     }
@@ -152,7 +156,7 @@ const checkSpendingLimit = async (req, res, next) => {
         message: 'Insufficient wallet balance',
         required: amount,
         balance: member.wallet?.balance || 0,
-        topUpUrl: '/wallet/topup'
+        topUpUrl: '/wallet/topup',
       });
     }
 
@@ -161,7 +165,7 @@ const checkSpendingLimit = async (req, res, next) => {
     console.error('Spending limit check error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error checking spending limits'
+      message: 'Error checking spending limits',
     });
   }
 };
@@ -183,7 +187,9 @@ const trackUnlock = async (req, res, next) => {
       amount: req.body.amount,
       timestamp: new Date(),
       source: req.headers['referer'] || 'direct',
-      deviceType: req.headers['user-agent']?.includes('Mobile') ? 'mobile' : 'desktop'
+      deviceType: req.headers['user-agent']?.includes('Mobile')
+        ? 'mobile'
+        : 'desktop',
     };
 
     // Fire and forget analytics tracking
@@ -211,7 +217,7 @@ const validateUnlockPrice = (req, res, next) => {
     return res.status(400).json({
       success: false,
       message: 'Invalid unlock price. Minimum price is $0.99',
-      minPrice: 0.99
+      minPrice: 0.99,
     });
   }
 
@@ -230,9 +236,9 @@ const checkMessageUnlock = async (req, res, next) => {
     const memberId = req.user.id;
 
     // Check if message has paid content
-    const message = await req.db.collection('messages').findOne({ 
+    const message = await Message.findOne({
       _id: messageId,
-      'paidContent.price': { $exists: true }
+      'paidContent.price': { $exists: true },
     });
 
     if (!message) {
@@ -241,7 +247,7 @@ const checkMessageUnlock = async (req, res, next) => {
     }
 
     // Check if member is sender
-    if (message.senderId.toString() === memberId) {
+    if (message.sender.toString() === memberId) {
       req.hasAccess = true;
       return next();
     }
@@ -251,7 +257,7 @@ const checkMessageUnlock = async (req, res, next) => {
       memberId,
       messageId,
       type: 'message_unlock',
-      status: 'completed'
+      status: 'completed',
     });
 
     req.hasAccess = !!unlock;
@@ -262,7 +268,7 @@ const checkMessageUnlock = async (req, res, next) => {
     console.error('Message unlock check error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error checking message access'
+      message: 'Error checking message access',
     });
   }
 };
@@ -275,13 +281,14 @@ const checkBundleUnlock = async (req, res, next) => {
     const { bundleId } = req.params;
     const memberId = req.user.id;
 
-    // Check if bundle exists and get content IDs
-    const bundle = await req.db.collection('bundles').findOne({ _id: bundleId });
-    
+    // TODO: Create Bundle model - for now return not found
+    // const bundle = await Bundle.findOne({ _id: bundleId });
+    const bundle = null; // Temporary until Bundle model is created
+
     if (!bundle) {
       return res.status(404).json({
         success: false,
-        message: 'Bundle not found'
+        message: 'Bundle not found',
       });
     }
 
@@ -290,7 +297,7 @@ const checkBundleUnlock = async (req, res, next) => {
       memberId,
       bundleId,
       type: 'bundle_unlock',
-      status: 'completed'
+      status: 'completed',
     });
 
     if (bundleUnlock) {
@@ -307,7 +314,7 @@ const checkBundleUnlock = async (req, res, next) => {
     console.error('Bundle unlock check error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error checking bundle access'
+      message: 'Error checking bundle access',
     });
   }
 };
@@ -319,5 +326,5 @@ module.exports = {
   trackUnlock,
   validateUnlockPrice,
   checkMessageUnlock,
-  checkBundleUnlock
+  checkBundleUnlock,
 };

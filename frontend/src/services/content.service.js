@@ -8,21 +8,21 @@ class ContentService {
   // ==========================================
   // CONTENT UPLOAD
   // ==========================================
-  
+
   /**
    * Upload content (photos/videos)
    */
   async uploadContent(data) {
     try {
       const formData = new FormData();
-      
+
       // Add files
       if (data.files && data.files.length > 0) {
-        data.files.forEach((file) => {
+        data.files.forEach(file => {
           formData.append('content', file);
         });
       }
-      
+
       // Add metadata
       formData.append('title', data.title);
       formData.append('description', data.description || '');
@@ -37,34 +37,39 @@ class ContentService {
       formData.append('blur_preview', data.blur_preview !== false);
       formData.append('schedule_date', data.schedule_date || '');
       formData.append('expires_at', data.expires_at || '');
-      
+
       // Thumbnail for videos
       if (data.thumbnail) {
         formData.append('thumbnail', data.thumbnail);
       }
-      
+
       // Location data if allowed
       if (data.include_location && navigator.geolocation) {
         const position = await this.getCurrentPosition();
-        formData.append('location', JSON.stringify({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        }));
+        formData.append(
+          'location',
+          JSON.stringify({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          })
+        );
       }
-      
+
       const response = await uploadApi.post('/content/upload', formData, {
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        onUploadProgress: progressEvent => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
           if (data.onProgress) {
             data.onProgress(percentCompleted);
           }
         },
-        timeout: 600000 // 10 minutes for large videos
+        timeout: 600000, // 10 minutes for large videos
       });
-      
+
       // Cache new content locally
       this.cacheContent(response.data);
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -78,11 +83,11 @@ class ContentService {
     try {
       const uploads = [];
       let completed = 0;
-      
+
       for (const file of files) {
         const formData = new FormData();
         formData.append('content', file);
-        
+
         // Apply common metadata
         Object.keys(commonData).forEach(key => {
           if (typeof commonData[key] === 'object') {
@@ -91,30 +96,40 @@ class ContentService {
             formData.append(key, commonData[key]);
           }
         });
-        
+
         const upload = uploadApi.post('/content/upload', formData, {
-          onUploadProgress: (progressEvent) => {
-            const fileProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            const totalProgress = Math.round(((completed + (fileProgress / 100)) / files.length) * 100);
-            
+          onUploadProgress: progressEvent => {
+            const fileProgress = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            const totalProgress = Math.round(
+              ((completed + fileProgress / 100) / files.length) * 100
+            );
+
             if (commonData.onBatchProgress) {
-              commonData.onBatchProgress(totalProgress, completed + 1, files.length);
+              commonData.onBatchProgress(
+                totalProgress,
+                completed + 1,
+                files.length
+              );
             }
-          }
+          },
         });
-        
+
         uploads.push(upload);
-        
+
         // Wait for each upload to complete before starting next (to avoid overwhelming server)
         await upload;
         completed++;
       }
-      
+
       const results = await Promise.allSettled(uploads);
-      
+
       return {
-        successful: results.filter(r => r.status === 'fulfilled').map(r => r.value),
-        failed: results.filter(r => r.status === 'rejected').map(r => r.reason)
+        successful: results
+          .filter(r => r.status === 'fulfilled')
+          .map(r => r.value),
+        failed: results.filter(r => r.status === 'rejected').map(r => r.reason),
       };
     } catch (error) {
       throw this.handleError(error);
@@ -129,30 +144,33 @@ class ContentService {
       const chunk_size = 1024 * 1024; // 1MB chunks
       const total_size = file.size;
       let current_byte = startByte;
-      
+
       while (current_byte < total_size) {
-        const chunk = file.slice(current_byte, Math.min(current_byte + chunk_size, total_size));
-        
+        const chunk = file.slice(
+          current_byte,
+          Math.min(current_byte + chunk_size, total_size)
+        );
+
         const formData = new FormData();
         formData.append('chunk', chunk);
         formData.append('upload_id', uploadId);
         formData.append('current_byte', current_byte);
         formData.append('total_size', total_size);
-        
+
         await uploadApi.post('/content/upload/chunk', formData);
-        
+
         current_byte += chunk_size;
-        
+
         if (this.onChunkProgress) {
           this.onChunkProgress(Math.round((current_byte / total_size) * 100));
         }
       }
-      
+
       // Finalize upload
       const response = await api.post('/content/upload/finalize', {
-        upload_id: uploadId
+        upload_id: uploadId,
       });
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -162,7 +180,7 @@ class ContentService {
   // ==========================================
   // CONTENT MANAGEMENT
   // ==========================================
-  
+
   /**
    * Get content list
    */
@@ -181,15 +199,15 @@ class ContentService {
           filter: params.filter, // 'free', 'paid', 'scheduled', 'expired'
           search: params.search,
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
-      
+
       // Cache for offline viewing
       if (params.cache !== false) {
         this.cacheContentList(response.data);
       }
-      
+
       return response;
     } catch (error) {
       // Try to return cached data if offline
@@ -209,10 +227,10 @@ class ContentService {
   async getContentById(contentId) {
     try {
       const response = await api.get(`/content/${contentId}`);
-      
+
       // Cache for offline viewing
       this.cacheContent(response.data);
-      
+
       return response;
     } catch (error) {
       // Try cached version if offline
@@ -241,12 +259,12 @@ class ContentService {
         allow_comments: data.allow_comments,
         allow_downloads: data.allow_downloads,
         schedule_date: data.schedule_date,
-        expires_at: data.expires_at
+        expires_at: data.expires_at,
       });
-      
+
       // Update cache
       this.cacheContent(response.data);
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -259,10 +277,10 @@ class ContentService {
   async deleteContent(contentId) {
     try {
       const response = await api.delete(`/content/${contentId}`);
-      
+
       // Remove from cache
       this.removeCachedContent(contentId);
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -296,17 +314,17 @@ class ContentService {
   // ==========================================
   // CONTENT INTERACTIONS
   // ==========================================
-  
+
   /**
    * Like content
    */
   async likeContent(contentId) {
     try {
       const response = await api.post(`/content/${contentId}/like`);
-      
+
       // Update local like state
       this.updateCachedContentLike(contentId, true);
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -319,10 +337,10 @@ class ContentService {
   async unlikeContent(contentId) {
     try {
       const response = await api.delete(`/content/${contentId}/like`);
-      
+
       // Update local like state
       this.updateCachedContentLike(contentId, false);
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -337,7 +355,7 @@ class ContentService {
       const response = await api.post(`/content/${contentId}/view`, {
         duration: 0, // Will be updated as user watches
         device_type: this.getDeviceType(),
-        referrer: document.referrer
+        referrer: document.referrer,
       });
       return response;
     } catch (error) {
@@ -353,7 +371,7 @@ class ContentService {
   async updateViewDuration(contentId, duration) {
     try {
       const response = await api.put(`/content/${contentId}/view`, {
-        duration
+        duration,
       });
       return response;
     } catch (error) {
@@ -369,23 +387,23 @@ class ContentService {
   async shareContent(contentId, platform) {
     try {
       const response = await api.post(`/content/${contentId}/share`, {
-        platform // 'link', 'twitter', 'reddit', 'telegram', 'whatsapp'
+        platform, // 'link', 'twitter', 'reddit', 'telegram', 'whatsapp'
       });
-      
+
       if (response.data?.share_url) {
         // Handle native share API if available
         if (navigator.share && platform === 'native') {
           await navigator.share({
             title: response.data.title,
             text: response.data.description,
-            url: response.data.share_url
+            url: response.data.share_url,
           });
         } else {
           // Copy to clipboard
           await navigator.clipboard.writeText(response.data.share_url);
         }
       }
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -400,7 +418,7 @@ class ContentService {
       const response = await api.post(`/content/${contentId}/report`, {
         reason, // 'inappropriate', 'copyright', 'spam', 'misleading', 'underage', 'other'
         details,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       return response;
     } catch (error) {
@@ -411,7 +429,7 @@ class ContentService {
   // ==========================================
   // COMMENTS
   // ==========================================
-  
+
   /**
    * Get comments
    */
@@ -421,8 +439,8 @@ class ContentService {
         params: {
           sort: params.sort || 'newest', // 'newest', 'oldest', 'popular'
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -437,7 +455,7 @@ class ContentService {
     try {
       const response = await api.post(`/content/${contentId}/comments`, {
         text,
-        reply_to: replyTo
+        reply_to: replyTo,
       });
       return response;
     } catch (error) {
@@ -475,7 +493,7 @@ class ContentService {
   async reportComment(commentId, reason) {
     try {
       const response = await api.post(`/comments/${commentId}/report`, {
-        reason
+        reason,
       });
       return response;
     } catch (error) {
@@ -486,7 +504,7 @@ class ContentService {
   // ==========================================
   // ANALYTICS
   // ==========================================
-  
+
   /**
    * Get content analytics (for creators)
    */
@@ -509,8 +527,8 @@ class ContentService {
           period: params.period || '24h', // '1h', '24h', '7d', '30d'
           category: params.category,
           type: params.type,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -526,8 +544,8 @@ class ContentService {
       const response = await api.get('/content/recommended', {
         params: {
           based_on: params.based_on, // 'history', 'likes', 'subscriptions'
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -538,25 +556,28 @@ class ContentService {
   // ==========================================
   // DOWNLOAD & OFFLINE
   // ==========================================
-  
+
   /**
    * Download content
    */
   async downloadContent(contentId) {
     try {
       const response = await api.get(`/content/${contentId}/download`, {
-        responseType: 'blob'
+        responseType: 'blob',
       });
-      
+
       // Create download link
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `content_${contentId}.${this.getFileExtension(response.headers['content-type'])}`);
+      link.setAttribute(
+        'download',
+        `content_${contentId}.${this.getFileExtension(response.headers['content-type'])}`
+      );
       document.body.appendChild(link);
       link.click();
       link.remove();
-      
+
       return { success: true };
     } catch (error) {
       throw this.handleError(error);
@@ -569,10 +590,10 @@ class ContentService {
   async saveForOffline(contentId) {
     try {
       const response = await api.get(`/content/${contentId}/offline`);
-      
+
       // Store in IndexedDB for offline access
       await this.storeOfflineContent(contentId, response.data);
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -606,7 +627,7 @@ class ContentService {
   // ==========================================
   // HELPER METHODS
   // ==========================================
-  
+
   /**
    * Get current position
    */
@@ -615,7 +636,7 @@ class ContentService {
       navigator.geolocation.getCurrentPosition(resolve, reject, {
         enableHighAccuracy: true,
         timeout: 5000,
-        maximumAge: 0
+        maximumAge: 0,
       });
     });
   }
@@ -628,7 +649,11 @@ class ContentService {
     if (/tablet|ipad|playbook|silk/i.test(userAgent)) {
       return 'tablet';
     }
-    if (/mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile/i.test(userAgent)) {
+    if (
+      /mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile/i.test(
+        userAgent
+      )
+    ) {
       return 'mobile';
     }
     return 'desktop';
@@ -646,7 +671,7 @@ class ContentService {
       'video/mp4': 'mp4',
       'video/webm': 'webm',
       'audio/mpeg': 'mp3',
-      'audio/wav': 'wav'
+      'audio/wav': 'wav',
     };
     return types[mimeType] || 'file';
   }
@@ -657,10 +682,13 @@ class ContentService {
   cacheContent(content) {
     try {
       const key = `content_${content.id}`;
-      localStorage.setItem(key, JSON.stringify({
-        data: content,
-        cached_at: Date.now()
-      }));
+      localStorage.setItem(
+        key,
+        JSON.stringify({
+          data: content,
+          cached_at: Date.now(),
+        })
+      );
     } catch (e) {
       console.error('Cache error:', e);
     }
@@ -717,7 +745,7 @@ class ContentService {
       const keys = Object.keys(localStorage);
       const contentKeys = keys.filter(key => key.startsWith('content_'));
       const contents = [];
-      
+
       contentKeys.forEach(key => {
         const cached = localStorage.getItem(key);
         if (cached) {
@@ -728,7 +756,7 @@ class ContentService {
           }
         }
       });
-      
+
       return contents;
     } catch (e) {
       console.error('Cache list retrieval error:', e);
@@ -744,8 +772,8 @@ class ContentService {
       const cached = this.getCachedContent(contentId);
       if (cached) {
         cached.is_liked = liked;
-        cached.likes_count = liked 
-          ? (cached.likes_count || 0) + 1 
+        cached.likes_count = liked
+          ? (cached.likes_count || 0) + 1
           : Math.max((cached.likes_count || 0) - 1, 0);
         this.cacheContent(cached);
       }
@@ -760,7 +788,7 @@ class ContentService {
   async storeOfflineContent(contentId, data) {
     // Implementation would use IndexedDB API
     // Simplified for brevity
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       // Store in IndexedDB
       resolve();
     });
@@ -772,7 +800,7 @@ class ContentService {
   async retrieveOfflineContent() {
     // Implementation would use IndexedDB API
     // Simplified for brevity
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       // Retrieve from IndexedDB
       resolve([]);
     });
@@ -784,7 +812,7 @@ class ContentService {
   async deleteOfflineContent(contentId) {
     // Implementation would use IndexedDB API
     // Simplified for brevity
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       // Delete from IndexedDB
       resolve();
     });
@@ -796,69 +824,70 @@ class ContentService {
   handleError(error) {
     if (error.response) {
       const { status, data } = error.response;
-      
+
       switch (status) {
         case 400:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: data.message || 'Invalid request',
-            errors: data.errors || {}
+            errors: data.errors || {},
           };
         case 401:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Please login to continue',
-            code: 'UNAUTHORIZED'
+            code: 'UNAUTHORIZED',
           };
         case 403:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Access denied',
-            code: 'FORBIDDEN'
+            code: 'FORBIDDEN',
           };
         case 404:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Content not found',
-            code: 'NOT_FOUND'
+            code: 'NOT_FOUND',
           };
         case 413:
-          return { 
-            error: true, 
-            message: 'File too large. Maximum size is 100MB for photos, 500MB for videos.',
-            code: 'FILE_TOO_LARGE'
+          return {
+            error: true,
+            message:
+              'File too large. Maximum size is 100MB for photos, 500MB for videos.',
+            code: 'FILE_TOO_LARGE',
           };
         case 422:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Invalid content data',
-            errors: data.errors || {}
+            errors: data.errors || {},
           };
         case 429:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Too many uploads. Please wait a moment.',
-            code: 'RATE_LIMITED'
+            code: 'RATE_LIMITED',
           };
         default:
-          return { 
-            error: true, 
-            message: data.message || 'Content operation failed'
+          return {
+            error: true,
+            message: data.message || 'Content operation failed',
           };
       }
     }
-    
+
     if (!navigator.onLine) {
-      return { 
-        error: true, 
+      return {
+        error: true,
         message: 'No internet connection',
-        code: 'OFFLINE'
+        code: 'OFFLINE',
       };
     }
-    
-    return { 
-      error: true, 
-      message: error.message || 'Content operation failed'
+
+    return {
+      error: true,
+      message: error.message || 'Content operation failed',
     };
   }
 
@@ -866,10 +895,10 @@ class ContentService {
   async unlockContent(contentId) {
     try {
       const response = await api.post(`/content/${contentId}/unlock`);
-      
+
       // Update cached content to show as unlocked
       this.updateCachedContentAccess(contentId, true);
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);

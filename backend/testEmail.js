@@ -21,30 +21,32 @@ const transporter = createTransport({
   secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    pass: process.env.EMAIL_PASS,
   },
   tls: {
-    rejectUnauthorized: false // Sometimes needed for SiteGround
+    rejectUnauthorized: false, // Sometimes needed for SiteGround
   },
   debug: true, // Enable debug output
-  logger: true // Log to console
+  logger: true, // Log to console
 });
 
 // Verify connection configuration
 console.log('Verifying SMTP connection...\n');
-transporter.verify(function(error, success) {
+transporter.verify(function (error, success) {
   if (error) {
     console.error('❌ SMTP Connection Failed:');
     console.error(error);
     console.log('\nPossible issues:');
     console.log('1. Check EMAIL_PASS is correct');
-    console.log('2. Try using "mail.sexyselfies.com" instead of "smtp.siteground.com"');
+    console.log(
+      '2. Try using "mail.sexyselfies.com" instead of "smtp.siteground.com"'
+    );
     console.log('3. Make sure no spaces in password');
     console.log('4. Check if 2FA is enabled on email account');
   } else {
     console.log('✅ SMTP Connection Successful!');
     console.log('Server is ready to send emails\n');
-    
+
     // If verification succeeds, send a test email
     sendTestEmail();
   }
@@ -52,7 +54,7 @@ transporter.verify(function(error, success) {
 
 function sendTestEmail() {
   console.log('Sending test email...\n');
-  
+
   const mailOptions = {
     from: process.env.EMAIL_FROM,
     to: process.env.ADMIN_EMAIL,
@@ -78,7 +80,7 @@ function sendTestEmail() {
           <p>This is an automated test email from your SexySelfies platform.</p>
         </div>
       </div>
-    `
+    `,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
@@ -90,7 +92,7 @@ function sendTestEmail() {
       console.log('Message ID:', info.messageId);
       console.log('Check your inbox at:', process.env.ADMIN_EMAIL);
     }
-    
+
     // Close the connection
     transporter.close();
   });

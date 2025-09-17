@@ -9,23 +9,21 @@ if (!fs.existsSync(logsDir)) {
 }
 
 // Create write streams for different log files
-const accessLogStream = fs.createWriteStream(
-  path.join(logsDir, 'access.log'),
-  { flags: 'a' }
-);
+const accessLogStream = fs.createWriteStream(path.join(logsDir, 'access.log'), {
+  flags: 'a',
+});
 
-const errorLogStream = fs.createWriteStream(
-  path.join(logsDir, 'error.log'),
-  { flags: 'a' }
-);
+const errorLogStream = fs.createWriteStream(path.join(logsDir, 'error.log'), {
+  flags: 'a',
+});
 
 // Custom token for user ID
-morgan.token('user-id', (req) => {
+morgan.token('user-id', req => {
   return req.user ? req.user.id : 'anonymous';
 });
 
 // Custom token for user type
-morgan.token('user-type', (req) => {
+morgan.token('user-type', req => {
   return req.user ? req.user.type : 'guest';
 });
 
@@ -35,10 +33,12 @@ morgan.token('response-time-ms', (req, res) => {
 });
 
 // Development logging format
-const devFormat = ':method :url :status :response-time-ms ms - :res[content-length]';
+const devFormat =
+  ':method :url :status :response-time-ms ms - :res[content-length]';
 
 // Production logging format
-const prodFormat = ':remote-addr - :user-id [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time-ms ms';
+const prodFormat =
+  ':remote-addr - :user-id [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time-ms ms';
 
 // Custom logging format for detailed logs
 const detailedFormat = JSON.stringify({
@@ -52,18 +52,19 @@ const detailedFormat = JSON.stringify({
   contentLength: ':res[content-length]',
   ip: ':remote-addr',
   userAgent: ':user-agent',
-  referrer: ':referrer'
+  referrer: ':referrer',
 });
 
 // Request logger middleware
-exports.requestLogger = process.env.NODE_ENV === 'production'
-  ? morgan(prodFormat, { stream: accessLogStream })
-  : morgan(devFormat);
+exports.requestLogger =
+  process.env.NODE_ENV === 'production'
+    ? morgan(prodFormat, { stream: accessLogStream })
+    : morgan(devFormat);
 
 // Detailed logger for debugging
 exports.detailedLogger = morgan(detailedFormat, {
   stream: accessLogStream,
-  skip: (req, res) => res.statusCode < 400 // Only log errors in detailed format
+  skip: (req, res) => res.statusCode < 400, // Only log errors in detailed format
 });
 
 // Error logger
@@ -76,11 +77,11 @@ exports.errorLogger = (err, req, res, next) => {
     error: {
       message: err.message,
       stack: err.stack,
-      name: err.name
+      name: err.name,
     },
     userId: req.user?.id,
     ip: req.ip,
-    userAgent: req.get('user-agent')
+    userAgent: req.get('user-agent'),
   };
 
   // Write to error log file
@@ -113,17 +114,19 @@ exports.performanceMonitor = (req, res, next) => {
 
   // Override res.end to calculate response time
   const originalEnd = res.end;
-  res.end = function(...args) {
+  res.end = function (...args) {
     const duration = Date.now() - start;
-    
+
     // Log slow requests (over 1 second)
     if (duration > 1000) {
-      console.warn(`Slow request detected: ${req.method} ${req.url} took ${duration}ms`);
+      console.warn(
+        `Slow request detected: ${req.method} ${req.url} took ${duration}ms`
+      );
     }
 
     // Add response time header
     res.set('X-Response-Time', `${duration}ms`);
-    
+
     originalEnd.apply(res, args);
   };
 
@@ -131,7 +134,7 @@ exports.performanceMonitor = (req, res, next) => {
 };
 
 // Audit logger for important actions
-exports.auditLog = (action) => {
+exports.auditLog = action => {
   return (req, res, next) => {
     const auditEntry = {
       timestamp: new Date().toISOString(),
@@ -141,7 +144,7 @@ exports.auditLog = (action) => {
       method: req.method,
       path: req.path,
       ip: req.ip,
-      userAgent: req.get('user-agent')
+      userAgent: req.get('user-agent'),
     };
 
     // Write to audit log
@@ -149,7 +152,7 @@ exports.auditLog = (action) => {
       path.join(logsDir, 'audit.log'),
       { flags: 'a' }
     );
-    
+
     auditLogStream.write(JSON.stringify(auditEntry) + '\n');
     auditLogStream.end();
 
@@ -164,14 +167,14 @@ exports.dbQueryLogger = (query, params, duration) => {
       timestamp: new Date().toISOString(),
       query,
       params,
-      duration: `${duration}ms`
+      duration: `${duration}ms`,
     };
 
     const dbLogStream = fs.createWriteStream(
       path.join(logsDir, 'database.log'),
       { flags: 'a' }
     );
-    
+
     dbLogStream.write(JSON.stringify(queryLog) + '\n');
     dbLogStream.end();
   }
@@ -183,14 +186,14 @@ exports.securityLog = (event, details) => {
     timestamp: new Date().toISOString(),
     event,
     details,
-    severity: details.severity || 'info'
+    severity: details.severity || 'info',
   };
 
   const securityLogStream = fs.createWriteStream(
     path.join(logsDir, 'security.log'),
     { flags: 'a' }
   );
-  
+
   securityLogStream.write(JSON.stringify(securityEntry) + '\n');
   securityLogStream.end();
 
@@ -216,9 +219,9 @@ exports.cleanupLogs = (daysToKeep = 30) => {
       const filePath = path.join(logsDir, file);
       fs.stat(filePath, (err, stats) => {
         if (err) return;
-        
+
         if (stats.mtime < cutoffDate) {
-          fs.unlink(filePath, (err) => {
+          fs.unlink(filePath, err => {
             if (err) {
               console.error(`Error deleting old log file ${file}:`, err);
             } else {
@@ -233,9 +236,12 @@ exports.cleanupLogs = (daysToKeep = 30) => {
 
 // Schedule log cleanup (run daily)
 if (process.env.NODE_ENV === 'production') {
-  setInterval(() => {
-    exports.cleanupLogs();
-  }, 24 * 60 * 60 * 1000); // Run once per day
+  setInterval(
+    () => {
+      exports.cleanupLogs();
+    },
+    24 * 60 * 60 * 1000
+  ); // Run once per day
 }
 
 module.exports = exports;

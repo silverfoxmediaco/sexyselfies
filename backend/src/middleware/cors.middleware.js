@@ -11,12 +11,12 @@ const corsOptions = {
       'https://sexyselfies-api.onrender.com',
       process.env.CLIENT_URL,
       process.env.ADMIN_URL,
-      process.env.MOBILE_URL
+      process.env.MOBILE_URL,
     ].filter(Boolean);
-    
+
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -25,7 +25,7 @@ const corsOptions = {
   },
   credentials: true,
   optionsSuccessStatus: 200,
-  exposedHeaders: ['X-Total-Count', 'X-Page-Count']
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
 };
 
 // Export configured CORS middleware
@@ -39,25 +39,25 @@ exports.publicCors = cors({
   origin: '*',
   methods: ['GET'],
   allowedHeaders: ['Content-Type'],
-  maxAge: 86400 // 24 hours
+  maxAge: 86400, // 24 hours
 });
 
 // Strict CORS for admin endpoints
 exports.adminCors = cors({
-  origin: [
-    process.env.ADMIN_URL,
-    'http://localhost:5175'
-  ].filter(Boolean),
+  origin: [process.env.ADMIN_URL, 'http://localhost:5175'].filter(Boolean),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['X-Total-Count', 'X-Admin-Token']
+  exposedHeaders: ['X-Total-Count', 'X-Admin-Token'],
 });
 
 // Handle preflight requests
 exports.handlePreflight = (req, res, next) => {
   if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header(
+      'Access-Control-Allow-Methods',
+      'GET, POST, PUT, DELETE, OPTIONS'
+    );
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.header('Access-Control-Max-Age', '3600');
     res.status(204).send();

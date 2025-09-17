@@ -8,21 +8,21 @@ const Icon = ({ name, size = 24, color = 'currentColor', className = '' }) => {
     superLike: '/icons/actions/super-like.svg',
     message: '/icons/actions/message.svg',
     camera: '/icons/actions/camera.svg',
-    
+
     // Navigation
     home: '/icons/nav/home.svg',
     discover: '/icons/nav/discover.svg',
     matches: '/icons/nav/matches.svg',
-    profile: '/icons/nav/profile.svg'
+    profile: '/icons/nav/profile.svg',
   };
 
   const iconPath = icons[name] || icons.home;
 
   return (
-    <img 
-      src={iconPath} 
-      alt={name} 
-      width={size} 
+    <img
+      src={iconPath}
+      alt={name}
+      width={size}
       height={size}
       className={`icon icon-${name} ${className}`}
       style={{ color }}

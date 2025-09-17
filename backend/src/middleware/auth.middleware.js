@@ -10,7 +10,10 @@ exports.protectWithSession = async (req, res, next) => {
     let token;
 
     // Check for token in header
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
       token = req.headers.authorization.split(' ')[1];
     } else if (req.cookies && req.cookies.token) {
       token = req.cookies.token;
@@ -20,7 +23,7 @@ exports.protectWithSession = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        error: 'Not authorized to access this route'
+        error: 'Not authorized to access this route',
       });
     }
 
@@ -34,7 +37,7 @@ exports.protectWithSession = async (req, res, next) => {
       if (!user) {
         return res.status(401).json({
           success: false,
-          error: 'User not found'
+          error: 'User not found',
         });
       }
 
@@ -42,35 +45,41 @@ exports.protectWithSession = async (req, res, next) => {
       if (user.status === 'suspended' || user.status === 'banned') {
         return res.status(403).json({
           success: false,
-          error: `Account ${user.status}`
+          error: `Account ${user.status}`,
         });
       }
 
       // Validate session if sessionId exists in JWT
       if (decoded.sessionId) {
-        console.log(`🔍 Validating session: ${decoded.sessionId} for user: ${user._id}`);
-        
+        console.log(
+          `🔍 Validating session: ${decoded.sessionId} for user: ${user._id}`
+        );
+
         const sessionValidation = await SessionService.validateSession(
-          decoded.sessionId, 
-          user._id, 
+          decoded.sessionId,
+          user._id,
           req
         );
 
         if (!sessionValidation.valid) {
-          console.log(`❌ Session validation failed: ${sessionValidation.reason}`);
-          
+          console.log(
+            `❌ Session validation failed: ${sessionValidation.reason}`
+          );
+
           if (sessionValidation.requiresReauth) {
             return res.status(401).json({
               success: false,
               error: 'Session expired. Please log in again.',
-              code: 'SESSION_EXPIRED'
+              code: 'SESSION_EXPIRED',
             });
           }
         }
 
         // Attach session info to request
         req.session = sessionValidation.session;
-        console.log(`✅ Session validated for ${user.role}: ${decoded.sessionId}`);
+        console.log(
+          `✅ Session validated for ${user.role}: ${decoded.sessionId}`
+        );
       } else {
         console.log(`⚠️ Legacy token without session ID for user: ${user._id}`);
         // For backward compatibility, allow tokens without sessionId
@@ -83,20 +92,20 @@ exports.protectWithSession = async (req, res, next) => {
       console.error('JWT verification error:', err.message);
       return res.status(401).json({
         success: false,
-        error: 'Not authorized to access this route'
+        error: 'Not authorized to access this route',
       });
     }
   } catch (error) {
     console.error('Session auth middleware error:', error);
     res.status(500).json({
       success: false,
-      error: 'Server error'
+      error: 'Server error',
     });
   }
 };
 
 // Activity tracking middleware (use after protectWithSession)
-exports.trackActivity = (activityType) => {
+exports.trackActivity = activityType => {
   return async (req, res, next) => {
     try {
       if (req.session && req.session.sessionId) {
@@ -105,19 +114,23 @@ exports.trackActivity = (activityType) => {
           endpoint: req.originalUrl,
           method: req.method,
           userAgent: req.headers['user-agent'],
-          timestamp: new Date()
+          timestamp: new Date(),
         };
 
         // Add specific metadata based on activity type
         if (activityType === 'content_purchase' && req.body.amount) {
           metadata.amount = req.body.amount;
         }
-        
+
         if (activityType === 'browse_members' && req.query) {
           metadata.filters = req.query;
         }
 
-        await SessionService.trackActivity(req.session.sessionId, activityType, metadata);
+        await SessionService.trackActivity(
+          req.session.sessionId,
+          activityType,
+          metadata
+        );
       }
       next();
     } catch (error) {
@@ -134,7 +147,10 @@ exports.protect = async (req, res, next) => {
     let token;
 
     // Check for token in header
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
       token = req.headers.authorization.split(' ')[1];
     } else if (req.cookies && req.cookies.token) {
       token = req.cookies.token;
@@ -144,7 +160,7 @@ exports.protect = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        error: 'Not authorized to access this route'
+        error: 'Not authorized to access this route',
       });
     }
 
@@ -158,7 +174,7 @@ exports.protect = async (req, res, next) => {
       if (!req.user) {
         return res.status(401).json({
           success: false,
-          error: 'User not found'
+          error: 'User not found',
         });
       }
 
@@ -166,7 +182,7 @@ exports.protect = async (req, res, next) => {
       if (req.user.status === 'suspended' || req.user.status === 'banned') {
         return res.status(403).json({
           success: false,
-          error: `Account ${req.user.status}`
+          error: `Account ${req.user.status}`,
         });
       }
 
@@ -174,14 +190,14 @@ exports.protect = async (req, res, next) => {
     } catch (err) {
       return res.status(401).json({
         success: false,
-        error: 'Not authorized to access this route'
+        error: 'Not authorized to access this route',
       });
     }
   } catch (error) {
     console.error('Auth middleware error:', error);
     res.status(500).json({
       success: false,
-      error: 'Server error'
+      error: 'Server error',
     });
   }
 };
@@ -192,7 +208,10 @@ exports.authenticateCreator = async (req, res, next) => {
     let token;
 
     // Check for token in header
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
       token = req.headers.authorization.split(' ')[1];
     } else if (req.cookies && req.cookies.token) {
       token = req.cookies.token;
@@ -202,7 +221,7 @@ exports.authenticateCreator = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        error: 'Not authorized - no token'
+        error: 'Not authorized - no token',
       });
     }
 
@@ -216,7 +235,7 @@ exports.authenticateCreator = async (req, res, next) => {
       if (!user) {
         return res.status(401).json({
           success: false,
-          error: 'User not found'
+          error: 'User not found',
         });
       }
 
@@ -224,20 +243,20 @@ exports.authenticateCreator = async (req, res, next) => {
       if (user.role !== 'creator') {
         return res.status(403).json({
           success: false,
-          error: 'Access denied - creators only'
+          error: 'Access denied - creators only',
         });
       }
 
       // Get creator profile
       const creator = await Creator.findOne({ user: user._id });
-      
+
       if (!creator) {
         // Create creator profile if it doesn't exist
         const newCreator = await Creator.create({
           user: user._id,
           username: user.username || user.email.split('@')[0],
           email: user.email,
-          isActive: true
+          isActive: true,
         });
         req.creator = newCreator;
       } else {
@@ -246,19 +265,19 @@ exports.authenticateCreator = async (req, res, next) => {
 
       req.user = user;
       req.user.type = 'creator';
-      
+
       next();
     } catch (err) {
       return res.status(401).json({
         success: false,
-        error: 'Token invalid or expired'
+        error: 'Token invalid or expired',
       });
     }
   } catch (error) {
     console.error('Creator auth middleware error:', error);
     res.status(500).json({
       success: false,
-      error: 'Server error'
+      error: 'Server error',
     });
   }
 };
@@ -269,7 +288,10 @@ exports.authenticateMember = async (req, res, next) => {
     let token;
 
     // Check for token in header
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
       token = req.headers.authorization.split(' ')[1];
     } else if (req.cookies && req.cookies.token) {
       token = req.cookies.token;
@@ -279,7 +301,7 @@ exports.authenticateMember = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        error: 'Not authorized - no token'
+        error: 'Not authorized - no token',
       });
     }
 
@@ -293,7 +315,7 @@ exports.authenticateMember = async (req, res, next) => {
       if (!user) {
         return res.status(401).json({
           success: false,
-          error: 'User not found'
+          error: 'User not found',
         });
       }
 
@@ -301,20 +323,20 @@ exports.authenticateMember = async (req, res, next) => {
       if (user.role !== 'member') {
         return res.status(403).json({
           success: false,
-          error: 'Access denied - members only'
+          error: 'Access denied - members only',
         });
       }
 
       // Get member profile
       const member = await Member.findOne({ user: user._id });
-      
+
       if (!member) {
         // Create member profile if it doesn't exist
         const newMember = await Member.create({
           user: user._id,
           username: user.username || user.email.split('@')[0],
           email: user.email,
-          isActive: true
+          isActive: true,
         });
         req.member = newMember;
       } else {
@@ -323,19 +345,19 @@ exports.authenticateMember = async (req, res, next) => {
 
       req.user = user;
       req.user.type = 'member';
-      
+
       next();
     } catch (err) {
       return res.status(401).json({
         success: false,
-        error: 'Token invalid or expired'
+        error: 'Token invalid or expired',
       });
     }
   } catch (error) {
     console.error('Member auth middleware error:', error);
     res.status(500).json({
       success: false,
-      error: 'Server error'
+      error: 'Server error',
     });
   }
 };
@@ -346,14 +368,14 @@ exports.authorize = (...roles) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
-        error: 'Not authorized'
+        error: 'Not authorized',
       });
     }
 
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        error: `User role '${req.user.role}' is not authorized to access this route`
+        error: `User role '${req.user.role}' is not authorized to access this route`,
       });
     }
 
@@ -367,7 +389,10 @@ exports.optionalAuth = async (req, res, next) => {
     let token;
 
     // Check for token in header
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
       token = req.headers.authorization.split(' ')[1];
     } else if (req.cookies && req.cookies.token) {
       token = req.cookies.token;
@@ -384,7 +409,7 @@ exports.optionalAuth = async (req, res, next) => {
 
       // Find user
       req.user = await User.findById(decoded.id).select('-password');
-      
+
       // Continue even if user not found
       next();
     } catch (err) {
@@ -405,39 +430,43 @@ exports.verifyEmailToken = async (req, res, next) => {
     if (!token) {
       return res.status(400).json({
         success: false,
-        error: 'No verification token provided'
+        error: 'No verification token provided',
       });
     }
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_EMAIL_SECRET || process.env.JWT_SECRET);
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_EMAIL_SECRET || process.env.JWT_SECRET
+      );
       req.emailVerification = decoded;
       next();
     } catch (err) {
       return res.status(400).json({
         success: false,
-        error: 'Invalid or expired verification token'
+        error: 'Invalid or expired verification token',
       });
     }
   } catch (error) {
     console.error('Email verification error:', error);
     res.status(500).json({
       success: false,
-      error: 'Server error'
+      error: 'Server error',
     });
   }
 };
 
 // Check if user owns the resource
-exports.checkOwnership = (model) => {
+exports.checkOwnership = model => {
   return async (req, res, next) => {
     try {
-      const resourceId = req.params.id || req.params.contentId || req.params.messageId;
-      
+      const resourceId =
+        req.params.id || req.params.contentId || req.params.messageId;
+
       if (!resourceId) {
         return res.status(400).json({
           success: false,
-          error: 'Resource ID required'
+          error: 'Resource ID required',
         });
       }
 
@@ -447,25 +476,31 @@ exports.checkOwnership = (model) => {
       if (!resource) {
         return res.status(404).json({
           success: false,
-          error: `${model} not found`
+          error: `${model} not found`,
         });
       }
 
       // Check ownership based on model type
       let isOwner = false;
-      
+
       if (resource.user && resource.user.toString() === req.user.id) {
         isOwner = true;
-      } else if (resource.creator && resource.creator.toString() === req.user.id) {
+      } else if (
+        resource.creator &&
+        resource.creator.toString() === req.user.id
+      ) {
         isOwner = true;
-      } else if (resource.member && resource.member.toString() === req.user.id) {
+      } else if (
+        resource.member &&
+        resource.member.toString() === req.user.id
+      ) {
         isOwner = true;
       }
 
       if (!isOwner && req.user.role !== 'admin') {
         return res.status(403).json({
           success: false,
-          error: 'Not authorized to access this resource'
+          error: 'Not authorized to access this resource',
         });
       }
 
@@ -475,7 +510,7 @@ exports.checkOwnership = (model) => {
       console.error('Ownership check error:', error);
       res.status(500).json({
         success: false,
-        error: 'Server error'
+        error: 'Server error',
       });
     }
   };
@@ -498,12 +533,14 @@ exports.userRateLimit = (maxRequests = 100, windowMs = 15 * 60 * 1000) => {
       requests.set(userId, []);
     }
 
-    const userRequests = requests.get(userId).filter(time => time > windowStart);
-    
+    const userRequests = requests
+      .get(userId)
+      .filter(time => time > windowStart);
+
     if (userRequests.length >= maxRequests) {
       return res.status(429).json({
         success: false,
-        error: 'Too many requests, please try again later'
+        error: 'Too many requests, please try again later',
       });
     }
 

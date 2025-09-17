@@ -2,7 +2,7 @@
 
 .my-connections-container {
   min-height: 100vh;
-  background: #0A0A0A;
+  background: #0a0a0a;
   padding-bottom: calc(70px + env(safe-area-inset-bottom, 0));
 }
 
@@ -22,7 +22,7 @@
 .connections-header h1 {
   font-size: 28px;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0 0 20px 0;
   display: flex;
   align-items: center;
@@ -33,7 +33,7 @@
   content: '';
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -72,24 +72,24 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #8E8E93;
+  color: #8e8e93;
   font-weight: 500;
 }
 
 .stat-item.total .stat-count {
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .stat-item.active .stat-count {
-  color: #34C759;
+  color: #34c759;
 }
 
 .stat-item.pending .stat-count {
-  color: #FF9500;
+  color: #ff9500;
 }
 
 .stat-item.expired .stat-count {
-  color: #FF3B30;
+  color: #ff3b30;
 }
 
 /* Search Section */
@@ -108,7 +108,7 @@
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
-  color: #8E8E93;
+  color: #8e8e93;
 }
 
 .connections-search input {
@@ -117,14 +117,14 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 14px 16px 14px 48px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 16px;
   outline: none;
   transition: all 0.2s;
 }
 
 .connections-search input::placeholder {
-  color: #8E8E93;
+  color: #8e8e93;
 }
 
 .connections-search input:focus {
@@ -151,7 +151,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -166,9 +166,9 @@
 
 .tab-button.active {
   background: transparent;
-  color: #17D2C2;
-  border-color: #17D2C2;
-  box-shadow: 0 0 0 1px #17D2C2;
+  color: #17d2c2;
+  border-color: #17d2c2;
+  box-shadow: 0 0 0 1px #17d2c2;
 }
 
 /* Connections List */
@@ -220,8 +220,8 @@
 }
 
 .connection-checkbox.checked {
-  background: #17D2C2;
-  border-color: #17D2C2;
+  background: #17d2c2;
+  border-color: #17d2c2;
 }
 
 .connection-checkbox.checked::after {
@@ -264,18 +264,18 @@
 }
 
 .connection-type-badge.premium {
-  background: #FFD700;
+  background: #ffd700;
   color: #000000;
 }
 
 .connection-type-badge.verified {
-  background: #17D2C2;
+  background: #17d2c2;
   color: #001310;
 }
 
 .connection-type-badge.basic {
-  background: #8E8E93;
-  color: #FFFFFF;
+  background: #8e8e93;
+  color: #ffffff;
 }
 
 /* Online Indicator */
@@ -285,8 +285,8 @@
   right: 12px;
   width: 24px;
   height: 24px;
-  background: #34C759;
-  border: 3px solid #0A0A0A;
+  background: #34c759;
+  border: 3px solid #0a0a0a;
   border-radius: 50%;
   z-index: 2;
 }
@@ -299,8 +299,8 @@
   min-width: 24px;
   height: 24px;
   padding: 0 8px;
-  background: #FF3B30;
-  color: #FFFFFF;
+  background: #ff3b30;
+  color: #ffffff;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -318,7 +318,7 @@
 .connection-name {
   font-size: 20px;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0 0 4px 0;
   display: flex;
   align-items: center;
@@ -326,19 +326,19 @@
 }
 
 .sparkle-icon {
-  color: #FFD700;
+  color: #ffd700;
   font-size: 18px;
 }
 
 .connection-username {
   font-size: 14px;
-  color: #8E8E93;
+  color: #8e8e93;
   margin: 0 0 8px 0;
 }
 
 .last-message {
   font-size: 14px;
-  color: #C7C7CC;
+  color: #c7c7cc;
   margin: 0 0 4px 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -347,7 +347,7 @@
 
 .last-message-time {
   font-size: 12px;
-  color: #8E8E93;
+  color: #8e8e93;
 }
 
 /* Action Buttons */
@@ -363,7 +363,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 14px;
   font-weight: 500;
   text-align: center;
@@ -377,13 +377,13 @@
 }
 
 .action-button.primary {
-  background: #17D2C2;
-  border-color: #17D2C2;
+  background: #17d2c2;
+  border-color: #17d2c2;
   color: #001310;
 }
 
 .action-button.primary:active {
-  background: #14B5A8;
+  background: #14b5a8;
 }
 
 /* Pending Connection Actions */
@@ -393,7 +393,8 @@
   margin-top: 12px;
 }
 
-.accept-btn, .decline-btn {
+.accept-btn,
+.decline-btn {
   flex: 1;
   padding: 10px 16px;
   border-radius: 8px;
@@ -405,22 +406,22 @@
 }
 
 .accept-btn {
-  background: #22C55E;
+  background: #22c55e;
   color: white;
 }
 
 .accept-btn:hover {
-  background: #16A34A;
+  background: #16a34a;
   transform: translateY(-1px);
 }
 
 .decline-btn {
-  background: #EF4444;
+  background: #ef4444;
   color: white;
 }
 
 .decline-btn:hover {
-  background: #DC2626;
+  background: #dc2626;
   transform: translateY(-1px);
 }
 
@@ -438,19 +439,24 @@
   background: rgba(249, 115, 22, 0.1);
   border: 1px solid rgba(249, 115, 22, 0.2);
   border-radius: 8px;
-  color: #F59E0B;
+  color: #f59e0b;
   font-size: 14px;
   font-weight: 500;
 }
 
 .waiting-response::before {
-  content: "⏳";
+  content: '⏳';
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Empty State */
@@ -474,19 +480,19 @@
 .empty-state h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0 0 8px 0;
 }
 
 .empty-state p {
   font-size: 14px;
-  color: #8E8E93;
+  color: #8e8e93;
   margin: 0 0 24px 0;
 }
 
 .browse-button {
   padding: 12px 32px;
-  background: #17D2C2;
+  background: #17d2c2;
   border: none;
   border-radius: 24px;
   color: #001310;
@@ -514,17 +520,19 @@
   width: 40px;
   height: 40px;
   border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #17D2C2;
+  border-top-color: #17d2c2;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-state p {
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 14px;
 }
 
@@ -579,10 +587,10 @@
   }
 
   .action-button.primary:hover {
-    background: #14B5A8;
+    background: #14b5a8;
   }
 
   .browse-button:hover {
-    background: #14B5A8;
+    background: #14b5a8;
   }
 }

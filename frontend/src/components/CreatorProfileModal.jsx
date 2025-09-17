@@ -1,14 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Heart, MessageCircle, Unlock, MapPin, Check, 
-  Camera, Video, Star, Users, Shield, Eye,
-  ChevronLeft, Lock, Sparkles, Info, Share2
+import {
+  X,
+  Heart,
+  MessageCircle,
+  Unlock,
+  MapPin,
+  Check,
+  Camera,
+  Video,
+  Star,
+  Users,
+  Shield,
+  Eye,
+  ChevronLeft,
+  Lock,
+  Sparkles,
+  Info,
+  Share2,
 } from 'lucide-react';
 import './CreatorProfileModal.css';
 import playCircleIcon from '../assets/play_circle_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png';
 
-const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuperLike }) => {
+const CreatorProfileModal = ({
+  creator,
+  isOpen,
+  onClose,
+  onLike,
+  onPass,
+  onSuperLike,
+}) => {
   const [activeTab, setActiveTab] = useState('about');
   const [selectedContent, setSelectedContent] = useState(null);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
@@ -16,12 +37,48 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
 
   // Mock content for demonstration
   const mockContent = [
-    { id: 1, type: 'photo', thumbnail: '/api/placeholder/400/600', price: 2.99, locked: true },
-    { id: 2, type: 'video', thumbnail: '/api/placeholder/400/600', price: 5.99, locked: true },
-    { id: 3, type: 'photo', thumbnail: '/api/placeholder/400/600', price: 2.99, locked: true },
-    { id: 4, type: 'photo', thumbnail: '/api/placeholder/400/600', price: 2.99, locked: true },
-    { id: 5, type: 'video', thumbnail: '/api/placeholder/400/600', price: 5.99, locked: true },
-    { id: 6, type: 'photo', thumbnail: '/api/placeholder/400/600', price: 2.99, locked: true },
+    {
+      id: 1,
+      type: 'photo',
+      thumbnail: '/api/placeholder/400/600',
+      price: 2.99,
+      locked: true,
+    },
+    {
+      id: 2,
+      type: 'video',
+      thumbnail: '/api/placeholder/400/600',
+      price: 5.99,
+      locked: true,
+    },
+    {
+      id: 3,
+      type: 'photo',
+      thumbnail: '/api/placeholder/400/600',
+      price: 2.99,
+      locked: true,
+    },
+    {
+      id: 4,
+      type: 'photo',
+      thumbnail: '/api/placeholder/400/600',
+      price: 2.99,
+      locked: true,
+    },
+    {
+      id: 5,
+      type: 'video',
+      thumbnail: '/api/placeholder/400/600',
+      price: 5.99,
+      locked: true,
+    },
+    {
+      id: 6,
+      type: 'photo',
+      thumbnail: '/api/placeholder/400/600',
+      price: 2.99,
+      locked: true,
+    },
   ];
 
   // Mock multiple images
@@ -29,7 +86,7 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
     creator?.profileImage || '/api/placeholder/400/600',
     '/api/placeholder/400/600',
     '/api/placeholder/400/600',
-    '/api/placeholder/400/600'
+    '/api/placeholder/400/600',
   ];
 
   useEffect(() => {
@@ -43,12 +100,12 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
     };
   }, [isOpen]);
 
-  const handleContentClick = (content) => {
+  const handleContentClick = content => {
     setSelectedContent(content);
     setShowUnlockModal(true);
   };
 
-  const handleSwipeImage = (direction) => {
+  const handleSwipeImage = direction => {
     if (direction === 'left' && imageIndex < images.length - 1) {
       setImageIndex(imageIndex + 1);
     } else if (direction === 'right' && imageIndex > 0) {
@@ -60,49 +117,46 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
 
   return (
     <AnimatePresence>
-      <motion.div 
-        className="creator-profile-modal-overlay"
+      <motion.div
+        className='creator-profile-modal-overlay'
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
       >
-        <motion.div 
-          className="creator-profile-modal"
+        <motion.div
+          className='creator-profile-modal'
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="modal-header">
-            <div className="modal-header-controls">
-              <button
-                onClick={onClose}
-                className="modal-control-btn"
-              >
+          <div className='modal-header'>
+            <div className='modal-header-controls'>
+              <button onClick={onClose} className='modal-control-btn'>
                 <ChevronLeft size={24} />
               </button>
-              
-              <button className="modal-control-btn">
+
+              <button className='modal-control-btn'>
                 <Share2 size={20} />
               </button>
             </div>
           </div>
 
           {/* Scrollable Content */}
-          <div className="modal-scroll-content">
+          <div className='modal-scroll-content'>
             {/* Image Gallery */}
-            <div className="image-gallery">
-              <img 
+            <div className='image-gallery'>
+              <img
                 src={images[imageIndex]}
                 alt={creator.displayName}
-                className="gallery-image"
+                className='gallery-image'
               />
-              
+
               {/* Image Navigation Dots */}
-              <div className="image-dots">
+              <div className='image-dots'>
                 {images.map((_, idx) => (
                   <button
                     key={idx}
@@ -113,36 +167,36 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
               </div>
 
               {/* Touch areas for image navigation */}
-              <div 
-                className="touch-nav-left"
+              <div
+                className='touch-nav-left'
                 onClick={() => handleSwipeImage('right')}
               />
-              <div 
-                className="touch-nav-right"
+              <div
+                className='touch-nav-right'
                 onClick={() => handleSwipeImage('left')}
               />
             </div>
 
             {/* Profile Info */}
-            <div className="profile-content">
+            <div className='profile-content'>
               {/* Name and Basic Info */}
-              <div className="profile-basic-info">
-                <div className="profile-name-container">
-                  <h2 className="profile-name">
+              <div className='profile-basic-info'>
+                <div className='profile-name-container'>
+                  <h2 className='profile-name'>
                     {creator.displayName}, {creator.age}
                     {creator.verified && (
-                      <span className="verified-badge">
+                      <span className='verified-badge'>
                         <Shield size={24} />
                       </span>
                     )}
                   </h2>
-                  <div className="profile-location-info">
+                  <div className='profile-location-info'>
                     <MapPin size={16} />
                     <span>{creator.distance || '2'}km away</span>
                     {creator.activeNow && (
                       <>
                         <span>•</span>
-                        <span className="active-indicator">Active Now</span>
+                        <span className='active-indicator'>Active Now</span>
                       </>
                     )}
                   </div>
@@ -150,46 +204,44 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
               </div>
 
               {/* Bio */}
-              <p className="profile-bio">
-                {creator.bio || 'No bio available'}
-              </p>
+              <p className='profile-bio'>{creator.bio || 'No bio available'}</p>
 
               {/* Stats */}
-              <div className="profile-stats-grid">
-                <div className="stat-card">
-                  <div className="stat-icon">
-                    <Heart size={20} color="#EC4899" />
+              <div className='profile-stats-grid'>
+                <div className='stat-card'>
+                  <div className='stat-icon'>
+                    <Heart size={20} color='#EC4899' />
                   </div>
-                  <span className="stat-value">
+                  <span className='stat-value'>
                     {creator.stats?.followers || '2.3k'}
                   </span>
-                  <span className="stat-label">Followers</span>
+                  <span className='stat-label'>Followers</span>
                 </div>
-                
-                <div className="stat-card">
-                  <div className="stat-icon">
-                    <Camera size={20} color="#8B5CF6" />
+
+                <div className='stat-card'>
+                  <div className='stat-icon'>
+                    <Camera size={20} color='#8B5CF6' />
                   </div>
-                  <span className="stat-value">
+                  <span className='stat-value'>
                     {creator.stats?.contentCount || '124'}
                   </span>
-                  <span className="stat-label">Content</span>
+                  <span className='stat-label'>Content</span>
                 </div>
-                
-                <div className="stat-card">
-                  <div className="stat-icon">
-                    <Star size={20} color="#F59E0B" />
+
+                <div className='stat-card'>
+                  <div className='stat-icon'>
+                    <Star size={20} color='#F59E0B' />
                   </div>
-                  <span className="stat-value">
+                  <span className='stat-value'>
                     {creator.stats?.rating || '4.9'}
                   </span>
-                  <span className="stat-label">Rating</span>
+                  <span className='stat-label'>Rating</span>
                 </div>
               </div>
 
               {/* Tabs */}
-              <div className="profile-tabs">
-                {['about', 'content', 'details'].map((tab) => (
+              <div className='profile-tabs'>
+                {['about', 'content', 'details'].map(tab => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -201,27 +253,26 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
               </div>
 
               {/* Tab Content */}
-              <div className="tab-content">
+              <div className='tab-content'>
                 {activeTab === 'about' && (
-                  <div className="about-grid">
-                    <div className="about-item">
-                      <span className="about-label">Orientation</span>
-                      <span className="about-value">
+                  <div className='about-grid'>
+                    <div className='about-item'>
+                      <span className='about-label'>Orientation</span>
+                      <span className='about-value'>
                         {creator.orientation || 'Not specified'}
                       </span>
                     </div>
-                    
-                    <div className="about-item">
-                      <span className="about-label">Gender</span>
-                      <span className="about-value">
+
+                    <div className='about-item'>
+                      <span className='about-label'>Gender</span>
+                      <span className='about-value'>
                         {creator.gender || 'Not specified'}
                       </span>
                     </div>
-                    
-                    
-                    <div className="about-item">
-                      <span className="about-label">Starting Price</span>
-                      <span className="about-value">
+
+                    <div className='about-item'>
+                      <span className='about-label'>Starting Price</span>
+                      <span className='about-value'>
                         ${creator.pricing?.starting || '2.99'}
                       </span>
                     </div>
@@ -229,33 +280,39 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
                 )}
 
                 {activeTab === 'content' && (
-                  <div className="content-grid">
-                    {mockContent.map((content) => (
+                  <div className='content-grid'>
+                    {mockContent.map(content => (
                       <div
                         key={content.id}
-                        className="content-item"
+                        className='content-item'
                         onClick={() => handleContentClick(content)}
                       >
                         <img
                           src={content.thumbnail}
-                          alt=""
+                          alt=''
                           className={`content-thumbnail ${content.locked ? 'locked' : ''}`}
                         />
                         {content.type === 'video' && (
-                          <div className="content-play-icon">
-                            <img src={playCircleIcon} alt="Play video" className="play-icon" />
+                          <div className='content-play-icon'>
+                            <img
+                              src={playCircleIcon}
+                              alt='Play video'
+                              className='play-icon'
+                            />
                           </div>
                         )}
                         {content.locked && (
-                          <div className="content-lock-icon">
-                            <Lock size={20} color="#fff" />
+                          <div className='content-lock-icon'>
+                            <Lock size={20} color='#fff' />
                           </div>
                         )}
-                        <div className="content-price">
-                          ${content.price}
-                        </div>
-                        <div className="content-type-icon">
-                          {content.type === 'video' ? <Video size={16} /> : <Camera size={16} />}
+                        <div className='content-price'>${content.price}</div>
+                        <div className='content-type-icon'>
+                          {content.type === 'video' ? (
+                            <Video size={16} />
+                          ) : (
+                            <Camera size={16} />
+                          )}
                         </div>
                       </div>
                     ))}
@@ -263,21 +320,26 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
                 )}
 
                 {activeTab === 'details' && (
-                  <div className="details-section">
-                    <div className="detail-card">
-                      <h4 className="detail-title">What I Offer</h4>
-                      <div className="detail-tags">
-                        {['Photos', 'Videos', 'Custom Content', 'Live Shows'].map((item) => (
-                          <span key={item} className="detail-tag">
+                  <div className='details-section'>
+                    <div className='detail-card'>
+                      <h4 className='detail-title'>What I Offer</h4>
+                      <div className='detail-tags'>
+                        {[
+                          'Photos',
+                          'Videos',
+                          'Custom Content',
+                          'Live Shows',
+                        ].map(item => (
+                          <span key={item} className='detail-tag'>
                             {item}
                           </span>
                         ))}
                       </div>
                     </div>
-                    
-                    <div className="detail-card">
-                      <h4 className="detail-title">Response Time</h4>
-                      <p className="detail-text">
+
+                    <div className='detail-card'>
+                      <h4 className='detail-title'>Response Time</h4>
+                      <p className='detail-text'>
                         Usually responds within 2 hours
                       </p>
                     </div>
@@ -288,33 +350,33 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
           </div>
 
           {/* Bottom Action Buttons */}
-          <div className="modal-action-buttons">
+          <div className='modal-action-buttons'>
             <button
               onClick={() => {
                 onPass?.();
                 onClose();
               }}
-              className="action-btn pass"
+              className='action-btn pass'
             >
               <X size={28} />
             </button>
-            
+
             <button
               onClick={() => {
                 onSuperLike?.();
                 onClose();
               }}
-              className="action-btn super"
+              className='action-btn super'
             >
               <Star size={24} />
             </button>
-            
+
             <button
               onClick={() => {
                 onLike?.();
                 onClose();
               }}
-              className="action-btn like"
+              className='action-btn like'
             >
               <Heart size={28} />
             </button>
@@ -324,40 +386,36 @@ const CreatorProfileModal = ({ creator, isOpen, onClose, onLike, onPass, onSuper
           <AnimatePresence>
             {showUnlockModal && selectedContent && (
               <motion.div
-                className="unlock-modal-overlay"
+                className='unlock-modal-overlay'
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setShowUnlockModal(false)}
               >
                 <motion.div
-                  className="unlock-modal"
+                  className='unlock-modal'
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.9, opacity: 0 }}
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={e => e.stopPropagation()}
                 >
-                  <div className="unlock-icon">
-                    <Unlock size={32} color="#17D2C2" />
+                  <div className='unlock-icon'>
+                    <Unlock size={32} color='#17D2C2' />
                   </div>
-                  
-                  <h3 className="unlock-title">Unlock Content</h3>
-                  
-                  <p className="unlock-description">
+
+                  <h3 className='unlock-title'>Unlock Content</h3>
+
+                  <p className='unlock-description'>
                     Get instant access to this exclusive {selectedContent.type}
                   </p>
-                  
-                  <div className="unlock-price">
-                    ${selectedContent.price}
-                  </div>
-                  
-                  <button className="unlock-btn">
-                    Unlock Now
-                  </button>
-                  
+
+                  <div className='unlock-price'>${selectedContent.price}</div>
+
+                  <button className='unlock-btn'>Unlock Now</button>
+
                   <button
                     onClick={() => setShowUnlockModal(false)}
-                    className="unlock-cancel"
+                    className='unlock-cancel'
                   >
                     Maybe Later
                   </button>

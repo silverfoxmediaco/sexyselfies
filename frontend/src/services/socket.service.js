@@ -20,7 +20,7 @@ class SocketService {
   // ==========================================
   // CONNECTION MANAGEMENT
   // ==========================================
-  
+
   /**
    * Initialize socket connection
    */
@@ -30,9 +30,11 @@ class SocketService {
       return this.socket;
     }
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'wss://sexyselfies-api.onrender.com';
+    const socketUrl =
+      import.meta.env.VITE_SOCKET_URL ||
+      `${window.location.protocol}//${window.location.host}`;
     const authToken = token || localStorage.getItem('token');
-    
+
     if (!authToken) {
       console.error('[Socket] No auth token available');
       return null;
@@ -40,7 +42,7 @@ class SocketService {
 
     this.socket = io(socketUrl, {
       auth: {
-        token: authToken
+        token: authToken,
       },
       transports: ['websocket', 'polling'],
       reconnection: true,
@@ -52,13 +54,13 @@ class SocketService {
       query: {
         device_type: this.getDeviceType(),
         platform: navigator.platform,
-        user_role: localStorage.getItem('userRole')
-      }
+        user_role: localStorage.getItem('userRole'),
+      },
     });
 
     this.setupEventListeners();
     this.setupConnectionHandlers();
-    
+
     return this.socket;
   }
 
@@ -68,15 +70,15 @@ class SocketService {
   disconnect() {
     if (this.socket) {
       console.log('[Socket] Disconnecting...');
-      
+
       // Leave all rooms
       this.rooms.forEach(room => {
         this.leaveRoom(room);
       });
-      
+
       // Clear event handlers
       this.eventHandlers.clear();
-      
+
       // Disconnect socket
       this.socket.disconnect();
       this.socket = null;
@@ -97,7 +99,7 @@ class SocketService {
   // ==========================================
   // CONNECTION HANDLERS
   // ==========================================
-  
+
   /**
    * Setup connection event handlers
    */
@@ -107,27 +109,27 @@ class SocketService {
       console.log('[Socket] Connected:', this.socket.id);
       this.connected = true;
       this.reconnectAttempts = 0;
-      
+
       // Rejoin rooms
       this.rooms.forEach(room => {
         this.socket.emit('join_room', room);
       });
-      
+
       // Process queued messages
       this.processMessageQueue();
-      
+
       // Notify app of connection
       this.emit('connection_status', { connected: true });
     });
 
     // Connection lost
-    this.socket.on('disconnect', (reason) => {
+    this.socket.on('disconnect', reason => {
       console.log('[Socket] Disconnected:', reason);
       this.connected = false;
-      
+
       // Notify app of disconnection
       this.emit('connection_status', { connected: false, reason });
-      
+
       // Handle different disconnection reasons
       if (reason === 'io server disconnect') {
         // Server disconnected, try to reconnect
@@ -136,10 +138,10 @@ class SocketService {
     });
 
     // Connection error
-    this.socket.on('connect_error', (error) => {
+    this.socket.on('connect_error', error => {
       console.error('[Socket] Connection error:', error.message);
       this.reconnectAttempts++;
-      
+
       if (this.reconnectAttempts >= this.maxReconnectAttempts) {
         console.error('[Socket] Max reconnection attempts reached');
         this.emit('connection_failed', { error: error.message });
@@ -147,13 +149,13 @@ class SocketService {
     });
 
     // Reconnection attempt
-    this.socket.on('reconnect_attempt', (attemptNumber) => {
+    this.socket.on('reconnect_attempt', attemptNumber => {
       console.log('[Socket] Reconnection attempt:', attemptNumber);
       this.emit('reconnecting', { attempt: attemptNumber });
     });
 
     // Successful reconnection
-    this.socket.on('reconnect', (attemptNumber) => {
+    this.socket.on('reconnect', attemptNumber => {
       console.log('[Socket] Reconnected after', attemptNumber, 'attempts');
       this.emit('reconnected', { attempts: attemptNumber });
     });
@@ -167,86 +169,86 @@ class SocketService {
   // ==========================================
   // EVENT LISTENERS
   // ==========================================
-  
+
   /**
    * Setup socket event listeners
    */
   setupEventListeners() {
     // New message
-    this.socket.on('new_message', (data) => {
+    this.socket.on('new_message', data => {
       this.handleNewMessage(data);
     });
 
     // Message status updates
-    this.socket.on('message_delivered', (data) => {
+    this.socket.on('message_delivered', data => {
       this.emit('message_delivered', data);
     });
 
-    this.socket.on('message_read', (data) => {
+    this.socket.on('message_read', data => {
       this.emit('message_read', data);
     });
 
     // Typing indicators
-    this.socket.on('user_typing', (data) => {
+    this.socket.on('user_typing', data => {
       this.emit('user_typing', data);
     });
 
-    this.socket.on('user_stopped_typing', (data) => {
+    this.socket.on('user_stopped_typing', data => {
       this.emit('user_stopped_typing', data);
     });
 
     // Online status
-    this.socket.on('user_online', (data) => {
+    this.socket.on('user_online', data => {
       this.emit('user_online', data);
     });
 
-    this.socket.on('user_offline', (data) => {
+    this.socket.on('user_offline', data => {
       this.emit('user_offline', data);
     });
 
     // Notifications
-    this.socket.on('notification', (data) => {
+    this.socket.on('notification', data => {
       this.handleNotification(data);
     });
 
     // Match events
-    this.socket.on('new_match', (data) => {
+    this.socket.on('new_match', data => {
       this.handleNewMatch(data);
     });
 
     // Creator events
-    this.socket.on('new_subscriber', (data) => {
+    this.socket.on('new_subscriber', data => {
       this.emit('new_subscriber', data);
     });
 
-    this.socket.on('new_tip', (data) => {
+    this.socket.on('new_tip', data => {
       this.emit('new_tip', data);
     });
 
-    this.socket.on('content_purchased', (data) => {
+    this.socket.on('content_purchased', data => {
       this.emit('content_purchased', data);
     });
 
     // Member events
-    this.socket.on('creator_went_live', (data) => {
+    this.socket.on('creator_went_live', data => {
       this.emit('creator_went_live', data);
     });
 
-    this.socket.on('new_content_available', (data) => {
+    this.socket.on('new_content_available', data => {
       this.emit('new_content_available', data);
     });
 
     // System events
-    this.socket.on('system_announcement', (data) => {
+    this.socket.on('system_announcement', data => {
       this.emit('system_announcement', data);
     });
 
-    this.socket.on('maintenance_mode', (data) => {
+    this.socket.on('maintenance_mode', data => {
       this.emit('maintenance_mode', data);
     });
 
     // Error handling
-    this.socket.on('error', (error) => {
+    this.socket.on('error', error => {
       console.error('[Socket] Error:', error);
       this.emit('socket_error', error);
     });
@@ -255,7 +257,7 @@ class SocketService {
   // ==========================================
   // ROOM MANAGEMENT
   // ==========================================
-  
+
   /**
    * Join a room
    */
@@ -302,7 +304,7 @@ class SocketService {
   // ==========================================
   // MESSAGING
   // ==========================================
-  
+
   /**
    * Send message
    */
@@ -314,7 +316,7 @@ class SocketService {
       media_url: message.media_url,
       reply_to: message.reply_to,
       timestamp: new Date().toISOString(),
-      client_id: this.generateClientId()
+      client_id: this.generateClientId(),
     };
 
     if (!this.connected) {
@@ -370,9 +372,9 @@ class SocketService {
   markMessageRead(messageId, senderId) {
     if (!this.socket?.connected) return;
 
-    this.socket.emit('mark_read', { 
+    this.socket.emit('mark_read', {
       message_id: messageId,
-      sender_id: senderId 
+      sender_id: senderId,
     });
   }
 
@@ -388,7 +390,7 @@ class SocketService {
   // ==========================================
   // NOTIFICATIONS
   // ==========================================
-  
+
   /**
    * Subscribe to notifications
    */
@@ -413,23 +415,23 @@ class SocketService {
   markNotificationRead(notificationId) {
     if (!this.socket?.connected) return;
 
-    this.socket.emit('mark_notification_read', { 
-      notification_id: notificationId 
+    this.socket.emit('mark_notification_read', {
+      notification_id: notificationId,
     });
   }
 
   // ==========================================
   // PRESENCE
   // ==========================================
-  
+
   /**
    * Update online status
    */
   updateOnlineStatus(status) {
     if (!this.socket?.connected) return;
 
-    this.socket.emit('update_status', { 
-      status // 'online', 'away', 'busy', 'offline'
+    this.socket.emit('update_status', {
+      status, // 'online', 'away', 'busy', 'offline'
     });
   }
 
@@ -445,7 +447,7 @@ class SocketService {
   // ==========================================
   // LIVE STREAMING
   // ==========================================
-  
+
   /**
    * Join live stream
    */
@@ -468,7 +470,7 @@ class SocketService {
 
     this.socket.emit('live_comment', {
       stream_id: streamId,
-      comment
+      comment,
     });
   }
 
@@ -480,20 +482,24 @@ class SocketService {
 
     this.socket.emit('live_reaction', {
       stream_id: streamId,
-      reaction // 'like', 'love', 'fire', etc.
+      reaction, // 'like', 'love', 'fire', etc.
     });
   }
 
   // ==========================================
   // EVENT HANDLING
   // ==========================================
-  
+
   /**
    * Handle new message
    */
   handleNewMessage(data) {
     // Show notification if app is in background
-    if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+    if (
+      document.hidden &&
+      'Notification' in window &&
+      Notification.permission === 'granted'
+    ) {
       new Notification(`New message from ${data.sender_name}`, {
         body: data.message,
         icon: data.sender_avatar || '/icons/icon-192x192.png',
@@ -501,8 +507,8 @@ class SocketService {
         vibrate: [200, 100, 200],
         tag: `message_${data.message_id}`,
         data: {
-          url: `/messages/${data.sender_id}`
-        }
+          url: `/messages/${data.sender_id}`,
+        },
       });
     }
 
@@ -522,8 +528,8 @@ class SocketService {
         vibrate: [200],
         tag: `notification_${data.id}`,
         data: {
-          url: data.url
-        }
+          url: data.url,
+        },
       });
     }
 
@@ -536,15 +542,15 @@ class SocketService {
   handleNewMatch(data) {
     // Show match notification
     if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('It\'s a Match! 🎉', {
+      new Notification("It's a Match! 🎉", {
         body: `You matched with ${data.creator_name}!`,
         icon: data.creator_avatar || '/icons/icon-192x192.png',
         badge: '/icons/badge-72x72.png',
         vibrate: [200, 100, 200, 100, 200],
         tag: `match_${data.match_id}`,
         data: {
-          url: `/matches/${data.creator_id}`
-        }
+          url: `/matches/${data.creator_id}`,
+        },
       });
     }
 
@@ -554,7 +560,7 @@ class SocketService {
   // ==========================================
   // EVENT EMITTER
   // ==========================================
-  
+
   /**
    * Register event handler
    */
@@ -592,15 +598,19 @@ class SocketService {
   // ==========================================
   // UTILITY METHODS
   // ==========================================
-  
+
   /**
    * Process queued messages
    */
   processMessageQueue() {
     if (this.messageQueue.length === 0) return;
 
-    console.log('[Socket] Processing', this.messageQueue.length, 'queued messages');
-    
+    console.log(
+      '[Socket] Processing',
+      this.messageQueue.length,
+      'queued messages'
+    );
+
     while (this.messageQueue.length > 0) {
       const message = this.messageQueue.shift();
       this.socket.emit('send_message', message);

@@ -8,7 +8,7 @@
 /* Top Navigation Bar - Mobile First */
 .admin-header-navbar {
   background: #121212;
-  border-bottom: 1px solid #2A2A2C;
+  border-bottom: 1px solid #2a2a2c;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -31,7 +31,7 @@
 .admin-header-hamburger-menu {
   background: transparent;
   border: none;
-  color: #C7C7CC;
+  color: #c7c7cc;
   padding: 8px;
   cursor: pointer;
   min-width: 44px;
@@ -44,12 +44,12 @@
 }
 
 .admin-header-hamburger-menu:hover {
-  background: #1C1C1E;
-  color: #17D2C2;
+  background: #1c1c1e;
+  color: #17d2c2;
 }
 
 .admin-header-hamburger-menu:active {
-  background: #1C1C1E;
+  background: #1c1c1e;
 }
 
 /* Right Slide-Out Menu Overlay */
@@ -65,13 +65,17 @@
 }
 
 @keyframes adminHeaderFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .admin-header-slide-menu {
   background: #121212;
-  border-left: 1px solid #2A2A2C;
+  border-left: 1px solid #2a2a2c;
   height: 100vh;
   width: 85%;
   max-width: 360px;
@@ -91,7 +95,7 @@
   right: 16px;
   background: transparent;
   border: none;
-  color: #C7C7CC;
+  color: #c7c7cc;
   cursor: pointer;
   padding: 8px;
   border-radius: 6px;
@@ -105,24 +109,28 @@
 }
 
 .admin-header-close-btn:hover {
-  background: #1C1C1E;
-  color: #17D2C2;
+  background: #1c1c1e;
+  color: #17d2c2;
 }
 
 .admin-header-close-btn:active {
-  background: #2A2A2C;
+  background: #2a2a2c;
 }
 
 @keyframes adminHeaderSlideInFromRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 /* User Info Section */
 .admin-header-user-info-section {
   padding: 24px 64px 24px 24px; /* Extra right padding for close button */
-  background: #1C1C1E;
-  border-bottom: 1px solid #2A2A2C;
+  background: #1c1c1e;
+  border-bottom: 1px solid #2a2a2c;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -132,7 +140,7 @@
 .admin-header-user-avatar {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%);
+  background: linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -150,12 +158,12 @@
 .admin-header-user-name {
   font-size: 16px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .admin-header-user-role {
   font-size: 13px;
-  color: #8E8E93;
+  color: #8e8e93;
   text-transform: capitalize;
 }
 
@@ -171,7 +179,7 @@
   align-items: center;
   gap: 16px;
   padding: 16px 24px;
-  color: #C7C7CC;
+  color: #c7c7cc;
   text-decoration: none;
   transition: all 0.2s ease;
   position: relative;
@@ -180,31 +188,35 @@
 }
 
 .admin-header-nav-link:hover {
-  background: #1C1C1E;
-  color: #17D2C2;
+  background: #1c1c1e;
+  color: #17d2c2;
 }
 
 .admin-header-nav-link:active {
-  background: #2A2A2C;
+  background: #2a2a2c;
 }
 
 .admin-header-nav-link.active {
-  background: linear-gradient(135deg, rgba(18, 183, 171, 0.1) 0%, rgba(23, 210, 194, 0.1) 100%);
-  color: #17D2C2;
-  border-right: 3px solid #17D2C2;
+  background: linear-gradient(
+    135deg,
+    rgba(18, 183, 171, 0.1) 0%,
+    rgba(23, 210, 194, 0.1) 100%
+  );
+  color: #17d2c2;
+  border-right: 3px solid #17d2c2;
 }
 
 /* Logout Link Styling */
 .admin-header-logout-link {
   margin-top: 16px;
-  border-top: 1px solid #2A2A2C;
+  border-top: 1px solid #2a2a2c;
   padding-top: 24px !important;
 }
 
 .admin-header-logout-link:hover {
   background: rgba(239, 68, 68, 0.1) !important;
-  color: #EF4444 !important;
-  border-right: 3px solid #EF4444 !important;
+  color: #ef4444 !important;
+  border-right: 3px solid #ef4444 !important;
 }
 
 .admin-header-nav-icon {
@@ -216,7 +228,7 @@
 .admin-header-nav-badge {
   position: absolute;
   left: 24px;
-  background: #EF4444;
+  background: #ef4444;
   color: white;
   font-size: 11px;
   font-weight: 600;
@@ -229,7 +241,7 @@
 /* Menu Actions */
 .admin-header-menu-actions {
   padding: 16px;
-  border-top: 1px solid #2A2A2C;
+  border-top: 1px solid #2a2a2c;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -243,9 +255,9 @@
   gap: 8px;
   padding: 16px;
   background: transparent;
-  border: 1px solid #2A2A2C;
+  border: 1px solid #2a2a2c;
   border-radius: 8px;
-  color: #C7C7CC;
+  color: #c7c7cc;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 14px;
@@ -253,19 +265,19 @@
 }
 
 .admin-header-refresh-btn:hover {
-  background: #1C1C1E;
-  color: #17D2C2;
-  border-color: #17D2C2;
+  background: #1c1c1e;
+  color: #17d2c2;
+  border-color: #17d2c2;
 }
 
 .admin-header-refresh-btn:active {
-  background: #2A2A2C;
+  background: #2a2a2c;
 }
 
 .admin-header-logout-btn:hover {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.3);
-  color: #EF4444;
+  color: #ef4444;
 }
 
 .admin-header-logout-btn:active {
@@ -276,19 +288,19 @@
 .admin-header-page-header {
   padding: 24px 16px;
   background: #121212;
-  border-bottom: 1px solid #2A2A2C;
+  border-bottom: 1px solid #2a2a2c;
 }
 
 .admin-header-page-header h1 {
   font-size: 24px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0 0 4px 0;
 }
 
 .admin-header-page-subtitle {
   font-size: 14px;
-  color: #8E8E93;
+  color: #8e8e93;
   margin: 0;
 }
 
@@ -298,11 +310,11 @@
   .admin-header-navbar-container {
     padding: 0 24px;
   }
-  
+
   .admin-header-page-header {
     padding: 32px 24px;
   }
-  
+
   .admin-header-slide-menu {
     max-width: 400px;
   }
@@ -313,18 +325,18 @@
   :root {
     --admin-header-navbar-height: 64px;
   }
-  
+
   .admin-header-navbar-container {
     padding: 0 32px;
     max-width: 1920px;
     margin: 0 auto;
     width: 100%;
   }
-  
+
   .admin-header-slide-menu {
     max-width: 450px;
   }
-  
+
   .admin-header-page-header {
     padding: 40px 32px;
   }

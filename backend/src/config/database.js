@@ -22,21 +22,20 @@ class DatabaseConnection {
         socketTimeoutMS: 30000, // Reduced for faster timeout
         connectTimeoutMS: 10000,
         maxPoolSize: 10, // Limit connection pool
-        minPoolSize: 2,  // Maintain minimum connections
+        minPoolSize: 2, // Maintain minimum connections
         maxIdleTimeMS: 30000,
         bufferMaxEntries: 0, // Disable buffering
-        family: 4 // Force IPv4
+        family: 4, // Force IPv4
       };
 
       await mongoose.connect(process.env.MONGODB_URI, options);
-      
+
       this.isConnected = true;
       this.connectionRetries = 0;
       console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
-      
+
       // Set up connection event handlers
       this.setupEventHandlers();
-      
     } catch (error) {
       console.error('❌ MongoDB connection error:', error.message);
       await this.handleConnectionError(error);
@@ -49,7 +48,7 @@ class DatabaseConnection {
       this.isConnected = true;
     });
 
-    mongoose.connection.on('error', (error) => {
+    mongoose.connection.on('error', error => {
       console.error('❌ MongoDB error:', error);
       this.isConnected = false;
     });
@@ -67,14 +66,16 @@ class DatabaseConnection {
 
   async handleConnectionError(error) {
     this.connectionRetries++;
-    
+
     if (this.connectionRetries >= this.maxRetries) {
       console.error('❌ Max connection retries reached. Exiting...');
       process.exit(1);
     }
-    
-    console.log(`⏳ Retrying connection in ${this.retryDelay / 1000} seconds... (Attempt ${this.connectionRetries}/${this.maxRetries})`);
-    
+
+    console.log(
+      `⏳ Retrying connection in ${this.retryDelay / 1000} seconds... (Attempt ${this.connectionRetries}/${this.maxRetries})`
+    );
+
     await new Promise(resolve => setTimeout(resolve, this.retryDelay));
     await this.connect();
   }
@@ -98,17 +99,22 @@ class DatabaseConnection {
       readyState: mongoose.connection.readyState,
       readyStateText: this.getReadyStateText(mongoose.connection.readyState),
       host: mongoose.connection.host,
-      name: mongoose.connection.name
+      name: mongoose.connection.name,
     };
   }
 
   getReadyStateText(state) {
-    switch(state) {
-      case 0: return 'disconnected';
-      case 1: return 'connected';
-      case 2: return 'connecting';
-      case 3: return 'disconnecting';
-      default: return 'unknown';
+    switch (state) {
+      case 0:
+        return 'disconnected';
+      case 1:
+        return 'connected';
+      case 2:
+        return 'connecting';
+      case 3:
+        return 'disconnecting';
+      default:
+        return 'unknown';
     }
   }
 }

@@ -4,28 +4,33 @@
 /* CSS Variables */
 :root {
   /* Brand Colors */
-  --brand: #17D2C2;
-  --brand-300: #47E0D2;
-  --brand-600: #12B7AB;
-  --brand-700: #0FA093;
-  --brand-gradient: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
-  
+  --brand: #17d2c2;
+  --brand-300: #47e0d2;
+  --brand-600: #12b7ab;
+  --brand-700: #0fa093;
+  --brand-gradient: linear-gradient(
+    135deg,
+    #12b7ab 0%,
+    #17d2c2 50%,
+    #47e0d2 100%
+  );
+
   /* Dark Theme */
   --bg-800: #121212;
-  --surface-700: #1C1C1E;
-  --border-600: #2A2A2C;
-  --text-primary: #FFFFFF;
-  --text-secondary: #C7C7CC;
-  
+  --surface-700: #1c1c1e;
+  --border-600: #2a2a2c;
+  --text-primary: #ffffff;
+  --text-secondary: #c7c7cc;
+
   /* Feedback Colors */
-  --success: #22C55E;
-  --warning: #F59E0B;
-  --error: #EF4444;
-  --info: #38BDF8;
-  
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #38bdf8;
+
   /* Effects */
-  --shadow-xl: 0 20px 50px rgba(0,0,0,0.45);
-  
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.45);
+
   /* Spacing */
   --space-xs: 4px;
   --space-sm: 8px;
@@ -33,14 +38,15 @@
   --space-lg: 24px;
   --space-xl: 32px;
   --space-3xl: 64px;
-  
+
   /* Border Radius */
   --radius-sm: 8px;
   --radius-lg: 16px;
   --radius-full: 9999px;
-  
+
   /* Typography */
-  --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:
+    'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Container */
@@ -83,8 +89,13 @@
 }
 
 @keyframes floating {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Swipe Card */
@@ -94,7 +105,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
-  transition: transform 0.5s ease, opacity 0.5s ease;
+  transition:
+    transform 0.5s ease,
+    opacity 0.5s ease;
 }
 
 .swipe-card.swipe-left {
@@ -259,7 +272,7 @@
   background: var(--brand-gradient);
   border-radius: var(--radius-full);
   font-weight: 600;
-  color: #0A0A0A;
+  color: #0a0a0a;
   font-family: var(--font-sans);
 }
 
@@ -280,7 +293,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 .swipe-btn svg {
@@ -323,8 +336,13 @@
 }
 
 @keyframes heartbeat {
-  0%, 100% { transform: scale(1.1); }
-  50% { transform: scale(1.3); }
+  0%,
+  100% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
 }
 
 /* Mobile Optimizations */
@@ -332,11 +350,11 @@
   .container {
     padding: 0 var(--space-md);
   }
-  
+
   .swipe-actions {
     gap: var(--space-lg);
   }
-  
+
   .swipe-btn {
     width: 56px;
     height: 56px;

@@ -1,15 +1,31 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Heart, Star, ArrowLeft, Grid3x3, List, Loader, AlertCircle,
-  MapPin, MessageCircle, Calendar, Filter, X, Search, Sparkles
+import {
+  Heart,
+  Star,
+  ArrowLeft,
+  Grid3x3,
+  List,
+  Loader,
+  AlertCircle,
+  MapPin,
+  MessageCircle,
+  Calendar,
+  Filter,
+  X,
+  Search,
+  Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, useIsDesktop, getUserRole } from '../utils/mobileDetection';
+import {
+  useIsMobile,
+  useIsDesktop,
+  getUserRole,
+} from '../utils/mobileDetection';
 import './Favorites.css';
 
 const Favorites = () => {
@@ -17,14 +33,14 @@ const Favorites = () => {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
-  
+
   // State management
   const [favorites, setFavorites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingError, setLoadingError] = useState(null);
   const [viewMode, setViewMode] = useState('grid'); // grid, list
   const [sortBy, setSortBy] = useState('recent'); // recent, name, rating, added
-  
+
   // Filter states
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +48,7 @@ const Favorites = () => {
     verified: false,
     online: false,
     categories: [],
-    dateRange: 'all' // all, week, month, year
+    dateRange: 'all', // all, week, month, year
   });
 
   // Filtered favorites based on search and filters
@@ -52,13 +68,12 @@ const Favorites = () => {
   const loadFavorites = async () => {
     setIsLoading(true);
     setLoadingError(null);
-    
 
     // Production API call
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('/api/v1/members/favorites', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.data.success) {
@@ -68,7 +83,9 @@ const Favorites = () => {
       }
     } catch (error) {
       console.error('Error loading favorites:', error);
-      setLoadingError(error.response?.data?.message || 'Failed to load favorites');
+      setLoadingError(
+        error.response?.data?.message || 'Failed to load favorites'
+      );
       setFavorites([]);
     } finally {
       setIsLoading(false);
@@ -82,11 +99,12 @@ const Favorites = () => {
     // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(creator => 
-        creator.displayName.toLowerCase().includes(query) ||
-        creator.username.toLowerCase().includes(query) ||
-        creator.bio.toLowerCase().includes(query) ||
-        creator.categories.some(cat => cat.toLowerCase().includes(query))
+      filtered = filtered.filter(
+        creator =>
+          creator.displayName.toLowerCase().includes(query) ||
+          creator.username.toLowerCase().includes(query) ||
+          creator.bio.toLowerCase().includes(query) ||
+          creator.categories.some(cat => cat.toLowerCase().includes(query))
       );
     }
 
@@ -100,7 +118,7 @@ const Favorites = () => {
     }
 
     if (activeFilters.categories.length > 0) {
-      filtered = filtered.filter(creator => 
+      filtered = filtered.filter(creator =>
         creator.categories.some(cat => activeFilters.categories.includes(cat))
       );
     }
@@ -109,7 +127,7 @@ const Favorites = () => {
     if (activeFilters.dateRange !== 'all') {
       const now = new Date();
       let cutoffDate;
-      
+
       switch (activeFilters.dateRange) {
         case 'week':
           cutoffDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -123,9 +141,11 @@ const Favorites = () => {
         default:
           cutoffDate = null;
       }
-      
+
       if (cutoffDate) {
-        filtered = filtered.filter(creator => new Date(creator.addedAt) >= cutoffDate);
+        filtered = filtered.filter(
+          creator => new Date(creator.addedAt) >= cutoffDate
+        );
       }
     }
 
@@ -148,22 +168,23 @@ const Favorites = () => {
   };
 
   // Handle creator card click
-  const handleCreatorClick = (creator) => {
+  const handleCreatorClick = creator => {
     navigate(`/creator/${creator.username}`);
   };
 
   // Handle unfavorite creator
   const handleUnfavorite = async (creatorId, e) => {
     e.stopPropagation();
-    
+
     try {
       // TODO: API call to unfavorite
       console.log('Unfavoriting creator:', creatorId);
-      
+
       // Optimistic update
-      const updatedFavorites = favorites.filter(creator => creator._id !== creatorId);
+      const updatedFavorites = favorites.filter(
+        creator => creator._id !== creatorId
+      );
       setFavorites(updatedFavorites);
-      
     } catch (error) {
       console.error('Error unfavoriting creator:', error);
       // Could show toast notification here
@@ -187,7 +208,7 @@ const Favorites = () => {
       verified: false,
       online: false,
       categories: [],
-      dateRange: 'all'
+      dateRange: 'all',
     });
     setSearchQuery('');
   };
@@ -195,7 +216,7 @@ const Favorites = () => {
   // Handle filter change
   const handleFilterChange = (filterType, value) => {
     const newFilters = { ...activeFilters };
-    
+
     if (filterType === 'categories') {
       const categories = [...newFilters.categories];
       if (categories.includes(value)) {
@@ -206,16 +227,16 @@ const Favorites = () => {
     } else {
       newFilters[filterType] = value;
     }
-    
+
     setActiveFilters(newFilters);
   };
 
   // Format date
-  const formatDate = (date) => {
+  const formatDate = date => {
     const now = new Date();
     const diffInMs = now - new Date(date);
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-    
+
     if (diffInDays === 0) return 'Today';
     if (diffInDays === 1) return 'Yesterday';
     if (diffInDays < 7) return `${diffInDays} days ago`;
@@ -226,9 +247,9 @@ const Favorites = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="favorites-page">
-        <div className="favorites-loading">
-          <Loader className="spinner" size={32} />
+      <div className='favorites-page'>
+        <div className='favorites-loading'>
+          <Loader className='spinner' size={32} />
           <span>Loading your favorites...</span>
         </div>
       </div>
@@ -238,12 +259,12 @@ const Favorites = () => {
   // Error state
   if (loadingError) {
     return (
-      <div className="favorites-page">
-        <div className="favorites-error">
+      <div className='favorites-page'>
+        <div className='favorites-error'>
           <AlertCircle size={48} />
           <h3>Error Loading Favorites</h3>
           <p>{loadingError}</p>
-          <button onClick={loadFavorites} className="retry-btn">
+          <button onClick={loadFavorites} className='retry-btn'>
             Try Again
           </button>
         </div>
@@ -252,26 +273,23 @@ const Favorites = () => {
   }
 
   return (
-    <div className="favorites-page">
+    <div className='favorites-page'>
       {/* Desktop Header */}
       {isDesktop && <MainHeader />}
       {/* Header */}
-      <div className="favorites-header">
-        <button 
-          className="favorites-back-btn"
-          onClick={() => navigate(-1)}
-        >
+      <div className='favorites-header'>
+        <button className='favorites-back-btn' onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
         </button>
-        
-        <div className="favorites-title">
-          <Heart className="favorites-icon" size={24} />
+
+        <div className='favorites-title'>
+          <Heart className='favorites-icon' size={24} />
           <h1>My Favorites</h1>
-          <span className="favorites-count">({favorites.length})</span>
+          <span className='favorites-count'>({favorites.length})</span>
         </div>
-        
+
         <button
-          className="filter-toggle-btn"
+          className='filter-toggle-btn'
           onClick={() => setShowFilters(!showFilters)}
         >
           <Filter size={20} />
@@ -279,21 +297,21 @@ const Favorites = () => {
       </div>
 
       {/* Search Bar */}
-      <div className="favorites-search">
-        <div className="search-input-container">
-          <Search size={20} className="search-icon" />
+      <div className='favorites-search'>
+        <div className='search-input-container'>
+          <Search size={20} className='search-icon' />
           <input
-            type="text"
-            placeholder="Search favorites..."
+            type='text'
+            placeholder='Search favorites...'
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
+            onChange={e => setSearchQuery(e.target.value)}
+            className='search-input'
           />
           {searchQuery && (
             <button
-              type="button"
+              type='button'
               onClick={clearSearch}
-              className="search-clear-btn"
+              className='search-clear-btn'
             >
               <X size={18} />
             </button>
@@ -302,17 +320,18 @@ const Favorites = () => {
       </div>
 
       {/* Controls & Stats */}
-      <div className="favorites-controls">
-        <div className="favorites-stats">
+      <div className='favorites-controls'>
+        <div className='favorites-stats'>
           <span>
-            {filteredFavorites.length} favorite{filteredFavorites.length !== 1 ? 's' : ''}
+            {filteredFavorites.length} favorite
+            {filteredFavorites.length !== 1 ? 's' : ''}
             {searchQuery && ` for "${searchQuery}"`}
           </span>
         </div>
-        
-        <div className="favorites-actions">
+
+        <div className='favorites-actions'>
           {/* View Mode Toggle */}
-          <div className="view-mode-toggle">
+          <div className='view-mode-toggle'>
             <button
               className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
               onClick={() => setViewMode('grid')}
@@ -326,17 +345,17 @@ const Favorites = () => {
               <List size={16} />
             </button>
           </div>
-          
+
           {/* Sort Dropdown */}
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="sort-select"
+            onChange={e => setSortBy(e.target.value)}
+            className='sort-select'
           >
-            <option value="recent">Recently Active</option>
-            <option value="added">Recently Added</option>
-            <option value="name">Name A-Z</option>
-            <option value="rating">Highest Rated</option>
+            <option value='recent'>Recently Active</option>
+            <option value='added'>Recently Added</option>
+            <option value='name'>Name A-Z</option>
+            <option value='rating'>Highest Rated</option>
           </select>
         </div>
       </div>
@@ -345,38 +364,42 @@ const Favorites = () => {
       <AnimatePresence>
         {showFilters && (
           <motion.div
-            className="filter-panel"
+            className='filter-panel'
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="filter-content">
-              <div className="filter-header">
+            <div className='filter-content'>
+              <div className='filter-header'>
                 <h3>Filters</h3>
-                <button onClick={clearFilters} className="clear-filters-btn">
+                <button onClick={clearFilters} className='clear-filters-btn'>
                   Clear All
                 </button>
               </div>
-              
-              <div className="filter-groups">
+
+              <div className='filter-groups'>
                 {/* Quick Filters */}
-                <div className="filter-group">
+                <div className='filter-group'>
                   <label>Quick Filters</label>
-                  <div className="quick-filters">
-                    <label className="filter-checkbox">
+                  <div className='quick-filters'>
+                    <label className='filter-checkbox'>
                       <input
-                        type="checkbox"
+                        type='checkbox'
                         checked={activeFilters.verified}
-                        onChange={(e) => handleFilterChange('verified', e.target.checked)}
+                        onChange={e =>
+                          handleFilterChange('verified', e.target.checked)
+                        }
                       />
                       <span>Verified Only</span>
                     </label>
-                    <label className="filter-checkbox">
+                    <label className='filter-checkbox'>
                       <input
-                        type="checkbox"
+                        type='checkbox'
                         checked={activeFilters.online}
-                        onChange={(e) => handleFilterChange('online', e.target.checked)}
+                        onChange={e =>
+                          handleFilterChange('online', e.target.checked)
+                        }
                       />
                       <span>Online Now</span>
                     </label>
@@ -384,29 +407,42 @@ const Favorites = () => {
                 </div>
 
                 {/* Date Range */}
-                <div className="filter-group">
+                <div className='filter-group'>
                   <label>Added</label>
                   <select
                     value={activeFilters.dateRange}
-                    onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-                    className="filter-select"
+                    onChange={e =>
+                      handleFilterChange('dateRange', e.target.value)
+                    }
+                    className='filter-select'
                   >
-                    <option value="all">All Time</option>
-                    <option value="week">This Week</option>
-                    <option value="month">This Month</option>
-                    <option value="year">This Year</option>
+                    <option value='all'>All Time</option>
+                    <option value='week'>This Week</option>
+                    <option value='month'>This Month</option>
+                    <option value='year'>This Year</option>
                   </select>
                 </div>
-                
+
                 {/* Categories */}
-                <div className="filter-group">
+                <div className='filter-group'>
                   <label>Categories</label>
-                  <div className="category-filters">
-                    {['fitness', 'lifestyle', 'gaming', 'art', 'music', 'travel', 'fashion', 'food'].map(category => (
+                  <div className='category-filters'>
+                    {[
+                      'fitness',
+                      'lifestyle',
+                      'gaming',
+                      'art',
+                      'music',
+                      'travel',
+                      'fashion',
+                      'food',
+                    ].map(category => (
                       <button
                         key={category}
                         className={`category-btn ${activeFilters.categories.includes(category) ? 'active' : ''}`}
-                        onClick={() => handleFilterChange('categories', category)}
+                        onClick={() =>
+                          handleFilterChange('categories', category)
+                        }
                       >
                         {category.charAt(0).toUpperCase() + category.slice(1)}
                       </button>
@@ -420,10 +456,16 @@ const Favorites = () => {
       </AnimatePresence>
 
       {/* Favorites List */}
-      <div className="favorites-list">
+      <div className='favorites-list'>
         {filteredFavorites.length === 0 && !isLoading ? (
-          <div className="favorites-empty">
-            {searchQuery || Object.values(activeFilters).some(v => v !== false && v !== 'all' && (Array.isArray(v) ? v.length > 0 : true)) ? (
+          <div className='favorites-empty'>
+            {searchQuery ||
+            Object.values(activeFilters).some(
+              v =>
+                v !== false &&
+                v !== 'all' &&
+                (Array.isArray(v) ? v.length > 0 : true)
+            ) ? (
               <>
                 <Search size={64} />
                 <h2>No matches found</h2>
@@ -434,9 +476,9 @@ const Favorites = () => {
                 <Heart size={64} />
                 <h2>No favorites yet</h2>
                 <p>Start browsing creators to add them to your favorites</p>
-                <button 
+                <button
                   onClick={() => navigate('/member/browse-creators')}
-                  className="browse-btn"
+                  className='browse-btn'
                 >
                   Browse Creators
                 </button>
@@ -448,68 +490,67 @@ const Favorites = () => {
             {filteredFavorites.map((creator, index) => (
               <motion.div
                 key={creator._id}
-                className="favorite-creator-card"
+                className='favorite-creator-card'
                 layoutId={creator._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 onClick={() => handleCreatorClick(creator)}
               >
-                <div className="creator-image">
-                  <img
-                    src={creator.profileImage}
-                    alt={creator.displayName}
-                  />
-                  {creator.isOnline && <span className="online-indicator"></span>}
+                <div className='creator-image'>
+                  <img src={creator.profileImage} alt={creator.displayName} />
+                  {creator.isOnline && (
+                    <span className='online-indicator'></span>
+                  )}
                   {creator.verified && (
-                    <span className="verified-badge">
+                    <span className='verified-badge'>
                       <Sparkles size={12} />
                     </span>
                   )}
-                  
+
                   {/* Unfavorite Button */}
                   <button
-                    className="unfavorite-btn"
-                    onClick={(e) => handleUnfavorite(creator._id, e)}
-                    aria-label="Remove from favorites"
+                    className='unfavorite-btn'
+                    onClick={e => handleUnfavorite(creator._id, e)}
+                    aria-label='Remove from favorites'
                   >
-                    <Heart size={16} fill="currentColor" />
+                    <Heart size={16} fill='currentColor' />
                   </button>
                 </div>
-                
-                <div className="creator-info">
-                  <h4 className="creator-name">{creator.displayName}</h4>
-                  <p className="creator-username">@{creator.username}</p>
-                  
+
+                <div className='creator-info'>
+                  <h4 className='creator-name'>{creator.displayName}</h4>
+                  <p className='creator-username'>@{creator.username}</p>
+
                   {viewMode === 'list' && (
-                    <p className="creator-bio">{creator.bio}</p>
+                    <p className='creator-bio'>{creator.bio}</p>
                   )}
-                  
-                  <div className="creator-meta">
-                    <span className="creator-age">{creator.age}</span>
+
+                  <div className='creator-meta'>
+                    <span className='creator-age'>{creator.age}</span>
                     {creator.location && (
-                      <span className="creator-location">
+                      <span className='creator-location'>
                         <MapPin size={12} />
                         {creator.location.city}
                       </span>
                     )}
                     {creator.stats?.rating && (
-                      <span className="creator-rating">
+                      <span className='creator-rating'>
                         <Star size={12} />
                         {creator.stats.rating.toFixed(1)}
                       </span>
                     )}
                   </div>
 
-                  <div className="creator-added">
+                  <div className='creator-added'>
                     <Calendar size={12} />
                     <span>Added {formatDate(creator.addedAt)}</span>
                   </div>
-                  
-                  <div className="creator-actions">
+
+                  <div className='creator-actions'>
                     <button
-                      className="action-btn message-btn"
-                      onClick={(e) => handleMessageCreator(creator._id, e)}
+                      className='action-btn message-btn'
+                      onClick={e => handleMessageCreator(creator._id, e)}
                     >
                       <MessageCircle size={16} />
                     </button>
@@ -523,7 +564,7 @@ const Favorites = () => {
 
       {/* Desktop Footer */}
       {isDesktop && <MainFooter />}
-      
+
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
     </div>

@@ -10,11 +10,11 @@ const Admin = require('../models/Admin');
 exports.createPayoutRequest = async (req, res) => {
   try {
     const { requestedAmount, message } = req.body;
-    
+
     if (!requestedAmount || requestedAmount <= 0) {
       return res.status(400).json({
         success: false,
-        error: 'Valid payout amount is required'
+        error: 'Valid payout amount is required',
       });
     }
 
@@ -23,7 +23,7 @@ exports.createPayoutRequest = async (req, res) => {
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator profile not found'
+        error: 'Creator profile not found',
       });
     }
 
@@ -32,20 +32,21 @@ exports.createPayoutRequest = async (req, res) => {
     if (!profile?.financials?.payoutSettings?.paypalEmail) {
       return res.status(400).json({
         success: false,
-        error: 'Please set your PayPal email in settings before requesting a payout'
+        error:
+          'Please set your PayPal email in settings before requesting a payout',
       });
     }
 
     // Check if there's already a pending request
     const existingRequest = await PayoutRequest.findOne({
       creator: creator._id,
-      status: 'pending'
+      status: 'pending',
     });
 
     if (existingRequest) {
       return res.status(400).json({
         success: false,
-        error: 'You already have a pending payout request'
+        error: 'You already have a pending payout request',
       });
     }
 
@@ -55,16 +56,16 @@ exports.createPayoutRequest = async (req, res) => {
         $match: {
           creator: creator._id,
           status: 'completed',
-          payoutProcessed: false
-        }
+          payoutProcessed: false,
+        },
       },
       {
         $group: {
           _id: null,
           totalEarnings: { $sum: '$creatorEarnings' },
-          transactionIds: { $push: '$_id' }
-        }
-      }
+          transactionIds: { $push: '$_id' },
+        },
+      },
     ]);
 
     const availableAmount = earningsData[0]?.totalEarnings || 0;
@@ -73,7 +74,7 @@ exports.createPayoutRequest = async (req, res) => {
     if (availableAmount < requestedAmount) {
       return res.status(400).json({
         success: false,
-        error: `Insufficient funds. Available: $${availableAmount.toFixed(2)}, Requested: $${requestedAmount.toFixed(2)}`
+        error: `Insufficient funds. Available: $${availableAmount.toFixed(2)}, Requested: $${requestedAmount.toFixed(2)}`,
       });
     }
 
@@ -82,7 +83,7 @@ exports.createPayoutRequest = async (req, res) => {
     if (requestedAmount < minimumPayout) {
       return res.status(400).json({
         success: false,
-        error: `Minimum payout amount is $${minimumPayout.toFixed(2)}`
+        error: `Minimum payout amount is $${minimumPayout.toFixed(2)}`,
       });
     }
 
@@ -93,7 +94,7 @@ exports.createPayoutRequest = async (req, res) => {
       availableAmount,
       paypalEmail: profile.financials.payoutSettings.paypalEmail,
       message: message || '',
-      transactions: transactionIds
+      transactions: transactionIds,
     });
 
     await payoutRequest.save();
@@ -108,15 +109,14 @@ exports.createPayoutRequest = async (req, res) => {
         requestId: payoutRequest._id,
         requestedAmount: payoutRequest.requestedAmount,
         status: payoutRequest.status,
-        paypalEmail: payoutRequest.paypalEmail
-      }
+        paypalEmail: payoutRequest.paypalEmail,
+      },
     });
-
   } catch (error) {
     console.error('Payout request creation error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to create payout request'
+      error: 'Failed to create payout request',
     });
   }
 };
@@ -130,7 +130,7 @@ exports.getCreatorPayoutRequests = async (req, res) => {
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator profile not found'
+        error: 'Creator profile not found',
       });
     }
 
@@ -140,14 +140,13 @@ exports.getCreatorPayoutRequests = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: payoutRequests
+      data: payoutRequests,
     });
-
   } catch (error) {
     console.error('Get payout requests error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch payout requests'
+      error: 'Failed to fetch payout requests',
     });
   }
 };
@@ -161,7 +160,7 @@ exports.getAvailableEarnings = async (req, res) => {
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator profile not found'
+        error: 'Creator profile not found',
       });
     }
 
@@ -170,16 +169,16 @@ exports.getAvailableEarnings = async (req, res) => {
         $match: {
           creator: creator._id,
           status: 'completed',
-          payoutProcessed: false
-        }
+          payoutProcessed: false,
+        },
       },
       {
         $group: {
           _id: null,
           totalEarnings: { $sum: '$creatorEarnings' },
-          transactionCount: { $sum: 1 }
-        }
-      }
+          transactionCount: { $sum: 1 },
+        },
+      },
     ]);
 
     const availableEarnings = earningsData[0]?.totalEarnings || 0;
@@ -188,7 +187,7 @@ exports.getAvailableEarnings = async (req, res) => {
     // Check for pending payout requests
     const pendingRequest = await PayoutRequest.findOne({
       creator: creator._id,
-      status: 'pending'
+      status: 'pending',
     });
 
     res.status(200).json({
@@ -197,15 +196,14 @@ exports.getAvailableEarnings = async (req, res) => {
         availableEarnings,
         transactionCount,
         hasPendingRequest: !!pendingRequest,
-        pendingRequest: pendingRequest || null
-      }
+        pendingRequest: pendingRequest || null,
+      },
     });
-
   } catch (error) {
     console.error('Get available earnings error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch available earnings'
+      error: 'Failed to fetch available earnings',
     });
   }
 };
@@ -219,26 +217,26 @@ exports.cancelPayoutRequest = async (req, res) => {
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator profile not found'
+        error: 'Creator profile not found',
       });
     }
 
     const payoutRequest = await PayoutRequest.findOne({
       _id: req.params.requestId,
-      creator: creator._id
+      creator: creator._id,
     });
 
     if (!payoutRequest) {
       return res.status(404).json({
         success: false,
-        error: 'Payout request not found'
+        error: 'Payout request not found',
       });
     }
 
     if (payoutRequest.status !== 'pending') {
       return res.status(400).json({
         success: false,
-        error: 'Only pending requests can be cancelled'
+        error: 'Only pending requests can be cancelled',
       });
     }
 
@@ -247,14 +245,13 @@ exports.cancelPayoutRequest = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Payout request cancelled successfully'
+      message: 'Payout request cancelled successfully',
     });
-
   } catch (error) {
     console.error('Cancel payout request error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to cancel payout request'
+      error: 'Failed to cancel payout request',
     });
   }
 };
@@ -285,15 +282,14 @@ exports.getAdminPayoutRequests = async (req, res) => {
         payoutRequests,
         totalPages: Math.ceil(total / limit),
         currentPage: page,
-        total
-      }
+        total,
+      },
     });
-
   } catch (error) {
     console.error('Get admin payout requests error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch payout requests'
+      error: 'Failed to fetch payout requests',
     });
   }
 };
@@ -309,14 +305,14 @@ exports.approvePayoutRequest = async (req, res) => {
     if (!payoutRequest) {
       return res.status(404).json({
         success: false,
-        error: 'Payout request not found'
+        error: 'Payout request not found',
       });
     }
 
     if (payoutRequest.status !== 'pending') {
       return res.status(400).json({
         success: false,
-        error: 'Only pending requests can be approved'
+        error: 'Only pending requests can be approved',
       });
     }
 
@@ -334,14 +330,13 @@ exports.approvePayoutRequest = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Payout request approved successfully',
-      data: payoutRequest
+      data: payoutRequest,
     });
-
   } catch (error) {
     console.error('Approve payout request error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to approve payout request'
+      error: 'Failed to approve payout request',
     });
   }
 };
@@ -356,7 +351,7 @@ exports.rejectPayoutRequest = async (req, res) => {
     if (!reason || reason.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        error: 'Rejection reason is required'
+        error: 'Rejection reason is required',
       });
     }
 
@@ -364,14 +359,14 @@ exports.rejectPayoutRequest = async (req, res) => {
     if (!payoutRequest) {
       return res.status(404).json({
         success: false,
-        error: 'Payout request not found'
+        error: 'Payout request not found',
       });
     }
 
     if (payoutRequest.status !== 'pending') {
       return res.status(400).json({
         success: false,
-        error: 'Only pending requests can be rejected'
+        error: 'Only pending requests can be rejected',
       });
     }
 
@@ -388,14 +383,13 @@ exports.rejectPayoutRequest = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Payout request rejected successfully'
+      message: 'Payout request rejected successfully',
     });
-
   } catch (error) {
     console.error('Reject payout request error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to reject payout request'
+      error: 'Failed to reject payout request',
     });
   }
 };
@@ -411,14 +405,14 @@ exports.markPayoutProcessed = async (req, res) => {
     if (!payoutRequest) {
       return res.status(404).json({
         success: false,
-        error: 'Payout request not found'
+        error: 'Payout request not found',
       });
     }
 
     if (payoutRequest.status !== 'approved') {
       return res.status(400).json({
         success: false,
-        error: 'Only approved requests can be marked as processed'
+        error: 'Only approved requests can be marked as processed',
       });
     }
 
@@ -436,14 +430,13 @@ exports.markPayoutProcessed = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Payout marked as processed successfully',
-      data: payoutRequest
+      data: payoutRequest,
     });
-
   } catch (error) {
     console.error('Mark payout processed error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to mark payout as processed'
+      error: 'Failed to mark payout as processed',
     });
   }
 };

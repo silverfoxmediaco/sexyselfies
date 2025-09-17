@@ -15,21 +15,20 @@ const SessionService = require('../services/session.service');
 exports.getSessionAnalytics = async (req, res) => {
   try {
     const { days = 30 } = req.query;
-    
+
     console.log(`📊 Fetching session analytics for last ${days} days`);
-    
+
     const analytics = await SessionService.getSessionAnalytics(parseInt(days));
-    
+
     res.status(200).json({
       success: true,
-      data: analytics
+      data: analytics,
     });
-    
   } catch (error) {
     console.error('Session analytics error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch session analytics'
+      error: 'Failed to fetch session analytics',
     });
   }
 };
@@ -42,22 +41,21 @@ exports.getSessionAnalytics = async (req, res) => {
 exports.getMyActiveSessions = async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     console.log(`🔍 Fetching active sessions for user: ${userId}`);
-    
+
     const sessions = await SessionService.getUserActiveSessions(userId);
-    
+
     res.status(200).json({
       success: true,
       count: sessions.length,
-      data: sessions
+      data: sessions,
     });
-    
   } catch (error) {
     console.error('Get user sessions error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch sessions'
+      error: 'Failed to fetch sessions',
     });
   }
 };
@@ -71,39 +69,38 @@ exports.endSession = async (req, res) => {
   try {
     const { sessionId } = req.params;
     const userId = req.user.id;
-    
+
     console.log(`🛑 Ending session: ${sessionId} for user: ${userId}`);
-    
+
     // Verify session ownership (basic security check)
     const userSessions = await SessionService.getUserActiveSessions(userId);
     const sessionExists = userSessions.some(s => s.sessionId === sessionId);
-    
+
     if (!sessionExists) {
       return res.status(403).json({
         success: false,
-        error: 'Session not found or not owned by user'
+        error: 'Session not found or not owned by user',
       });
     }
-    
+
     const success = await SessionService.endSession(sessionId, 'manual');
-    
+
     if (success) {
       res.status(200).json({
         success: true,
-        message: 'Session ended successfully'
+        message: 'Session ended successfully',
       });
     } else {
       res.status(400).json({
         success: false,
-        error: 'Failed to end session'
+        error: 'Failed to end session',
       });
     }
-    
   } catch (error) {
     console.error('End session error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to end session'
+      error: 'Failed to end session',
     });
   }
 };
@@ -117,32 +114,36 @@ exports.endAllOtherSessions = async (req, res) => {
   try {
     const userId = req.user.id;
     const currentSessionId = req.session?.sessionId;
-    
-    console.log(`🔒 Ending all other sessions for user: ${userId} (keeping: ${currentSessionId})`);
-    
+
+    console.log(
+      `🔒 Ending all other sessions for user: ${userId} (keeping: ${currentSessionId})`
+    );
+
     // Get all user sessions
     const userSessions = await SessionService.getUserActiveSessions(userId);
-    
+
     // End all sessions except current one
     let endedCount = 0;
     for (const session of userSessions) {
       if (session.sessionId !== currentSessionId) {
-        const success = await SessionService.endSession(session.sessionId, 'security');
+        const success = await SessionService.endSession(
+          session.sessionId,
+          'security'
+        );
         if (success) endedCount++;
       }
     }
-    
+
     res.status(200).json({
       success: true,
       message: `Ended ${endedCount} other sessions`,
-      endedSessions: endedCount
+      endedSessions: endedCount,
     });
-    
   } catch (error) {
     console.error('End all sessions error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to end other sessions'
+      error: 'Failed to end other sessions',
     });
   }
 };
@@ -161,20 +162,19 @@ exports.endAllOtherSessions = async (req, res) => {
 exports.cleanupExpiredSessions = async (req, res) => {
   try {
     console.log('🧹 Starting manual session cleanup...');
-    
+
     const cleanedCount = await SessionService.cleanupExpiredSessions();
-    
+
     res.status(200).json({
       success: true,
       message: `Cleaned up ${cleanedCount} expired sessions`,
-      cleanedSessions: cleanedCount
+      cleanedSessions: cleanedCount,
     });
-    
   } catch (error) {
     console.error('Session cleanup error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to cleanup sessions'
+      error: 'Failed to cleanup sessions',
     });
   }
 };

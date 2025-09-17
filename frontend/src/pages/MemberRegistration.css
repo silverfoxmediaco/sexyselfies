@@ -5,20 +5,25 @@
    ======================== */
 :root {
   /* Brand colors from Brand Guide */
-  --memberreg-bg-primary: #0A0A0A;        /* bg-900 */
-  --memberreg-bg-secondary: #121212;      /* bg-800 */
-  --memberreg-bg-tertiary: #1C1C1E;       /* surface-700 */
-  --memberreg-border-color: #2A2A2C;      /* border-600 */
-  --memberreg-text-primary: #FFFFFF;      /* text */
-  --memberreg-text-secondary: #C7C7CC;    /* text-2 */
-  --memberreg-text-tertiary: #8E8E93;     /* muted */
-  --memberreg-accent-primary: #17D2C2;    /* brand primary */
-  --memberreg-accent-secondary: #12B7AB;  /* primary-600 */
-  --memberreg-accent-tertiary: #47E0D2;   /* primary-300 */
-  --memberreg-gradient: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
-  --memberreg-error: #EF4444;
-  --memberreg-success: #22C55E;
-  --memberreg-warning: #F59E0B;
+  --memberreg-bg-primary: #0a0a0a; /* bg-900 */
+  --memberreg-bg-secondary: #121212; /* bg-800 */
+  --memberreg-bg-tertiary: #1c1c1e; /* surface-700 */
+  --memberreg-border-color: #2a2a2c; /* border-600 */
+  --memberreg-text-primary: #ffffff; /* text */
+  --memberreg-text-secondary: #c7c7cc; /* text-2 */
+  --memberreg-text-tertiary: #8e8e93; /* muted */
+  --memberreg-accent-primary: #17d2c2; /* brand primary */
+  --memberreg-accent-secondary: #12b7ab; /* primary-600 */
+  --memberreg-accent-tertiary: #47e0d2; /* primary-300 */
+  --memberreg-gradient: linear-gradient(
+    135deg,
+    #12b7ab 0%,
+    #17d2c2 50%,
+    #47e0d2 100%
+  );
+  --memberreg-error: #ef4444;
+  --memberreg-success: #22c55e;
+  --memberreg-warning: #f59e0b;
 
   /* PWA-optimized spacing scale (8-point grid system) */
   --memberreg-space-xs: 4px;
@@ -35,11 +40,13 @@
   --memberreg-radius-xl: 24px;
 
   /* Brand shadows and effects */
-  --memberreg-shadow-elev: 0 10px 30px rgba(0,0,0,.35);
-  --memberreg-overlay: rgba(0,0,0,.6);
+  --memberreg-shadow-elev: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --memberreg-overlay: rgba(0, 0, 0, 0.6);
 
   /* Typography */
-  --memberreg-font-sans: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --memberreg-font-sans:
+    'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
 
   /* PWA Touch targets */
   --memberreg-touch-target-min: 44px;
@@ -65,9 +72,15 @@
   padding: var(--memberreg-space-md);
   /* PWA safe area support */
   padding-top: max(var(--memberreg-space-md), env(safe-area-inset-top, 16px));
-  padding-bottom: max(var(--memberreg-space-md), env(safe-area-inset-bottom, 16px));
+  padding-bottom: max(
+    var(--memberreg-space-md),
+    env(safe-area-inset-bottom, 16px)
+  );
   padding-left: max(var(--memberreg-space-md), env(safe-area-inset-left, 16px));
-  padding-right: max(var(--memberreg-space-md), env(safe-area-inset-right, 16px));
+  padding-right: max(
+    var(--memberreg-space-md),
+    env(safe-area-inset-right, 16px)
+  );
 }
 
 .memberreg-content {
@@ -489,7 +502,9 @@
   background: var(--memberreg-accent-primary);
   position: relative;
   transform: scale(1.15);
-  box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.5), 0 0 20px rgba(23, 210, 194, 0.3);
+  box-shadow:
+    0 0 0 3px rgba(23, 210, 194, 0.5),
+    0 0 20px rgba(23, 210, 194, 0.3);
   transition: all 0.3s ease;
   animation: memberregCheckboxPulse 0.6s ease-out;
 }
@@ -525,7 +540,9 @@
 }
 
 .memberreg-range-inputs .memberreg-range:first-child {
-  margin-bottom: var(--memberreg-space-sm); /* Extra space for top slider thumb */
+  margin-bottom: var(
+    --memberreg-space-sm
+  ); /* Extra space for top slider thumb */
 }
 
 .memberreg-range {
@@ -581,11 +598,26 @@
   transition: all 0.3s ease;
 }
 
-.strength-fill.strength-20 { background: var(--memberreg-error); width: 20%; }
-.strength-fill.strength-40 { background: #F59E0B; width: 40%; }
-.strength-fill.strength-60 { background: #F59E0B; width: 60%; }
-.strength-fill.strength-80 { background: var(--memberreg-success); width: 80%; }
-.strength-fill.strength-100 { background: var(--memberreg-success); width: 100%; }
+.strength-fill.strength-20 {
+  background: var(--memberreg-error);
+  width: 20%;
+}
+.strength-fill.strength-40 {
+  background: #f59e0b;
+  width: 40%;
+}
+.strength-fill.strength-60 {
+  background: #f59e0b;
+  width: 60%;
+}
+.strength-fill.strength-80 {
+  background: var(--memberreg-success);
+  width: 80%;
+}
+.strength-fill.strength-100 {
+  background: var(--memberreg-success);
+  width: 100%;
+}
 
 .strength-requirements {
   display: flex;
@@ -685,7 +717,10 @@
   font-weight: 600;
   font-family: var(--memberreg-font-sans);
   cursor: pointer;
-  transition: transform .06s ease, box-shadow .2s ease, background .2s ease;
+  transition:
+    transform 0.06s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
   min-height: var(--memberreg-touch-target-optimal);
   line-height: 1;
   text-decoration: none;
@@ -721,7 +756,7 @@
 }
 
 .memberreg-btn-secondary:hover {
-  background: rgba(255,255,255,.04);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .memberreg-btn-primary:disabled,
@@ -790,8 +825,12 @@
 }
 
 @keyframes memberreg-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* ========================
@@ -803,9 +842,18 @@
   .memberreg-container {
     padding: var(--memberreg-space-lg);
     padding-top: max(var(--memberreg-space-lg), env(safe-area-inset-top, 24px));
-    padding-bottom: max(var(--memberreg-space-lg), env(safe-area-inset-bottom, 24px));
-    padding-left: max(var(--memberreg-space-lg), env(safe-area-inset-left, 24px));
-    padding-right: max(var(--memberreg-space-lg), env(safe-area-inset-right, 24px));
+    padding-bottom: max(
+      var(--memberreg-space-lg),
+      env(safe-area-inset-bottom, 24px)
+    );
+    padding-left: max(
+      var(--memberreg-space-lg),
+      env(safe-area-inset-left, 24px)
+    );
+    padding-right: max(
+      var(--memberreg-space-lg),
+      env(safe-area-inset-right, 24px)
+    );
   }
 
   .memberreg-content {
@@ -851,11 +899,19 @@
   .memberreg-container {
     padding: var(--memberreg-space-xl);
     padding-top: max(var(--memberreg-space-xl), env(safe-area-inset-top, 32px));
-    padding-bottom: max(var(--memberreg-space-xl), env(safe-area-inset-bottom, 32px));
-    padding-left: max(var(--memberreg-space-xl), env(safe-area-inset-left, 32px));
-    padding-right: max(var(--memberreg-space-xl), env(safe-area-inset-right, 32px));
+    padding-bottom: max(
+      var(--memberreg-space-xl),
+      env(safe-area-inset-bottom, 32px)
+    );
+    padding-left: max(
+      var(--memberreg-space-xl),
+      env(safe-area-inset-left, 32px)
+    );
+    padding-right: max(
+      var(--memberreg-space-xl),
+      env(safe-area-inset-right, 32px)
+    );
   }
-
 
   .memberreg-benefits-section {
     padding: var(--memberreg-space-2xl);
@@ -877,11 +933,11 @@
   .memberreg-benefits-section {
     display: none;
   }
-  
+
   .memberreg-content {
     flex-direction: column;
   }
-  
+
   .memberreg-form-section {
     padding: var(--memberreg-space-md);
   }
@@ -898,32 +954,34 @@
 
 /* Enhanced checkbox animations */
 @keyframes memberregCheckboxPulse {
-  0% { 
-    transform: scale(1); 
-    box-shadow: 0 0 0 0px rgba(23, 210, 194, 0.5); 
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0px rgba(23, 210, 194, 0.5);
   }
-  50% { 
-    transform: scale(1.2); 
-    box-shadow: 0 0 0 5px rgba(23, 210, 194, 0.3); 
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 5px rgba(23, 210, 194, 0.3);
   }
-  100% { 
-    transform: scale(1.15); 
-    box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.5), 0 0 20px rgba(23, 210, 194, 0.3); 
+  100% {
+    transform: scale(1.15);
+    box-shadow:
+      0 0 0 3px rgba(23, 210, 194, 0.5),
+      0 0 20px rgba(23, 210, 194, 0.3);
   }
 }
 
 @keyframes memberregCheckmarkAppear {
-  0% { 
-    opacity: 0; 
-    transform: translate(-50%, -50%) scale(0); 
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
   }
-  70% { 
-    opacity: 1; 
-    transform: translate(-50%, -50%) scale(1.2); 
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
   }
-  100% { 
-    opacity: 1; 
-    transform: translate(-50%, -50%) scale(1); 
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

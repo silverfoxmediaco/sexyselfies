@@ -9,12 +9,12 @@ console.log('🚀 SexySelfies App Starting...');
 import AppLayout from './components/AppLayout';
 
 // Import Dev Helpers
-import { 
-  DEV_MODE, 
-  ProtectedCreatorRoute, 
-  ProtectedMemberRoute, 
-  ComingSoon, 
-  DevModeIndicator 
+import {
+  DEV_MODE,
+  ProtectedCreatorRoute,
+  ProtectedMemberRoute,
+  ComingSoon,
+  DevModeIndicator,
 } from './components/DevHelpers';
 
 // Import Admin pages (all exist)
@@ -41,7 +41,7 @@ import CreatorEarnings from './pages/CreatorEarnings';
 import CreatorConnections from './pages/CreatorConnections';
 import CreatorManageMembers from './pages/CreatorManageMembers';
 import CreatorSettingsPage from './pages/CreatorSettingsPage';
-import BrowseMembers from './pages/BrowseMembers'; 
+import BrowseMembers from './pages/BrowseMembers';
 
 // Import Member pages
 import MemberRegistration from './pages/MemberRegistration';
@@ -70,11 +70,11 @@ if (DEV_MODE) {
   if (!localStorage.getItem('token')) {
     localStorage.setItem('token', 'dev-token-12345');
     localStorage.setItem('userId', 'dev-user-123');
-    
+
     // Detect initial role from URL
     const path = window.location.pathname;
     let initialRole = 'member'; // default
-    
+
     if (path.startsWith('/admin')) {
       initialRole = 'admin';
     } else if (path.startsWith('/creator')) {
@@ -82,370 +82,376 @@ if (DEV_MODE) {
     } else if (path.startsWith('/member')) {
       initialRole = 'member';
     }
-    
+
     localStorage.setItem('userRole', initialRole);
-    console.log('🔧 DEV MODE: Auto-login enabled as', initialRole, 'based on URL');
+    console.log(
+      '🔧 DEV MODE: Auto-login enabled as',
+      initialRole,
+      'based on URL'
+    );
   }
 }
 
 console.log('🎯 Mounting React App to root element...');
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+    <BrowserRouter
+      future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
+    >
       <AppLayout>
         <Routes>
           {/* Landing Pages */}
-          <Route path="/" element={<LandingPageV2 />} />
-          <Route path="/landing-v1" element={<LandingPage />} />
-          
+          <Route path='/' element={<LandingPageV2 />} />
+          <Route path='/landing-v1' element={<LandingPage />} />
+
           {/* Main App Route - Redirect to home */}
-          <Route path="/app" element={<Navigate to="/" replace />} />
-          
+          <Route path='/app' element={<Navigate to='/' replace />} />
+
           {/* Creator Routes */}
-          <Route path="/creator">
+          <Route path='/creator'>
             {/* Public creator routes */}
-            <Route path="register" element={<CreatorRegistration />} />
-            <Route path="verify-id" element={<CreatorVerifyID />} />
-            <Route path="login" element={<CreatorLogin />} />
-            
+            <Route path='register' element={<CreatorRegistration />} />
+            <Route path='verify-id' element={<CreatorVerifyID />} />
+            <Route path='login' element={<CreatorLogin />} />
+
             {/* BROWSE MEMBERS ROUTE - Creators browse members to target */}
-            <Route 
-              path="browse-members" 
+            <Route
+              path='browse-members'
               element={
                 <ProtectedCreatorRoute>
                   <BrowseMembers />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            
+
             {/* MEMBERS ROUTE - Creators manage their existing members (dashboard) */}
-            <Route 
-              path="members" 
+            <Route
+              path='members'
               element={
                 <ProtectedCreatorRoute>
                   <CreatorManageMembers />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            
+
             {/* MESSAGES ROUTE - Creators view all conversations */}
-            <Route 
-              path="messages" 
+            <Route
+              path='messages'
               element={
                 <ProtectedCreatorRoute>
                   <Messages /> {/* Creators can use same Messages component */}
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            
+
             {/* CONNECTIONS ROUTE - Creators manage their connections/matches */}
-            <Route 
-              path="connections" 
+            <Route
+              path='connections'
               element={
                 <ProtectedCreatorRoute>
                   <CreatorConnections />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            
+
             {/* CHAT ROUTE - Creators chat with members */}
-            <Route 
-              path="chat/:connectionId" 
+            <Route
+              path='chat/:connectionId'
               element={
                 <ProtectedCreatorRoute>
                   <Chat /> {/* Creators can use same Chat component */}
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            
+
             {/* Protected creator routes */}
-            <Route 
-              path="profile-setup" 
+            <Route
+              path='profile-setup'
               element={
                 <ProtectedCreatorRoute>
                   <CreatorProfileSetup />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            <Route 
-              path="profile-preview" 
+            <Route
+              path='profile-preview'
               element={
                 <ProtectedCreatorRoute>
                   <CreatorProfilePreview />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            <Route 
-              path="dashboard" 
+            <Route
+              path='dashboard'
               element={
                 <ProtectedCreatorRoute>
                   <CreatorDashboard />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            <Route 
-              path="upload" 
+            <Route
+              path='upload'
               element={
                 <ProtectedCreatorRoute>
                   <CreatorContentUpload />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            <Route 
-              path="content" 
+            <Route
+              path='content'
               element={
                 <ProtectedCreatorRoute>
-                  <ComingSoon title="Content Manager" />
+                  <ComingSoon title='Content Manager' />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            <Route 
-              path="earnings" 
+            <Route
+              path='earnings'
               element={
                 <ProtectedCreatorRoute>
                   <CreatorEarnings />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            <Route 
-              path="analytics" 
+            <Route
+              path='analytics'
               element={
                 <ProtectedCreatorRoute>
                   <CreatorAnalytics />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            <Route 
-              path="profile" 
+            <Route
+              path='profile'
               element={
                 <ProtectedCreatorRoute>
                   <CreatorProfilePage />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
-            <Route 
-              path="settings" 
+            <Route
+              path='settings'
               element={
                 <ProtectedCreatorRoute>
                   <CreatorSettingsPage />
                 </ProtectedCreatorRoute>
-              } 
+              }
             />
           </Route>
-          
+
           {/* Member Routes */}
-          <Route path="/member">
+          <Route path='/member'>
             {/* Public member routes */}
-            <Route path="login" element={<MemberLogin />} />
-            <Route path="register" element={<MemberRegistration />} />
-            
+            <Route path='login' element={<MemberLogin />} />
+            <Route path='register' element={<MemberRegistration />} />
+
             {/* Protected member routes */}
             {/* BROWSE CREATORS ROUTE - Members browse creators (swipe interface) */}
-            <Route 
-              path="browse-creators" 
+            <Route
+              path='browse-creators'
               element={
                 <ProtectedMemberRoute>
                   <BrowseCreators />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            
+
             {/* DISCOVER ROUTE - Alternative to browse */}
-            <Route 
-              path="discover" 
+            <Route
+              path='discover'
               element={
                 <ProtectedMemberRoute>
                   <BrowseCreators />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            
+
             {/* BROWSE FILTERS ROUTE - Browse preferences/filters */}
-            <Route 
-              path="filters" 
+            <Route
+              path='filters'
               element={
                 <ProtectedMemberRoute>
                   <BrowseFilters />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            
+
             {/* MY CONNECTIONS ROUTE - Replaces matches */}
-            <Route 
-              path="connections" 
+            <Route
+              path='connections'
               element={
                 <ProtectedMemberRoute>
                   <MyConnections />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            
+
             {/* Legacy matches route - redirect to connections */}
-            <Route 
-              path="matches" 
-              element={<Navigate to="/member/connections" replace />} 
+            <Route
+              path='matches'
+              element={<Navigate to='/member/connections' replace />}
             />
-            
+
             {/* MESSAGES ROUTE - View all conversations */}
-            <Route 
-              path="messages" 
+            <Route
+              path='messages'
               element={
                 <ProtectedMemberRoute>
                   <Messages />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            
+
             {/* CHAT ROUTES - Individual conversation */}
-            <Route 
-              path="messages/:creatorId" 
+            <Route
+              path='messages/:creatorId'
               element={
                 <ProtectedMemberRoute>
                   <Chat />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            <Route 
-              path="chat/:connectionId" 
+            <Route
+              path='chat/:connectionId'
               element={
                 <ProtectedMemberRoute>
                   <Chat />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            
-            <Route 
-              path="profile" 
+
+            <Route
+              path='profile'
               element={
                 <ProtectedMemberRoute>
                   <MemberProfilePage />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
             {/* LIBRARY ROUTE - Members view and download purchased content */}
-            <Route 
-              path="library" 
+            <Route
+              path='library'
               element={
                 <ProtectedMemberRoute>
                   <Library />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            <Route 
-              path="purchased" 
+            <Route
+              path='purchased'
               element={
                 <ProtectedMemberRoute>
-                  <ComingSoon title="Purchased Content" />
+                  <ComingSoon title='Purchased Content' />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            <Route 
-              path="favorites" 
+            <Route
+              path='favorites'
               element={
                 <ProtectedMemberRoute>
                   <Favorites />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            <Route 
-              path="search" 
+            <Route
+              path='search'
               element={
                 <ProtectedMemberRoute>
                   <SearchCreators />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            <Route 
-              path="trending" 
+            <Route
+              path='trending'
               element={
                 <ProtectedMemberRoute>
                   <TrendingCreators />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            <Route 
-              path="billing" 
+            <Route
+              path='billing'
               element={
                 <ProtectedMemberRoute>
-                  <ComingSoon title="Billing" />
+                  <ComingSoon title='Billing' />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            <Route 
-              path="settings" 
+            <Route
+              path='settings'
               element={
                 <ProtectedMemberRoute>
-                  <ComingSoon title="Settings" />
+                  <ComingSoon title='Settings' />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
-            <Route 
-              path="help" 
+            <Route
+              path='help'
               element={
                 <ProtectedMemberRoute>
-                  <ComingSoon title="Help Center" />
+                  <ComingSoon title='Help Center' />
                 </ProtectedMemberRoute>
-              } 
+              }
             />
           </Route>
-          
+
           {/* Creator Profile Route (Public - for members to view) */}
           {/* THIS MUST COME AFTER ALL /creator/* ROUTES */}
-          <Route path="/creator/:creatorId" element={<CreatorProfile />} />
-          
+          <Route path='/creator/:creatorId' element={<CreatorProfile />} />
+
           {/* Admin Routes */}
-          <Route path="/admin">
-            <Route path="login" element={<AdminLogin />} />
-            <Route 
-              path="dashboard" 
+          <Route path='/admin'>
+            <Route path='login' element={<AdminLogin />} />
+            <Route
+              path='dashboard'
               element={
                 <ProtectedAdminRoute>
                   <AdminDashboard />
                 </ProtectedAdminRoute>
-              } 
+              }
             />
-            <Route 
-              path="verifications" 
+            <Route
+              path='verifications'
               element={
                 <ProtectedAdminRoute>
                   <AdminVerifications />
                 </ProtectedAdminRoute>
-              } 
+              }
             />
-            <Route 
-              path="reports" 
+            <Route
+              path='reports'
               element={
                 <ProtectedAdminRoute>
                   <AdminReports />
                 </ProtectedAdminRoute>
-              } 
+              }
             />
-            <Route 
-              path="users" 
+            <Route
+              path='users'
               element={
                 <ProtectedAdminRoute>
                   <AdminUsers />
                 </ProtectedAdminRoute>
-              } 
+              }
             />
-            <Route 
-              path="content" 
+            <Route
+              path='content'
               element={
                 <ProtectedAdminRoute>
                   <AdminContent />
                 </ProtectedAdminRoute>
-              } 
+              }
             />
-            <Route 
-              path="management" 
+            <Route
+              path='management'
               element={
                 <ProtectedAdminRoute>
                   <AdminManagement />
                 </ProtectedAdminRoute>
-              } 
+              }
             />
             {/* Redirect /admin to dashboard */}
-            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route index element={<Navigate to='/admin/dashboard' replace />} />
           </Route>
         </Routes>
       </AppLayout>

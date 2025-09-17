@@ -10,11 +10,11 @@ const createTransporter = () => {
     secure: process.env.EMAIL_SECURE === 'true',
     auth: {
       user: process.env.EMAIL_USER || 'admin@sexyselfies.com',
-      pass: process.env.EMAIL_PASS
+      pass: process.env.EMAIL_PASS,
     },
     tls: {
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: process.env.NODE_ENV === 'production',
+    },
   });
 };
 
@@ -24,20 +24,20 @@ const createTransporter = () => {
 exports.sendAdminVerificationNotification = async (req, res) => {
   try {
     const { userId, userEmail, idType } = req.body;
-    
+
     // Get user details
     const user = await User.findById(userId);
     const creator = await Creator.findOne({ user: userId });
-    
+
     if (!user || !creator) {
       return res.status(404).json({
         success: false,
-        error: 'User not found'
+        error: 'User not found',
       });
     }
-    
+
     const transporter = createTransporter();
-    
+
     // Simple text email to admin
     const adminMailOptions = {
       from: process.env.EMAIL_FROM || 'SexySelfies <admin@sexyselfies.com>',
@@ -91,12 +91,12 @@ Admin Dashboard: ${process.env.ADMIN_DASHBOARD_URL || 'http://localhost:5173/adm
     <p>This is an automated notification from SexySelfies admin system.</p>
   </div>
 </div>
-      `
+      `,
     };
-    
+
     // Send email to admin
     await transporter.sendMail(adminMailOptions);
-    
+
     // Simple confirmation email to user
     const userMailOptions = {
       from: process.env.EMAIL_FROM || 'SexySelfies <admin@sexyselfies.com>',
@@ -154,28 +154,27 @@ The Sexy Selfies Team
     <p>Thank you for joining SexySelfies!</p>
   </div>
 </div>
-      `
+      `,
     };
-    
+
     await transporter.sendMail(userMailOptions);
-    
+
     // Update creator verification status
     if (!creator.verificationStatus) {
       creator.verificationStatus = 'pending';
     }
     creator.verificationSubmittedAt = new Date();
     await creator.save();
-    
+
     res.status(200).json({
       success: true,
-      message: 'Verification notification sent successfully'
+      message: 'Verification notification sent successfully',
     });
-    
   } catch (error) {
     console.error('Email notification error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to send notification: ' + error.message
+      error: 'Failed to send notification: ' + error.message,
     });
   }
 };
@@ -186,26 +185,26 @@ The Sexy Selfies Team
 exports.approveVerification = async (req, res) => {
   try {
     const { userId } = req.body;
-    
+
     const creator = await Creator.findOne({ user: userId });
     const user = await User.findById(userId);
-    
+
     if (!creator || !user) {
       return res.status(404).json({
         success: false,
-        error: 'Creator not found'
+        error: 'Creator not found',
       });
     }
-    
+
     // Update verification status
     creator.isVerified = true;
     creator.verificationStatus = 'approved';
     creator.verificationApprovedAt = new Date();
     await creator.save();
-    
+
     // Send approval email
     const transporter = createTransporter();
-    
+
     const mailOptions = {
       from: process.env.EMAIL_FROM || 'SexySelfies <admin@sexyselfies.com>',
       to: user.email,
@@ -268,21 +267,20 @@ The Sexy Selfies Team
     <p>Start your journey as a SexySelfies creator today!</p>
   </div>
 </div>
-      `
+      `,
     };
-    
+
     await transporter.sendMail(mailOptions);
-    
+
     res.status(200).json({
       success: true,
-      message: 'Creator approved successfully'
+      message: 'Creator approved successfully',
     });
-    
   } catch (error) {
     console.error('Approval error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to approve creator: ' + error.message
+      error: 'Failed to approve creator: ' + error.message,
     });
   }
 };
@@ -293,27 +291,27 @@ The Sexy Selfies Team
 exports.rejectVerification = async (req, res) => {
   try {
     const { userId, reason } = req.body;
-    
+
     const creator = await Creator.findOne({ user: userId });
     const user = await User.findById(userId);
-    
+
     if (!creator || !user) {
       return res.status(404).json({
         success: false,
-        error: 'Creator not found'
+        error: 'Creator not found',
       });
     }
-    
+
     // Update verification status
     creator.isVerified = false;
     creator.verificationStatus = 'rejected';
     creator.verificationRejectedAt = new Date();
     creator.verificationRejectionReason = reason;
     await creator.save();
-    
+
     // Send rejection email
     const transporter = createTransporter();
-    
+
     const mailOptions = {
       from: process.env.EMAIL_FROM || 'SexySelfies <admin@sexyselfies.com>',
       to: user.email,
@@ -348,12 +346,16 @@ The Sexy Selfies Team
     <p>Hi ${creator.displayName},</p>
     <p>Unfortunately, we were unable to verify your account at this time.</p>
     
-    ${reason ? `
+    ${
+      reason
+        ? `
     <div style="background: #1C1C1E; border: 1px solid #EF4444; border-radius: 12px; padding: 20px; margin: 20px 0;">
       <p style="color: #EF4444; margin-top: 0;"><strong>Reason:</strong></p>
       <p style="color: #C7C7CC;">${reason}</p>
     </div>
-    ` : ''}
+    `
+        : ''
+    }
     
     <div style="background: #1C1C1E; border-radius: 12px; padding: 20px; margin: 20px 0;">
       <p style="color: #F59E0B; margin-top: 0;"><strong>Common reasons for verification issues:</strong></p>
@@ -383,21 +385,20 @@ The Sexy Selfies Team
     <p>We're here to help - contact support if you have questions.</p>
   </div>
 </div>
-      `
+      `,
     };
-    
+
     await transporter.sendMail(mailOptions);
-    
+
     res.status(200).json({
       success: true,
-      message: 'Creator rejection notification sent'
+      message: 'Creator rejection notification sent',
     });
-    
   } catch (error) {
     console.error('Rejection error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to process rejection: ' + error.message
+      error: 'Failed to process rejection: ' + error.message,
     });
   }
 };
@@ -405,21 +406,21 @@ The Sexy Selfies Team
 // @desc    Send payout request notification to admin
 // @route   Called internally when creator requests payout
 // @access  Internal
-exports.sendPayoutRequestNotification = async (options) => {
+exports.sendPayoutRequestNotification = async options => {
   try {
     const { payoutRequest, type } = options;
-    
+
     // Populate creator details if not already populated
     const populatedRequest = await payoutRequest.populate([
       { path: 'creator', select: 'displayName profileImage user' },
-      { path: 'creator.user', select: 'email' }
+      { path: 'creator.user', select: 'email' },
     ]);
 
     const creator = populatedRequest.creator;
     const creatorUser = creator.user;
-    
+
     const transporter = createTransporter();
-    
+
     const adminMailOptions = {
       from: process.env.EMAIL_FROM || 'SexySelfies <admin@sexyselfies.com>',
       to: 'james@sexyselfies.com', // Your specific email
@@ -481,12 +482,16 @@ This is a real payout request that requires your immediate attention.
       <p><strong>Submitted:</strong> ${new Date(payoutRequest.createdAt).toLocaleString()}</p>
     </div>
     
-    ${payoutRequest.message ? `
+    ${
+      payoutRequest.message
+        ? `
     <h3 style="color: #47E0D2;">Creator Message:</h3>
     <div style="background: #1C1C1E; border-left: 4px solid #17D2C2; padding: 15px; margin: 15px 0;">
       <p style="font-style: italic;">"${payoutRequest.message}"</p>
     </div>
-    ` : ''}
+    `
+        : ''
+    }
     
     <div style="background: #22C55E; color: white; padding: 20px; border-radius: 12px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: white;">⚡ NEXT STEPS:</h3>
@@ -518,12 +523,14 @@ This is a real payout request that requires your immediate attention.
     <p>Request Time: ${new Date().toLocaleString()}</p>
   </div>
 </div>
-      `
+      `,
     };
-    
+
     await transporter.sendMail(adminMailOptions);
-    console.log('Payout request notification sent to admin:', payoutRequest._id);
-    
+    console.log(
+      'Payout request notification sent to admin:',
+      payoutRequest._id
+    );
   } catch (error) {
     console.error('Failed to send payout request notification:', error);
     throw error;

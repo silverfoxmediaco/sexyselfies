@@ -8,7 +8,7 @@ class AuthService {
   // ==========================================
   // MEMBER AUTHENTICATION
   // ==========================================
-  
+
   /**
    * Member Registration
    */
@@ -28,8 +28,8 @@ class AuthService {
         username: data.username,
         displayName: data.displayName || data.username,
         phone: data.phone || undefined,
-        birthDate: formattedBirthDate, // ESSENTIAL: Age verification  
-        agreeToTerms: data.agreeToTerms
+        birthDate: formattedBirthDate, // ESSENTIAL: Age verification
+        agreeToTerms: data.agreeToTerms,
       });
 
       // For new registration flow, no token is returned
@@ -63,8 +63,8 @@ class AuthService {
           userAgent: navigator.userAgent,
           screenResolution: `${window.screen.width}x${window.screen.height}`,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          isPWA: window.matchMedia('(display-mode: standalone)').matches
-        }
+          isPWA: window.matchMedia('(display-mode: standalone)').matches,
+        },
       });
 
       console.log('Raw login response:', response);
@@ -76,12 +76,12 @@ class AuthService {
         localStorage.setItem('refreshToken', response.refreshToken);
         localStorage.setItem('userRole', 'member');
         localStorage.setItem('userId', response.user?.id || '');
-        
+
         if (rememberMe) {
           localStorage.setItem('rememberMe', 'true');
           localStorage.setItem('savedEmail', email);
         }
-        
+
         apiHelpers.setAuthToken(response.token);
 
         // Register for push notifications if PWA
@@ -99,7 +99,7 @@ class AuthService {
   // ==========================================
   // CREATOR AUTHENTICATION
   // ==========================================
-  
+
   /**
    * Creator Registration
    */
@@ -121,12 +121,12 @@ class AuthService {
           platform: navigator.platform,
           userAgent: navigator.userAgent,
           screenResolution: `${window.screen.width}x${window.screen.height}`,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-        }
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
       });
 
       console.log('Creator registration response:', response);
-      
+
       // Store tokens - response is already unwrapped by api interceptor
       if (response && response.token) {
         localStorage.setItem('token', response.token);
@@ -136,7 +136,10 @@ class AuthService {
         localStorage.setItem('userId', response.user?.id || '');
         localStorage.setItem('displayName', data.displayName || '');
         localStorage.setItem('username', data.username || '');
-        localStorage.setItem('creatorVerificationStatus', response.verificationStatus || 'pending');
+        localStorage.setItem(
+          'creatorVerificationStatus',
+          response.verificationStatus || 'pending'
+        );
         apiHelpers.setAuthToken(response.token);
       }
 
@@ -146,7 +149,7 @@ class AuthService {
       console.error('Error response:', error.response);
       console.error('Error response data:', error.response?.data);
       console.error('Error response status:', error.response?.status);
-      
+
       // Re-throw the original error to preserve the response structure
       throw error;
     }
@@ -166,8 +169,8 @@ class AuthService {
           userAgent: navigator.userAgent,
           screenResolution: `${window.screen.width}x${window.screen.height}`,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          isPWA: window.matchMedia('(display-mode: standalone)').matches
-        }
+          isPWA: window.matchMedia('(display-mode: standalone)').matches,
+        },
       });
 
       // Store tokens
@@ -177,15 +180,21 @@ class AuthService {
         localStorage.setItem('refreshToken', response.refreshToken);
         localStorage.setItem('userRole', 'creator');
         localStorage.setItem('userId', response.user.id);
-        localStorage.setItem('displayName', response.displayName || response.user.displayName || '');
+        localStorage.setItem(
+          'displayName',
+          response.displayName || response.user.displayName || ''
+        );
         localStorage.setItem('username', response.user.username || '');
-        localStorage.setItem('creatorVerificationStatus', response.user.verificationStatus || 'pending');
-        
+        localStorage.setItem(
+          'creatorVerificationStatus',
+          response.user.verificationStatus || 'pending'
+        );
+
         if (rememberMe) {
           localStorage.setItem('rememberMe', 'true');
           localStorage.setItem('savedEmail', email);
         }
-        
+
         apiHelpers.setAuthToken(response.token);
 
         // Register for push notifications
@@ -208,7 +217,7 @@ class AuthService {
   // ==========================================
   // ADMIN AUTHENTICATION
   // ==========================================
-  
+
   /**
    * Admin Login
    */
@@ -223,8 +232,8 @@ class AuthService {
           userAgent: navigator.userAgent,
           screenResolution: `${window.screen.width}x${window.screen.height}`,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          ipAddress: 'server-side-detection' // Will be detected server-side
-        }
+          ipAddress: 'server-side-detection', // Will be detected server-side
+        },
       });
 
       // Check if 2FA is required
@@ -239,7 +248,10 @@ class AuthService {
         localStorage.setItem('refreshToken', response.data.refreshToken);
         localStorage.setItem('userRole', 'admin');
         localStorage.setItem('adminId', response.data.admin.id);
-        localStorage.setItem('adminPermissions', JSON.stringify(response.data.admin.permissions || []));
+        localStorage.setItem(
+          'adminPermissions',
+          JSON.stringify(response.data.admin.permissions || [])
+        );
         apiHelpers.setAuthToken(response.data.token);
       }
 
@@ -252,7 +264,7 @@ class AuthService {
   // ==========================================
   // COMMON AUTHENTICATION METHODS
   // ==========================================
-  
+
   /**
    * Logout
    */
@@ -260,12 +272,16 @@ class AuthService {
     try {
       const token = localStorage.getItem('token');
       const userRole = localStorage.getItem('userRole');
-      
+
       // Call logout endpoint
       if (token) {
-        await api.post('/auth/logout', {}, {
-          queueIfOffline: false // Don't queue logout requests
-        });
+        await api.post(
+          '/auth/logout',
+          {},
+          {
+            queueIfOffline: false, // Don't queue logout requests
+          }
+        );
       }
 
       // Unregister push notifications
@@ -280,9 +296,9 @@ class AuthService {
       // Clear all stored data except remember me
       const rememberMe = localStorage.getItem('rememberMe');
       const savedEmail = localStorage.getItem('savedEmail');
-      
+
       localStorage.clear();
-      
+
       if (rememberMe === 'true') {
         localStorage.setItem('rememberMe', 'true');
         localStorage.setItem('savedEmail', savedEmail);
@@ -316,22 +332,23 @@ class AuthService {
   async getCurrentUser() {
     try {
       const userRole = localStorage.getItem('userRole');
-      
+
       if (!userRole) {
         throw new Error('No user role found');
       }
 
-      const endpoint = userRole === 'admin' 
-        ? '/auth/admin/me'
-        : '/auth/me';
+      const endpoint = userRole === 'admin' ? '/auth/admin/me' : '/auth/me';
 
       const response = await api.get(endpoint);
-      
+
       // Update stored user info
       if (response.data) {
         localStorage.setItem('userId', response.data.id);
         if (userRole === 'creator') {
-          localStorage.setItem('creatorVerificationStatus', response.data.verificationStatus || 'pending');
+          localStorage.setItem(
+            'creatorVerificationStatus',
+            response.data.verificationStatus || 'pending'
+          );
         }
       }
 
@@ -347,19 +364,19 @@ class AuthService {
   async refreshToken() {
     try {
       const refreshToken = localStorage.getItem('refreshToken');
-      
+
       if (!refreshToken) {
         throw new Error('No refresh token available');
       }
 
       const response = await api.post('/auth/refresh', {
-        refreshToken
+        refreshToken,
       });
 
       // Update tokens
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
-        
+
         const userRole = localStorage.getItem('userRole');
         if (userRole === 'admin') {
           localStorage.setItem('adminToken', response.data.token);
@@ -368,11 +385,11 @@ class AuthService {
         } else {
           localStorage.setItem('memberToken', response.data.token);
         }
-        
+
         if (response.data.refreshToken) {
           localStorage.setItem('refreshToken', response.data.refreshToken);
         }
-        
+
         apiHelpers.setAuthToken(response.data.token);
       }
 
@@ -389,7 +406,7 @@ class AuthService {
     try {
       const response = await api.post('/auth/password/reset-request', {
         email,
-        userType
+        userType,
       });
       return response;
     } catch (error) {
@@ -405,7 +422,7 @@ class AuthService {
       const response = await api.post('/auth/password/reset', {
         token,
         newPassword,
-        confirmPassword
+        confirmPassword,
       });
       return response;
     } catch (error) {
@@ -421,7 +438,7 @@ class AuthService {
       const response = await api.post('/auth/password/change', {
         currentPassword,
         newPassword,
-        confirmPassword
+        confirmPassword,
       });
       return response;
     } catch (error) {
@@ -435,7 +452,7 @@ class AuthService {
   async verifyEmail(token) {
     try {
       const response = await api.post('/auth/email/verify', {
-        token
+        token,
       });
       return response;
     } catch (error) {
@@ -458,14 +475,14 @@ class AuthService {
   // ==========================================
   // SOCIAL AUTH
   // ==========================================
-  
+
   /**
    * Social login/register
    */
   async socialAuth(provider, userType = 'member') {
     try {
       // Redirect to social auth endpoint
-      const redirectUrl = `${import.meta.env.VITE_API_URL || 'https://sexyselfies-api.onrender.com/api/v1'}/auth/${userType}/social/${provider}`;
+      const redirectUrl = `${import.meta.env.VITE_API_URL || '/api/v1'}/auth/${userType}/social/${provider}`;
       window.location.href = redirectUrl;
     } catch (error) {
       throw this.handleAuthError(error);
@@ -477,9 +494,12 @@ class AuthService {
    */
   async handleSocialCallback(provider, code, userType = 'member') {
     try {
-      const response = await api.post(`/auth/${userType}/social/${provider}/callback`, {
-        code
-      });
+      const response = await api.post(
+        `/auth/${userType}/social/${provider}/callback`,
+        {
+          code,
+        }
+      );
 
       // Store tokens
       if (response.data.token) {
@@ -500,14 +520,15 @@ class AuthService {
   // ==========================================
   // BIOMETRIC AUTH (Mobile)
   // ==========================================
-  
+
   /**
    * Check biometric availability
    */
   async checkBiometricAvailability() {
     if ('credentials' in navigator && window.PublicKeyCredential) {
       try {
-        const available = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        const available =
+          await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
         return available;
       } catch (error) {
         console.error('Biometric check error:', error);
@@ -523,24 +544,24 @@ class AuthService {
   async enableBiometric() {
     try {
       const response = await api.post('/auth/biometric/enable');
-      
+
       if (response.data.challenge) {
         // Create credentials for biometric
         const credential = await navigator.credentials.create({
-          publicKey: response.data.challenge
+          publicKey: response.data.challenge,
         });
-        
+
         // Send credential to server
         const verifyResponse = await api.post('/auth/biometric/verify', {
           credentialId: credential.id,
           clientData: credential.response.clientDataJSON,
-          attestation: credential.response.attestationObject
+          attestation: credential.response.attestationObject,
         });
-        
+
         if (verifyResponse.success) {
           localStorage.setItem('biometricEnabled', 'true');
         }
-        
+
         return verifyResponse;
       }
     } catch (error) {
@@ -551,26 +572,26 @@ class AuthService {
   // ==========================================
   // PUSH NOTIFICATIONS
   // ==========================================
-  
+
   /**
    * Register for push notifications
    */
   async registerPushNotifications() {
     try {
       const registration = await navigator.serviceWorker.ready;
-      
+
       // Check if already subscribed
       let subscription = await registration.pushManager.getSubscription();
-      
+
       if (!subscription) {
         // Get public key from server
         const response = await api.get('/auth/push/public-key');
         const publicKey = response.data.publicKey;
-        
+
         // Subscribe to push notifications
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: this.urlBase64ToUint8Array(publicKey)
+          applicationServerKey: this.urlBase64ToUint8Array(publicKey),
         });
       }
 
@@ -579,8 +600,8 @@ class AuthService {
         subscription: subscription.toJSON(),
         deviceInfo: {
           platform: navigator.platform,
-          userAgent: navigator.userAgent
-        }
+          userAgent: navigator.userAgent,
+        },
       });
 
       return true;
@@ -593,7 +614,7 @@ class AuthService {
   // ==========================================
   // HELPER METHODS
   // ==========================================
-  
+
   /**
    * Check if user is authenticated
    */
@@ -622,51 +643,53 @@ class AuthService {
   handleAuthError(error) {
     if (error.response) {
       const { status, data } = error.response;
-      
+
       switch (status) {
         case 400:
           console.error('Backend 400 error details:', data);
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: data.message || data.error || 'Invalid request',
             errors: data.errors || {},
-            details: data
+            details: data,
           };
         case 401:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: data.error || 'Invalid credentials',
-            code: 'INVALID_CREDENTIALS'
+            code: 'INVALID_CREDENTIALS',
           };
         case 403:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Access forbidden',
-            code: 'FORBIDDEN'
+            code: 'FORBIDDEN',
           };
         case 422:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Validation failed',
-            errors: data.errors || {}
+            errors: data.errors || {},
           };
         case 429:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Too many attempts. Please try again later.',
-            code: 'RATE_LIMITED'
+            code: 'RATE_LIMITED',
           };
         default:
-          return { 
-            error: true, 
-            message: data.error || data.message || 'An error occurred'
+          return {
+            error: true,
+            message: data.error || data.message || 'An error occurred',
           };
       }
     }
-    
-    return { 
-      error: true, 
-      message: error.message || 'Invalid email or password. Please check your credentials and try again.'
+
+    return {
+      error: true,
+      message:
+        error.message ||
+        'Invalid email or password. Please check your credentials and try again.',
     };
   }
 
@@ -674,7 +697,7 @@ class AuthService {
    * Convert base64 to Uint8Array for push notifications
    */
   urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
       .replace(/\-/g, '+')
       .replace(/_/g, '/');

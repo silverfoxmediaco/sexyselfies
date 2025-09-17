@@ -8,7 +8,7 @@ const {
   getVerificationStatus,
   getPendingVerifications,
   approveVerification,
-  rejectVerification
+  rejectVerification,
 } = require('../controllers/verification.controller');
 
 // Protected routes - Creators

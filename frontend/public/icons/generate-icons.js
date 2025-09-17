@@ -56,15 +56,17 @@ const iconSizes = [
 
   // Badge Icon (for notifications)
   { size: 72, name: 'badge-72x72.png' },
-  { size: 128, name: 'badge-128x128.png' }
+  { size: 128, name: 'badge-128x128.png' },
 ];
 
 async function generateIcons() {
   const baseIconPath = path.join(__dirname, 'base-icon.png');
-  
+
   // Check if base icon exists
   if (!fs.existsSync(baseIconPath)) {
-    console.error('Base icon (base-icon.png) not found! Please add a 1024x1024 PNG image.');
+    console.error(
+      'Base icon (base-icon.png) not found! Please add a 1024x1024 PNG image.'
+    );
     return;
   }
 
@@ -72,32 +74,29 @@ async function generateIcons() {
 
   for (const config of iconSizes) {
     try {
-      let pipeline = sharp(baseIconPath)
-        .resize(config.size, config.size, {
-          fit: 'contain',
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
-        });
+      let pipeline = sharp(baseIconPath).resize(config.size, config.size, {
+        fit: 'contain',
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      });
 
       // Add padding for maskable icons
       if (config.maskable) {
         const padding = Math.floor(config.size * 0.1);
         pipeline = sharp(baseIconPath)
-          .resize(config.size - (padding * 2), config.size - (padding * 2), {
+          .resize(config.size - padding * 2, config.size - padding * 2, {
             fit: 'contain',
-            background: { r: 0, g: 0, b: 0, alpha: 0 }
+            background: { r: 0, g: 0, b: 0, alpha: 0 },
           })
           .extend({
             top: padding,
             bottom: padding,
             left: padding,
             right: padding,
-            background: { r: 0, g: 0, b: 0, alpha: 0 }
+            background: { r: 0, g: 0, b: 0, alpha: 0 },
           });
       }
 
-      await pipeline
-        .png()
-        .toFile(path.join(__dirname, config.name));
+      await pipeline.png().toFile(path.join(__dirname, config.name));
 
       console.log(`✅ Generated ${config.name}`);
     } catch (error) {

@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { 
-  Menu, X, LogOut,
-  Home, Camera, DollarSign, TrendingUp, 
-  Settings, User, Bell, MessageCircle,
-  Users, Grid3x3, CreditCard, BarChart3,
-  Zap, Shield, Heart
+import {
+  Menu,
+  X,
+  LogOut,
+  Home,
+  Camera,
+  DollarSign,
+  TrendingUp,
+  Settings,
+  User,
+  Bell,
+  MessageCircle,
+  Users,
+  Grid3x3,
+  CreditCard,
+  BarChart3,
+  Zap,
+  Shield,
+  Heart,
 } from 'lucide-react';
 import authService from '../services/auth.service';
 import './CreatorMainHeader.css';
@@ -16,13 +29,13 @@ const CreatorMainHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Get user info from localStorage
   const userRole = localStorage.getItem('userRole');
   const token = localStorage.getItem('token');
   const isLoggedIn = !!token;
   const creatorName = localStorage.getItem('displayName') || 'Creator';
-  
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
@@ -64,35 +77,37 @@ const CreatorMainHeader = () => {
     { label: 'Payments', path: '/creator/payments', icon: CreditCard },
   ];
 
-  const isActivePath = (path) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+  const isActivePath = path => {
+    return (
+      location.pathname === path || location.pathname.startsWith(path + '/')
+    );
   };
 
   return (
     <>
       {/* Top Navigation Bar */}
       <header className={`creator-main-header ${scrolled ? 'scrolled' : ''}`}>
-        <div className="creator-header-container">
+        <div className='creator-header-container'>
           {/* Logo */}
-          <div className="creator-header-logo">
-            <Link to="/creator/dashboard">
-              <img src={logo} alt="SexySelfies" />
+          <div className='creator-header-logo'>
+            <Link to='/creator/dashboard'>
+              <img src={logo} alt='SexySelfies' />
             </Link>
           </div>
 
           {/* Right Side Actions */}
-          <div className="creator-header-actions">
+          <div className='creator-header-actions'>
             {/* Notifications */}
-            <button className="creator-notification-btn">
+            <button className='creator-notification-btn'>
               <Bell size={20} />
-              <span className="creator-notification-badge">3</span>
+              <span className='creator-notification-badge'>3</span>
             </button>
 
             {/* Hamburger Menu Button */}
-            <button 
-              className="creator-hamburger-menu"
+            <button
+              className='creator-hamburger-menu'
               onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Toggle menu"
+              aria-label='Toggle menu'
             >
               {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -102,41 +117,47 @@ const CreatorMainHeader = () => {
 
       {/* Right Slide-Out Menu Overlay */}
       {menuOpen && (
-        <div className="creator-menu-overlay" onClick={() => setMenuOpen(false)}>
-          <div className="creator-slide-menu" onClick={(e) => e.stopPropagation()}>
+        <div
+          className='creator-menu-overlay'
+          onClick={() => setMenuOpen(false)}
+        >
+          <div
+            className='creator-slide-menu'
+            onClick={e => e.stopPropagation()}
+          >
             {/* Close Button */}
-            <button 
-              className="creator-close-btn" 
+            <button
+              className='creator-close-btn'
               onClick={() => setMenuOpen(false)}
-              aria-label="Close menu"
+              aria-label='Close menu'
             >
               <X size={24} />
             </button>
 
             {/* User Info Section */}
-            <div className="creator-user-info-section">
-              <div className="creator-user-avatar">
+            <div className='creator-user-info-section'>
+              <div className='creator-user-avatar'>
                 <User size={24} />
               </div>
-              <div className="creator-user-details">
-                <span className="creator-user-name">{creatorName}</span>
-                <span className="creator-user-role">Creator</span>
+              <div className='creator-user-details'>
+                <span className='creator-user-name'>{creatorName}</span>
+                <span className='creator-user-role'>Creator</span>
               </div>
             </div>
 
             {/* Main Navigation Links */}
-            <div className="creator-nav-section">
-              <h3 className="creator-nav-section-title">Navigation</h3>
-              <div className="creator-nav-links">
-                {creatorNavItems.map((item) => {
+            <div className='creator-nav-section'>
+              <h3 className='creator-nav-section-title'>Navigation</h3>
+              <div className='creator-nav-links'>
+                {creatorNavItems.map(item => {
                   const Icon = item.icon;
                   return (
-                    <Link 
+                    <Link
                       key={item.path}
                       to={item.path}
                       className={`creator-nav-link ${isActivePath(item.path) ? 'active' : ''}`}
                     >
-                      <Icon className="creator-nav-icon" size={20} />
+                      <Icon className='creator-nav-icon' size={20} />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -145,18 +166,18 @@ const CreatorMainHeader = () => {
             </div>
 
             {/* Profile & Settings Section */}
-            <div className="creator-nav-section">
-              <h3 className="creator-nav-section-title">Account</h3>
-              <div className="creator-nav-links">
-                {profileNavItems.map((item) => {
+            <div className='creator-nav-section'>
+              <h3 className='creator-nav-section-title'>Account</h3>
+              <div className='creator-nav-links'>
+                {profileNavItems.map(item => {
                   const Icon = item.icon;
                   return (
-                    <Link 
+                    <Link
                       key={item.path}
                       to={item.path}
                       className={`creator-nav-link ${isActivePath(item.path) ? 'active' : ''}`}
                     >
-                      <Icon className="creator-nav-icon" size={20} />
+                      <Icon className='creator-nav-icon' size={20} />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -165,8 +186,8 @@ const CreatorMainHeader = () => {
             </div>
 
             {/* Logout Section */}
-            <div className="creator-logout-section">
-              <button onClick={handleLogout} className="creator-logout-btn">
+            <div className='creator-logout-section'>
+              <button onClick={handleLogout} className='creator-logout-btn'>
                 <LogOut size={20} />
                 <span>Sign Out</span>
               </button>

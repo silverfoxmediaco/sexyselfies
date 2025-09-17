@@ -8,13 +8,13 @@ const Connection = require('../models/Connections');
 // @access  Public
 exports.getCreators = async (req, res, next) => {
   try {
-    const { 
-      page = 1, 
-      limit = 20, 
+    const {
+      page = 1,
+      limit = 20,
       sortBy = 'lastActive',
       isVerified,
       minPrice,
-      maxPrice 
+      maxPrice,
     } = req.query;
 
     const query = { isPaused: false };
@@ -42,12 +42,12 @@ exports.getCreators = async (req, res, next) => {
       total: count,
       pages: Math.ceil(count / limit),
       currentPage: page,
-      data: creators
+      data: creators,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -57,24 +57,26 @@ exports.getCreators = async (req, res, next) => {
 // @access  Public
 exports.getCreator = async (req, res, next) => {
   try {
-    const creator = await Creator.findById(req.params.id)
-      .populate('user', 'email lastLogin');
+    const creator = await Creator.findById(req.params.id).populate(
+      'user',
+      'email lastLogin'
+    );
 
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator not found'
+        error: 'Creator not found',
       });
     }
 
     res.status(200).json({
       success: true,
-      data: creator
+      data: creator,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -89,7 +91,7 @@ exports.updateCreatorProfile = async (req, res, next) => {
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator profile not found'
+        error: 'Creator profile not found',
       });
     }
 
@@ -98,18 +100,18 @@ exports.updateCreatorProfile = async (req, res, next) => {
       req.body,
       {
         new: true,
-        runValidators: true
+        runValidators: true,
       }
     );
 
     res.status(200).json({
       success: true,
-      data: updatedCreator
+      data: updatedCreator,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -124,23 +126,23 @@ exports.uploadContent = async (req, res, next) => {
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator profile not found'
+        error: 'Creator profile not found',
       });
     }
 
     const content = await Content.create({
       creator: creator._id,
-      ...req.body
+      ...req.body,
     });
 
     res.status(201).json({
       success: true,
-      data: content
+      data: content,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -150,21 +152,20 @@ exports.uploadContent = async (req, res, next) => {
 // @access  Public
 exports.getCreatorContent = async (req, res, next) => {
   try {
-    const content = await Content.find({ 
+    const content = await Content.find({
       creator: req.params.id,
-      isActive: true 
-    })
-    .sort({ createdAt: -1 });
+      isActive: true,
+    }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
       count: content.length,
-      data: content
+      data: content,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -175,16 +176,16 @@ exports.getCreatorContent = async (req, res, next) => {
 exports.deleteContent = async (req, res, next) => {
   try {
     const creator = await Creator.findOne({ user: req.user.id });
-    
+
     const content = await Content.findOne({
       _id: req.params.contentId,
-      creator: creator._id
+      creator: creator._id,
     });
 
     if (!content) {
       return res.status(404).json({
         success: false,
-        error: 'Content not found'
+        error: 'Content not found',
       });
     }
 
@@ -193,12 +194,12 @@ exports.deleteContent = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: {}
+      data: {},
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -210,13 +211,13 @@ exports.getCreatorStats = async (req, res, next) => {
   try {
     const creator = await Creator.findOne({ user: req.user.id });
 
-    const totalContent = await Content.countDocuments({ 
-      creator: creator._id 
+    const totalContent = await Content.countDocuments({
+      creator: creator._id,
     });
 
-    const totalConnections = await Connection.countDocuments({ 
+    const totalConnections = await Connection.countDocuments({
       creator: creator._id,
-      isConnected: true 
+      isConnected: true,
     });
 
     const thirtyDaysAgo = new Date();
@@ -227,15 +228,15 @@ exports.getCreatorStats = async (req, res, next) => {
         $match: {
           creator: creator._id,
           status: 'completed',
-          createdAt: { $gte: thirtyDaysAgo }
-        }
+          createdAt: { $gte: thirtyDaysAgo },
+        },
       },
       {
         $group: {
           _id: null,
-          total: { $sum: '$creatorEarnings' }
-        }
-      }
+          total: { $sum: '$creatorEarnings' },
+        },
+      },
     ]);
 
     res.status(200).json({
@@ -244,13 +245,13 @@ exports.getCreatorStats = async (req, res, next) => {
         totalContent,
         totalConnections,
         monthlyEarnings: monthlyEarnings[0]?.total || 0,
-        ...creator.stats
-      }
+        ...creator.stats,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -264,22 +265,25 @@ exports.getEarnings = async (req, res, next) => {
 
     const earnings = await Transaction.find({
       creator: creator._id,
-      status: 'completed'
+      status: 'completed',
     })
-    .sort({ createdAt: -1 })
-    .limit(100);
+      .sort({ createdAt: -1 })
+      .limit(100);
 
-    const totalEarnings = earnings.reduce((sum, t) => sum + t.creatorEarnings, 0);
+    const totalEarnings = earnings.reduce(
+      (sum, t) => sum + t.creatorEarnings,
+      0
+    );
 
     res.status(200).json({
       success: true,
       total: totalEarnings,
-      data: earnings
+      data: earnings,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -296,7 +300,7 @@ exports.requestPayout = async (req, res, next) => {
     if (creator.stats.totalEarnings < amount) {
       return res.status(400).json({
         success: false,
-        error: 'Insufficient balance'
+        error: 'Insufficient balance',
       });
     }
 
@@ -306,17 +310,17 @@ exports.requestPayout = async (req, res, next) => {
       type: 'payout',
       amount,
       paymentMethod: method,
-      status: 'pending'
+      status: 'pending',
     });
 
     res.status(201).json({
       success: true,
-      data: payout
+      data: payout,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -326,47 +330,56 @@ exports.requestPayout = async (req, res, next) => {
 // @access  Public
 exports.getPublicProfile = async (req, res, next) => {
   try {
-    const creator = await Creator.findOne({ 
+    const creator = await Creator.findOne({
       username: req.params.username,
-      isPaused: false 
+      isPaused: false,
     })
-    .populate('user', 'lastLogin')
-    .select('-stats.totalEarnings -stats.monthlyEarnings');
+      .populate('user', 'lastLogin')
+      .select('-stats.totalEarnings -stats.monthlyEarnings');
 
     if (!creator) {
       return res.status(404).json({
         success: false,
-        error: 'Creator not found'
+        error: 'Creator not found',
       });
     }
 
     res.status(200).json({
       success: true,
-      data: creator
+      data: creator,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
 
 // Placeholder functions for routes that don't have implementation yet
 exports.getSubscriptionStatus = async (req, res) => {
-  res.status(501).json({ message: 'Subscription feature not implemented - using pay-per-content model' });
+  res.status(501).json({
+    message:
+      'Subscription feature not implemented - using pay-per-content model',
+  });
 };
 
 exports.getAvailablePlans = async (req, res) => {
-  res.status(501).json({ message: 'No subscription plans - using pay-per-content model' });
+  res
+    .status(501)
+    .json({ message: 'No subscription plans - using pay-per-content model' });
 };
 
 exports.upgradeSubscription = async (req, res) => {
-  res.status(501).json({ message: 'No subscriptions to upgrade - using pay-per-content model' });
+  res.status(501).json({
+    message: 'No subscriptions to upgrade - using pay-per-content model',
+  });
 };
 
 exports.cancelSubscription = async (req, res) => {
-  res.status(501).json({ message: 'No subscriptions to cancel - using pay-per-content model' });
+  res.status(501).json({
+    message: 'No subscriptions to cancel - using pay-per-content model',
+  });
 };
 
 exports.getNotifications = async (req, res) => {
@@ -378,7 +391,9 @@ exports.markNotificationAsRead = async (req, res) => {
 };
 
 exports.updateNotificationPreferences = async (req, res) => {
-  res.status(501).json({ message: 'Notification preferences feature coming soon' });
+  res
+    .status(501)
+    .json({ message: 'Notification preferences feature coming soon' });
 };
 
 exports.getTrendingCreators = async (req, res) => {

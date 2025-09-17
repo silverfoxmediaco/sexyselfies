@@ -53,7 +53,7 @@
 .stat-item strong {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #17D2C2;
+  color: #17d2c2;
 }
 
 .stat-item span {
@@ -80,7 +80,7 @@
 }
 
 .social-link:hover {
-  background: #17D2C2;
+  background: #17d2c2;
   color: white;
   transform: translateY(-2px);
 }
@@ -97,7 +97,7 @@
   font-weight: 600;
   color: #f9fafb;
   margin: 0 0 1rem 0;
-  border-bottom: 2px solid #17D2C2;
+  border-bottom: 2px solid #17d2c2;
   padding-bottom: 0.5rem;
 }
 
@@ -121,13 +121,13 @@
 }
 
 .footer-section li a:hover {
-  color: #17D2C2;
+  color: #17d2c2;
   transform: translateX(4px);
 }
 
 /* Creator CTA Section */
 .creator-cta-section {
-  background: linear-gradient(135deg, #17D2C2 0%, #12B7AB 100%);
+  background: linear-gradient(135deg, #17d2c2 0%, #12b7ab 100%);
   padding: 2rem;
   border-radius: 16px;
   margin: 2rem 0;
@@ -166,7 +166,7 @@
 
 .cta-btn.primary {
   background: white;
-  color: #17D2C2;
+  color: #17d2c2;
 }
 
 .cta-btn.primary:hover {
@@ -218,7 +218,7 @@
 }
 
 .footer-bottom-links a:hover {
-  color: #17D2C2;
+  color: #17d2c2;
 }
 
 /* Responsive Design */
@@ -226,21 +226,21 @@
   .footer-container {
     padding: 0 1rem;
   }
-  
+
   .footer-content {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  
+
   .footer-links {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .cta-buttons {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .cta-btn {
     width: 100%;
     max-width: 280px;
@@ -252,33 +252,33 @@
   .footer-content {
     padding: 2rem 0;
   }
-  
+
   .footer-links {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .creator-footer-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
   }
-  
+
   .footer-bottom-content {
     flex-direction: column;
     text-align: center;
     gap: 1rem;
   }
-  
+
   .footer-bottom-links {
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .cta-content h3 {
     font-size: 1.25rem;
   }
-  
+
   .cta-content p {
     font-size: 1rem;
   }
@@ -288,20 +288,20 @@
   .footer-container {
     padding: 0 1rem;
   }
-  
+
   .footer-content {
     padding: 1.5rem 0;
   }
-  
+
   .creator-cta-section {
     padding: 1.5rem;
     margin: 1.5rem 0;
   }
-  
+
   .social-links {
     justify-content: center;
   }
-  
+
   .stat-item strong {
     font-size: 1.25rem;
   }
@@ -319,13 +319,14 @@
 .footer-section li a:focus,
 .cta-btn:focus,
 .footer-bottom-links a:focus {
-  outline: 2px solid #17D2C2;
+  outline: 2px solid #17d2c2;
   outline-offset: 2px;
 }
 
 /* Animation for hover effects */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

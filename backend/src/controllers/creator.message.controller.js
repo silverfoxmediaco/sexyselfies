@@ -11,21 +11,21 @@ exports.sendMessage = async (req, res) => {
   try {
     const creatorId = req.user.id;
     const { connectionId, content, mediaType, mediaUrl, price } = req.body;
-    
+
     // Verify connection exists and is active
     const connection = await CreatorConnection.findOne({
       _id: connectionId,
       creator: creatorId,
-      status: 'connected'
+      status: 'connected',
     });
-    
+
     if (!connection) {
       return res.status(404).json({
         success: false,
-        message: 'Connection not found or not active'
+        message: 'Connection not found or not active',
       });
     }
-    
+
     // Create message
     const message = new CreatorMessage({
       creator: creatorId,
@@ -33,46 +33,53 @@ exports.sendMessage = async (req, res) => {
       connection: connectionId,
       content: {
         text: content,
-        media: mediaUrl ? [{
-          type: mediaType,
-          url: mediaUrl,
-          thumbnail: mediaType === 'video' ? await generateVideoThumbnail(mediaUrl) : null
-        }] : []
+        media: mediaUrl
+          ? [
+              {
+                type: mediaType,
+                url: mediaUrl,
+                thumbnail:
+                  mediaType === 'video'
+                    ? await generateVideoThumbnail(mediaUrl)
+                    : null,
+              },
+            ]
+          : [],
       },
       type: price > 0 ? 'paid' : 'free',
       pricing: {
         isPaid: price > 0,
         price: price || 0,
-        currency: 'USD'
+        currency: 'USD',
       },
       metadata: {
         connectionContext: connection.context,
-        memberTier: connection.relationship.memberScore.tier
-      }
+        memberTier: connection.relationship.memberScore.tier,
+      },
     });
-    
+
     await message.save();
-    
+
     // Update connection's last message info
     connection.lastMessageAt = new Date();
     connection.messageCount += 1;
     await connection.save();
-    
+
     // Send notification to member
     await sendMessageNotification(connection.member, creatorId, message);
-    
+
     // Populate creator info for response
     await message.populate('creator', 'username profileImage');
-    
+
     res.json({
       success: true,
-      message: message
+      message: message,
     });
   } catch (error) {
     console.error('Send message error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error sending message'
+      message: 'Error sending message',
     });
   }
 };
@@ -83,31 +90,31 @@ exports.getMessages = async (req, res) => {
     const creatorId = req.user.id;
     const { connectionId } = req.params;
     const { page = 1, limit = 50 } = req.query;
-    
+
     // Verify connection belongs to creator
     const connection = await CreatorConnection.findOne({
       _id: connectionId,
-      creator: creatorId
+      creator: creatorId,
     });
-    
+
     if (!connection) {
       return res.status(404).json({
         success: false,
-        message: 'Connection not found'
+        message: 'Connection not found',
       });
     }
-    
+
     const messages = await CreatorMessage.find({
       creator: creatorId,
       member: connection.member,
-      connection: connectionId
+      connection: connectionId,
     })
       .sort('-createdAt')
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .populate('member', 'username profileImage')
       .populate('creator', 'username profileImage');
-    
+
     // Mark messages as read
     await CreatorMessage.updateMany(
       {
@@ -115,28 +122,28 @@ exports.getMessages = async (req, res) => {
         member: connection.member,
         connection: connectionId,
         'status.read': false,
-        sender: 'member'
+        sender: 'member',
       },
       {
         'status.read': true,
-        'status.readAt': new Date()
+        'status.readAt': new Date(),
       }
     );
-    
+
     res.json({
       success: true,
       messages,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        hasMore: messages.length === parseInt(limit)
-      }
+        hasMore: messages.length === parseInt(limit),
+      },
     });
   } catch (error) {
     console.error('Get messages error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching messages'
+      message: 'Error fetching messages',
     });
   }
 };
@@ -146,21 +153,23 @@ exports.getMessageThreads = async (req, res) => {
   try {
     const creatorId = req.user.id;
     const { filter = 'all', page = 1, limit = 20 } = req.query;
-    
+
     // Build connection query based on filter
     let connectionQuery = {
       creator: creatorId,
-      status: 'connected'
+      status: 'connected',
     };
-    
+
     if (filter === 'unread') {
       connectionQuery.hasUnreadMessages = true;
     } else if (filter === 'paid') {
       connectionQuery['monetization.totalRevenue'] = { $gt: 0 };
     } else if (filter === 'vip') {
-      connectionQuery['relationship.memberScore.tier'] = { $in: ['vip', 'whale'] };
+      connectionQuery['relationship.memberScore.tier'] = {
+        $in: ['vip', 'whale'],
+      };
     }
-    
+
     // Get connections with messages
     const connections = await CreatorConnection.find(connectionQuery)
       .sort('-lastMessageAt')
@@ -168,26 +177,26 @@ exports.getMessageThreads = async (req, res) => {
       .skip((page - 1) * limit)
       .populate('member', 'username profileImage lastActive')
       .lean();
-    
+
     // Get last message for each thread
     const threads = await Promise.all(
-      connections.map(async (connection) => {
+      connections.map(async connection => {
         const lastMessage = await CreatorMessage.findOne({
           creator: creatorId,
           member: connection.member._id,
-          connection: connection._id
+          connection: connection._id,
         })
           .sort('-createdAt')
           .lean();
-        
+
         const unreadCount = await CreatorMessage.countDocuments({
           creator: creatorId,
           member: connection.member._id,
           connection: connection._id,
           sender: 'member',
-          'status.read': false
+          'status.read': false,
         });
-        
+
         return {
           connection: connection,
           lastMessage,
@@ -196,26 +205,26 @@ exports.getMessageThreads = async (req, res) => {
             ...connection.member,
             isOnline: isUserOnline(connection.member.lastActive),
             tier: connection.relationship.memberScore.tier,
-            totalSpent: connection.monetization.totalRevenue
-          }
+            totalSpent: connection.monetization.totalRevenue,
+          },
         };
       })
     );
-    
+
     res.json({
       success: true,
       threads,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        hasMore: connections.length === parseInt(limit)
-      }
+        hasMore: connections.length === parseInt(limit),
+      },
     });
   } catch (error) {
     console.error('Get message threads error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching message threads'
+      message: 'Error fetching message threads',
     });
   }
 };
@@ -225,56 +234,58 @@ exports.sendBulkMessage = async (req, res) => {
   try {
     const creatorId = req.user.id;
     const { connectionIds, content, mediaUrl, mediaType, segment } = req.body;
-    
+
     // Get target connections
     let targetConnections;
-    
+
     if (connectionIds && connectionIds.length > 0) {
       // Specific connections
       targetConnections = await CreatorConnection.find({
         _id: { $in: connectionIds },
         creator: creatorId,
-        status: 'connected'
+        status: 'connected',
       });
     } else if (segment) {
       // Segment-based targeting
       let segmentQuery = {
         creator: creatorId,
-        status: 'connected'
+        status: 'connected',
       };
-      
+
       if (segment === 'vip') {
-        segmentQuery['relationship.memberScore.tier'] = { $in: ['vip', 'whale'] };
+        segmentQuery['relationship.memberScore.tier'] = {
+          $in: ['vip', 'whale'],
+        };
       } else if (segment === 'active') {
-        segmentQuery['engagement.lastActiveAt'] = { 
-          $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) 
+        segmentQuery['engagement.lastActiveAt'] = {
+          $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
         };
       } else if (segment === 'paying') {
         segmentQuery['monetization.totalRevenue'] = { $gt: 0 };
       }
-      
+
       targetConnections = await CreatorConnection.find(segmentQuery);
     } else {
       return res.status(400).json({
         success: false,
-        message: 'No recipients specified'
+        message: 'No recipients specified',
       });
     }
-    
+
     // Check bulk message limits
     const creator = await CreatorProfile.findOne({ creator: creatorId });
     const dailyLimit = creator?.subscription?.tier === 'premium' ? 500 : 100;
-    
+
     if (targetConnections.length > dailyLimit) {
       return res.status(400).json({
         success: false,
-        message: `Bulk message limit exceeded. Maximum ${dailyLimit} recipients per day.`
+        message: `Bulk message limit exceeded. Maximum ${dailyLimit} recipients per day.`,
       });
     }
-    
+
     // Send messages
     const results = await Promise.all(
-      targetConnections.map(async (connection) => {
+      targetConnections.map(async connection => {
         try {
           const message = new CreatorMessage({
             creator: creatorId,
@@ -282,54 +293,65 @@ exports.sendBulkMessage = async (req, res) => {
             connection: connection._id,
             content: {
               text: personalizeMessage(content, connection),
-              media: mediaUrl ? [{
-                type: mediaType,
-                url: mediaUrl
-              }] : []
+              media: mediaUrl
+                ? [
+                    {
+                      type: mediaType,
+                      url: mediaUrl,
+                    },
+                  ]
+                : [],
             },
             type: 'bulk',
             metadata: {
               isBulk: true,
               bulkSegment: segment,
-              connectionContext: connection.context
-            }
+              connectionContext: connection.context,
+            },
           });
-          
+
           await message.save();
-          
+
           // Update connection
           connection.lastMessageAt = new Date();
           connection.messageCount += 1;
           await connection.save();
-          
+
           // Send notification
           await sendMessageNotification(connection.member, creatorId, message);
-          
+
           return { success: true, connectionId: connection._id };
         } catch (error) {
-          console.error(`Failed to send to connection ${connection._id}:`, error);
-          return { success: false, connectionId: connection._id, error: error.message };
+          console.error(
+            `Failed to send to connection ${connection._id}:`,
+            error
+          );
+          return {
+            success: false,
+            connectionId: connection._id,
+            error: error.message,
+          };
         }
       })
     );
-    
+
     const successCount = results.filter(r => r.success).length;
     const failedCount = results.filter(r => !r.success).length;
-    
+
     res.json({
       success: true,
       message: `Bulk message sent to ${successCount} members`,
       results: {
         sent: successCount,
         failed: failedCount,
-        details: results
-      }
+        details: results,
+      },
     });
   } catch (error) {
     console.error('Send bulk message error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error sending bulk message'
+      message: 'Error sending bulk message',
     });
   }
 };
@@ -339,36 +361,36 @@ exports.markAsRead = async (req, res) => {
   try {
     const creatorId = req.user.id;
     const { messageId } = req.params;
-    
+
     const message = await CreatorMessage.findOneAndUpdate(
       {
         _id: messageId,
         creator: creatorId,
-        'status.read': false
+        'status.read': false,
       },
       {
         'status.read': true,
-        'status.readAt': new Date()
+        'status.readAt': new Date(),
       },
       { new: true }
     );
-    
+
     if (!message) {
       return res.status(404).json({
         success: false,
-        message: 'Message not found or already read'
+        message: 'Message not found or already read',
       });
     }
-    
+
     res.json({
       success: true,
-      message: 'Message marked as read'
+      message: 'Message marked as read',
     });
   } catch (error) {
     console.error('Mark as read error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error marking message as read'
+      message: 'Error marking message as read',
     });
   }
 };
@@ -378,33 +400,33 @@ exports.deleteMessage = async (req, res) => {
   try {
     const creatorId = req.user.id;
     const { messageId } = req.params;
-    
+
     const message = await CreatorMessage.findOne({
       _id: messageId,
-      creator: creatorId
+      creator: creatorId,
     });
-    
+
     if (!message) {
       return res.status(404).json({
         success: false,
-        message: 'Message not found'
+        message: 'Message not found',
       });
     }
-    
+
     // Soft delete
     message.status.deleted = true;
     message.status.deletedAt = new Date();
     await message.save();
-    
+
     res.json({
       success: true,
-      message: 'Message deleted'
+      message: 'Message deleted',
     });
   } catch (error) {
     console.error('Delete message error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error deleting message'
+      message: 'Error deleting message',
     });
   }
 };
@@ -414,11 +436,13 @@ exports.getMessageAnalytics = async (req, res) => {
   try {
     const creatorId = req.user.id;
     const { period = '7d' } = req.query;
-    
+
     // Check if creator has any messages or connections
-    const hasMessages = await CreatorMessage.countDocuments({ creator: creatorId }) > 0;
-    const hasConnections = await CreatorConnection.countDocuments({ creator: creatorId }) > 0;
-    
+    const hasMessages =
+      (await CreatorMessage.countDocuments({ creator: creatorId })) > 0;
+    const hasConnections =
+      (await CreatorConnection.countDocuments({ creator: creatorId })) > 0;
+
     // Return default analytics for new creators
     if (!hasMessages && !hasConnections) {
       return res.json({
@@ -436,80 +460,80 @@ exports.getMessageAnalytics = async (req, res) => {
           trends: {
             messages: [],
             revenue: [],
-            purchases: []
+            purchases: [],
           },
           insights: [
             {
               type: 'getting_started',
               message: 'Connect with members to start messaging',
-              action: 'Browse members to connect with'
-            }
-          ]
-        }
+              action: 'Browse members to connect with',
+            },
+          ],
+        },
       });
     }
-    
+
     const startDate = getStartDate(period);
-    
+
     // Get message stats
     const totalMessages = await CreatorMessage.countDocuments({
       creator: creatorId,
-      createdAt: { $gte: startDate }
+      createdAt: { $gte: startDate },
     });
-    
+
     const paidMessages = await CreatorMessage.countDocuments({
       creator: creatorId,
       'pricing.isPaid': true,
-      createdAt: { $gte: startDate }
+      createdAt: { $gte: startDate },
     });
-    
+
     const purchasedMessages = await CreatorMessage.countDocuments({
       creator: creatorId,
       'pricing.isPaid': true,
       'purchase.status': 'unlocked',
-      createdAt: { $gte: startDate }
+      createdAt: { $gte: startDate },
     });
-    
+
     // Get revenue from messages
     const messageRevenue = await CreatorMessage.aggregate([
       {
         $match: {
-          creator: mongoose.Types.ObjectId(creatorId),
+          creator: new mongoose.Types.ObjectId(creatorId),
           'pricing.isPaid': true,
           'purchase.status': 'unlocked',
-          createdAt: { $gte: startDate }
-        }
+          createdAt: { $gte: startDate },
+        },
       },
       {
         $group: {
           _id: null,
           total: { $sum: '$pricing.price' },
-          count: { $sum: 1 }
-        }
-      }
+          count: { $sum: 1 },
+        },
+      },
     ]);
-    
+
     // Get response rates
     const sentByCreator = await CreatorMessage.countDocuments({
       creator: creatorId,
       sender: 'creator',
-      createdAt: { $gte: startDate }
+      createdAt: { $gte: startDate },
     });
-    
+
     const responses = await CreatorMessage.countDocuments({
       creator: creatorId,
       sender: 'member',
       'metadata.isResponse': true,
-      createdAt: { $gte: startDate }
+      createdAt: { $gte: startDate },
     });
-    
+
     // Get top conversations
     const topConversations = await CreatorMessage.aggregate([
       {
         $match: {
-          creator: mongoose.Types.ObjectId(creatorId),
-          createdAt: { $gte: startDate }
-        }
+          creator: new mongoose.Types.ObjectId(creatorId),
+          createdAt: { $gte: startDate },
+        },
       },
       {
         $group: {
@@ -520,21 +544,21 @@ exports.getMessageAnalytics = async (req, res) => {
               $cond: [
                 { $eq: ['$purchase.isPurchased', true] },
                 '$pricing.price',
-                0
-              ]
-            }
+                0,
+              ],
+            },
           },
-          lastMessage: { $max: '$createdAt' }
-        }
+          lastMessage: { $max: '$createdAt' },
+        },
       },
       {
-        $sort: { revenue: -1 }
+        $sort: { revenue: -1 },
       },
       {
-        $limit: 10
-      }
+        $limit: 10,
+      },
     ]);
-    
+
     // Populate connection details
     const topConversationsWithDetails = await CreatorConnection.populate(
       topConversations,
@@ -542,56 +566,62 @@ exports.getMessageAnalytics = async (req, res) => {
         path: '_id',
         populate: {
           path: 'member',
-          select: 'username profileImage'
-        }
+          select: 'username profileImage',
+        },
       }
     );
-    
+
     const analytics = {
       overview: {
         totalMessages,
         paidMessages,
         purchasedMessages,
-        conversionRate: paidMessages > 0 ? 
-          ((purchasedMessages / paidMessages) * 100).toFixed(2) : 0,
+        conversionRate:
+          paidMessages > 0
+            ? ((purchasedMessages / paidMessages) * 100).toFixed(2)
+            : 0,
         revenue: messageRevenue[0]?.total || 0,
-        avgMessageValue: messageRevenue[0]?.count > 0 ?
-          (messageRevenue[0].total / messageRevenue[0].count).toFixed(2) : 0
+        avgMessageValue:
+          messageRevenue[0]?.count > 0
+            ? (messageRevenue[0].total / messageRevenue[0].count).toFixed(2)
+            : 0,
       },
-      
+
       engagement: {
         sentMessages: sentByCreator,
         receivedResponses: responses,
-        responseRate: sentByCreator > 0 ?
-          ((responses / sentByCreator) * 100).toFixed(2) : 0,
-        avgResponseTime: '2.5 hours' // Would calculate actual
+        responseRate:
+          sentByCreator > 0
+            ? ((responses / sentByCreator) * 100).toFixed(2)
+            : 0,
+        avgResponseTime: '2.5 hours', // Would calculate actual
       },
-      
+
       topConversations: topConversationsWithDetails.map(conv => ({
         connection: conv._id,
         member: conv._id?.member,
         messageCount: conv.messageCount,
         revenue: conv.revenue,
-        lastMessage: conv.lastMessage
+        lastMessage: conv.lastMessage,
       })),
-      
+
       trends: {
         daily: await getDailyMessageTrends(creatorId, startDate),
-        hourly: await getHourlyMessagePattern(creatorId)
+        hourly: await getHourlyMessagePattern(creatorId),
       },
-      
-      recommendations: generateMessageRecommendations(analytics)
+
+      recommendations: generateMessageRecommendations(analytics),
     };
-    
+
     res.json({
       success: true,
-      analytics
+      analytics,
     });
   } catch (error) {
     console.error('Get message analytics error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching message analytics'
+      message: 'Error fetching message analytics',
     });
   }
 };
@@ -600,38 +630,37 @@ exports.getMessageAnalytics = async (req, res) => {
 exports.uploadMessageMedia = async (req, res) => {
   try {
     const creatorId = req.user.id;
-    
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: 'No file uploaded'
+        message: 'No file uploaded',
       });
     }
-    
+
     // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: `creators/${creatorId}/messages`,
       resource_type: 'auto',
-      transformation: [
-        { quality: 'auto:good' },
-        { fetch_format: 'auto' }
-      ]
+      transformation: [{ quality: 'auto:good' }, { fetch_format: 'auto' }],
     });
-    
+
     res.json({
       success: true,
       media: {
         url: result.secure_url,
         type: result.resource_type,
-        thumbnail: result.resource_type === 'video' ? 
-          result.secure_url.replace(/\.[^/.]+$/, '.jpg') : null
-      }
+        thumbnail:
+          result.resource_type === 'video'
+            ? result.secure_url.replace(/\.[^/.]+$/, '.jpg')
+            : null,
+      },
     });
   } catch (error) {
     console.error('Upload message media error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error uploading media'
+      message: 'Error uploading media',
     });
   }
 };
@@ -651,25 +680,26 @@ async function generateVideoThumbnail(videoUrl) {
 
 async function sendMessageNotification(memberId, creatorId, message) {
   try {
-    const creator = await CreatorProfile.findOne({ creator: creatorId })
-      .select('displayName profileImage');
-    
+    const creator = await CreatorProfile.findOne({ creator: creatorId }).select(
+      'displayName profileImage'
+    );
+
     const notification = new Notification({
       recipient: memberId,
       type: 'message',
       title: `New message from ${creator.displayName}`,
-      message: message.content.text ? 
-        message.content.text.substring(0, 100) : 
-        'Sent you a photo',
+      message: message.content.text
+        ? message.content.text.substring(0, 100)
+        : 'Sent you a photo',
       data: {
         creatorId,
         messageId: message._id,
-        connectionId: message.connection
-      }
+        connectionId: message.connection,
+      },
     });
-    
+
     await notification.save();
-    
+
     // Send push notification if enabled
     // await sendPushNotification(memberId, notification);
   } catch (error) {
@@ -680,22 +710,25 @@ async function sendMessageNotification(memberId, creatorId, message) {
 function personalizeMessage(template, connection) {
   // Simple personalization
   let message = template;
-  
+
   if (connection.member?.username) {
     message = message.replace('{name}', connection.member.username);
   }
-  
+
   if (connection.relationship?.memberScore?.tier) {
-    message = message.replace('{tier}', connection.relationship.memberScore.tier);
+    message = message.replace(
+      '{tier}',
+      connection.relationship.memberScore.tier
+    );
   }
-  
+
   return message;
 }
 
 function getStartDate(period) {
   const now = new Date();
-  
-  switch(period) {
+
+  switch (period) {
     case '24h':
       return new Date(now - 24 * 60 * 60 * 1000);
     case '7d':
@@ -719,17 +752,21 @@ async function getHourlyMessagePattern(creatorId) {
 
 function generateMessageRecommendations(analytics) {
   const recommendations = [];
-  
+
   if (analytics?.overview?.conversionRate < 20) {
-    recommendations.push('Consider lowering message prices to increase conversions');
+    recommendations.push(
+      'Consider lowering message prices to increase conversions'
+    );
   }
-  
+
   if (analytics?.engagement?.responseRate < 50) {
-    recommendations.push('Send more engaging opening messages to increase responses');
+    recommendations.push(
+      'Send more engaging opening messages to increase responses'
+    );
   }
-  
+
   recommendations.push('Peak messaging hours are 7-10 PM');
-  
+
   return recommendations;
 }
 

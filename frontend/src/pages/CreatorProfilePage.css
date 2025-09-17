@@ -1,18 +1,18 @@
 /* CreatorProfilePage.css */
 .creator-profile-page {
-  --profile-primary: #FF1B6B;
-  --profile-primary-hover: #E91E63;
-  --profile-secondary: #45CAFF;
-  --profile-bg: #0A0B0F;
-  --profile-surface: #1A1D29;
+  --profile-primary: #ff1b6b;
+  --profile-primary-hover: #e91e63;
+  --profile-secondary: #45caff;
+  --profile-bg: #0a0b0f;
+  --profile-surface: #1a1d29;
   --profile-surface-hover: #242938;
-  --profile-border: #2A2F3F;
-  --profile-text: #FFFFFF;
-  --profile-text-secondary: #9CA3AF;
-  --profile-success: #10B981;
-  --profile-warning: #F59E0B;
-  --profile-error: #EF4444;
-  
+  --profile-border: #2a2f3f;
+  --profile-text: #ffffff;
+  --profile-text-secondary: #9ca3af;
+  --profile-success: #10b981;
+  --profile-warning: #f59e0b;
+  --profile-error: #ef4444;
+
   width: 100%;
   min-height: 100vh;
   background: var(--profile-bg);
@@ -27,7 +27,7 @@
     padding-left: 2rem;
     padding-right: 2rem;
   }
-  
+
   .profile-header {
     margin-top: 0; /* Remove extra margin on desktop */
   }
@@ -393,19 +393,19 @@
 }
 
 .stat-icon.views {
-  background: linear-gradient(135deg, #667EEA, #764BA2);
+  background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
 .stat-icon.matches {
-  background: linear-gradient(135deg, #FF1B6B, #45CAFF);
+  background: linear-gradient(135deg, #ff1b6b, #45caff);
 }
 
 .stat-icon.earnings {
-  background: linear-gradient(135deg, #10B981, #059669);
+  background: linear-gradient(135deg, #10b981, #059669);
 }
 
 .stat-icon.rating {
-  background: linear-gradient(135deg, #F59E0B, #D97706);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 .stat-content {
@@ -632,47 +632,47 @@
     padding: 12px;
     padding-bottom: 80px; /* Account for bottom navigation */
   }
-  
+
   .profile-card {
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
-  
+
   .profile-avatar {
     margin-bottom: 16px;
   }
-  
+
   .avatar-container,
   .avatar-placeholder {
     width: 100px;
     height: 100px;
   }
-  
+
   .online-indicator {
     width: 16px;
     height: 16px;
     bottom: 4px;
     right: 4px;
   }
-  
+
   .profile-page-header-content {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .header-actions {
     justify-content: center;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .details-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .actions-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -682,16 +682,16 @@
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .actions-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .profile-meta {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .avatar-container,
   .avatar-placeholder {
     width: 80px;

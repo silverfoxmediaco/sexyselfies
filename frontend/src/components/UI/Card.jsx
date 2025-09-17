@@ -1,11 +1,9 @@
 import React from 'react';
 
 const Card = ({ children, className = '', elevated = false, ...props }) => {
-  const classes = [
-    'card',
-    elevated && 'card-elevated',
-    className
-  ].filter(Boolean).join(' ');
+  const classes = ['card', elevated && 'card-elevated', className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={classes} {...props}>

@@ -18,11 +18,15 @@ class CacheManager {
   /**
    * Set item in memory cache
    */
-  setMemory(key, value, ttl = 300000) { // 5 minutes default
+  setMemory(key, value, ttl = 300000) {
+    // 5 minutes default
     const size = this.getObjectSize(value);
-    
+
     // Check if we need to clear space
-    if (this.currentMemoryUsage + size > this.maxMemoryCacheSize * 1024 * 1024) {
+    if (
+      this.currentMemoryUsage + size >
+      this.maxMemoryCacheSize * 1024 * 1024
+    ) {
       this.evictLRU();
     }
 
@@ -30,7 +34,7 @@ class CacheManager {
       value,
       expires: Date.now() + ttl,
       lastAccessed: Date.now(),
-      size
+      size,
     });
 
     this.currentMemoryUsage += size;
@@ -41,9 +45,9 @@ class CacheManager {
    */
   getMemory(key) {
     const item = this.memoryCache.get(key);
-    
+
     if (!item) return null;
-    
+
     if (Date.now() > item.expires) {
       this.removeMemory(key);
       return null;
@@ -102,7 +106,7 @@ class CacheManager {
       timestamp: Date.now(),
       expires: Date.now() + (options.ttl || 300000), // 5 minutes default
       etag: response.headers?.etag,
-      version: this.cacheVersion
+      version: this.cacheVersion,
     };
 
     // Store in memory
@@ -116,7 +120,8 @@ class CacheManager {
     }
 
     // Store large responses in IndexedDB
-    if (this.getObjectSize(response) > 100000) { // > 100KB
+    if (this.getObjectSize(response) > 100000) {
+      // > 100KB
       await this.cacheInIndexedDB('api_responses', cacheKey, cacheData);
     }
   }
@@ -145,12 +150,19 @@ class CacheManager {
         }
       }
     } catch (error) {
-      console.warn('Failed to get cached API response from localStorage:', error);
+      console.warn(
+        'Failed to get cached API response from localStorage:',
+        error
+      );
     }
 
     // Check IndexedDB for large responses
     const idbCache = await this.getFromIndexedDB('api_responses', cacheKey);
-    if (idbCache && Date.now() < idbCache.expires && idbCache.version === this.cacheVersion) {
+    if (
+      idbCache &&
+      Date.now() < idbCache.expires &&
+      idbCache.version === this.cacheVersion
+    ) {
       // Restore to memory cache
       this.setMemory(cacheKey, idbCache);
       return idbCache.response;
@@ -179,22 +191,22 @@ class CacheManager {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-      
+
       // Convert to base64 for storage
       const reader = new FileReader();
       return new Promise((resolve, reject) => {
         reader.onloadend = () => {
           const base64 = reader.result;
-          
+
           // Store in IndexedDB
           this.cacheInIndexedDB('images', url, {
             url,
             data: base64,
             type: blob.type,
             size: blob.size,
-            cached: Date.now()
+            cached: Date.now(),
           });
-          
+
           resolve(base64);
         };
         reader.onerror = reject;
@@ -233,7 +245,7 @@ class CacheManager {
     const cacheData = {
       ...content,
       cachedAt: Date.now(),
-      version: this.cacheVersion
+      version: this.cacheVersion,
     };
 
     // Cache in IndexedDB
@@ -285,7 +297,7 @@ class CacheManager {
       ...profile,
       userId,
       cachedAt: Date.now(),
-      version: this.cacheVersion
+      version: this.cacheVersion,
     };
 
     // Store in memory
@@ -326,7 +338,7 @@ class CacheManager {
       conversationId,
       messages,
       cachedAt: Date.now(),
-      version: this.cacheVersion
+      version: this.cacheVersion,
     };
 
     // Store recent messages in memory
@@ -357,7 +369,7 @@ class CacheManager {
   async addMessageToCache(conversationId, message) {
     const messages = await this.getCachedMessages(conversationId);
     messages.push(message);
-    
+
     // Keep only last 1000 messages
     if (messages.length > 1000) {
       messages.splice(0, messages.length - 1000);
@@ -380,7 +392,7 @@ class CacheManager {
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = event.target.result;
 
         // Create stores if they don't exist
@@ -411,12 +423,12 @@ class CacheManager {
       const db = await this.openDB();
       const transaction = db.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
-      
+
       const record = { ...data };
       if (storeName === 'api_responses') {
         record.key = key;
       }
-      
+
       await store.put(record);
       db.close();
       return true;
@@ -434,12 +446,11 @@ class CacheManager {
       const db = await this.openDB();
       const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
-      
-      return new Promise((resolve) => {
-        const request = storeName === 'api_responses' 
-          ? store.get(key)
-          : store.get(key);
-          
+
+      return new Promise(resolve => {
+        const request =
+          storeName === 'api_responses' ? store.get(key) : store.get(key);
+
         request.onsuccess = () => {
           db.close();
           resolve(request.result);
@@ -463,8 +474,8 @@ class CacheManager {
       const db = await this.openDB();
       const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
-      
-      return new Promise((resolve) => {
+
+      return new Promise(resolve => {
         const request = store.getAll();
         request.onsuccess = () => {
           db.close();
@@ -489,7 +500,7 @@ class CacheManager {
       const db = await this.openDB();
       const transaction = db.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
-      
+
       await store.delete(key);
       db.close();
       return true;
@@ -529,14 +540,20 @@ class CacheManager {
     // Clear IndexedDB
     try {
       const db = await this.openDB();
-      const stores = ['api_responses', 'images', 'content', 'profiles', 'messages'];
-      
+      const stores = [
+        'api_responses',
+        'images',
+        'content',
+        'profiles',
+        'messages',
+      ];
+
       for (const storeName of stores) {
         const transaction = db.transaction([storeName], 'readwrite');
         const store = transaction.objectStore(storeName);
         await store.clear();
       }
-      
+
       db.close();
     } catch (error) {
       console.error('Failed to clear IndexedDB:', error);
@@ -553,15 +570,15 @@ class CacheManager {
       memory: {
         items: this.memoryCache.size,
         sizeBytes: this.currentMemoryUsage,
-        sizeMB: (this.currentMemoryUsage / 1024 / 1024).toFixed(2)
+        sizeMB: (this.currentMemoryUsage / 1024 / 1024).toFixed(2),
       },
       localStorage: {
         items: 0,
-        sizeBytes: 0
+        sizeBytes: 0,
       },
       indexedDB: {
-        items: 0
-      }
+        items: 0,
+      },
     };
 
     // Count localStorage items
@@ -572,20 +589,30 @@ class CacheManager {
       }
     });
 
-    stats.localStorage.sizeMB = (stats.localStorage.sizeBytes / 1024 / 1024).toFixed(2);
+    stats.localStorage.sizeMB = (
+      stats.localStorage.sizeBytes /
+      1024 /
+      1024
+    ).toFixed(2);
 
     // Count IndexedDB items
     try {
       const db = await this.openDB();
-      const stores = ['api_responses', 'images', 'content', 'profiles', 'messages'];
-      
+      const stores = [
+        'api_responses',
+        'images',
+        'content',
+        'profiles',
+        'messages',
+      ];
+
       for (const storeName of stores) {
         const transaction = db.transaction([storeName], 'readonly');
         const store = transaction.objectStore(storeName);
         const count = await store.count();
         stats.indexedDB.items += count;
       }
-      
+
       db.close();
     } catch (error) {
       console.error('Failed to get IndexedDB stats:', error);

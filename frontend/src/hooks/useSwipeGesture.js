@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 /**
  * useSwipeGesture Hook
  * Handles swipe gestures with customizable callbacks
- * 
+ *
  * @param {Object} options - Configuration options
  * @returns {Object} - Hook state and methods
  */
@@ -22,7 +22,7 @@ export const useSwipeGesture = (options = {}) => {
     trackTouch = true,
     rotationAngle = 15,
     swipeVelocity = 0.5,
-    disableSwipeBack = false
+    disableSwipeBack = false,
   } = options;
 
   // State
@@ -47,15 +47,15 @@ export const useSwipeGesture = (options = {}) => {
     const deltaX = currentPosRef.current.x - startPosRef.current.x;
     const deltaY = currentPosRef.current.y - startPosRef.current.y;
     const deltaTime = Date.now() - startTimeRef.current;
-    
+
     const velocityX = deltaTime > 0 ? deltaX / deltaTime : 0;
     const velocityY = deltaTime > 0 ? deltaY / deltaTime : 0;
-    
+
     return {
       distance: { x: deltaX, y: deltaY },
       velocity: { x: velocityX, y: velocityY },
       duration: deltaTime,
-      angle: Math.atan2(deltaY, deltaX) * 180 / Math.PI
+      angle: (Math.atan2(deltaY, deltaX) * 180) / Math.PI,
     };
   }, []);
 
@@ -65,7 +65,7 @@ export const useSwipeGesture = (options = {}) => {
   const determineDirection = useCallback((deltaX, deltaY) => {
     const absX = Math.abs(deltaX);
     const absY = Math.abs(deltaY);
-    
+
     if (absX > absY) {
       return deltaX > 0 ? 'right' : 'left';
     } else {
@@ -76,63 +76,78 @@ export const useSwipeGesture = (options = {}) => {
   /**
    * Handle swipe start
    */
-  const handleSwipeStart = useCallback((x, y) => {
-    startPosRef.current = { x, y };
-    currentPosRef.current = { x, y };
-    startTimeRef.current = Date.now();
-    setIsSwiping(true);
-    setDirection(null);
-    
-    // Clear history
-    historyRef.current = [{ x, y, time: Date.now() }];
+  const handleSwipeStart = useCallback(
+    (x, y) => {
+      startPosRef.current = { x, y };
+      currentPosRef.current = { x, y };
+      startTimeRef.current = Date.now();
+      setIsSwiping(true);
+      setDirection(null);
 
-    if (onSwipeStart) {
-      onSwipeStart({ x, y });
-    }
-  }, [onSwipeStart]);
+      // Clear history
+      historyRef.current = [{ x, y, time: Date.now() }];
+
+      if (onSwipeStart) {
+        onSwipeStart({ x, y });
+      }
+    },
+    [onSwipeStart]
+  );
 
   /**
    * Handle swipe move
    */
-  const handleSwipeMove = useCallback((x, y) => {
-    if (!isSwiping) return;
+  const handleSwipeMove = useCallback(
+    (x, y) => {
+      if (!isSwiping) return;
 
-    currentPosRef.current = { x, y };
-    
-    // Add to history for gesture recognition
-    historyRef.current.push({ x, y, time: Date.now() });
-    if (historyRef.current.length > 10) {
-      historyRef.current.shift();
-    }
+      currentPosRef.current = { x, y };
 
-    const metrics = calculateSwipeMetrics();
-    const currentDirection = determineDirection(metrics.distance.x, metrics.distance.y);
-    
-    setDistance(metrics.distance);
-    setVelocity(metrics.velocity);
-    setDirection(currentDirection);
+      // Add to history for gesture recognition
+      historyRef.current.push({ x, y, time: Date.now() });
+      if (historyRef.current.length > 10) {
+        historyRef.current.shift();
+      }
 
-    if (elementRef.current) {
-      // Apply visual feedback
-      const rotation = (metrics.distance.x / 10) * rotationAngle;
-      const opacity = Math.max(0, 1 - Math.abs(metrics.distance.x) / 300);
-      
-      elementRef.current.style.transform = `
+      const metrics = calculateSwipeMetrics();
+      const currentDirection = determineDirection(
+        metrics.distance.x,
+        metrics.distance.y
+      );
+
+      setDistance(metrics.distance);
+      setVelocity(metrics.velocity);
+      setDirection(currentDirection);
+
+      if (elementRef.current) {
+        // Apply visual feedback
+        const rotation = (metrics.distance.x / 10) * rotationAngle;
+        const opacity = Math.max(0, 1 - Math.abs(metrics.distance.x) / 300);
+
+        elementRef.current.style.transform = `
         translate(${metrics.distance.x}px, ${metrics.distance.y}px) 
         rotate(${Math.min(Math.max(rotation, -rotationAngle), rotationAngle)}deg)
       `;
-      elementRef.current.style.opacity = opacity;
-    }
+        elementRef.current.style.opacity = opacity;
+      }
 
-    if (onSwiping) {
-      onSwiping({
-        direction: currentDirection,
-        distance: metrics.distance,
-        velocity: metrics.velocity,
-        angle: metrics.angle
-      });
-    }
-  }, [isSwiping, calculateSwipeMetrics, determineDirection, rotationAngle, onSwiping]);
+      if (onSwiping) {
+        onSwiping({
+          direction: currentDirection,
+          distance: metrics.distance,
+          velocity: metrics.velocity,
+          angle: metrics.angle,
+        });
+      }
+    },
+    [
+      isSwiping,
+      calculateSwipeMetrics,
+      determineDirection,
+      rotationAngle,
+      onSwiping,
+    ]
+  );
 
   /**
    * Handle swipe end
@@ -141,15 +156,18 @@ export const useSwipeGesture = (options = {}) => {
     if (!isSwiping) return;
 
     const metrics = calculateSwipeMetrics();
-    const finalDirection = determineDirection(metrics.distance.x, metrics.distance.y);
-    
+    const finalDirection = determineDirection(
+      metrics.distance.x,
+      metrics.distance.y
+    );
+
     // Check if swipe threshold is met
-    const meetsThreshold = 
-      Math.abs(metrics.distance.x) > threshold || 
+    const meetsThreshold =
+      Math.abs(metrics.distance.x) > threshold ||
       Math.abs(metrics.distance.y) > threshold;
-    
-    const meetsVelocity = 
-      Math.abs(metrics.velocity.x) > swipeVelocity || 
+
+    const meetsVelocity =
+      Math.abs(metrics.velocity.x) > swipeVelocity ||
       Math.abs(metrics.velocity.y) > swipeVelocity;
 
     if (meetsThreshold || meetsVelocity) {
@@ -186,7 +204,7 @@ export const useSwipeGesture = (options = {}) => {
         elementRef.current.style.transform = 'translate(0, 0) rotate(0)';
         elementRef.current.style.opacity = '1';
         elementRef.current.style.transition = 'all 0.3s ease';
-        
+
         setTimeout(() => {
           if (elementRef.current) {
             elementRef.current.style.transition = '';
@@ -201,7 +219,7 @@ export const useSwipeGesture = (options = {}) => {
         distance: metrics.distance,
         velocity: metrics.velocity,
         duration: metrics.duration,
-        triggered: meetsThreshold || meetsVelocity
+        triggered: meetsThreshold || meetsVelocity,
       });
     }
 
@@ -211,104 +229,154 @@ export const useSwipeGesture = (options = {}) => {
     setDistance({ x: 0, y: 0 });
     setVelocity({ x: 0, y: 0 });
     historyRef.current = [];
-  }, [isSwiping, calculateSwipeMetrics, determineDirection, threshold, swipeVelocity, onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, onSwipeEnd]);
+  }, [
+    isSwiping,
+    calculateSwipeMetrics,
+    determineDirection,
+    threshold,
+    swipeVelocity,
+    onSwipeLeft,
+    onSwipeRight,
+    onSwipeUp,
+    onSwipeDown,
+    onSwipeEnd,
+  ]);
 
   /**
    * Touch event handlers
    */
-  const handleTouchStart = useCallback((e) => {
-    if (!trackTouch) return;
-    
-    const touch = e.touches[0];
-    handleSwipeStart(touch.clientX, touch.clientY);
-    
-    if (preventScroll) {
-      e.preventDefault();
-    }
-  }, [trackTouch, handleSwipeStart, preventScroll]);
+  const handleTouchStart = useCallback(
+    e => {
+      if (!trackTouch) return;
 
-  const handleTouchMove = useCallback((e) => {
-    if (!trackTouch || !isSwiping) return;
-    
-    const touch = e.touches[0];
-    handleSwipeMove(touch.clientX, touch.clientY);
-    
-    if (preventScroll) {
-      e.preventDefault();
-    }
-  }, [trackTouch, isSwiping, handleSwipeMove, preventScroll]);
+      const touch = e.touches[0];
+      handleSwipeStart(touch.clientX, touch.clientY);
 
-  const handleTouchEnd = useCallback((e) => {
-    if (!trackTouch || !isSwiping) return;
-    handleSwipeEnd();
-  }, [trackTouch, isSwiping, handleSwipeEnd]);
+      if (preventScroll) {
+        e.preventDefault();
+      }
+    },
+    [trackTouch, handleSwipeStart, preventScroll]
+  );
+
+  const handleTouchMove = useCallback(
+    e => {
+      if (!trackTouch || !isSwiping) return;
+
+      const touch = e.touches[0];
+      handleSwipeMove(touch.clientX, touch.clientY);
+
+      if (preventScroll) {
+        e.preventDefault();
+      }
+    },
+    [trackTouch, isSwiping, handleSwipeMove, preventScroll]
+  );
+
+  const handleTouchEnd = useCallback(
+    e => {
+      if (!trackTouch || !isSwiping) return;
+      handleSwipeEnd();
+    },
+    [trackTouch, isSwiping, handleSwipeEnd]
+  );
 
   /**
    * Mouse event handlers
    */
-  const handleMouseDown = useCallback((e) => {
-    if (!trackMouse) return;
-    handleSwipeStart(e.clientX, e.clientY);
-  }, [trackMouse, handleSwipeStart]);
+  const handleMouseDown = useCallback(
+    e => {
+      if (!trackMouse) return;
+      handleSwipeStart(e.clientX, e.clientY);
+    },
+    [trackMouse, handleSwipeStart]
+  );
 
-  const handleMouseMove = useCallback((e) => {
-    if (!trackMouse || !isSwiping) return;
-    handleSwipeMove(e.clientX, e.clientY);
-  }, [trackMouse, isSwiping, handleSwipeMove]);
+  const handleMouseMove = useCallback(
+    e => {
+      if (!trackMouse || !isSwiping) return;
+      handleSwipeMove(e.clientX, e.clientY);
+    },
+    [trackMouse, isSwiping, handleSwipeMove]
+  );
 
-  const handleMouseUp = useCallback((e) => {
-    if (!trackMouse || !isSwiping) return;
-    handleSwipeEnd();
-  }, [trackMouse, isSwiping, handleSwipeEnd]);
+  const handleMouseUp = useCallback(
+    e => {
+      if (!trackMouse || !isSwiping) return;
+      handleSwipeEnd();
+    },
+    [trackMouse, isSwiping, handleSwipeEnd]
+  );
 
-  const handleMouseLeave = useCallback((e) => {
-    if (!trackMouse || !isSwiping) return;
-    handleSwipeEnd();
-  }, [trackMouse, isSwiping, handleSwipeEnd]);
+  const handleMouseLeave = useCallback(
+    e => {
+      if (!trackMouse || !isSwiping) return;
+      handleSwipeEnd();
+    },
+    [trackMouse, isSwiping, handleSwipeEnd]
+  );
 
   /**
    * Bind events to element
    */
-  const bind = useCallback((element) => {
-    if (!element) return;
-    
-    elementRef.current = element;
-    
-    // Touch events
-    if (trackTouch) {
-      element.addEventListener('touchstart', handleTouchStart, { passive: !preventScroll });
-      element.addEventListener('touchmove', handleTouchMove, { passive: !preventScroll });
-      element.addEventListener('touchend', handleTouchEnd);
-      element.addEventListener('touchcancel', handleTouchEnd);
-    }
-    
-    // Mouse events
-    if (trackMouse) {
-      element.addEventListener('mousedown', handleMouseDown);
-      element.addEventListener('mousemove', handleMouseMove);
-      element.addEventListener('mouseup', handleMouseUp);
-      element.addEventListener('mouseleave', handleMouseLeave);
-    }
-    
-    // Prevent drag
-    element.addEventListener('dragstart', (e) => e.preventDefault());
-    
-    return () => {
+  const bind = useCallback(
+    element => {
+      if (!element) return;
+
+      elementRef.current = element;
+
+      // Touch events
       if (trackTouch) {
-        element.removeEventListener('touchstart', handleTouchStart);
-        element.removeEventListener('touchmove', handleTouchMove);
-        element.removeEventListener('touchend', handleTouchEnd);
-        element.removeEventListener('touchcancel', handleTouchEnd);
+        element.addEventListener('touchstart', handleTouchStart, {
+          passive: !preventScroll,
+        });
+        element.addEventListener('touchmove', handleTouchMove, {
+          passive: !preventScroll,
+        });
+        element.addEventListener('touchend', handleTouchEnd);
+        element.addEventListener('touchcancel', handleTouchEnd);
       }
-      
+
+      // Mouse events
       if (trackMouse) {
-        element.removeEventListener('mousedown', handleMouseDown);
-        element.removeEventListener('mousemove', handleMouseMove);
-        element.removeEventListener('mouseup', handleMouseUp);
-        element.removeEventListener('mouseleave', handleMouseLeave);
+        element.addEventListener('mousedown', handleMouseDown);
+        element.addEventListener('mousemove', handleMouseMove);
+        element.addEventListener('mouseup', handleMouseUp);
+        element.addEventListener('mouseleave', handleMouseLeave);
       }
-    };
-  }, [trackTouch, trackMouse, preventScroll, handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown, handleMouseMove, handleMouseUp, handleMouseLeave]);
+
+      // Prevent drag
+      element.addEventListener('dragstart', e => e.preventDefault());
+
+      return () => {
+        if (trackTouch) {
+          element.removeEventListener('touchstart', handleTouchStart);
+          element.removeEventListener('touchmove', handleTouchMove);
+          element.removeEventListener('touchend', handleTouchEnd);
+          element.removeEventListener('touchcancel', handleTouchEnd);
+        }
+
+        if (trackMouse) {
+          element.removeEventListener('mousedown', handleMouseDown);
+          element.removeEventListener('mousemove', handleMouseMove);
+          element.removeEventListener('mouseup', handleMouseUp);
+          element.removeEventListener('mouseleave', handleMouseLeave);
+        }
+      };
+    },
+    [
+      trackTouch,
+      trackMouse,
+      preventScroll,
+      handleTouchStart,
+      handleTouchMove,
+      handleTouchEnd,
+      handleMouseDown,
+      handleMouseMove,
+      handleMouseUp,
+      handleMouseLeave,
+    ]
+  );
 
   /**
    * Reset swipe state
@@ -319,7 +387,7 @@ export const useSwipeGesture = (options = {}) => {
     setDistance({ x: 0, y: 0 });
     setVelocity({ x: 0, y: 0 });
     historyRef.current = [];
-    
+
     if (elementRef.current) {
       elementRef.current.style.transform = '';
       elementRef.current.style.opacity = '';
@@ -337,7 +405,7 @@ export const useSwipeGesture = (options = {}) => {
       isActive: isSwiping,
       lastDistance: distance,
       lastVelocity: velocity,
-      history: historyRef.current
+      history: historyRef.current,
     };
   }, [swipeCount, direction, isSwiping, distance, velocity]);
 
@@ -348,12 +416,12 @@ export const useSwipeGesture = (options = {}) => {
     distance,
     velocity,
     swipeCount,
-    
+
     // Methods
     bind,
     reset,
     getStats,
-    
+
     // Handlers (for manual binding)
     handlers: {
       onTouchStart: handleTouchStart,
@@ -362,8 +430,8 @@ export const useSwipeGesture = (options = {}) => {
       onMouseDown: handleMouseDown,
       onMouseMove: handleMouseMove,
       onMouseUp: handleMouseUp,
-      onMouseLeave: handleMouseLeave
-    }
+      onMouseLeave: handleMouseLeave,
+    },
   };
 };
 

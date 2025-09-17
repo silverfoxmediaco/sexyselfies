@@ -2,14 +2,14 @@ import api from './api.config';
 
 /**
  * Payment Service
- * Handles all payment-related API calls including CCBill integration, 
+ * Handles all payment-related API calls including CCBill integration,
  * credits, subscriptions, and transaction management
  */
 class PaymentService {
   // ==========================================
   // PAYMENT PROCESSING
   // ==========================================
-  
+
   /**
    * Initialize payment session (CCBill)
    */
@@ -22,17 +22,19 @@ class PaymentService {
         item_id: data.item_id,
         item_type: data.item_type,
         creator_id: data.creator_id,
-        return_url: data.return_url || `${window.location.origin}/payment/success`,
-        cancel_url: data.cancel_url || `${window.location.origin}/payment/cancel`,
+        return_url:
+          data.return_url || `${window.location.origin}/payment/success`,
+        cancel_url:
+          data.cancel_url || `${window.location.origin}/payment/cancel`,
         webhook_url: data.webhook_url,
-        device_fingerprint: await this.getDeviceFingerprint()
+        device_fingerprint: await this.getDeviceFingerprint(),
       });
-      
+
       // Store payment session for tracking
       if (response.data?.session_id) {
         sessionStorage.setItem('payment_session', response.data.session_id);
       }
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -45,15 +47,18 @@ class PaymentService {
   async processPayment(data) {
     try {
       const response = await api.post('/payment/process', {
-        session_id: data.session_id || sessionStorage.getItem('payment_session'),
+        session_id:
+          data.session_id || sessionStorage.getItem('payment_session'),
         payment_method: data.payment_method, // 'credit_card', 'crypto', 'paypal'
-        card_details: data.card_details ? {
-          number: data.card_details.number,
-          exp_month: data.card_details.exp_month,
-          exp_year: data.card_details.exp_year,
-          cvv: data.card_details.cvv,
-          holder_name: data.card_details.holder_name
-        } : undefined,
+        card_details: data.card_details
+          ? {
+              number: data.card_details.number,
+              exp_month: data.card_details.exp_month,
+              exp_year: data.card_details.exp_year,
+              cvv: data.card_details.cvv,
+              holder_name: data.card_details.holder_name,
+            }
+          : undefined,
         billing_info: {
           first_name: data.billing_info.first_name,
           last_name: data.billing_info.last_name,
@@ -63,17 +68,17 @@ class PaymentService {
           city: data.billing_info.city,
           state: data.billing_info.state,
           zip: data.billing_info.zip,
-          country: data.billing_info.country
+          country: data.billing_info.country,
         },
         save_payment_method: data.save_payment_method || false,
-        device_fingerprint: await this.getDeviceFingerprint()
+        device_fingerprint: await this.getDeviceFingerprint(),
       });
-      
+
       // Clear session after successful payment
       if (response.success) {
         sessionStorage.removeItem('payment_session');
       }
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -99,13 +104,13 @@ class PaymentService {
     try {
       const response = await api.post('/payment/callback', {
         ...params,
-        session_id: sessionStorage.getItem('payment_session')
+        session_id: sessionStorage.getItem('payment_session'),
       });
-      
+
       if (response.success) {
         sessionStorage.removeItem('payment_session');
       }
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -115,25 +120,28 @@ class PaymentService {
   // ==========================================
   // CREDIT SYSTEM
   // ==========================================
-  
+
   /**
    * Get credit packages
    */
   async getCreditPackages() {
     try {
       const response = await api.get('/payment/credits/packages');
-      
+
       // Add bonus calculations for UI display
       if (response.data?.packages) {
         response.data.packages = response.data.packages.map(pkg => ({
           ...pkg,
-          bonus_percentage: pkg.bonus_credits 
+          bonus_percentage: pkg.bonus_credits
             ? Math.round((pkg.bonus_credits / pkg.base_credits) * 100)
             : 0,
-          per_credit_cost: (pkg.price / (pkg.base_credits + (pkg.bonus_credits || 0))).toFixed(3)
+          per_credit_cost: (
+            pkg.price /
+            (pkg.base_credits + (pkg.bonus_credits || 0))
+          ).toFixed(3),
         }));
       }
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -149,14 +157,14 @@ class PaymentService {
         package_id: packageId,
         payment_method: paymentMethod,
         return_url: `${window.location.origin}/member/credits/success`,
-        cancel_url: `${window.location.origin}/member/credits`
+        cancel_url: `${window.location.origin}/member/credits`,
       });
-      
+
       // Redirect to CCBill if URL provided
       if (response.data?.redirect_url) {
         window.location.href = response.data.redirect_url;
       }
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -169,13 +177,16 @@ class PaymentService {
   async getCreditBalance() {
     try {
       const response = await api.get('/payment/credits/balance');
-      
+
       // Store in localStorage for offline access
       if (response.data?.balance !== undefined) {
         localStorage.setItem('credit_balance', response.data.balance);
-        localStorage.setItem('credit_balance_updated', new Date().toISOString());
+        localStorage.setItem(
+          'credit_balance_updated',
+          new Date().toISOString()
+        );
       }
-      
+
       return response;
     } catch (error) {
       // Return cached balance if offline
@@ -186,8 +197,8 @@ class PaymentService {
             data: {
               balance: parseInt(cachedBalance),
               cached: true,
-              updated_at: localStorage.getItem('credit_balance_updated')
-            }
+              updated_at: localStorage.getItem('credit_balance_updated'),
+            },
           };
         }
       }
@@ -206,8 +217,8 @@ class PaymentService {
           start_date: params.start_date,
           end_date: params.end_date,
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -225,15 +236,18 @@ class PaymentService {
         recipient_type: 'creator', // 'creator' or 'member'
         amount,
         message,
-        type: 'tip' // 'tip', 'gift', 'payment'
+        type: 'tip', // 'tip', 'gift', 'payment'
       });
-      
+
       // Update local balance
       if (response.data?.new_balance !== undefined) {
         localStorage.setItem('credit_balance', response.data.new_balance);
-        localStorage.setItem('credit_balance_updated', new Date().toISOString());
+        localStorage.setItem(
+          'credit_balance_updated',
+          new Date().toISOString()
+        );
       }
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -243,7 +257,7 @@ class PaymentService {
   // ==========================================
   // SUBSCRIPTIONS
   // ==========================================
-  
+
   /**
    * Create subscription
    */
@@ -255,14 +269,14 @@ class PaymentService {
         duration: data.duration || 30, // days
         auto_renew: data.auto_renew !== false,
         payment_method: data.payment_method || 'credits',
-        promo_code: data.promo_code
+        promo_code: data.promo_code,
       });
-      
+
       // Handle CCBill redirect for card payments
       if (response.data?.redirect_url && data.payment_method === 'card') {
         window.location.href = response.data.redirect_url;
       }
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -274,10 +288,13 @@ class PaymentService {
    */
   async cancelSubscription(subscriptionId, reason) {
     try {
-      const response = await api.post(`/payment/subscription/${subscriptionId}/cancel`, {
-        reason,
-        cancel_immediately: false // Let it run until end of period
-      });
+      const response = await api.post(
+        `/payment/subscription/${subscriptionId}/cancel`,
+        {
+          reason,
+          cancel_immediately: false, // Let it run until end of period
+        }
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -289,7 +306,9 @@ class PaymentService {
    */
   async reactivateSubscription(subscriptionId) {
     try {
-      const response = await api.post(`/payment/subscription/${subscriptionId}/reactivate`);
+      const response = await api.post(
+        `/payment/subscription/${subscriptionId}/reactivate`
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -301,11 +320,14 @@ class PaymentService {
    */
   async updateSubscription(subscriptionId, data) {
     try {
-      const response = await api.put(`/payment/subscription/${subscriptionId}`, {
-        tier: data.tier,
-        auto_renew: data.auto_renew,
-        payment_method: data.payment_method
-      });
+      const response = await api.put(
+        `/payment/subscription/${subscriptionId}`,
+        {
+          tier: data.tier,
+          auto_renew: data.auto_renew,
+          payment_method: data.payment_method,
+        }
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -333,8 +355,8 @@ class PaymentService {
         params: {
           status: params.status, // 'active', 'cancelled', 'expired'
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -345,7 +367,7 @@ class PaymentService {
   // ==========================================
   // TRANSACTIONS
   // ==========================================
-  
+
   /**
    * Get transaction history
    */
@@ -361,8 +383,8 @@ class PaymentService {
           max_amount: params.max_amount,
           sort: params.sort || 'recent', // 'recent', 'oldest', 'amount_high', 'amount_low'
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -387,11 +409,14 @@ class PaymentService {
    */
   async requestRefund(transactionId, reason, details) {
     try {
-      const response = await api.post(`/payment/transactions/${transactionId}/refund`, {
-        reason, // 'not_received', 'not_as_described', 'unauthorized', 'other'
-        details,
-        amount: null // null for full refund, or specify partial amount
-      });
+      const response = await api.post(
+        `/payment/transactions/${transactionId}/refund`,
+        {
+          reason, // 'not_received', 'not_as_described', 'unauthorized', 'other'
+          details,
+          amount: null, // null for full refund, or specify partial amount
+        }
+      );
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -403,10 +428,13 @@ class PaymentService {
    */
   async downloadInvoice(transactionId) {
     try {
-      const response = await api.get(`/payment/transactions/${transactionId}/invoice`, {
-        responseType: 'blob'
-      });
-      
+      const response = await api.get(
+        `/payment/transactions/${transactionId}/invoice`,
+        {
+          responseType: 'blob',
+        }
+      );
+
       // Create download link
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -415,7 +443,7 @@ class PaymentService {
       document.body.appendChild(link);
       link.click();
       link.remove();
-      
+
       return { success: true };
     } catch (error) {
       throw this.handleError(error);
@@ -425,7 +453,7 @@ class PaymentService {
   // ==========================================
   // PAYMENT METHODS
   // ==========================================
-  
+
   /**
    * Get saved payment methods
    */
@@ -447,7 +475,7 @@ class PaymentService {
         type: data.type, // 'card', 'paypal', 'crypto'
         card_details: data.card_details,
         billing_address: data.billing_address,
-        set_as_default: data.set_as_default || false
+        set_as_default: data.set_as_default || false,
       });
       return response;
     } catch (error) {
@@ -494,7 +522,7 @@ class PaymentService {
   // ==========================================
   // CREATOR PAYOUTS
   // ==========================================
-  
+
   /**
    * Get payout balance (for creators)
    */
@@ -516,7 +544,7 @@ class PaymentService {
         amount: data.amount,
         method: data.method, // 'bank', 'paypal', 'crypto'
         account_details: data.account_details,
-        notes: data.notes
+        notes: data.notes,
       });
       return response;
     } catch (error) {
@@ -535,8 +563,8 @@ class PaymentService {
           start_date: params.start_date,
           end_date: params.end_date,
           page: params.page || 1,
-          limit: params.limit || 20
-        }
+          limit: params.limit || 20,
+        },
       });
       return response;
     } catch (error) {
@@ -566,7 +594,7 @@ class PaymentService {
         auto_payout: data.auto_payout,
         payout_day: data.payout_day,
         tax_info: data.tax_info,
-        preferred_method: data.preferred_method
+        preferred_method: data.preferred_method,
       });
       return response;
     } catch (error) {
@@ -577,7 +605,7 @@ class PaymentService {
   // ==========================================
   // PROMO CODES & DISCOUNTS
   // ==========================================
-  
+
   /**
    * Validate promo code
    */
@@ -586,7 +614,7 @@ class PaymentService {
       const response = await api.post('/payment/promo/validate', {
         code,
         item_type: itemType, // 'subscription', 'credits', 'content'
-        item_id: itemId
+        item_id: itemId,
       });
       return response;
     } catch (error) {
@@ -601,7 +629,7 @@ class PaymentService {
     try {
       const response = await api.post('/payment/promo/apply', {
         code,
-        session_id: sessionId || sessionStorage.getItem('payment_session')
+        session_id: sessionId || sessionStorage.getItem('payment_session'),
       });
       return response;
     } catch (error) {
@@ -612,7 +640,7 @@ class PaymentService {
   // ==========================================
   // SPENDING LIMITS & CONTROLS
   // ==========================================
-  
+
   /**
    * Get spending limits
    */
@@ -636,7 +664,7 @@ class PaymentService {
         monthly_limit: data.monthly_limit,
         per_transaction_limit: data.per_transaction_limit,
         require_pin: data.require_pin,
-        pin_code: data.pin_code
+        pin_code: data.pin_code,
       });
       return response;
     } catch (error) {
@@ -650,13 +678,13 @@ class PaymentService {
   async verifySpendingPin(pin) {
     try {
       const response = await api.post('/payment/limits/verify-pin', { pin });
-      
+
       // Store verification for session
       if (response.data?.verified) {
         sessionStorage.setItem('spending_pin_verified', 'true');
         sessionStorage.setItem('pin_verified_at', new Date().toISOString());
       }
-      
+
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -666,7 +694,7 @@ class PaymentService {
   // ==========================================
   // ANALYTICS & REPORTS
   // ==========================================
-  
+
   /**
    * Get spending analytics
    */
@@ -676,8 +704,8 @@ class PaymentService {
         params: {
           period: params.period || '30d',
           group_by: params.group_by || 'day',
-          category: params.category
-        }
+          category: params.category,
+        },
       });
       return response;
     } catch (error) {
@@ -694,8 +722,8 @@ class PaymentService {
         params: {
           period: params.period || '30d',
           group_by: params.group_by || 'day',
-          source: params.source // 'subscriptions', 'tips', 'messages', 'content'
-        }
+          source: params.source, // 'subscriptions', 'tips', 'messages', 'content'
+        },
       });
       return response;
     } catch (error) {
@@ -713,20 +741,23 @@ class PaymentService {
           format: params.format || 'csv', // 'csv', 'pdf', 'excel'
           start_date: params.start_date,
           end_date: params.end_date,
-          type: params.type
+          type: params.type,
         },
-        responseType: 'blob'
+        responseType: 'blob',
       });
-      
+
       // Create download link
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `transactions_${new Date().toISOString()}.${params.format || 'csv'}`);
+      link.setAttribute(
+        'download',
+        `transactions_${new Date().toISOString()}.${params.format || 'csv'}`
+      );
       document.body.appendChild(link);
       link.click();
       link.remove();
-      
+
       return { success: true };
     } catch (error) {
       throw this.handleError(error);
@@ -736,7 +767,7 @@ class PaymentService {
   // ==========================================
   // HELPER METHODS
   // ==========================================
-  
+
   /**
    * Get device fingerprint for fraud prevention
    */
@@ -757,16 +788,16 @@ class PaymentService {
         session_storage: typeof sessionStorage !== 'undefined',
         local_storage: typeof localStorage !== 'undefined',
         indexed_db: 'indexedDB' in window,
-        cpu_cores: navigator.hardwareConcurrency || 0
+        cpu_cores: navigator.hardwareConcurrency || 0,
       };
-      
+
       // Generate hash
       const fingerprintString = JSON.stringify(fingerprint);
       const hash = await this.generateHash(fingerprintString);
-      
+
       return {
         hash,
-        data: fingerprint
+        data: fingerprint,
       };
     } catch (error) {
       console.error('Fingerprint generation error:', error);
@@ -780,7 +811,8 @@ class PaymentService {
   getWebGLVendor() {
     try {
       const canvas = document.createElement('canvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      const gl =
+        canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
       if (gl) {
         const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
         if (debugInfo) {
@@ -800,7 +832,9 @@ class PaymentService {
     const msgBuffer = new TextEncoder().encode(str);
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const hashHex = hashArray
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
     return hashHex;
   }
 
@@ -810,7 +844,7 @@ class PaymentService {
   formatCurrency(amount, currency = 'USD') {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency
+      currency: currency,
     }).format(amount);
   }
 
@@ -820,63 +854,63 @@ class PaymentService {
   handleError(error) {
     if (error.response) {
       const { status, data } = error.response;
-      
+
       switch (status) {
         case 400:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: data.message || 'Invalid payment request',
-            errors: data.errors || {}
+            errors: data.errors || {},
           };
         case 401:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Authentication required',
-            code: 'UNAUTHORIZED'
+            code: 'UNAUTHORIZED',
           };
         case 402:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Payment required',
-            code: 'PAYMENT_REQUIRED'
+            code: 'PAYMENT_REQUIRED',
           };
         case 403:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Payment not allowed',
-            code: 'FORBIDDEN'
+            code: 'FORBIDDEN',
           };
         case 422:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Invalid payment data',
-            errors: data.errors || {}
+            errors: data.errors || {},
           };
         case 429:
-          return { 
-            error: true, 
+          return {
+            error: true,
             message: 'Too many payment attempts. Please try again later.',
-            code: 'RATE_LIMITED'
+            code: 'RATE_LIMITED',
           };
         default:
-          return { 
-            error: true, 
-            message: data.message || 'Payment processing error'
+          return {
+            error: true,
+            message: data.message || 'Payment processing error',
           };
       }
     }
-    
+
     if (!navigator.onLine) {
-      return { 
-        error: true, 
+      return {
+        error: true,
         message: 'No internet connection. Payment cannot be processed offline.',
-        code: 'OFFLINE'
+        code: 'OFFLINE',
       };
     }
-    
-    return { 
-      error: true, 
-      message: error.message || 'Payment processing failed'
+
+    return {
+      error: true,
+      message: error.message || 'Payment processing failed',
     };
   }
 }

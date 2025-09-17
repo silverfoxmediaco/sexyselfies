@@ -10,7 +10,7 @@ const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
     });
     console.log('MongoDB Connected');
   } catch (error) {
@@ -23,88 +23,53 @@ const connectDB = async () => {
 const createSuperAdmin = async () => {
   try {
     // Check if super admin already exists
-    const existingAdmin = await Admin.findOne({ email: 'admin@sexyselfies.com' });
-    
+    const existingAdmin = await Admin.findOne({
+      email: 'admin@sexyselfies.com',
+    });
+
     if (existingAdmin) {
-      console.log('❌ Super admin already exists with email: admin@sexyselfies.com');
-      
+      console.log(
+        '❌ Super admin already exists with email: admin@sexyselfies.com'
+      );
+
       // Ask if they want to reset the password
       console.log('Resetting password for existing admin...');
-      
+
       // Generate new password
-      const newPassword = 'AdminPass123!'; // Change this!
+      const newPassword = '315261970';
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword, salt);
-      
+
       existingAdmin.password = hashedPassword;
       existingAdmin.loginAttempts = 0;
       existingAdmin.lockUntil = undefined;
       existingAdmin.isActive = true;
       existingAdmin.role = 'superAdmin';
-      
+
       // Set all permissions
       existingAdmin.setRolePermissions();
-      
+
       await existingAdmin.save();
-      
+
       console.log('✅ Password reset successfully!');
-      
     } else {
       // Create new super admin
-      const password = 'AdminPass123!'; // Change this!
-      
+      const password = '315261970';
+
       const admin = await Admin.create({
         email: 'admin@sexyselfies.com',
         password: password,
         name: 'Super Admin',
         role: 'superAdmin',
-        isActive: true
+        isActive: true,
       });
-      
+
       // Set permissions based on role
       admin.setRolePermissions();
       await admin.save();
-      
+
       console.log('✅ Super Admin created successfully!');
     }
-    
-    // Also create a moderator and verification staff for testing
-    const moderatorExists = await Admin.findOne({ email: 'moderator@sexyselfies.com' });
-    
-    if (!moderatorExists) {
-      const moderator = await Admin.create({
-        email: 'moderator@sexyselfies.com',
-        password: 'ModPass123!',
-        name: 'Moderator',
-        role: 'moderator',
-        isActive: true,
-        createdBy: admin._id
-      });
-      
-      moderator.setRolePermissions();
-      await moderator.save();
-      
-      console.log('✅ Moderator account created');
-    }
-    
-    const verifierExists = await Admin.findOne({ email: 'verifier@sexyselfies.com' });
-    
-    if (!verifierExists) {
-      const verifier = await Admin.create({
-        email: 'verifier@sexyselfies.com',
-        password: 'VerifyPass123!',
-        name: 'ID Verifier',
-        role: 'verificationStaff',
-        isActive: true,
-        createdBy: admin._id
-      });
-      
-      verifier.setRolePermissions();
-      await verifier.save();
-      
-      console.log('✅ Verification Staff account created');
-    }
-    
   } catch (error) {
     console.error('Error creating super admin:', error);
   } finally {

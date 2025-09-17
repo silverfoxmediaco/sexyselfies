@@ -38,7 +38,7 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #FF006E 0%, #FF4B8C 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #ff4b8c 100%);
   color: white;
   box-shadow: 0 4px 12px rgba(255, 0, 110, 0.3);
 }
@@ -61,19 +61,19 @@
 
 .btn-outlined {
   background: transparent;
-  color: #FF006E;
-  border: 2px solid #FF006E;
+  color: #ff006e;
+  border: 2px solid #ff006e;
 }
 
 .btn-outlined:hover:not(:disabled) {
-  background: #FF006E;
+  background: #ff006e;
   color: white;
   transform: translateY(-1px);
 }
 
 .btn-text {
   background: transparent;
-  color: #FF006E;
+  color: #ff006e;
   border: none;
   box-shadow: none;
 }
@@ -201,7 +201,7 @@
 }
 
 .text-primary {
-  color: #FF006E;
+  color: #ff006e;
 }
 
 .text-secondary {
@@ -252,13 +252,13 @@
 
 .chip-filled {
   background: rgba(255, 0, 110, 0.2);
-  color: #FF006E;
+  color: #ff006e;
 }
 
 .chip-outlined {
   background: transparent;
   border: 1px solid rgba(255, 0, 110, 0.5);
-  color: #FF006E;
+  color: #ff006e;
 }
 
 .chip-clickable {
@@ -281,7 +281,7 @@
 
 .linear-progress-bar {
   height: 100%;
-  background: linear-gradient(135deg, #FF006E 0%, #FF4B8C 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #ff4b8c 100%);
   transition: width 0.3s ease;
 }
 
@@ -501,41 +501,41 @@
   .typography-h1 {
     font-size: 2.5rem;
   }
-  
+
   .typography-h2 {
     font-size: 2rem;
   }
-  
+
   .typography-h3 {
     font-size: 1.75rem;
   }
-  
+
   .btn-large {
     padding: 12px 24px;
     font-size: 1rem;
   }
-  
+
   .card-content {
     padding: 20px;
   }
-  
+
   .dialog-backdrop {
     padding: 16px;
   }
-  
+
   .dialog-title {
     padding: 20px 20px 12px;
     font-size: 1.25rem;
   }
-  
+
   .dialog-content {
     padding: 16px 20px;
   }
-  
+
   .dialog-actions {
     padding: 12px 20px 20px;
   }
-  
+
   .snackbar {
     left: 16px;
     right: 16px;

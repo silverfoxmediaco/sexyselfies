@@ -5,7 +5,7 @@ const { protectAdmin } = require('../middleware/admin.auth.middleware');
 const {
   sendAdminVerificationNotification,
   approveVerification,
-  rejectVerification
+  rejectVerification,
 } = require('../controllers/notification.controller');
 
 // User routes (creators submitting verification)

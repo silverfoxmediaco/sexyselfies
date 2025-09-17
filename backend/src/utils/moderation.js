@@ -7,7 +7,7 @@ const PROHIBITED_WORDS = [
   // Add prohibited words here
   // Using placeholder examples
   'prohibited1',
-  'prohibited2'
+  'prohibited2',
 ];
 
 // Content guidelines
@@ -30,7 +30,7 @@ exports.scanContent = async (content, type = 'text') => {
       violations: [],
       confidence: 100,
       warnings: [],
-      suggestions: []
+      suggestions: [],
     };
 
     switch (type) {
@@ -40,21 +40,21 @@ exports.scanContent = async (content, type = 'text') => {
         results.violations = textResults.violations;
         results.confidence = textResults.confidence;
         break;
-        
+
       case 'image':
         const imageResults = await moderateImage(content);
         results.safe = imageResults.safe;
         results.violations = imageResults.violations;
         results.warnings = imageResults.warnings;
         break;
-        
+
       case 'video':
         const videoResults = await moderateVideo(content);
         results.safe = videoResults.safe;
         results.violations = videoResults.violations;
         results.warnings = videoResults.warnings;
         break;
-        
+
       default:
         throw new Error('Invalid content type for moderation');
     }
@@ -78,7 +78,7 @@ async function moderateText(text) {
   const results = {
     safe: true,
     violations: [],
-    confidence: 100
+    confidence: 100,
   };
 
   if (!text || typeof text !== 'string') {
@@ -94,7 +94,7 @@ async function moderateText(text) {
       results.violations.push({
         type: 'prohibited_content',
         severity: 'high',
-        detail: 'Contains prohibited words'
+        detail: 'Contains prohibited words',
       });
     }
   }
@@ -105,7 +105,7 @@ async function moderateText(text) {
     results.violations.push({
       type: 'spam',
       severity: 'medium',
-      detail: 'Content appears to be spam'
+      detail: 'Content appears to be spam',
     });
   }
 
@@ -115,7 +115,7 @@ async function moderateText(text) {
     results.violations.push({
       type: 'external_links',
       severity: 'medium',
-      detail: 'Contains external links'
+      detail: 'Contains external links',
     });
   }
 
@@ -124,7 +124,7 @@ async function moderateText(text) {
     results.violations.push({
       type: 'personal_info',
       severity: 'low',
-      detail: 'May contain personal information'
+      detail: 'May contain personal information',
     });
     results.confidence = 80;
   }
@@ -150,7 +150,7 @@ async function moderateImage(imageData) {
   const results = {
     safe: true,
     violations: [],
-    warnings: []
+    warnings: [],
   };
 
   // Check image properties
@@ -159,7 +159,7 @@ async function moderateImage(imageData) {
     results.violations.push({
       type: 'file_size',
       severity: 'low',
-      detail: 'Image exceeds maximum file size'
+      detail: 'Image exceeds maximum file size',
     });
   }
 
@@ -169,20 +169,20 @@ async function moderateImage(imageData) {
     results.violations.push({
       type: 'invalid_format',
       severity: 'high',
-      detail: 'Invalid image format'
+      detail: 'Invalid image format',
     });
   }
 
   // AI-based image moderation (would integrate with service like AWS Rekognition)
   // const aiResults = await analyzeImageWithAI(imageData);
-  
+
   // Mock AI results for development
   const aiResults = {
     nudity: 0.2,
     suggestive: 0.6,
     violence: 0.0,
     drugs: 0.0,
-    hate: 0.0
+    hate: 0.0,
   };
 
   // Check for explicit content (not allowed)
@@ -191,7 +191,7 @@ async function moderateImage(imageData) {
     results.violations.push({
       type: 'explicit_content',
       severity: 'high',
-      detail: 'Image contains explicit nudity'
+      detail: 'Image contains explicit nudity',
     });
   }
 
@@ -199,7 +199,7 @@ async function moderateImage(imageData) {
   if (aiResults.suggestive > 0.5 && aiResults.suggestive <= 0.8) {
     results.warnings.push({
       type: 'suggestive_content',
-      detail: 'Image contains suggestive content'
+      detail: 'Image contains suggestive content',
     });
   }
 
@@ -209,7 +209,7 @@ async function moderateImage(imageData) {
     results.violations.push({
       type: 'violence',
       severity: 'high',
-      detail: 'Image contains violent content'
+      detail: 'Image contains violent content',
     });
   }
 
@@ -219,7 +219,7 @@ async function moderateImage(imageData) {
     results.violations.push({
       type: 'hate_content',
       severity: 'critical',
-      detail: 'Image contains hate symbols or content'
+      detail: 'Image contains hate symbols or content',
     });
   }
 
@@ -233,7 +233,7 @@ async function moderateVideo(videoData) {
   const results = {
     safe: true,
     violations: [],
-    warnings: []
+    warnings: [],
   };
 
   // Check video properties
@@ -242,7 +242,7 @@ async function moderateVideo(videoData) {
     results.violations.push({
       type: 'file_size',
       severity: 'low',
-      detail: 'Video exceeds maximum file size'
+      detail: 'Video exceeds maximum file size',
     });
   }
 
@@ -252,7 +252,7 @@ async function moderateVideo(videoData) {
     results.violations.push({
       type: 'invalid_format',
       severity: 'high',
-      detail: 'Invalid video format'
+      detail: 'Invalid video format',
     });
   }
 
@@ -262,7 +262,7 @@ async function moderateVideo(videoData) {
     results.violations.push({
       type: 'duration',
       severity: 'low',
-      detail: 'Video exceeds maximum duration'
+      detail: 'Video exceeds maximum duration',
     });
   }
 
@@ -355,9 +355,9 @@ async function logModerationIssue(content, type, results) {
     console.log('Moderation issue logged:', {
       type,
       violations: results.violations,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
-    
+
     // In production, this would create a moderation queue item
     // for human review
   } catch (error) {
@@ -368,7 +368,7 @@ async function logModerationIssue(content, type, results) {
 /**
  * Report content
  */
-exports.reportContent = async (reportData) => {
+exports.reportContent = async reportData => {
   try {
     const {
       reporterId,
@@ -376,7 +376,7 @@ exports.reportContent = async (reportData) => {
       targetType, // 'user', 'content', 'message'
       reason,
       description,
-      evidence
+      evidence,
     } = reportData;
 
     // Create report
@@ -388,7 +388,7 @@ exports.reportContent = async (reportData) => {
       description,
       evidence,
       status: 'pending',
-      createdAt: new Date()
+      createdAt: new Date(),
     });
 
     // Auto-moderate based on report type
@@ -401,7 +401,7 @@ exports.reportContent = async (reportData) => {
     const reportCount = await Report.countDocuments({
       targetId,
       targetType,
-      status: 'verified'
+      status: 'verified',
     });
 
     if (reportCount >= 3) {
@@ -412,7 +412,7 @@ exports.reportContent = async (reportData) => {
     return {
       success: true,
       reportId: report._id,
-      message: 'Report submitted successfully'
+      message: 'Report submitted successfully',
     };
   } catch (error) {
     console.error('Error reporting content:', error);
@@ -427,7 +427,7 @@ async function autoModerateContent(targetId, targetType, reason) {
   try {
     // Implementation depends on target type
     console.log(`Auto-moderating ${targetType} ${targetId} for ${reason}`);
-    
+
     // Would update the content status to 'hidden' or 'under_review'
     // based on targetType
   } catch (error) {
@@ -445,13 +445,13 @@ async function createViolation(userId, violationType, severity) {
       type: violationType,
       severity,
       timestamp: new Date(),
-      status: 'active'
+      status: 'active',
     });
 
     // Check total violations for auto-suspension
     const violationCount = await UserViolation.countDocuments({
       user: userId,
-      status: 'active'
+      status: 'active',
     });
 
     if (violationCount >= 5 || severity === 'critical') {
@@ -472,17 +472,18 @@ async function createViolation(userId, violationType, severity) {
 async function suspendUser(userId, duration) {
   try {
     const User = require('../models/User');
-    
-    const suspendedUntil = duration === 'permanent' 
-      ? new Date('2099-12-31')
-      : new Date(Date.now() + parseDuration(duration));
-    
+
+    const suspendedUntil =
+      duration === 'permanent'
+        ? new Date('2099-12-31')
+        : new Date(Date.now() + parseDuration(duration));
+
     await User.findByIdAndUpdate(userId, {
       status: 'suspended',
       suspendedUntil,
-      suspendedAt: new Date()
+      suspendedAt: new Date(),
     });
-    
+
     console.log(`User ${userId} suspended until ${suspendedUntil}`);
   } catch (error) {
     console.error('Error suspending user:', error);
@@ -497,15 +498,15 @@ function parseDuration(duration) {
     h: 60 * 60 * 1000,
     d: 24 * 60 * 60 * 1000,
     w: 7 * 24 * 60 * 60 * 1000,
-    m: 30 * 24 * 60 * 60 * 1000
+    m: 30 * 24 * 60 * 60 * 1000,
   };
-  
+
   const match = duration.match(/(\d+)([hdwm])/);
   if (match) {
     const [, value, unit] = match;
     return parseInt(value) * (units[unit] || 0);
   }
-  
+
   return 0;
 }
 
@@ -516,18 +517,18 @@ exports.checkUserPermissions = async (userId, action) => {
   try {
     const User = require('../models/User');
     const user = await User.findById(userId);
-    
+
     if (!user) {
       return { allowed: false, reason: 'User not found' };
     }
-    
+
     // Check if suspended
     if (user.status === 'suspended') {
       if (user.suspendedUntil > new Date()) {
-        return { 
-          allowed: false, 
+        return {
+          allowed: false,
           reason: 'Account suspended',
-          until: user.suspendedUntil
+          until: user.suspendedUntil,
         };
       } else {
         // Suspension expired, update status
@@ -535,24 +536,24 @@ exports.checkUserPermissions = async (userId, action) => {
         await user.save();
       }
     }
-    
+
     // Check if banned
     if (user.status === 'banned') {
       return { allowed: false, reason: 'Account banned' };
     }
-    
+
     // Check specific action permissions
     const actionLimits = {
       post_content: { max: 50, window: 24 * 60 * 60 * 1000 }, // 50 per day
       send_message: { max: 100, window: 60 * 60 * 1000 }, // 100 per hour
-      create_account: { max: 1, window: Infinity } // 1 account ever
+      create_account: { max: 1, window: Infinity }, // 1 account ever
     };
-    
+
     if (actionLimits[action]) {
       // Would check against rate limits in database
       // For now, allow all actions for active users
     }
-    
+
     return { allowed: true };
   } catch (error) {
     console.error('Error checking permissions:', error);
@@ -563,23 +564,29 @@ exports.checkUserPermissions = async (userId, action) => {
 /**
  * Clean/sanitize user input
  */
-exports.sanitizeInput = (input) => {
+exports.sanitizeInput = input => {
   if (typeof input !== 'string') {
     return input;
   }
-  
+
   // Remove HTML tags
   let cleaned = input.replace(/<[^>]*>/g, '');
-  
+
   // Remove script tags and content
-  cleaned = cleaned.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-  
+  cleaned = cleaned.replace(
+    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    ''
+  );
+
   // Remove SQL injection attempts
-  cleaned = cleaned.replace(/(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|CREATE|ALTER)\b)/gi, '');
-  
+  cleaned = cleaned.replace(
+    /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|CREATE|ALTER)\b)/gi,
+    ''
+  );
+
   // Trim whitespace
   cleaned = cleaned.trim();
-  
+
   return cleaned;
 };
 
@@ -590,16 +597,16 @@ exports.validateContent = async (content, type) => {
   const validation = {
     valid: true,
     errors: [],
-    warnings: []
+    warnings: [],
   };
-  
+
   // Check content exists
   if (!content) {
     validation.valid = false;
     validation.errors.push('Content is required');
     return validation;
   }
-  
+
   // Type-specific validation
   switch (type) {
     case 'text':
@@ -612,14 +619,14 @@ exports.validateContent = async (content, type) => {
         validation.errors.push('Text exceeds maximum length');
       }
       break;
-      
+
     case 'image':
       if (!content.url && !content.file) {
         validation.valid = false;
         validation.errors.push('Image file is required');
       }
       break;
-      
+
     case 'video':
       if (!content.url && !content.file) {
         validation.valid = false;
@@ -627,19 +634,19 @@ exports.validateContent = async (content, type) => {
       }
       break;
   }
-  
+
   // Run moderation check
   const moderationResults = await exports.scanContent(content, type);
-  
+
   if (!moderationResults.safe) {
     validation.valid = false;
     validation.errors.push(...moderationResults.violations.map(v => v.detail));
   }
-  
+
   if (moderationResults.warnings) {
     validation.warnings.push(...moderationResults.warnings.map(w => w.detail));
   }
-  
+
   return validation;
 };
 

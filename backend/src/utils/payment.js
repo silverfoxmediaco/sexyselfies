@@ -11,20 +11,20 @@ const CCBILL_CONFIG = {
   subacc: {
     initial: process.env.CCBILL_SUBACC_INITIAL,
     recurring: process.env.CCBILL_SUBACC_RECURRING,
-    credit: process.env.CCBILL_SUBACC_CREDIT
+    credit: process.env.CCBILL_SUBACC_CREDIT,
   },
   salt: process.env.CCBILL_SALT,
   flexFormId: process.env.CCBILL_FLEX_FORM_ID,
   dataLink: {
     username: process.env.CCBILL_DATALINK_USERNAME,
-    password: process.env.CCBILL_DATALINK_PASSWORD
-  }
+    password: process.env.CCBILL_DATALINK_PASSWORD,
+  },
 };
 
 /**
  * Process a payment for content or message unlock
  */
-exports.processPayment = async (paymentData) => {
+exports.processPayment = async paymentData => {
   try {
     const {
       memberId,
@@ -32,7 +32,7 @@ exports.processPayment = async (paymentData) => {
       amount,
       type, // 'content_unlock', 'message_unlock', 'tip', 'credits'
       referenceId,
-      paymentMethodId
+      paymentMethodId,
     } = paymentData;
 
     // Validate payment amount
@@ -42,17 +42,23 @@ exports.processPayment = async (paymentData) => {
 
     // Check member has sufficient credits or payment method
     const member = await Member.findById(memberId);
-    
+
     if (!member) {
       throw new Error('Member not found');
     }
 
     // Process based on payment type
     let transaction;
-    
+
     if (member.credits && member.credits >= amount) {
       // Use credits
-      transaction = await processWithCredits(member, amount, type, referenceId, creatorId);
+      transaction = await processWithCredits(
+        member,
+        amount,
+        type,
+        referenceId,
+        creatorId
+      );
     } else {
       // Use CCBill
       transaction = await processWithCCBill(paymentData);
@@ -60,13 +66,19 @@ exports.processPayment = async (paymentData) => {
 
     // Update creator earnings
     if (creatorId) {
-      await updateCreatorEarnings(creatorId, amount, type, memberId, referenceId);
+      await updateCreatorEarnings(
+        creatorId,
+        amount,
+        type,
+        memberId,
+        referenceId
+      );
     }
 
     return {
       success: true,
       transaction,
-      message: 'Payment processed successfully'
+      message: 'Payment processed successfully',
     };
   } catch (error) {
     console.error('Payment processing error:', error);
@@ -77,7 +89,13 @@ exports.processPayment = async (paymentData) => {
 /**
  * Process payment using member credits
  */
-async function processWithCredits(member, amount, type, referenceId, creatorId) {
+async function processWithCredits(
+  member,
+  amount,
+  type,
+  referenceId,
+  creatorId
+) {
   // Deduct credits
   member.credits -= amount;
   await member.save();
@@ -92,7 +110,7 @@ async function processWithCredits(member, amount, type, referenceId, creatorId) 
     paymentMethod: 'credits',
     referenceId,
     completedAt: new Date(),
-    processor: 'internal'
+    processor: 'internal',
   });
 
   return transaction;
@@ -102,13 +120,7 @@ async function processWithCredits(member, amount, type, referenceId, creatorId) 
  * Process payment using CCBill
  */
 async function processWithCCBill(paymentData) {
-  const {
-    memberId,
-    creatorId,
-    amount,
-    type,
-    referenceId
-  } = paymentData;
+  const { memberId, creatorId, amount, type, referenceId } = paymentData;
 
   // Create pending transaction
   const transaction = await Transaction.create({
@@ -119,7 +131,7 @@ async function processWithCCBill(paymentData) {
     status: 'pending',
     paymentMethod: 'ccbill',
     referenceId,
-    processor: 'ccbill'
+    processor: 'ccbill',
   });
 
   // Generate CCBill payment URL
@@ -128,7 +140,7 @@ async function processWithCCBill(paymentData) {
     transactionId: transaction._id,
     memberId,
     creatorId,
-    type
+    type,
   });
 
   // In production, you would redirect user to CCBill
@@ -147,13 +159,7 @@ async function processWithCCBill(paymentData) {
  * Generate CCBill payment URL
  */
 function generateCCBillPaymentUrl(params) {
-  const {
-    amount,
-    transactionId,
-    memberId,
-    creatorId,
-    type
-  } = params;
+  const { amount, transactionId, memberId, creatorId, type } = params;
 
   // Generate form digest for security
   const formString = `${amount}30840${CCBILL_CONFIG.salt}`;
@@ -172,7 +178,7 @@ function generateCCBillPaymentUrl(params) {
     transactionId,
     memberId,
     creatorId,
-    type
+    type,
   });
 
   return `${baseUrl}?${queryParams.toString()}`;
@@ -181,10 +187,16 @@ function generateCCBillPaymentUrl(params) {
 /**
  * Update creator earnings after successful payment
  */
-async function updateCreatorEarnings(creatorId, amount, type, memberId, referenceId) {
+async function updateCreatorEarnings(
+  creatorId,
+  amount,
+  type,
+  memberId,
+  referenceId
+) {
   try {
     let earnings = await CreatorEarnings.findOne({ creator: creatorId });
-    
+
     if (!earnings) {
       earnings = await CreatorEarnings.create({
         creator: creatorId,
@@ -192,14 +204,14 @@ async function updateCreatorEarnings(creatorId, amount, type, memberId, referenc
           total: 0,
           available: 0,
           pending: 0,
-          withdrawn: 0
+          withdrawn: 0,
         },
-        transactions: []
+        transactions: [],
       });
     }
 
     // Calculate platform fee (20%)
-    const platformFee = amount * 0.20;
+    const platformFee = amount * 0.2;
     const netAmount = amount - platformFee;
 
     // Update revenue
@@ -215,18 +227,18 @@ async function updateCreatorEarnings(creatorId, amount, type, memberId, referenc
       customer: memberId,
       reference: referenceId,
       date: new Date(),
-      status: 'completed'
+      status: 'completed',
     });
 
     // Update daily/weekly/monthly earnings
     const today = new Date();
     earnings.dailyEarnings.today.total += amount;
     earnings.dailyEarnings.today.count += 1;
-    
+
     await earnings.save();
 
     console.log(`Updated earnings for creator ${creatorId}: +$${netAmount}`);
-    
+
     return earnings;
   } catch (error) {
     console.error('Error updating creator earnings:', error);
@@ -237,15 +249,15 @@ async function updateCreatorEarnings(creatorId, amount, type, memberId, referenc
 /**
  * Calculate platform fee
  */
-exports.calculatePlatformFee = (amount) => {
+exports.calculatePlatformFee = amount => {
   // 20% platform fee
-  return amount * 0.20;
+  return amount * 0.2;
 };
 
 /**
  * Calculate creator payout
  */
-exports.calculateCreatorPayout = (amount) => {
+exports.calculateCreatorPayout = amount => {
   const fee = exports.calculatePlatformFee(amount);
   return amount - fee;
 };
@@ -256,7 +268,7 @@ exports.calculateCreatorPayout = (amount) => {
 exports.processRefund = async (transactionId, reason) => {
   try {
     const transaction = await Transaction.findById(transactionId);
-    
+
     if (!transaction) {
       throw new Error('Transaction not found');
     }
@@ -280,27 +292,34 @@ exports.processRefund = async (transactionId, reason) => {
 
     // Deduct from creator earnings
     if (transaction.creator) {
-      const earnings = await CreatorEarnings.findOne({ 
-        creator: transaction.creator 
+      const earnings = await CreatorEarnings.findOne({
+        creator: transaction.creator,
       });
-      
+
       if (earnings) {
         const netAmount = exports.calculateCreatorPayout(transaction.amount);
         earnings.revenue.total -= transaction.amount;
         earnings.revenue.available -= netAmount;
-        earnings.revenue.refunds = (earnings.revenue.refunds || 0) + transaction.amount;
+        earnings.revenue.refunds =
+          (earnings.revenue.refunds || 0) + transaction.amount;
         await earnings.save();
       }
     }
 
     // Process refund with CCBill if CCBill payment
-    if (transaction.paymentMethod === 'ccbill' && transaction.processorTransactionId) {
-      await processCCBillRefund(transaction.processorTransactionId, transaction.amount);
+    if (
+      transaction.paymentMethod === 'ccbill' &&
+      transaction.processorTransactionId
+    ) {
+      await processCCBillRefund(
+        transaction.processorTransactionId,
+        transaction.amount
+      );
     }
 
     return {
       success: true,
-      message: 'Refund processed successfully'
+      message: 'Refund processed successfully',
     };
   } catch (error) {
     console.error('Refund processing error:', error);
@@ -313,8 +332,10 @@ exports.processRefund = async (transactionId, reason) => {
  */
 async function processCCBillRefund(ccbillTransactionId, amount) {
   // This would call CCBill's refund API
-  console.log(`Processing CCBill refund for transaction ${ccbillTransactionId}`);
-  
+  console.log(
+    `Processing CCBill refund for transaction ${ccbillTransactionId}`
+  );
+
   // In production:
   // const response = await axios.post('https://datalink.ccbill.com/utils/subscriptionManagement.cgi', {
   //   clientAccnum: CCBILL_CONFIG.accountNumber,
@@ -324,7 +345,7 @@ async function processCCBillRefund(ccbillTransactionId, amount) {
   //   username: CCBILL_CONFIG.dataLink.username,
   //   password: CCBILL_CONFIG.dataLink.password
   // });
-  
+
   return { success: true };
 }
 
@@ -334,25 +355,25 @@ async function processCCBillRefund(ccbillTransactionId, amount) {
 exports.verifyCCBillWebhook = (body, headers) => {
   // CCBill webhook verification
   // This would check the webhook signature against your CCBill configuration
-  
+
   // For development
   if (process.env.NODE_ENV === 'development') {
     return true;
   }
-  
+
   // In production, verify the signature
   const signature = headers['x-ccbill-signature'];
   if (!signature) {
     return false;
   }
-  
+
   // Implement actual signature verification based on CCBill's method
   // This is a simplified example
   const expectedSignature = crypto
     .createHash('md5')
     .update(JSON.stringify(body) + CCBILL_CONFIG.salt)
     .digest('hex');
-  
+
   return signature === expectedSignature;
 };
 
@@ -363,8 +384,8 @@ exports.getPaymentStats = async (creatorId, period = '30d') => {
   try {
     const now = new Date();
     let startDate = new Date();
-    
-    switch(period) {
+
+    switch (period) {
       case '24h':
         startDate.setDate(now.getDate() - 1);
         break;
@@ -382,7 +403,7 @@ exports.getPaymentStats = async (creatorId, period = '30d') => {
     const transactions = await Transaction.find({
       creator: creatorId,
       status: 'completed',
-      completedAt: { $gte: startDate }
+      completedAt: { $gte: startDate },
     });
 
     const stats = {
@@ -392,25 +413,26 @@ exports.getPaymentStats = async (creatorId, period = '30d') => {
       byType: {
         content_unlock: { count: 0, amount: 0 },
         message_unlock: { count: 0, amount: 0 },
-        tip: { count: 0, amount: 0 }
+        tip: { count: 0, amount: 0 },
       },
       topSpenders: [],
-      dailyRevenue: []
+      dailyRevenue: [],
     };
 
     // Calculate statistics
     transactions.forEach(t => {
       stats.totalRevenue += t.amount;
-      
+
       if (stats.byType[t.type]) {
         stats.byType[t.type].count++;
         stats.byType[t.type].amount += t.amount;
       }
     });
 
-    stats.averageTransaction = stats.totalTransactions > 0 
-      ? (stats.totalRevenue / stats.totalTransactions).toFixed(2)
-      : 0;
+    stats.averageTransaction =
+      stats.totalTransactions > 0
+        ? (stats.totalRevenue / stats.totalTransactions).toFixed(2)
+        : 0;
 
     return stats;
   } catch (error) {
@@ -425,14 +447,14 @@ exports.getPaymentStats = async (creatorId, period = '30d') => {
 exports.processInstantPayout = async (creatorId, amount, accountDetails) => {
   try {
     const creator = await Creator.findById(creatorId);
-    
+
     if (!creator) {
       throw new Error('Creator not found');
     }
 
     // Check if instant payout is enabled
     const earnings = await CreatorEarnings.findOne({ creator: creatorId });
-    
+
     if (!earnings || !earnings.payouts.instantPayoutEnabled) {
       throw new Error('Instant payout not enabled');
     }
@@ -448,12 +470,16 @@ exports.processInstantPayout = async (creatorId, amount, accountDetails) => {
 
     // Process payout through payment provider
     // This would integrate with your payout provider (CCBill, PayPal, etc.)
-    const payoutResult = await processCCBillPayout(creator, netAmount, accountDetails);
+    const payoutResult = await processCCBillPayout(
+      creator,
+      netAmount,
+      accountDetails
+    );
 
     // Update earnings
     earnings.revenue.available -= amount;
     earnings.revenue.withdrawn += netAmount;
-    
+
     // Record payout
     earnings.payouts.history.push({
       amount,
@@ -467,22 +493,22 @@ exports.processInstantPayout = async (creatorId, amount, accountDetails) => {
       accountDetails: {
         ...accountDetails,
         // Mask sensitive data
-        accountNumber: accountDetails.accountNumber 
+        accountNumber: accountDetails.accountNumber
           ? '****' + accountDetails.accountNumber.slice(-4)
-          : undefined
-      }
+          : undefined,
+      },
     });
-    
+
     earnings.payouts.lastPayoutAt = new Date();
     earnings.payouts.totalPaidOut += netAmount;
-    
+
     await earnings.save();
 
     return {
       success: true,
       payoutId: payoutResult.id,
       amount: netAmount,
-      fee
+      fee,
     };
   } catch (error) {
     console.error('Instant payout error:', error);
@@ -495,12 +521,14 @@ exports.processInstantPayout = async (creatorId, amount, accountDetails) => {
  */
 async function processCCBillPayout(creator, amount, accountDetails) {
   // This would integrate with CCBill's payout API
-  console.log(`Processing CCBill payout of $${amount} for creator ${creator._id}`);
-  
+  console.log(
+    `Processing CCBill payout of $${amount} for creator ${creator._id}`
+  );
+
   // Mock response for development
   return {
     id: 'ccbill_payout_' + Date.now(),
-    status: 'success'
+    status: 'success',
   };
 }
 
@@ -515,7 +543,7 @@ exports.getCreditPackages = () => {
       price: 9.99,
       bonus: 0,
       popular: false,
-      savings: null
+      savings: null,
     },
     {
       id: 'popular',
@@ -523,7 +551,7 @@ exports.getCreditPackages = () => {
       price: 19.99,
       bonus: 5,
       popular: true,
-      savings: '20%'
+      savings: '20%',
     },
     {
       id: 'value',
@@ -531,7 +559,7 @@ exports.getCreditPackages = () => {
       price: 39.99,
       bonus: 15,
       popular: false,
-      savings: '30%'
+      savings: '30%',
     },
     {
       id: 'premium',
@@ -539,8 +567,8 @@ exports.getCreditPackages = () => {
       price: 69.99,
       bonus: 40,
       popular: false,
-      savings: '40%'
-    }
+      savings: '40%',
+    },
   ];
 };
 
@@ -550,7 +578,7 @@ exports.getCreditPackages = () => {
 exports.addCredits = async (memberId, credits) => {
   try {
     const member = await Member.findById(memberId);
-    
+
     if (!member) {
       throw new Error('Member not found');
     }
@@ -560,7 +588,7 @@ exports.addCredits = async (memberId, credits) => {
 
     return {
       success: true,
-      newBalance: member.credits
+      newBalance: member.credits,
     };
   } catch (error) {
     console.error('Add credits error:', error);

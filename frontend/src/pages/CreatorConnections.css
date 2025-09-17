@@ -1,18 +1,18 @@
 /* CreatorConnections.css */
 .creator-connections {
-  --connections-primary: #FF1B6B;
-  --connections-primary-hover: #E91E63;
-  --connections-secondary: #45CAFF;
-  --connections-bg: #0A0B0F;
-  --connections-surface: #1A1D29;
+  --connections-primary: #ff1b6b;
+  --connections-primary-hover: #e91e63;
+  --connections-secondary: #45caff;
+  --connections-bg: #0a0b0f;
+  --connections-surface: #1a1d29;
   --connections-surface-hover: #242938;
-  --connections-border: #2A2F3F;
-  --connections-text: #FFFFFF;
-  --connections-text-secondary: #9CA3AF;
-  --connections-success: #10B981;
-  --connections-warning: #F59E0B;
-  --connections-error: #EF4444;
-  
+  --connections-border: #2a2f3f;
+  --connections-text: #ffffff;
+  --connections-text-secondary: #9ca3af;
+  --connections-success: #10b981;
+  --connections-warning: #f59e0b;
+  --connections-error: #ef4444;
+
   width: 100%;
   min-height: 100vh;
   background: var(--connections-bg);
@@ -40,8 +40,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Header */
@@ -125,19 +129,19 @@
 }
 
 .connections-stat-icon.matches {
-  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
 }
 
 .connections-stat-icon.chats {
-  background: linear-gradient(135deg, #FF1B6B, #E91E63);
+  background: linear-gradient(135deg, #ff1b6b, #e91e63);
 }
 
 .connections-stat-icon.earnings {
-  background: linear-gradient(135deg, #10B981, #059669);
+  background: linear-gradient(135deg, #10b981, #059669);
 }
 
 .connections-stat-icon.response {
-  background: linear-gradient(135deg, #F59E0B, #D97706);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 .connections-stat-content {
@@ -466,30 +470,30 @@
   .creator-connections {
     padding: 12px;
   }
-  
+
   .connections-header-content {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .connections-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .connections-tabs {
     flex-wrap: wrap;
   }
-  
+
   .connections-item {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .connections-main-info {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .connections-actions {
     justify-content: space-between;
   }
@@ -499,11 +503,11 @@
   .connections-stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .connections-actions-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .connections-meta {
     flex-direction: column;
     gap: 4px;

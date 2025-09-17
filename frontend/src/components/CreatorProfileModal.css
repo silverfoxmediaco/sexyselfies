@@ -19,7 +19,7 @@
   width: 100%;
   max-width: 500px;
   height: 95vh;
-  background: #0A0A0A;
+  background: #0a0a0a;
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   overflow: hidden;
@@ -35,7 +35,7 @@
   left: 0;
   right: 0;
   z-index: 10;
-  background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
   padding: 20px;
 }
 
@@ -140,7 +140,7 @@
 /* Profile Content Section */
 .profile-content {
   padding: 20px;
-  background: #0A0A0A;
+  background: #0a0a0a;
   padding-bottom: 100px; /* Space for action buttons */
 }
 
@@ -167,7 +167,7 @@
 }
 
 .verified-badge {
-  color: #3B82F6;
+  color: #3b82f6;
   display: flex;
   align-items: center;
 }
@@ -177,12 +177,12 @@
   align-items: center;
   gap: 8px;
   margin-top: 8px;
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 14px;
 }
 
 .active-indicator {
-  color: #22C55E;
+  color: #22c55e;
   font-weight: 500;
 }
 
@@ -190,7 +190,7 @@
 .profile-bio {
   font-size: 16px;
   line-height: 1.5;
-  color: #C7C7CC;
+  color: #c7c7cc;
   margin-bottom: 24px;
 }
 
@@ -230,7 +230,7 @@
 }
 
 .stat-label {
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 12px;
   display: block;
 }
@@ -250,7 +250,7 @@
   background: transparent;
   border: 1px solid transparent;
   border-radius: 8px;
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -260,8 +260,8 @@
 
 .tab-btn.active {
   background: rgba(23, 210, 194, 0.2);
-  border-color: #17D2C2;
-  color: #17D2C2;
+  border-color: #17d2c2;
+  color: #17d2c2;
 }
 
 .tab-btn:active {
@@ -288,7 +288,7 @@
 }
 
 .about-label {
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 12px;
   margin-bottom: 4px;
   display: block;
@@ -412,14 +412,14 @@
 .detail-tag {
   padding: 6px 12px;
   background: rgba(23, 210, 194, 0.2);
-  border: 1px solid #17D2C2;
+  border: 1px solid #17d2c2;
   border-radius: 16px;
   font-size: 12px;
-  color: #17D2C2;
+  color: #17d2c2;
 }
 
 .detail-text {
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 14px;
 }
 
@@ -430,7 +430,7 @@
   left: 0;
   right: 0;
   padding: 20px;
-  background: linear-gradient(180deg, transparent 0%, #0A0A0A 50%);
+  background: linear-gradient(180deg, transparent 0%, #0a0a0a 50%);
   display: flex;
   justify-content: center;
   gap: 20px;
@@ -458,24 +458,24 @@
   width: 60px;
   height: 60px;
   background: rgba(239, 68, 68, 0.2);
-  border-color: #EF4444;
-  color: #EF4444;
+  border-color: #ef4444;
+  color: #ef4444;
 }
 
 .action-btn.super {
   width: 50px;
   height: 50px;
   background: rgba(56, 189, 248, 0.2);
-  border-color: #38BDF8;
-  color: #38BDF8;
+  border-color: #38bdf8;
+  color: #38bdf8;
 }
 
 .action-btn.like {
   width: 60px;
   height: 60px;
   background: rgba(34, 197, 94, 0.2);
-  border-color: #22C55E;
-  color: #22C55E;
+  border-color: #22c55e;
+  color: #22c55e;
 }
 
 /* Unlock Modal */
@@ -494,7 +494,7 @@
 }
 
 .unlock-modal {
-  background: #1C1C1E;
+  background: #1c1c1e;
   border-radius: 20px;
   padding: 24px;
   max-width: 320px;
@@ -521,7 +521,7 @@
 }
 
 .unlock-description {
-  color: #8E8E93;
+  color: #8e8e93;
   margin-bottom: 20px;
   font-size: 14px;
 }
@@ -529,14 +529,14 @@
 .unlock-price {
   font-size: 32px;
   font-weight: 700;
-  color: #17D2C2;
+  color: #17d2c2;
   margin-bottom: 20px;
 }
 
 .unlock-btn {
   width: 100%;
   padding: 14px;
-  background: #17D2C2;
+  background: #17d2c2;
   color: #000;
   border: none;
   border-radius: 12px;
@@ -549,13 +549,13 @@
 
 .unlock-btn:active {
   transform: scale(0.98);
-  background: #14B8A6;
+  background: #14b8a6;
 }
 
 .unlock-cancel {
   background: transparent;
   border: none;
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 14px;
   cursor: pointer;
   padding: 8px;
@@ -566,15 +566,15 @@
   .profile-name {
     font-size: 24px;
   }
-  
+
   .profile-stats-grid {
     gap: 8px;
   }
-  
+
   .stat-card {
     padding: 10px;
   }
-  
+
   .stat-value {
     font-size: 16px;
   }
@@ -586,19 +586,19 @@
     max-width: 600px;
     margin: 0 auto;
   }
-  
+
   .image-gallery {
     height: 70vh;
   }
-  
+
   .profile-content {
     padding: 24px;
   }
-  
+
   .about-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .content-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
@@ -611,14 +611,14 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #8E8E93;
+  color: #8e8e93;
 }
 
 .loading-spinner {
   width: 40px;
   height: 40px;
   border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #17D2C2;
+  border-top-color: #17d2c2;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

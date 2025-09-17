@@ -19,12 +19,12 @@ class MemberScoringService {
         includeInteractions = true,
         includePurchases = true,
         includeActivity = true,
-        creatorId = null
+        creatorId = null,
       } = options;
 
       // Get member analytics
       let analytics = await MemberAnalytics.findOne({ member: memberId });
-      
+
       if (!analytics) {
         // Create new analytics if doesn't exist
         analytics = await MemberAnalytics.create({
@@ -35,8 +35,8 @@ class MemberScoringService {
             last7Days: 0,
             last30Days: 0,
             last90Days: 0,
-            lifetime: 0
-          }
+            lifetime: 0,
+          },
         });
       }
 
@@ -59,7 +59,10 @@ class MemberScoringService {
 
       // 3. Interaction Score (20% weight)
       if (includeInteractions && creatorId) {
-        const interactionScore = await this._calculateInteractionScore(memberId, creatorId);
+        const interactionScore = await this._calculateInteractionScore(
+          memberId,
+          creatorId
+        );
         score += interactionScore * 0.2;
         scoreBreakdown.interaction = interactionScore;
       }
@@ -78,7 +81,7 @@ class MemberScoringService {
         score: Math.round(score),
         breakdown: scoreBreakdown,
         tier: analytics.spending.tier,
-        lastCalculated: new Date()
+        lastCalculated: new Date(),
       };
     } catch (error) {
       console.error('Error calculating member score:', error);
@@ -92,7 +95,7 @@ class MemberScoringService {
   static async determineSpendingTier(memberId, period = 'last30Days') {
     try {
       const analytics = await MemberAnalytics.findOne({ member: memberId });
-      
+
       if (!analytics) {
         return 'new';
       }
@@ -118,12 +121,12 @@ class MemberScoringService {
   static async predictLifetimeValue(memberId) {
     try {
       const analytics = await MemberAnalytics.findOne({ member: memberId });
-      
+
       if (!analytics) {
         return {
           predicted: 0,
           confidence: 0,
-          factors: []
+          factors: [],
         };
       }
 
@@ -131,28 +134,34 @@ class MemberScoringService {
       const purchases = await Transaction.find({
         member: memberId,
         status: 'completed',
-        type: { $in: ['purchase', 'tip', 'unlock'] }
+        type: { $in: ['purchase', 'tip', 'unlock'] },
       }).sort({ createdAt: 1 });
 
       if (purchases.length === 0) {
         return {
           predicted: 0,
           confidence: 0,
-          factors: ['No purchase history']
+          factors: ['No purchase history'],
         };
       }
 
       // Calculate key metrics
       const firstPurchase = purchases[0].createdAt;
       const lastPurchase = purchases[purchases.length - 1].createdAt;
-      const membershipDays = Math.max(1, (lastPurchase - firstPurchase) / (1000 * 60 * 60 * 24));
+      const membershipDays = Math.max(
+        1,
+        (lastPurchase - firstPurchase) / (1000 * 60 * 60 * 24)
+      );
       const purchaseFrequency = purchases.length / membershipDays;
       const avgPurchaseValue = analytics.spending.lifetime / purchases.length;
-      
+
       // Calculate velocity
       const recentSpending = analytics.spending.last30Days;
       const previousSpending = analytics.spending.last90Days - recentSpending;
-      const velocity = previousSpending > 0 ? (recentSpending - previousSpending) / previousSpending : 0;
+      const velocity =
+        previousSpending > 0
+          ? (recentSpending - previousSpending) / previousSpending
+          : 0;
 
       // Predict based on patterns
       let predicted = 0;
@@ -162,7 +171,7 @@ class MemberScoringService {
       // Base prediction on current run rate
       const dailyRunRate = analytics.spending.last30Days / 30;
       const projectedYearlyValue = dailyRunRate * 365;
-      
+
       // Adjust based on tier
       let tierMultiplier = 1;
       switch (analytics.spending.tier) {
@@ -204,7 +213,11 @@ class MemberScoringService {
       }
 
       // Calculate final prediction
-      predicted = projectedYearlyValue * tierMultiplier * velocityMultiplier * activityMultiplier;
+      predicted =
+        projectedYearlyValue *
+        tierMultiplier *
+        velocityMultiplier *
+        activityMultiplier;
 
       // Calculate confidence based on data quality
       if (purchases.length >= 10 && membershipDays >= 30) {
@@ -219,7 +232,7 @@ class MemberScoringService {
 
       // Adjust confidence based on consistency
       const purchaseConsistency = this._calculatePurchaseConsistency(purchases);
-      confidence = Math.min(95, confidence + (purchaseConsistency * 10));
+      confidence = Math.min(95, confidence + purchaseConsistency * 10);
 
       return {
         predicted: Math.round(predicted),
@@ -230,15 +243,15 @@ class MemberScoringService {
           avgPurchaseValue: Math.round(avgPurchaseValue * 100) / 100,
           purchaseFrequency: Math.round(purchaseFrequency * 100) / 100,
           velocity: Math.round(velocity * 100) / 100,
-          membershipDays: Math.round(membershipDays)
-        }
+          membershipDays: Math.round(membershipDays),
+        },
       };
     } catch (error) {
       console.error('Error predicting lifetime value:', error);
       return {
         predicted: 0,
         confidence: 0,
-        factors: ['Error calculating prediction']
+        factors: ['Error calculating prediction'],
       };
     }
   }
@@ -253,7 +266,7 @@ class MemberScoringService {
         minScore = 60,
         includeNew = true,
         includeRising = true,
-        includeWhales = true
+        includeWhales = true,
       } = options;
 
       const highPotentialMembers = [];
@@ -263,16 +276,18 @@ class MemberScoringService {
         const whales = await MemberAnalytics.find({
           'spending.tier': { $in: ['whale', 'vip'] },
           'privacy.discoverable': true,
-          'privacy.blockedCreators': { $ne: creatorId }
+          'privacy.blockedCreators': { $ne: creatorId },
         })
-        .limit(Math.floor(limit / 3))
-        .populate('member', 'username email');
+          .limit(Math.floor(limit / 3))
+          .populate('member', 'username email');
 
-        highPotentialMembers.push(...whales.map(m => ({
-          ...m.toObject(),
-          reason: 'High spender',
-          priority: 'critical'
-        })));
+        highPotentialMembers.push(
+          ...whales.map(m => ({
+            ...m.toObject(),
+            reason: 'High spender',
+            priority: 'critical',
+          }))
+        );
       }
 
       // 2. Find rising stars (increasing velocity)
@@ -281,16 +296,18 @@ class MemberScoringService {
           'spending.velocity.trend': 'increasing',
           'spending.last30Days': { $gte: 50 },
           'privacy.discoverable': true,
-          'privacy.blockedCreators': { $ne: creatorId }
+          'privacy.blockedCreators': { $ne: creatorId },
         })
-        .limit(Math.floor(limit / 3))
-        .populate('member', 'username email');
+          .limit(Math.floor(limit / 3))
+          .populate('member', 'username email');
 
-        highPotentialMembers.push(...risingStars.map(m => ({
-          ...m.toObject(),
-          reason: 'Rising spender',
-          priority: 'high'
-        })));
+        highPotentialMembers.push(
+          ...risingStars.map(m => ({
+            ...m.toObject(),
+            reason: 'Rising spender',
+            priority: 'high',
+          }))
+        );
       }
 
       // 3. Find engaged new members
@@ -300,28 +317,30 @@ class MemberScoringService {
           'activity.level': { $in: ['active', 'very-active'] },
           'privacy.discoverable': true,
           'privacy.blockedCreators': { $ne: creatorId },
-          createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
+          createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
         })
-        .limit(Math.floor(limit / 3))
-        .populate('member', 'username email');
+          .limit(Math.floor(limit / 3))
+          .populate('member', 'username email');
 
-        highPotentialMembers.push(...engagedNew.map(m => ({
-          ...m.toObject(),
-          reason: 'Engaged newcomer',
-          priority: 'medium'
-        })));
+        highPotentialMembers.push(
+          ...engagedNew.map(m => ({
+            ...m.toObject(),
+            reason: 'Engaged newcomer',
+            priority: 'medium',
+          }))
+        );
       }
 
       // Calculate scores for all
       const scoredMembers = await Promise.all(
-        highPotentialMembers.map(async (member) => {
+        highPotentialMembers.map(async member => {
           const score = await this.calculateMemberScore(member.member._id, {
-            creatorId
+            creatorId,
           });
           return {
             ...member,
             score: score.score,
-            scoreBreakdown: score.breakdown
+            scoreBreakdown: score.breakdown,
           };
         })
       );
@@ -343,12 +362,12 @@ class MemberScoringService {
   static async assessChurnRisk(memberId) {
     try {
       const analytics = await MemberAnalytics.findOne({ member: memberId });
-      
+
       if (!analytics) {
         return {
           risk: 'unknown',
           score: 0,
-          factors: ['No analytics data']
+          factors: ['No analytics data'],
         };
       }
 
@@ -358,7 +377,7 @@ class MemberScoringService {
       // Check activity decline
       const lastActive = new Date(analytics.activity.lastActive);
       const daysSinceActive = (Date.now() - lastActive) / (1000 * 60 * 60 * 24);
-      
+
       if (daysSinceActive > 30) {
         riskScore += 40;
         factors.push('Inactive for 30+ days');
@@ -385,11 +404,12 @@ class MemberScoringService {
       // Check purchase recency
       const lastPurchase = await Transaction.findOne({
         member: memberId,
-        status: 'completed'
+        status: 'completed',
       }).sort({ createdAt: -1 });
 
       if (lastPurchase) {
-        const daysSincePurchase = (Date.now() - lastPurchase.createdAt) / (1000 * 60 * 60 * 24);
+        const daysSincePurchase =
+          (Date.now() - lastPurchase.createdAt) / (1000 * 60 * 60 * 24);
         if (daysSincePurchase > 60) {
           riskScore += 30;
           factors.push('No purchase in 60+ days');
@@ -429,15 +449,15 @@ class MemberScoringService {
         spending: {
           tier: analytics.spending.tier,
           last30Days: analytics.spending.last30Days,
-          trend: analytics.spending.velocity.trend
-        }
+          trend: analytics.spending.velocity.trend,
+        },
       };
     } catch (error) {
       console.error('Error assessing churn risk:', error);
       return {
         risk: 'unknown',
         score: 0,
-        factors: ['Error calculating risk']
+        factors: ['Error calculating risk'],
       };
     }
   }
@@ -445,7 +465,7 @@ class MemberScoringService {
   // Private helper methods
   static _calculateSpendingScore(spending) {
     let score = 0;
-    
+
     // Tier-based scoring
     const tierScores = {
       whale: 100,
@@ -453,7 +473,7 @@ class MemberScoringService {
       regular: 60,
       occasional: 40,
       casual: 20,
-      new: 10
+      new: 10,
     };
     score = tierScores[spending.tier] || 0;
 
@@ -468,18 +488,18 @@ class MemberScoringService {
   static _calculateActivityScore(activity) {
     const levelScores = {
       'very-active': 100,
-      'active': 75,
-      'moderate': 50,
-      'low': 25,
-      'inactive': 0
+      active: 75,
+      moderate: 50,
+      low: 25,
+      inactive: 0,
     };
-    
+
     let score = levelScores[activity.level] || 0;
 
     // Adjust for recency
     const lastActive = new Date(activity.lastActive);
     const hoursSinceActive = (Date.now() - lastActive) / (1000 * 60 * 60);
-    
+
     if (hoursSinceActive < 1) score = Math.min(100, score + 20);
     else if (hoursSinceActive < 24) score = Math.min(100, score + 10);
     else if (hoursSinceActive > 168) score = Math.max(0, score - 20);
@@ -492,7 +512,7 @@ class MemberScoringService {
       const interactions = await MemberInteraction.find({
         member: memberId,
         creator: creatorId,
-        createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
+        createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
       });
 
       if (interactions.length === 0) return 0;
@@ -521,10 +541,10 @@ class MemberScoringService {
 
     const trendScores = {
       'rapid-growth': 100,
-      'increasing': 80,
-      'stable': 50,
-      'decreasing': 20,
-      'rapid-decline': 0
+      increasing: 80,
+      stable: 50,
+      decreasing: 20,
+      'rapid-decline': 0,
     };
 
     return trendScores[spending.velocity.trend] || 50;
@@ -535,17 +555,20 @@ class MemberScoringService {
 
     const intervals = [];
     for (let i = 1; i < purchases.length; i++) {
-      const days = (purchases[i].createdAt - purchases[i-1].createdAt) / (1000 * 60 * 60 * 24);
+      const days =
+        (purchases[i].createdAt - purchases[i - 1].createdAt) /
+        (1000 * 60 * 60 * 24);
       intervals.push(days);
     }
 
     const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-    const variance = intervals.reduce((sum, interval) => {
-      return sum + Math.pow(interval - avgInterval, 2);
-    }, 0) / intervals.length;
+    const variance =
+      intervals.reduce((sum, interval) => {
+        return sum + Math.pow(interval - avgInterval, 2);
+      }, 0) / intervals.length;
 
     const stdDev = Math.sqrt(variance);
-    const consistency = Math.max(0, 1 - (stdDev / avgInterval));
+    const consistency = Math.max(0, 1 - stdDev / avgInterval);
 
     return consistency;
   }

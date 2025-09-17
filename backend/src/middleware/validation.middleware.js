@@ -6,7 +6,7 @@ const validator = require('validator');
 // ==========================================
 
 // XSS sanitization function
-const sanitizeInput = (value) => {
+const sanitizeInput = value => {
   if (!value) return value;
   // Remove any HTML tags and scripts
   return validator.escape(value.trim());
@@ -14,18 +14,17 @@ const sanitizeInput = (value) => {
 
 // Handle validation errors
 const handleValidationErrors = (req, res, next) => {
-  
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
       success: false,
       errors: errors.array().map(err => ({
         field: err.param,
-        message: err.msg
-      }))
+        message: err.msg,
+      })),
     });
   }
-  
+
   next();
 };
 
@@ -52,7 +51,9 @@ exports.validateMemberRegistration = [
     .isLength({ min: 3, max: 30 })
     .withMessage('Username must be 3-30 characters')
     .matches(/^[a-zA-Z0-9_-]+$/)
-    .withMessage('Username can only contain letters, numbers, underscore, and hyphen')
+    .withMessage(
+      'Username can only contain letters, numbers, underscore, and hyphen'
+    )
     .customSanitizer(sanitizeInput),
   body('displayName')
     .optional()
@@ -68,12 +69,15 @@ exports.validateMemberRegistration = [
   body('birthDate')
     .isISO8601()
     .withMessage('Valid date required')
-    .custom((value) => {
+    .custom(value => {
       const birth = new Date(value);
       const today = new Date();
       let age = today.getFullYear() - birth.getFullYear();
       const monthDiff = today.getMonth() - birth.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birth.getDate())
+      ) {
         age--;
       }
       if (age < 18) throw new Error('Must be at least 18 years old');
@@ -84,7 +88,7 @@ exports.validateMemberRegistration = [
     .isBoolean()
     .custom(value => value === true)
     .withMessage('Must agree to terms and conditions'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 // Creator Registration - matches your actual fields
@@ -100,7 +104,9 @@ exports.validateCreatorRegistration = [
     .isLength({ min: 8, max: 128 })
     .withMessage('Password must be 8-128 characters')
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/)
-    .withMessage('Password must contain uppercase, lowercase, number, and special character'),
+    .withMessage(
+      'Password must contain uppercase, lowercase, number, and special character'
+    ),
   body('confirmPassword')
     .custom((value, { req }) => value === req.body.password)
     .withMessage('Passwords do not match'),
@@ -110,7 +116,9 @@ exports.validateCreatorRegistration = [
     .isLength({ min: 3, max: 30 })
     .withMessage('Username must be 3-30 characters')
     .matches(/^[a-zA-Z0-9_-]+$/)
-    .withMessage('Username can only contain letters, numbers, underscore, and hyphen')
+    .withMessage(
+      'Username can only contain letters, numbers, underscore, and hyphen'
+    )
     .customSanitizer(sanitizeInput),
   body('displayName')
     .trim()
@@ -120,12 +128,15 @@ exports.validateCreatorRegistration = [
   body('birthDate')
     .isISO8601()
     .withMessage('Valid date required')
-    .custom((value) => {
+    .custom(value => {
       const birth = new Date(value);
       const today = new Date();
       let age = today.getFullYear() - birth.getFullYear();
       const monthDiff = today.getMonth() - birth.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birth.getDate())
+      ) {
         age--;
       }
       if (age < 18) throw new Error('Must be at least 18 years old');
@@ -149,10 +160,8 @@ exports.validateCreatorRegistration = [
     .isBoolean()
     .custom(value => value === true)
     .withMessage('Must confirm age requirement'),
-  body('taxInfoConsent')
-    .optional()
-    .isBoolean(),
-  handleValidationErrors
+  body('taxInfoConsent').optional().isBoolean(),
+  handleValidationErrors,
 ];
 
 // Login validation
@@ -167,7 +176,7 @@ exports.validateLogin = [
     .withMessage('Password required')
     .isLength({ max: 128 })
     .withMessage('Invalid password'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 // ==========================================
@@ -177,7 +186,7 @@ exports.validateLogin = [
 exports.validatePayment = [
   body('amount')
     .optional()
-    .isFloat({ min: 0.50, max: 10000 })
+    .isFloat({ min: 0.5, max: 10000 })
     .withMessage('Amount must be between $0.50 and $10,000'),
   body('currency')
     .optional()
@@ -200,23 +209,21 @@ exports.validatePayment = [
     .optional()
     .isMongoId()
     .withMessage('Valid member ID required'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 exports.validateTip = [
   body('amount')
     .isFloat({ min: 1, max: 500 })
     .withMessage('Tip amount must be between $1 and $500'),
-  body('creatorId')
-    .isMongoId()
-    .withMessage('Valid creator ID required'),
+  body('creatorId').isMongoId().withMessage('Valid creator ID required'),
   body('message')
     .optional()
     .trim()
     .isLength({ max: 200 })
     .withMessage('Message must be under 200 characters')
     .customSanitizer(sanitizeInput),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 exports.validateCredits = [
@@ -228,7 +235,7 @@ exports.validateCredits = [
     .optional()
     .isInt({ min: 1, max: 10000 })
     .withMessage('Credits must be between 1 and 10,000'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 // ==========================================
@@ -271,7 +278,7 @@ exports.validateProfileUpdate = [
     .optional()
     .isObject()
     .withMessage('Preferences must be an object'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 exports.validateCreator = [
@@ -289,9 +296,17 @@ exports.validateCreator = [
     .withMessage('Maximum 10 categories allowed'),
   body('categories.*')
     .optional()
-    .isIn(['lingerie', 'bikini', 'artistic', 'fitness', 'cosplay', 'alternative', 'glamour'])
+    .isIn([
+      'lingerie',
+      'bikini',
+      'artistic',
+      'fitness',
+      'cosplay',
+      'alternative',
+      'glamour',
+    ])
     .withMessage('Invalid category'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 // ==========================================
@@ -331,7 +346,7 @@ exports.validateContent = [
     .trim()
     .isLength({ max: 30 })
     .customSanitizer(sanitizeInput),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 // ==========================================
@@ -345,14 +360,12 @@ exports.validateMessage = [
     .isLength({ min: 1, max: 1000 })
     .withMessage('Message must be 1-1000 characters')
     .customSanitizer(sanitizeInput),
-  body('recipientId')
-    .isMongoId()
-    .withMessage('Valid recipient ID required'),
+  body('recipientId').isMongoId().withMessage('Valid recipient ID required'),
   body('attachments')
     .optional()
     .isArray({ max: 5 })
     .withMessage('Maximum 5 attachments allowed'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 // ==========================================
@@ -386,7 +399,7 @@ exports.validateSearch = [
     .optional()
     .isFloat({ min: 0 })
     .withMessage('Maximum price must be positive'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 exports.validateFilters = [
@@ -414,7 +427,18 @@ exports.validateFilters = [
     .withMessage('Body types must be an array'),
   body('bodyTypes.*')
     .optional()
-    .isIn(['Slim', 'Slender', 'Athletic', 'Average', 'Curvy', 'Plus Size', 'BBW', 'Muscular', 'Dad Bod', 'Mom Bod'])
+    .isIn([
+      'Slim',
+      'Slender',
+      'Athletic',
+      'Average',
+      'Curvy',
+      'Plus Size',
+      'BBW',
+      'Muscular',
+      'Dad Bod',
+      'Mom Bod',
+    ])
     .withMessage('Invalid body type'),
   body('onlineOnly')
     .optional()
@@ -424,7 +448,7 @@ exports.validateFilters = [
     .optional()
     .isBoolean()
     .withMessage('New members only must be a boolean'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 // ==========================================
@@ -446,18 +470,24 @@ exports.validateAdminAction = [
     .optional()
     .isIn(['low', 'medium', 'high', 'critical'])
     .withMessage('Invalid severity level'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 exports.validateReport = [
-  body('targetId')
-    .isMongoId()
-    .withMessage('Valid target ID required'),
+  body('targetId').isMongoId().withMessage('Valid target ID required'),
   body('targetType')
     .isIn(['user', 'content', 'message', 'comment'])
     .withMessage('Invalid target type'),
   body('reason')
-    .isIn(['spam', 'harassment', 'inappropriate', 'scam', 'underage', 'copyright', 'other'])
+    .isIn([
+      'spam',
+      'harassment',
+      'inappropriate',
+      'scam',
+      'underage',
+      'copyright',
+      'other',
+    ])
     .withMessage('Invalid report reason'),
   body('description')
     .optional()
@@ -465,7 +495,7 @@ exports.validateReport = [
     .isLength({ min: 10, max: 500 })
     .withMessage('Description must be 10-500 characters')
     .customSanitizer(sanitizeInput),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 // ==========================================
@@ -473,20 +503,14 @@ exports.validateReport = [
 // ==========================================
 
 exports.validateMongoId = (paramName = 'id') => [
-  param(paramName)
-    .isMongoId()
-    .withMessage(`Invalid ${paramName}`),
-  handleValidationErrors
+  param(paramName).isMongoId().withMessage(`Invalid ${paramName}`),
+  handleValidationErrors,
 ];
 
-exports.validateMultipleIds = (fieldName) => [
-  body(fieldName)
-    .isArray()
-    .withMessage(`${fieldName} must be an array`),
-  body(`${fieldName}.*`)
-    .isMongoId()
-    .withMessage(`Invalid ID in ${fieldName}`),
-  handleValidationErrors
+exports.validateMultipleIds = fieldName => [
+  body(fieldName).isArray().withMessage(`${fieldName} must be an array`),
+  body(`${fieldName}.*`).isMongoId().withMessage(`Invalid ID in ${fieldName}`),
+  handleValidationErrors,
 ];
 
 // ==========================================
@@ -499,7 +523,7 @@ exports.validatePhoneNumber = [
     .trim()
     .isMobilePhone('any')
     .withMessage('Invalid phone number'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 exports.validateCoordinates = [
@@ -515,7 +539,7 @@ exports.validateCoordinates = [
     .optional()
     .isFloat({ min: -90, max: 90 })
     .withMessage('Invalid latitude'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 exports.validatePagination = [
@@ -527,7 +551,7 @@ exports.validatePagination = [
     .optional()
     .isInt({ min: 1, max: 100 })
     .withMessage('Limit must be between 1 and 100'),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 // ==========================================

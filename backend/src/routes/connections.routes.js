@@ -7,7 +7,7 @@ const {
   // Swipe/Discovery
   getSwipeStack,
   swipeAction,
-  
+
   // Connections Management (MyConnections page)
   getConnections,
   getConnectionStats,
@@ -17,17 +17,17 @@ const {
   archiveConnection,
   blockConnection,
   bulkConnectionAction,
-  
+
   // Legacy Match Support
   getMatches,
   getMatch,
   unmatch,
-  
+
   // Messaging
   sendMessage,
   getMessages,
   markMessagesAsRead,
-  deleteMessage
+  deleteMessage,
 } = require('../controllers/connections.controller');
 
 // Debug middleware to see if routes are being hit
