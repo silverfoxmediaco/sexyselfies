@@ -422,6 +422,7 @@
   justify-content: center;
   align-items: center;
   gap: var(--space-sm);
+  margin-bottom: 20px;
 }
 
 .member-login-btn {
