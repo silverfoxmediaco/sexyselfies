@@ -145,6 +145,10 @@
   font-family: var(--font-sans);
 }
 
+.hero-title span {
+  display: block;
+}
+
 .gradient-text {
   background: var(--brand-gradient);
   -webkit-background-clip: text;
