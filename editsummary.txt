@@ -2964,5 +2964,65 @@ Status: FIXED ✅ - Creator registration data now properly displays in profile
 - ✅ **editsummary.txt**: Complete session changelog (this file)
 
 Last Updated: Current Session - Documentation Cleanup
-Total Documented Changes: 96
+Total Documented Changes: 97
+
+=================================================================
+EDIT 97: Fixed Admin Session Analytics 401 Unauthorized Error
+Date: 2025-09-18 Current Session
+=================================================================
+
+Issue: Admin dashboard showing 401 Unauthorized error for session analytics endpoint
+- Error: GET /api/v1/sessions/admin/analytics?days=1 401 (Unauthorized)
+- Admin was successfully logged in (dashboard stats working)
+- Only session analytics endpoint failing with authentication error
+
+Root Cause: Authentication middleware mismatch
+- Session routes used `protectWithSession` + `authorize('admin')` middleware
+- All other admin routes use `protectAdmin` middleware directly
+- Different authentication flow for admin vs user sessions
+
+Solution: Updated session routes to use proper admin authentication
+- Added import: const { protectAdmin } = require('../middleware/admin.auth.middleware')
+- Changed /admin/analytics route: protectWithSession → protectAdmin
+- Changed /admin/cleanup route: protectWithSession → protectAdmin
+- Removed redundant authorize('admin') middleware
+
+Changes Made:
+- backend/src/routes/session.routes.js:
+  * Added protectAdmin import from admin.auth.middleware
+  * Line 40: Changed protectWithSession to protectAdmin
+  * Line 48: Changed protectWithSession to protectAdmin
+  * Removed authorize('admin') calls (redundant with protectAdmin)
+
+Status: FIXED ✅ - Admin session analytics should now authenticate properly
+
+=================================================================
+EDIT 98: Complete Update from "stageName" to "displayName" in Verification System
+Date: 2025-09-18 Current Session
+=================================================================
+
+Issue: Inconsistent field naming in admin verification system
+- Backend Creator model uses "displayName" field
+- Frontend mapped creator.displayName to verification.stageName (inconsistent naming)
+- Verification modal used "Stage Name" label and verification.stageName field
+
+Root Cause: Naming inconsistency across data flow
+- Backend field: creator.displayName
+- Frontend mapping: stageName: creator.displayName (inconsistent)
+- Modal: "Stage Name" label + verification.stageName field (double inconsistency)
+
+Solution: Complete alignment to use "displayName" throughout
+- Updated data mapping from stageName to displayName
+- Updated modal label from "Stage Name" to "Display Name"
+- Updated modal field reference from verification.stageName to verification.displayName
+
+Changes Made:
+- frontend/src/pages/AdminVerifications.jsx:
+  * Line 137: Changed stageName: creator.displayName to displayName: creator.displayName
+
+- frontend/src/components/VerificationModal.jsx:
+  * Line 109: Changed <label>Stage Name</label> to <label>Display Name</label>
+  * Line 110: Changed verification.stageName to verification.displayName
+
+Status: COMPLETED ✅ - Full consistency from backend displayName → frontend displayName
 

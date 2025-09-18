@@ -134,7 +134,7 @@ const AdminVerifications = () => {
 
     return {
       userId: creator.user?._id,
-      stageName: creator.displayName,
+      displayName: creator.displayName,
       email: creator.user?.email,
       registrationDate: creator.user?.createdAt,
       submissionDate: creator.verificationSubmittedAt,

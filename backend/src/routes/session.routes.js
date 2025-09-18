@@ -8,6 +8,7 @@ const {
   trackActivity,
   authorize,
 } = require('../middleware/auth.middleware');
+const { protectAdmin } = require('../middleware/admin.auth.middleware');
 
 const {
   getSessionAnalytics,
@@ -37,16 +38,14 @@ router.delete('/end-all-others', protectWithSession, endAllOtherSessions);
 // Platform-wide session analytics (admin only)
 router.get(
   '/admin/analytics',
-  protectWithSession,
-  authorize('admin'),
+  protectAdmin,
   getSessionAnalytics
 );
 
 // Clean up expired sessions (admin only)
 router.post(
   '/admin/cleanup',
-  protectWithSession,
-  authorize('admin'),
+  protectAdmin,
   cleanupExpiredSessions
 );
 

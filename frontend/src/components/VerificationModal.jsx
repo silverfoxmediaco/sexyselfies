@@ -106,8 +106,8 @@ const VerificationModal = ({
               <h3>Creator Information</h3>
               <div className='VerificationModal-infoGrid'>
                 <div className='VerificationModal-infoItem'>
-                  <label>Stage Name</label>
-                  <p>{verification.stageName || 'Not provided'}</p>
+                  <label>Display Name</label>
+                  <p>{verification.displayName || 'Not provided'}</p>
                 </div>
                 <div className='VerificationModal-infoItem'>
                   <label>Email</label>
