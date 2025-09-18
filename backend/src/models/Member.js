@@ -41,6 +41,12 @@ const memberSchema = new mongoose.Schema(
           enum: ['male', 'female', 'everyone'],
         },
       ],
+      bodyTypePreferences: [
+        {
+          type: String,
+          enum: ['slim', 'slender', 'athletic', 'average', 'curvy', 'plus-size', 'bbw', 'muscular', 'dad-bod', 'mom-bod'],
+        },
+      ],
       contentTypes: [
         {
           type: String,

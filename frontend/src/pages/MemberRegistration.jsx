@@ -62,6 +62,7 @@ const MemberRegistration = () => {
     // Step 3: Preferences
     orientation: 'straight',
     interestedIn: [],
+    bodyTypePreferences: [],
     ageRange: [18, 50],
     maxDistance: 25,
 
@@ -198,6 +199,29 @@ const MemberRegistration = () => {
     }));
   };
 
+  const handleBodyTypeToggle = bodyType => {
+    setFormData(prev => ({
+      ...prev,
+      bodyTypePreferences: prev.bodyTypePreferences.includes(bodyType)
+        ? prev.bodyTypePreferences.filter(bt => bt !== bodyType)
+        : [...prev.bodyTypePreferences, bodyType],
+    }));
+  };
+
+  // Body type options (matching backend enum)
+  const bodyTypeOptions = [
+    { label: 'Slim', value: 'slim' },
+    { label: 'Slender', value: 'slender' },
+    { label: 'Athletic', value: 'athletic' },
+    { label: 'Average', value: 'average' },
+    { label: 'Curvy', value: 'curvy' },
+    { label: 'Plus Size', value: 'plus-size' },
+    { label: 'BBW', value: 'bbw' },
+    { label: 'Muscular', value: 'muscular' },
+    { label: 'Dad Bod', value: 'dad-bod' },
+    { label: 'Mom Bod', value: 'mom-bod' },
+  ];
+
   // Validate current step
   const validateStep = () => {
     const newErrors = {};
@@ -319,6 +343,13 @@ const MemberRegistration = () => {
           ? new Date(formData.dateOfBirth).toISOString()
           : null,
         agreeToTerms: formData.agreedToTerms,
+        interestedIn: formData.interestedIn || [],
+        ageRange: {
+          min: formData.ageRange[0] || 18,
+          max: formData.ageRange[1] || 99,
+        },
+        orientation: formData.orientation || 'straight',
+        bodyTypePreferences: formData.bodyTypePreferences || [],
       };
 
       // API call to register using auth service
@@ -880,6 +911,34 @@ const MemberRegistration = () => {
                   }
                   className='memberreg-range'
                 />
+              </div>
+            </div>
+
+            {/* Body Type Preferences */}
+            <div className='memberreg-form-group'>
+              <label className='memberreg-label'>
+                <Users size={18} />
+                <span>Body Type Preferences</span>
+              </label>
+              <div className='memberreg-checkbox-group'>
+                {bodyTypeOptions.map(option => (
+                  <label
+                    key={option.value}
+                    className='memberreg-checkbox-option'
+                    htmlFor={`bodytype-${option.value}`}
+                  >
+                    <input
+                      type='checkbox'
+                      id={`bodytype-${option.value}`}
+                      name='bodyTypePreferences'
+                      value={option.value}
+                      checked={formData.bodyTypePreferences.includes(option.value)}
+                      onChange={() => handleBodyTypeToggle(option.value)}
+                    />
+                    <span className='checkbox-custom'></span>
+                    <span>{option.label}</span>
+                  </label>
+                ))}
               </div>
             </div>
           </motion.div>

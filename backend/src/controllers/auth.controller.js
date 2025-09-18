@@ -23,6 +23,10 @@ exports.register = async (req, res, next) => {
       phone,
       birthDate,
       agreeToTerms,
+      interestedIn,
+      ageRange,
+      orientation,
+      bodyTypePreferences,
     } = req.body;
 
     // Validate required fields for members
@@ -104,6 +108,18 @@ exports.register = async (req, res, next) => {
           phone: phone || undefined,
           agreeToTerms: true,
           profileComplete: false,
+          preferences: {
+            ageRange: {
+              min: ageRange?.min || 18,
+              max: ageRange?.max || 99,
+            },
+            interestedIn: interestedIn && Array.isArray(interestedIn) && interestedIn.length > 0
+              ? interestedIn
+              : ['everyone'],
+            bodyTypePreferences: bodyTypePreferences && Array.isArray(bodyTypePreferences) && bodyTypePreferences.length > 0
+              ? bodyTypePreferences
+              : [],
+          },
         },
       ],
       { session }
