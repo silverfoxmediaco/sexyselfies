@@ -7,18 +7,45 @@ const MemberInteraction = require('../models/MemberInteraction');
 const Creator = require('../models/Creator');
 
 // Redis client for rate limiting
-const redisClient = redis.createClient({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: process.env.REDIS_PORT || 6379,
-});
+let redisClient = null;
+let redisAvailable = false;
 
-// Connect to Redis
-redisClient.connect().catch(console.error);
+try {
+  redisClient = redis.createClient({
+    host: process.env.REDIS_HOST || 'localhost',
+    port: process.env.REDIS_PORT || 6379,
+  });
 
-const getAsync = promisify(redisClient.get).bind(redisClient);
-const setAsync = promisify(redisClient.set).bind(redisClient);
-const incrAsync = promisify(redisClient.incr).bind(redisClient);
-const expireAsync = promisify(redisClient.expire).bind(redisClient);
+  // Connect to Redis with error handling
+  redisClient.connect().then(() => {
+    redisAvailable = true;
+    console.log('✅ Redis connected for sales limits');
+  }).catch(err => {
+    console.warn('⚠️ Redis not available for sales limits, using fallback:', err.message);
+    redisAvailable = false;
+  });
+
+  redisClient.on('error', (err) => {
+    console.warn('⚠️ Redis error, falling back to memory:', err.message);
+    redisAvailable = false;
+  });
+} catch (err) {
+  console.warn('⚠️ Redis initialization failed, using fallback:', err.message);
+  redisAvailable = false;
+}
+
+// Promisified Redis methods - only if Redis is available
+let getAsync, setAsync, incrAsync, expireAsync;
+
+if (redisClient) {
+  getAsync = promisify(redisClient.get).bind(redisClient);
+  setAsync = promisify(redisClient.set).bind(redisClient);
+  incrAsync = promisify(redisClient.incr).bind(redisClient);
+  expireAsync = promisify(redisClient.expire).bind(redisClient);
+}
+
+// In-memory fallback for when Redis is not available
+const memoryStore = new Map();
 
 // ============================================
 // DAILY INTERACTION LIMITS
