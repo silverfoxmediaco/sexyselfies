@@ -77,13 +77,6 @@ const CreatorProfileSetup = () => {
     bodyType: '',
     ethnicity: '',
     languages: [],
-    showInBrowse: true, // CHANGED FROM: showInDiscovery
-    browsePreferences: {
-      // CHANGED FROM: discoveryPreferences
-      men: true,
-      women: true,
-      couples: false,
-    },
 
     // Step 3: Content & Pricing
     contentTypes: {
@@ -742,7 +735,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
           <span className='required'>*</span>
         </label>
         <div className='radio-group'>
-          {['Male', 'Female', 'Prefer not to say'].map(option => (
+          {['Male', 'Female'].map(option => (
             <label key={option} className='radio-label'>
               <input
                 type='radio'
@@ -776,7 +769,6 @@ const StepTwo = ({ formData, setFormData, errors }) => {
             'Lesbian',
             'Bisexual',
             'Pansexual',
-            'Prefer not to say',
           ].map(option => (
             <label key={option} className='radio-label'>
               <input
@@ -801,38 +793,6 @@ const StepTwo = ({ formData, setFormData, errors }) => {
         )}
       </div>
 
-      {/* Browse preferences - UPDATED FROM: Discovery preferences */}
-      <div className='form-group'>
-        <label className='form-label'>
-          I want to be browsed by {/* CHANGED FROM: discovered by */}
-        </label>
-        <div className='checkbox-group'>
-          {Object.entries({
-            men: 'Men',
-            women: 'Women',
-            couples: 'Couples',
-          }).map(([key, label]) => (
-            <label key={key} className='checkbox-label'>
-              <input
-                type='checkbox'
-                checked={formData.browsePreferences[key]} // CHANGED FROM: discoveryPreferences
-                onChange={e =>
-                  setFormData(prev => ({
-                    ...prev,
-                    browsePreferences: {
-                      // CHANGED FROM: discoveryPreferences
-                      ...prev.browsePreferences, // CHANGED FROM: discoveryPreferences
-                      [key]: e.target.checked,
-                    },
-                  }))
-                }
-              />
-              <span className='checkbox-custom'></span>
-              <span>{label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
 
       {/* Body type */}
       <div className='form-group'>

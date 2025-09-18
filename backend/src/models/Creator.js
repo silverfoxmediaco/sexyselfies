@@ -31,7 +31,7 @@ const creatorSchema = new mongoose.Schema(
     },
     orientation: {
       type: String,
-      enum: ['straight', 'gay', 'bisexual', 'pansexual', 'other'],
+      enum: ['straight', 'gay', 'lesbian', 'bisexual', 'pansexual'],
     },
     bodyType: {
       type: String,

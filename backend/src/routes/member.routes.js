@@ -118,6 +118,82 @@ router.get('/creator/:identifier', async (req, res) => {
 router.post('/purchase/:contentId', purchaseContent);
 router.get('/purchased', getPurchasedContent);
 
+// Browse creators based on member preferences only
+router.get('/browse-creators', async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const member = req.user; // Current member from auth middleware
+
+    // Import models
+    const Creator = require('../models/Creator');
+
+    // Get member's preferences
+    const memberInterestedIn = member.preferences?.interestedIn || ['everyone'];
+    const memberAgeRange = member.preferences?.ageRange || { min: 18, max: 99 };
+
+    // Build creator gender filter based on member preferences
+    let genderFilter = {};
+    if (!memberInterestedIn.includes('everyone')) {
+      const allowedGenders = [];
+      if (memberInterestedIn.includes('male')) allowedGenders.push('male');
+      if (memberInterestedIn.includes('female')) allowedGenders.push('female');
+
+      if (allowedGenders.length > 0) {
+        genderFilter = { gender: { $in: allowedGenders } };
+      }
+    }
+
+    // Base query: verified creators with complete profiles
+    const baseQuery = {
+      isVerified: true,
+      profileComplete: true,
+      age: {
+        $gte: memberAgeRange.min,
+        $lte: memberAgeRange.max
+      },
+      ...genderFilter
+    };
+
+    const creators = await Creator.find(baseQuery)
+      .select('username displayName bio profileImage age isVerified gender orientation bodyType')
+      .sort({ 'analytics.views.total': -1, createdAt: -1 }) // Popular first
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    // Transform for response
+    const transformedCreators = creators.map(creator => ({
+      id: creator._id,
+      username: creator.username,
+      displayName: creator.displayName,
+      bio: creator.bio,
+      profileImage: creator.profileImage,
+      age: creator.age,
+      isVerified: creator.isVerified,
+      gender: creator.gender,
+      orientation: creator.orientation,
+      bodyType: creator.bodyType
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: transformedCreators,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: await Creator.countDocuments(baseQuery)
+      }
+    });
+
+  } catch (error) {
+    console.error('Browse creators error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching creators',
+      error: error.message
+    });
+  }
+});
+
 // ==========================================
 // SWIPING ACTIONS
 // ==========================================

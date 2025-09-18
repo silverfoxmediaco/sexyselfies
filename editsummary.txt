@@ -3222,3 +3222,192 @@ Benefits:
 
 Status: IMPLEMENTED ✅ - Full Payments & Payouts section functional
 
+=================================================================
+EDIT 104: Fixed Gender and Orientation Form Options
+Date: 2025-09-18 Current Session
+=================================================================
+
+Issue: Frontend/backend enum mismatches causing profile setup failures
+- Gender: Frontend offered "Prefer not to say" but backend only accepts ['male', 'female']
+- Orientation: Frontend sent "prefer not to say" but backend expects "other"
+- Users selecting invalid options would get MongoDB validation errors
+- Business logic requires clear identification for proper discovery matching
+
+Root Cause: Form options didn't match database enum constraints
+- Gender enum: ['male', 'female'] - missing "prefer not to say"
+- Orientation enum: ['straight', 'gay', 'bisexual', 'pansexual', 'other'] - has "other" not "prefer not to say"
+- Frontend toLowerCase() converted options but backend rejected invalid enum values
+
+Solution: Aligned frontend options with backend requirements and business logic
+- Removed "Prefer not to say" from gender (business requires clear gender for matching)
+- Changed "Prefer not to say" to "Other" for orientation (matches backend enum)
+- Maintains user choice while ensuring data compatibility
+
+Changes Made:
+- frontend/src/pages/CreatorProfileSetup.jsx:
+  * Line 745: Changed gender options from ['Male', 'Female', 'Prefer not to say'] to ['Male', 'Female']
+  * Line 779: Changed orientation from 'Prefer not to say' to 'Other'
+  * Both changes ensure frontend matches backend enum constraints
+
+Benefits:
+- ✅ Eliminates MongoDB validation errors during profile setup
+- ✅ Ensures all user selections are successfully saved
+- ✅ Maintains business requirement for clear gender identification
+- ✅ Provides "Other" option for orientation flexibility while matching backend
+
+Status: FIXED ✅ - Form options now match backend enum constraints
+
+=================================================================
+EDIT 105: Removed Vague "Other" Option from Orientation
+Date: 2025-09-18 Current Session
+=================================================================
+
+Issue: "Other" orientation option was too vague for business matching logic
+- "Other" doesn't provide meaningful data for discovery algorithms
+- Business requires specific orientations for proper member-creator matching
+- Vague categories reduce matching accuracy and user experience
+
+Solution: Removed "Other" and kept only specific, actionable orientations
+- Removed "Other" from frontend form options
+- Updated backend enum to remove 'other' and ensure 'lesbian' is included
+- Now offers clear, specific orientation choices that enable precise matching
+
+Changes Made:
+- frontend/src/pages/CreatorProfileSetup.jsx:
+  * Line 778: Removed 'Other' from orientation options array
+  * Final options: ['Straight', 'Gay', 'Lesbian', 'Bisexual', 'Pansexual']
+
+- backend/src/models/Creator.js:
+  * Line 34: Updated enum from ['straight', 'gay', 'bisexual', 'pansexual', 'other']
+  * Line 34: New enum: ['straight', 'gay', 'lesbian', 'bisexual', 'pansexual']
+  * Removed vague 'other', ensured 'lesbian' is properly included
+
+Benefits:
+- ✅ Clear, specific orientation data for matching algorithms
+- ✅ No vague categories that provide no business value
+- ✅ Better member-creator discovery based on actual preferences
+- ✅ Frontend and backend perfectly aligned with specific options
+
+Status: FIXED ✅ - Only specific, meaningful orientation options remain
+
+=================================================================
+EDIT 106: Implemented Functional Browse Preferences System
+Date: 2025-09-18 Current Session
+=================================================================
+
+Issue: Browse preferences were collecting data but had no backend implementation
+- Frontend had "Couples" option which was too narrow in scope
+- Backend had browsePreferences schema but no filtering logic
+- Members could see all creators regardless of creator's browse preferences
+- No actual functionality behind "I want to be browsed by" settings
+
+Root Cause: Missing backend logic to enforce creator browse preferences
+- Data was saved to database but never used in discovery/browsing
+- No endpoint existed for filtered creator browsing
+- Member gender wasn't being used to respect creator preferences
+
+Solution: Complete browse preferences system with "All" logic
+- Changed "Couples" to "All" for broader inclusivity
+- Implemented full backend filtering logic
+- Created dedicated browse-creators endpoint with intelligent filtering
+
+Changes Made:
+- frontend/src/pages/CreatorProfileSetup.jsx:
+  * Line 812: Changed options from {men: 'Men', women: 'Women', couples: 'Couples'} to {men: 'Men', women: 'Women', all: 'All'}
+  * Line 85: Updated initial state from couples: false to all: false
+
+- backend/src/models/CreatorProfile.js:
+  * Line 622: Changed couples field to all field
+  * Removed nonBinary field (lines 626-629)
+  * Final schema: {men: Boolean, women: Boolean, all: Boolean}
+
+- backend/src/routes/member.routes.js:
+  * Added /browse-creators endpoint (lines 122-201)
+  * Implemented intelligent filtering based on member gender and creator preferences
+  * Query logic: creator.all OR creator[memberGender] must be true
+  * Returns paginated, filtered results respecting creator browse preferences
+
+Browse Logic Implementation:
+- "All" checked = Everyone can browse this creator (universal access)
+- "Men" checked = Male members can browse this creator
+- "Women" checked = Female members can browse this creator
+- Multiple selections = Additive (Men + Women = both genders can browse)
+- No selection = Creator not discoverable (safety default)
+
+API Endpoint: GET /api/member/browse-creators
+- Query params: page, limit, filter
+- Authentication: Required (member role)
+- Returns: Filtered creators based on browse preferences
+- Respects: Creator verification, profile completion, and browse preferences
+
+Benefits:
+- ✅ Creators have real control over their audience
+- ✅ Browse preferences actually functional, not just UI decoration
+- ✅ "All" option provides maximum reach when desired
+- ✅ Intelligent filtering respects both member gender and creator preferences
+- ✅ Scalable system ready for additional filters (age, location, etc.)
+
+Status: IMPLEMENTED ✅ - Full browse preferences system functional
+
+=================================================================
+EDIT 107: Removed Browse Preferences - Simplified to Member-Driven Logic
+Date: 2025-09-18 Current Session
+=================================================================
+
+Issue: "I want to be browsed by" logic was unnecessarily complex for content platform
+- Creator-side restrictions don't make business sense for content monetization
+- Complex orientation matching logic was more suited for dating than content consumption
+- Member should control what they see, not creator controlling who sees them
+- Simple logic: "I want to see slim women" → show all slim women (regardless of orientation)
+
+Root Cause: Treating content platform like dating platform
+- Browse preferences assumed romantic compatibility requirements
+- Creator restrictions limited revenue potential
+- Member preferences should drive discovery, not creator gatekeeping
+- Content consumption doesn't require mutual attraction logic
+
+Solution: Complete removal of browse preferences system
+- Simplified to pure member-driven filtering
+- Removed all creator-side restrictions and UI
+- Focus on member preferences: gender, age, body type interests
+- Creator orientation irrelevant for content consumption
+
+Changes Made:
+- frontend/src/pages/CreatorProfileSetup.jsx:
+  * Removed entire "I want to be browsed by" form section (lines 804-836)
+  * Removed browsePreferences from form state initialization (lines 80-86)
+  * Cleaned profile setup to focus on creator identity, not audience restrictions
+
+- backend/src/models/CreatorProfile.js:
+  * Removed browsePreferences schema field completely (lines 613-625)
+  * Simplified browseSettings to focus on visibility only
+
+- backend/src/routes/member.routes.js:
+  * Completely rewrote /browse-creators endpoint (lines 122-195)
+  * Removed complex orientation compatibility logic
+  * Simplified to member preference filtering only
+  * Uses member.preferences.interestedIn and ageRange
+
+New Simple Logic:
+- Member interested in "female" → sees all female creators (straight, gay, bi, doesn't matter)
+- Member interested in "male" → sees all male creators
+- Member interested in "everyone" → sees all creators
+- Member age range 25-35 → only shows creators aged 25-35
+- Creator gender and age matter, creator orientation does not
+
+API Changes:
+- GET /api/member/browse-creators now filters by:
+  * Member's interestedIn preferences
+  * Member's age range preferences
+  * Creator verification and profile completion status
+- Returns: All qualifying creators without creator-side restrictions
+
+Business Benefits:
+- ✅ Maximum revenue potential for creators (no audience restrictions)
+- ✅ Simple, intuitive member experience
+- ✅ Content-focused rather than dating-focused logic
+- ✅ Eliminates complex orientation matching edge cases
+- ✅ Member controls their feed completely
+
+Status: SIMPLIFIED ✅ - Member-driven discovery with no creator restrictions
+

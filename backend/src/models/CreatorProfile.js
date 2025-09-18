@@ -610,24 +610,6 @@ const creatorProfileSchema = new mongoose.Schema(
         type: Boolean,
         default: true,
       },
-      browsePreferences: {
-        men: {
-          type: Boolean,
-          default: true,
-        },
-        women: {
-          type: Boolean,
-          default: true,
-        },
-        couples: {
-          type: Boolean,
-          default: false,
-        },
-        nonBinary: {
-          type: Boolean,
-          default: true,
-        },
-      },
       ageRange: {
         min: {
           type: Number,
