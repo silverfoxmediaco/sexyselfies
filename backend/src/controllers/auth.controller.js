@@ -22,6 +22,7 @@ exports.register = async (req, res, next) => {
       displayName,
       phone,
       birthDate,
+      gender,
       agreeToTerms,
       interestedIn,
       ageRange,
@@ -106,6 +107,7 @@ exports.register = async (req, res, next) => {
           displayName: displayName || username,
           birthDate: new Date(birthDate),
           phone: phone || undefined,
+          gender,
           agreeToTerms: true,
           profileComplete: false,
           preferences: {

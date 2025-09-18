@@ -48,6 +48,46 @@ const memoryExpire = async (key, ttlSeconds) => {
   return 1;
 };
 
+const memoryTtl = async (key) => {
+  const item = memoryStore.get(key);
+  if (!item || !item.expiry) return -1;
+
+  const now = Date.now();
+  if (now > item.expiry) {
+    memoryStore.delete(key);
+    return -2; // Expired
+  }
+
+  return Math.floor((item.expiry - now) / 1000); // Seconds remaining
+};
+
+const memoryKeys = async (pattern) => {
+  const keys = Array.from(memoryStore.keys());
+  // Simple pattern matching - convert Redis pattern to regex
+  const regexPattern = pattern.replace(/\*/g, '.*');
+  const regex = new RegExp(regexPattern);
+  return keys.filter(key => regex.test(key));
+};
+
+const memoryDel = async (keys) => {
+  if (Array.isArray(keys)) {
+    let deleted = 0;
+    keys.forEach(key => {
+      if (memoryStore.has(key)) {
+        memoryStore.delete(key);
+        deleted++;
+      }
+    });
+    return deleted;
+  } else {
+    if (memoryStore.has(keys)) {
+      memoryStore.delete(keys);
+      return 1;
+    }
+    return 0;
+  }
+};
+
 // ============================================
 // DAILY INTERACTION LIMITS
 // ============================================
@@ -116,7 +156,7 @@ exports.checkMessageQuota = async (req, res, next) => {
 
     // Check hourly limit
     const hourlyKey = `limit:${creatorId}:messages:hourly:${getCurrentHour()}`;
-    const hourlyCount = (await getAsync(hourlyKey)) || 0;
+    const hourlyCount = (await memoryGet(hourlyKey)) || 0;
 
     if (parseInt(hourlyCount) >= hourlyLimit) {
       return res.status(429).json({
@@ -131,7 +171,7 @@ exports.checkMessageQuota = async (req, res, next) => {
 
     // Check daily limit
     const dailyKey = `limit:${creatorId}:messages:${getTodayDateString()}`;
-    const dailyCount = (await getAsync(dailyKey)) || 0;
+    const dailyCount = (await memoryGet(dailyKey)) || 0;
 
     if (parseInt(dailyCount) >= dailyLimit) {
       return res.status(429).json({
@@ -145,10 +185,10 @@ exports.checkMessageQuota = async (req, res, next) => {
     }
 
     // Increment both counters
-    await incrAsync(hourlyKey);
-    await expireAsync(hourlyKey, 3600); // 1 hour
-    await incrAsync(dailyKey);
-    await expireAsync(dailyKey, getSecondsUntilMidnight());
+    await memoryIncr(hourlyKey);
+    await memoryExpire(hourlyKey, 3600); // 1 hour
+    await memoryIncr(dailyKey);
+    await memoryExpire(dailyKey, getSecondsUntilMidnight());
 
     next();
   } catch (error) {
@@ -181,10 +221,10 @@ exports.preventSpam = async (req, res, next) => {
 
     // Check cooldown
     const cooldownKey = `cooldown:${creatorId}:${memberId}:${interactionType}`;
-    const isOnCooldown = await getAsync(cooldownKey);
+    const isOnCooldown = await memoryGet(cooldownKey);
 
     if (isOnCooldown) {
-      const remainingTime = await redisClient.ttl(cooldownKey);
+      const remainingTime = await memoryTtl(cooldownKey);
 
       return res.status(429).json({
         success: false,
@@ -195,7 +235,7 @@ exports.preventSpam = async (req, res, next) => {
     }
 
     // Set cooldown
-    await setAsync(cooldownKey, '1', 'EX', cooldownPeriod);
+    await memorySet(cooldownKey, '1', cooldownPeriod);
 
     next();
   } catch (error) {
@@ -226,7 +266,7 @@ exports.bulkActionLimits = async (req, res, next) => {
     // Check bulk action limit
     const bulkLimit = creator.verificationLevel === 'vip' ? 10 : 3;
     const bulkKey = `limit:${creatorId}:bulk:${getTodayDateString()}`;
-    const bulkCount = (await getAsync(bulkKey)) || 0;
+    const bulkCount = (await memoryGet(bulkKey)) || 0;
 
     if (parseInt(bulkCount) >= bulkLimit) {
       return res.status(429).json({
@@ -252,8 +292,8 @@ exports.bulkActionLimits = async (req, res, next) => {
     }
 
     // Increment bulk counter
-    await incrAsync(bulkKey);
-    await expireAsync(bulkKey, getSecondsUntilMidnight());
+    await memoryIncr(bulkKey);
+    await memoryExpire(bulkKey, getSecondsUntilMidnight());
 
     next();
   } catch (error) {
@@ -279,7 +319,7 @@ exports.checkSpecialOfferLimits = async (req, res, next) => {
 
     // Check hourly limit
     const hourlyKey = `limit:${creatorId}:offers:hourly:${getCurrentHour()}`;
-    const hourlyCount = (await getAsync(hourlyKey)) || 0;
+    const hourlyCount = (await memoryGet(hourlyKey)) || 0;
 
     if (parseInt(hourlyCount) >= hourlyLimit) {
       return res.status(429).json({
@@ -293,7 +333,7 @@ exports.checkSpecialOfferLimits = async (req, res, next) => {
 
     // Check daily limit
     const dailyKey = `limit:${creatorId}:offers:${getTodayDateString()}`;
-    const dailyCount = (await getAsync(dailyKey)) || 0;
+    const dailyCount = (await memoryGet(dailyKey)) || 0;
 
     if (parseInt(dailyCount) >= dailyLimit) {
       return res.status(429).json({
@@ -306,10 +346,10 @@ exports.checkSpecialOfferLimits = async (req, res, next) => {
     }
 
     // Increment counters
-    await incrAsync(hourlyKey);
-    await expireAsync(hourlyKey, 3600);
-    await incrAsync(dailyKey);
-    await expireAsync(dailyKey, getSecondsUntilMidnight());
+    await memoryIncr(hourlyKey);
+    await memoryExpire(hourlyKey, 3600);
+    await memoryIncr(dailyKey);
+    await memoryExpire(dailyKey, getSecondsUntilMidnight());
 
     next();
   } catch (error) {
@@ -411,9 +451,9 @@ exports.resetLimits = async creatorId => {
   const patterns = [`limit:${creatorId}:*`, `cooldown:${creatorId}:*`];
 
   for (const pattern of patterns) {
-    const keys = await redisClient.keys(pattern);
+    const keys = await memoryKeys(pattern);
     if (keys.length > 0) {
-      await redisClient.del(keys);
+      await memoryDel(keys);
     }
   }
 
