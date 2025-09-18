@@ -115,6 +115,55 @@ const SwipeConnectMonetize = () => {
               </button>
             </div>
 
+            {/* Member Actions - Mobile Only */}
+            <div className='member-actions mobile-only'>
+              <button
+                className='btn btn-secondary btn-large member-login-btn'
+                onClick={() => navigate('/member/login')}
+              >
+                <svg
+                  className='btn-icon'
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m10 17 5-5-5-5"></path>
+                  <path d="M15 12H3"></path>
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                </svg>
+                <span>Member Login</span>
+              </button>
+              <button
+                className='btn btn-primary btn-large member-join-btn'
+                onClick={() => navigate('/member/register')}
+              >
+                <svg
+                  className='btn-icon'
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <line x1="19" x2="19" y1="8" y2="14"></line>
+                  <line x1="22" x2="16" y1="11" y2="11"></line>
+                </svg>
+                <span>Join Free</span>
+              </button>
+            </div>
+
             {/* Social Proof */}
             <div className='social-proof'>
               <div className='stat-item'>

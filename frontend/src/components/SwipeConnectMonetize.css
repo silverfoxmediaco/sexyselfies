@@ -407,6 +407,55 @@
   font-family: var(--font-sans);
 }
 
+/* Member Actions - Mobile Only */
+.member-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-600);
+}
+
+.member-actions .btn {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.member-login-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-600);
+}
+
+.member-login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--brand-300);
+}
+
+.member-join-btn {
+  background: var(--brand-gradient);
+  color: var(--bg-900);
+  font-weight: 600;
+}
+
+.member-join-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Mobile-only utility class */
+.mobile-only {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
 /* Mobile Optimizations */
 @media (max-width: 767px) {
   .container {

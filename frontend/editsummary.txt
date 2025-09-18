@@ -1,0 +1,19 @@
+
+
+---
+
+## Edit 111: Member Authentication Buttons Added to Mobile Hero (Latest)
+
+**Summary**: Added member signup and login buttons to the hero section that are visible only on mobile viewport (<768px).
+
+**Changes Made**:
+- **SwipeConnectMonetize.jsx**: Added mobile-only member-actions section with "Member Login" and "Join Free" buttons
+- **SwipeConnectMonetize.css**: Added responsive styles with mobile-only utility class and button styling
+- **Features**: Buttons use same icons as desktop header, proper hover effects, unique className identifiers
+- **Navigation**: Member Login routes to `/member/login`, Join Free routes to `/member/register`
+
+## Files Modified
+- frontend/src/components/SwipeConnectMonetize.jsx
+- frontend/src/components/SwipeConnectMonetize.css
+
+**Status**: Mobile users now have easy access to member authentication from hero section.
