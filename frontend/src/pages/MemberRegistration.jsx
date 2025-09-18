@@ -355,6 +355,18 @@ const MemberRegistration = () => {
 
       // API call to register using auth service
       console.log('📤 Sending registration data:', registrationData);
+      console.log('📤 DETAILED REGISTRATION DATA:');
+      console.log('  email:', registrationData.email);
+      console.log('  username:', registrationData.username);
+      console.log('  password length:', registrationData.password?.length);
+      console.log('  displayName:', registrationData.displayName);
+      console.log('  birthDate:', registrationData.birthDate);
+      console.log('  gender:', registrationData.gender);
+      console.log('  agreeToTerms:', registrationData.agreeToTerms);
+      console.log('  interestedIn:', registrationData.interestedIn);
+      console.log('  ageRange:', registrationData.ageRange);
+      console.log('  orientation:', registrationData.orientation);
+      console.log('  bodyTypePreferences:', registrationData.bodyTypePreferences);
       const response = await authService.memberRegister(registrationData);
       console.log('📥 Registration response:', response);
 

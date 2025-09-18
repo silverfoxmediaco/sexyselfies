@@ -15,6 +15,20 @@ exports.register = async (req, res, next) => {
   session.startTransaction();
 
   try {
+    // DEBUG: Log what we receive
+    console.log('🔍 MEMBER REGISTRATION DEBUG:');
+    console.log('  Request body keys:', Object.keys(req.body));
+    console.log('  email:', req.body.email);
+    console.log('  username:', req.body.username);
+    console.log('  password length:', req.body.password?.length);
+    console.log('  displayName:', req.body.displayName);
+    console.log('  birthDate:', req.body.birthDate);
+    console.log('  gender:', req.body.gender);
+    console.log('  agreeToTerms:', req.body.agreeToTerms);
+    console.log('  interestedIn:', req.body.interestedIn);
+    console.log('  ageRange:', req.body.ageRange);
+    console.log('  orientation:', req.body.orientation);
+    console.log('  bodyTypePreferences:', req.body.bodyTypePreferences);
     const {
       email,
       password,
