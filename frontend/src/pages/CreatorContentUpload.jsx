@@ -542,32 +542,12 @@ const ReviewStep = ({ uploads, contentDetails, setContentDetails, errors }) => (
       </div>
     </div>
 
-    {/* Visibility Options - Only show if no files are free */}
-    {!uploads.some(upload => upload.price === 0) && (
+    {/* Visibility Options - Only show if all files are paid */}
+    {uploads.length > 0 && uploads.every(upload => upload.price > 0) && (
     <div className='creator-content-upload-visibility-options'>
       <h3>Visibility</h3>
       <div className='creator-content-upload-visibility-grid'>
-        <label className='creator-content-upload-visibility-option'>
-          <input
-            type='radio'
-            name='visibility'
-            value='free'
-            checked={contentDetails.visibility === 'free'}
-            onChange={e =>
-              setContentDetails(prev => ({
-                ...prev,
-                visibility: e.target.value,
-              }))
-            }
-          />
-          <div className='creator-content-upload-option-content'>
-            <Gift size={20} />
-            <span className='creator-content-upload-option-title'>Free</span>
-            <span className='creator-content-upload-option-desc'>
-              Free sample for everyone
-            </span>
-          </div>
-        </label>
+        {/* Free option removed when all content is paid */}
 
         <label className='creator-content-upload-visibility-option'>
           <input

@@ -3462,3 +3462,48 @@ Benefits:
 
 Status: STREAMLINED ✅ - Visibility options optimized for revenue and UX
 
+=================================================================
+EDIT 109: Removed Conflicting Free Visibility Option for Paid Content
+Date: 2025-09-18 Current Session
+=================================================================
+
+Issue: Free visibility option was showing even when all content had prices
+- Creators could select "Free" visibility while individual files were priced
+- Created conflicting signals: paid files but free visibility setting
+- UI allowed contradictory states that confused business logic
+- Backend would need to resolve conflicting free vs paid signals
+
+Root Cause: Visibility options didn't reflect actual content pricing
+- Free visibility option available regardless of individual file pricing
+- No conditional logic to hide conflicting options
+- UI suggested creators could override file pricing with visibility setting
+
+Solution: Hide Free visibility option when all content is priced
+- Only show Free visibility option if some content is actually free
+- When all content has prices > 0, show only Public and Schedule options
+- Cleaner logic: paid content gets paid visibility options only
+
+Changes Made:
+- frontend/src/pages/CreatorContentUpload.jsx:
+  * Updated outer condition to show visibility section only when all files are paid
+  * Changed from {!uploads.some(upload => upload.price === 0)}
+  * To {uploads.every(upload => upload.price > 0)}
+  * Removed Free visibility option entirely for paid content uploads
+  * Added comment explaining Free option removal for clarity
+
+New Complete Logic Flow:
+1. **Any file marked free (price = 0)** → Hide entire visibility section (content is just free)
+2. **All files have prices (price > 0)** → Show visibility options WITHOUT Free option:
+   - Public: Available to all members
+   - Schedule: Post at optimal time
+3. **No conflicting options** → Paid content only gets paid visibility choices
+
+Benefits:
+- ✅ Eliminates conflicting free vs paid signals
+- ✅ Cleaner decision tree for creators
+- ✅ No UI confusion about content pricing
+- ✅ Backend receives consistent pricing signals
+- ✅ Logical separation: free content = no options, paid content = paid options only
+
+Status: REFINED ✅ - Eliminated conflicting free/paid visibility options
+
