@@ -482,6 +482,7 @@
     padding: 24px 16px;
     border-radius: 0;
     min-height: 100vh;
+    margin-bottom: 40px;
   }
 
   .upload-grid {
