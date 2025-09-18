@@ -1,5 +1,0 @@
-# Run formatting check
-npm run format:check
-
-# Skip linting for now (too many issues to fix)
-# npm run lint
