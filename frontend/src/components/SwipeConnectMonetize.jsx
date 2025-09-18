@@ -63,13 +63,13 @@ const SwipeConnectMonetize = () => {
 
             <div className='launch-chip pulse-animation'>
               <span className='chip-icon'>🚀</span>
-              <span>Launching January 2025</span>
+              <span>Launching January 2026</span>
             </div>
 
             <h1 className='hero-title'>
-              <span className='gradient-text'>Swipe.</span>
-              <span className='gradient-text-2'> Connect.</span>
-              <span className='gradient-text-3'> Monetize.</span>
+              <span className='gradient-text'>A Sanctuary.</span>
+              <span className='gradient-text-2'> For Sexy.</span>
+              <span className='gradient-text-3'> Self Expression.</span>
             </h1>
 
             <p className='hero-description'>
