@@ -197,10 +197,14 @@ api.interceptors.response.use(
       (originalRequest.url.includes('/login') ||
         originalRequest.url.includes('/register'));
 
+    // Skip auto-logout for admin users - admins don't use refresh tokens
+    const isAdminUser = localStorage.getItem('userRole') === 'admin';
+
     if (
       error.response.status === 401 &&
       !originalRequest._retry &&
-      !isLoginEndpoint
+      !isLoginEndpoint &&
+      !isAdminUser
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
