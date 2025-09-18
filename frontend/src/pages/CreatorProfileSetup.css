@@ -760,14 +760,7 @@
 }
 
 .step-four .step-header h2 {
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--primary-300) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 8px;
@@ -1873,14 +1866,7 @@
 }
 
 .step-four .step-header h2 {
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--primary-300) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 8px;

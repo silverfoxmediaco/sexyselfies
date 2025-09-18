@@ -18,6 +18,8 @@ import {
   Menu,
   Eye,
   EyeOff,
+  CreditCard,
+  DollarSign,
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
@@ -77,6 +79,13 @@ const CreatorSettingsPage = () => {
     analyticsEnabled: true,
     performanceTracking: true,
     dataExport: 'monthly',
+
+    // Payments & Payouts
+    payoutMethod: 'weekly', // 'weekly' or 'instant'
+    payoutThreshold: 50,
+    autoPayoutEnabled: false,
+    paypalEmail: '',
+    paypalConnected: false,
   });
 
   const [unsavedChanges, setUnsavedChanges] = useState(false);
@@ -108,6 +117,14 @@ const CreatorSettingsPage = () => {
       description: 'Who can see your content',
       priority: 'high',
       items: 5,
+    },
+    {
+      id: 'payments',
+      title: 'Payments & Payouts',
+      icon: CreditCard,
+      description: 'Payout methods & preferences',
+      priority: 'high',
+      items: 4,
     },
     {
       id: 'notifications',
@@ -693,6 +710,130 @@ const CreatorSettingsPage = () => {
     }
   };
 
+  const renderPaymentsSection = () => (
+    <div className='settings-mobile-section'>
+      <div className='notification-disclaimer'>
+        <p>
+          <strong>Note:</strong> Payment and payout settings are saved to your account.
+          Changes may take up to 24 hours to take effect.
+        </p>
+      </div>
+
+      <div className='mobile-settings-group'>
+        <h4>Payout Settings</h4>
+        <div className='mobile-select-item'>
+          <div className='select-content'>
+            <div className='select-header'>
+              <DollarSign size={20} />
+              <span>Payout Method</span>
+            </div>
+            <p>Choose how often you receive payments</p>
+          </div>
+          <select
+            value={settings.payoutMethod}
+            onChange={e => updateSetting(null, 'payoutMethod', e.target.value)}
+            className='mobile-select'
+          >
+            <option value='weekly'>Weekly Payouts</option>
+            <option value='instant'>Instant Payouts (+2% fee)</option>
+          </select>
+        </div>
+
+        <div className='mobile-input-item'>
+          <div className='input-content'>
+            <div className='input-header'>
+              <CreditCard size={20} />
+              <span>Minimum Payout</span>
+            </div>
+            <p>Minimum amount before payout is triggered</p>
+          </div>
+          <div className='input-wrapper'>
+            <span className='input-prefix'>$</span>
+            <input
+              type='number'
+              value={settings.payoutThreshold}
+              onChange={e => updateSetting(null, 'payoutThreshold', e.target.value)}
+              min='10'
+              max='1000'
+              step='5'
+              className='mobile-input'
+            />
+          </div>
+        </div>
+
+        <div className='mobile-toggle-item'>
+          <div className='toggle-content'>
+            <div className='toggle-header'>
+              <DollarSign size={20} />
+              <span>Auto Payout</span>
+            </div>
+            <p>Automatically send payouts when threshold is reached</p>
+          </div>
+          <label className='mobile-toggle'>
+            <input
+              type='checkbox'
+              checked={settings.autoPayout}
+              onChange={e => updateSetting(null, 'autoPayout', e.target.checked)}
+            />
+            <span className='toggle-slider'></span>
+          </label>
+        </div>
+      </div>
+
+      <div className='mobile-settings-group'>
+        <h4>Payment Account</h4>
+        <div className='payment-account-status'>
+          <div className='account-info'>
+            <CreditCard size={24} />
+            <div className='account-details'>
+              <span className='account-status'>PayPal Account</span>
+              <span className='account-email'>
+                {settings.paypalConnected ? 'creator@example.com' : 'Not connected'}
+              </span>
+            </div>
+          </div>
+          <button
+            className={`mobile-action-btn ${settings.paypalConnected ? 'secondary' : 'primary'}`}
+            onClick={() => {
+              if (settings.paypalConnected) {
+                updateSetting(null, 'paypalConnected', false);
+              } else {
+                updateSetting(null, 'paypalConnected', true);
+              }
+            }}
+          >
+            {settings.paypalConnected ? 'Disconnect' : 'Connect PayPal'}
+          </button>
+        </div>
+        <p className='action-description'>
+          Connect your PayPal account to receive payments securely
+        </p>
+      </div>
+
+      <div className='mobile-settings-group'>
+        <h4>Quick Stats</h4>
+        <div className='stats-grid'>
+          <div className='stat-item'>
+            <span className='stat-value'>$0.00</span>
+            <span className='stat-label'>Pending Balance</span>
+          </div>
+          <div className='stat-item'>
+            <span className='stat-value'>$0.00</span>
+            <span className='stat-label'>This Month</span>
+          </div>
+          <div className='stat-item'>
+            <span className='stat-value'>$0.00</span>
+            <span className='stat-label'>Total Earned</span>
+          </div>
+          <div className='stat-item'>
+            <span className='stat-value'>0</span>
+            <span className='stat-label'>Total Payouts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderAnalyticsSection = () => (
     <div className='settings-mobile-section'>
       <div className='notification-disclaimer'>
@@ -755,6 +896,8 @@ const CreatorSettingsPage = () => {
         return renderProfileSection();
       case 'privacy':
         return renderPrivacySection();
+      case 'payments':
+        return renderPaymentsSection();
       case 'notifications':
         return renderNotificationsSection();
       case 'analytics':

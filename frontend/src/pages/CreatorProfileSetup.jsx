@@ -107,9 +107,7 @@ const CreatorProfileSetup = () => {
         enabled: true, // Always enabled since there's no toggle
         text: 'Hey! Thanks for connecting with me 💕 Check out my exclusive content!',
       },
-      autoMatch: 'verified', // all, verified, manual
     },
-    instantPayout: true,
     analytics: true,
 
     // Step 5: Verification
@@ -1098,108 +1096,7 @@ const StepFour = ({ formData, setFormData, errors }) => {
         </div>
       </div>
 
-      {/* Auto-match settings */}
-      <div className='form-group'>
-        <label className='form-label'>
-          <Users size={18} />
-          Auto-Match Settings
-        </label>
-        <div className='radio-group'>
-          <label className='radio-label'>
-            <input
-              type='radio'
-              name='autoMatch'
-              value='manual'
-              checked={formData.automation.autoMatch === 'manual'}
-              onChange={e =>
-                setFormData(prev => ({
-                  ...prev,
-                  automation: { ...prev.automation, autoMatch: e.target.value },
-                }))
-              }
-            />
-            <span className='radio-custom'></span>
-            <span>Manual review all likes</span>
-          </label>
 
-          <label className='radio-label'>
-            <input
-              type='radio'
-              name='autoMatch'
-              value='verified'
-              checked={formData.automation.autoMatch === 'verified'}
-              onChange={e =>
-                setFormData(prev => ({
-                  ...prev,
-                  automation: { ...prev.automation, autoMatch: e.target.value },
-                }))
-              }
-            />
-            <span className='radio-custom'></span>
-            <span>Auto-match verified members</span>
-          </label>
-
-          <label className='radio-label'>
-            <input
-              type='radio'
-              name='autoMatch'
-              value='all'
-              checked={formData.automation.autoMatch === 'all'}
-              onChange={e =>
-                setFormData(prev => ({
-                  ...prev,
-                  automation: { ...prev.automation, autoMatch: e.target.value },
-                }))
-              }
-            />
-            <span className='radio-custom'></span>
-            <span>Auto-match everyone</span>
-          </label>
-        </div>
-      </div>
-
-      {/* Payout method */}
-      <div className='form-group'>
-        <label className='form-label'>
-          <DollarSign size={18} />
-          Payout Method
-        </label>
-        <div className='payout-options'>
-          <label className='radio-label'>
-            <input
-              type='radio'
-              name='payout'
-              value='weekly'
-              checked={!formData.instantPayout}
-              onChange={() =>
-                setFormData(prev => ({ ...prev, instantPayout: false }))
-              }
-            />
-            <span className='radio-custom'></span>
-            <div>
-              <span>Weekly Payouts</span>
-              <span className='option-desc'>No fees, paid every Friday</span>
-            </div>
-          </label>
-
-          <label className='radio-label'>
-            <input
-              type='radio'
-              name='payout'
-              value='instant'
-              checked={formData.instantPayout}
-              onChange={() =>
-                setFormData(prev => ({ ...prev, instantPayout: true }))
-              }
-            />
-            <span className='radio-custom'></span>
-            <div>
-              <span>Instant Payouts</span>
-              <span className='option-desc'>2.5% fee, get paid in minutes</span>
-            </div>
-          </label>
-        </div>
-      </div>
 
       {/* Success Tips */}
       <div className='form-group'>
