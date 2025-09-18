@@ -3411,3 +3411,54 @@ Business Benefits:
 
 Status: SIMPLIFIED ✅ - Member-driven discovery with no creator restrictions
 
+=================================================================
+EDIT 108: Improved Content Upload Visibility Logic
+Date: 2025-09-18 Current Session
+=================================================================
+
+Issue: Visibility options needed refinement for better business logic
+- Private option unnecessary for content platform business model
+- Public should be available to ALL members, not just connections
+- Visibility options showing when content is free doesn't make sense
+- Need conditional logic based on individual file pricing
+
+Root Cause: UI didn't reflect optimal content monetization strategy
+- Private content limits revenue potential unnecessarily
+- "Connections only" reduces discoverability for paid content
+- Showing visibility options for free content creates confusion
+- Two competing systems: individual file pricing vs visibility settings
+
+Solution: Streamlined visibility system with intelligent conditional display
+- Removed Private option to maximize content reach
+- Updated Public to mean "all members" for broader audience
+- Added logic to hide visibility section when any file is marked as free
+- Cleaner separation between free content (no options) and paid content (visibility choices)
+
+Changes Made:
+- frontend/src/pages/CreatorContentUpload.jsx:
+  * Removed entire Private visibility option (lines 594-612)
+  * Updated Public description from "Available to all connections" to "Available to all members"
+  * Added conditional wrapper around visibility section: {!uploads.some(upload => upload.price === 0) && (...)}
+  * Visibility options now only show when ALL uploaded files are paid
+
+New Business Logic:
+- Free Content (any file has price = 0) → No visibility options (content is just free for everyone)
+- Paid Content (all files have price > 0) → Show visibility options:
+  * Free: Free sample for everyone
+  * Public: Available to all members (broader than connections)
+  * Schedule: Post at optimal time
+
+Visibility Options Simplified:
+1. Free Sample: Marketing content to attract new members
+2. Public: Main revenue content available to all platform members
+3. Schedule: Timing optimization for maximum engagement
+
+Benefits:
+- ✅ Cleaner UX - no conflicting options when content is free
+- ✅ Maximum revenue potential - Public reaches all members
+- ✅ Simplified decision tree for creators
+- ✅ Logical separation between free and paid content workflows
+- ✅ Eliminated unnecessary Private restriction
+
+Status: STREAMLINED ✅ - Visibility options optimized for revenue and UX
+

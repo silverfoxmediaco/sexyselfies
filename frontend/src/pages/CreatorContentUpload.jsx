@@ -542,7 +542,8 @@ const ReviewStep = ({ uploads, contentDetails, setContentDetails, errors }) => (
       </div>
     </div>
 
-    {/* Visibility Options */}
+    {/* Visibility Options - Only show if no files are free */}
+    {!uploads.some(upload => upload.price === 0) && (
     <div className='creator-content-upload-visibility-options'>
       <h3>Visibility</h3>
       <div className='creator-content-upload-visibility-grid'>
@@ -585,32 +586,11 @@ const ReviewStep = ({ uploads, contentDetails, setContentDetails, errors }) => (
             <Unlock size={20} />
             <span className='creator-content-upload-option-title'>Public</span>
             <span className='creator-content-upload-option-desc'>
-              Available to all connections
+              Available to all members
             </span>
           </div>
         </label>
 
-        <label className='creator-content-upload-visibility-option'>
-          <input
-            type='radio'
-            name='visibility'
-            value='private'
-            checked={contentDetails.visibility === 'private'}
-            onChange={e =>
-              setContentDetails(prev => ({
-                ...prev,
-                visibility: e.target.value,
-              }))
-            }
-          />
-          <div className='creator-content-upload-option-content'>
-            <Lock size={20} />
-            <span className='creator-content-upload-option-title'>Private</span>
-            <span className='creator-content-upload-option-desc'>
-              Only for selected connections
-            </span>
-          </div>
-        </label>
 
         <label className='creator-content-upload-visibility-option'>
           <input
@@ -637,6 +617,7 @@ const ReviewStep = ({ uploads, contentDetails, setContentDetails, errors }) => (
         </label>
       </div>
     </div>
+    )}
 
     {/* Estimated Earnings */}
     <div className='creator-content-upload-earnings-preview'>

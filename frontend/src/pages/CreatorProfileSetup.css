@@ -1219,7 +1219,7 @@
 
 .preview-full-btn {
   background: linear-gradient(135deg, var(--primary), var(--primary-600));
-  color: var(--bg-900);
+  color: var(--text-primary);
   border: none;
   padding: 16px 24px;
   border-radius: 16px;
@@ -2325,7 +2325,7 @@
 
 .preview-full-btn {
   background: linear-gradient(135deg, var(--primary), var(--primary-600));
-  color: var(--bg-900);
+  color: var(--text-primary);
   border: none;
   padding: 16px 24px;
   border-radius: 16px;
