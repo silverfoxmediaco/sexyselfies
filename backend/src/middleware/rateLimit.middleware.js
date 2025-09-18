@@ -2,50 +2,13 @@
 
 const rateLimit = require('express-rate-limit');
 
-// Optional Redis support - only load if available
-let RedisStore = null;
-let Redis = null;
-let redisClient = null;
-
-try {
-  // Try to load Redis dependencies
-  RedisStore = require('rate-limit-redis');
-  Redis = require('ioredis');
-
-  // Create Redis client if Redis is available and configured
-  if (process.env.REDIS_URL || process.env.REDIS_HOST) {
-    redisClient = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT || 6379,
-      password: process.env.REDIS_PASSWORD,
-      retryStrategy: times => {
-        if (times > 3) {
-          console.log('Redis connection failed, falling back to memory store');
-          return null;
-        }
-        return Math.min(times * 50, 2000);
-      },
-    });
-
-    redisClient.on('error', err => {
-      console.error('Redis Client Error:', err);
-      redisClient = null; // Disable Redis on error
-    });
-
-    console.log('Redis rate limiting enabled');
-  }
-} catch (err) {
-  // Redis dependencies not installed - use memory store
-  console.log('Redis not available for rate limiting, using memory store');
-}
-
 // ==========================================
 // RATE LIMITER FACTORY
 // ==========================================
 
 /**
  * Create a rate limiter with custom options
- * Falls back to memory store if Redis is not available
+ * Uses in-memory store (default behavior)
  */
 const createRateLimiter = (options = {}) => {
   const defaultOptions = {
@@ -58,17 +21,6 @@ const createRateLimiter = (options = {}) => {
   };
 
   const limiterOptions = { ...defaultOptions, ...options };
-
-  // Remove custom keyGenerator to avoid IPv6 issues
-  // express-rate-limit handles IPv4/IPv6 properly by default
-
-  // Use Redis store if available, otherwise use memory store
-  if (RedisStore && redisClient && redisClient.status === 'ready') {
-    limiterOptions.store = new RedisStore({
-      client: redisClient,
-      prefix: 'rl:',
-    });
-  }
 
   return rateLimit(limiterOptions);
 };
@@ -281,15 +233,4 @@ exports.rateLimitHandler = (req, res) => {
 // CLEANUP
 // ==========================================
 
-// Cleanup Redis connection on app termination
-process.on('SIGINT', () => {
-  if (redisClient) {
-    redisClient.quit();
-  }
-});
-
-process.on('SIGTERM', () => {
-  if (redisClient) {
-    redisClient.quit();
-  }
-});
+// No cleanup needed for in-memory rate limiting

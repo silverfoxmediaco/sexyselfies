@@ -1,51 +1,52 @@
 // backend/src/middleware/salesLimits.middleware.js
 // Middleware for enforcing daily limits and preventing spam
 
-const redis = require('redis');
-const { promisify } = require('util');
 const MemberInteraction = require('../models/MemberInteraction');
 const Creator = require('../models/Creator');
 
-// Redis client for rate limiting
-let redisClient = null;
-let redisAvailable = false;
-
-try {
-  redisClient = redis.createClient({
-    host: process.env.REDIS_HOST || 'localhost',
-    port: process.env.REDIS_PORT || 6379,
-  });
-
-  // Connect to Redis with error handling
-  redisClient.connect().then(() => {
-    redisAvailable = true;
-    console.log('✅ Redis connected for sales limits');
-  }).catch(err => {
-    console.warn('⚠️ Redis not available for sales limits, using fallback:', err.message);
-    redisAvailable = false;
-  });
-
-  redisClient.on('error', (err) => {
-    console.warn('⚠️ Redis error, falling back to memory:', err.message);
-    redisAvailable = false;
-  });
-} catch (err) {
-  console.warn('⚠️ Redis initialization failed, using fallback:', err.message);
-  redisAvailable = false;
-}
-
-// Promisified Redis methods - only if Redis is available
-let getAsync, setAsync, incrAsync, expireAsync;
-
-if (redisClient) {
-  getAsync = promisify(redisClient.get).bind(redisClient);
-  setAsync = promisify(redisClient.set).bind(redisClient);
-  incrAsync = promisify(redisClient.incr).bind(redisClient);
-  expireAsync = promisify(redisClient.expire).bind(redisClient);
-}
-
-// In-memory fallback for when Redis is not available
+// In-memory store for rate limiting
 const memoryStore = new Map();
+
+// Memory-based functions for rate limiting
+const memoryGet = async (key) => {
+  const item = memoryStore.get(key);
+  if (!item) return null;
+
+  // Check if expired
+  if (item.expiry && Date.now() > item.expiry) {
+    memoryStore.delete(key);
+    return null;
+  }
+
+  return item.value;
+};
+
+const memorySet = async (key, value, ttlSeconds) => {
+  const expiry = ttlSeconds ? Date.now() + (ttlSeconds * 1000) : null;
+  memoryStore.set(key, { value, expiry });
+  return 'OK';
+};
+
+const memoryIncr = async (key) => {
+  const current = await memoryGet(key);
+  const newValue = current ? parseInt(current) + 1 : 1;
+
+  // Preserve existing expiry if any
+  const existing = memoryStore.get(key);
+  const expiry = existing?.expiry || null;
+
+  memoryStore.set(key, { value: newValue.toString(), expiry });
+  return newValue;
+};
+
+const memoryExpire = async (key, ttlSeconds) => {
+  const existing = memoryStore.get(key);
+  if (existing) {
+    existing.expiry = Date.now() + (ttlSeconds * 1000);
+    memoryStore.set(key, existing);
+  }
+  return 1;
+};
 
 // ============================================
 // DAILY INTERACTION LIMITS
@@ -71,7 +72,7 @@ exports.checkDailyInteractionLimit = interactionType => {
 
       // Check current usage
       const key = `limit:${creatorId}:${interactionType}:${getTodayDateString()}`;
-      const current = (await getAsync(key)) || 0;
+      const current = (await memoryGet(key)) || 0;
 
       if (parseInt(current) >= limit) {
         return res.status(429).json({
@@ -85,8 +86,8 @@ exports.checkDailyInteractionLimit = interactionType => {
       }
 
       // Increment counter
-      await incrAsync(key);
-      await expireAsync(key, getSecondsUntilMidnight());
+      await memoryIncr(key);
+      await memoryExpire(key, getSecondsUntilMidnight());
 
       // Add limit info to response headers
       res.setHeader('X-RateLimit-Limit', limit);

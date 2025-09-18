@@ -1,5 +1,4 @@
 // Simple in-memory cache middleware
-// For production, consider using Redis
 
 const NodeCache = require('node-cache');
 
@@ -105,90 +104,6 @@ exports.invalidateCache = pattern => {
   };
 };
 
-// Advanced cache with Redis support (optional)
-let redisCache = null;
-
-// Initialize Redis cache if available
-if (process.env.REDIS_URL || process.env.REDIS_HOST) {
-  try {
-    const Redis = require('ioredis');
-    const redis = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT || 6379,
-      password: process.env.REDIS_PASSWORD,
-      retryStrategy: times => {
-        if (times > 3) {
-          console.log('Redis cache connection failed, using memory cache');
-          return null;
-        }
-        return Math.min(times * 50, 2000);
-      },
-    });
-
-    redis.on('connect', () => {
-      console.log('Redis cache connected');
-      redisCache = redis;
-    });
-
-    redis.on('error', err => {
-      console.error('Redis cache error:', err);
-      redisCache = null;
-    });
-  } catch (err) {
-    console.log('Redis not available for caching');
-  }
-}
-
-// Redis cache middleware
-exports.redisCache = (duration = 300) => {
-  return async (req, res, next) => {
-    // Skip if Redis not available
-    if (!redisCache) {
-      return next();
-    }
-
-    // Skip caching for non-GET requests
-    if (req.method !== 'GET') {
-      return next();
-    }
-
-    // Skip caching if user is authenticated
-    if (req.user) {
-      return next();
-    }
-
-    const key = `cache:${req.originalUrl || req.url}`;
-
-    try {
-      // Try to get cached response
-      const cachedResponse = await redisCache.get(key);
-      if (cachedResponse) {
-        console.log(`Redis cache hit for: ${key}`);
-        return res.json(JSON.parse(cachedResponse));
-      }
-
-      // Store original res.json method
-      const originalJson = res.json.bind(res);
-
-      // Override res.json to cache successful responses
-      res.json = body => {
-        // Only cache successful responses
-        if (res.statusCode === 200) {
-          redisCache
-            .setex(key, duration, JSON.stringify(body))
-            .then(() => console.log(`Redis cached response for: ${key}`))
-            .catch(err => console.error('Redis cache set error:', err));
-        }
-        return originalJson(body);
-      };
-
-      next();
-    } catch (err) {
-      console.error('Redis cache error:', err);
-      next();
-    }
-  };
-};
 
 // Cache headers middleware
 exports.cacheHeaders = (maxAge = 300) => {
@@ -262,7 +177,6 @@ exports.getCacheStats = () => {
       misses: longCache.getStats().misses,
       keys: longCache.keys().length,
     },
-    redis: redisCache ? 'connected' : 'not available',
   };
 };
 
@@ -271,5 +185,4 @@ exports.caches = {
   short: shortCache,
   medium: mediumCache,
   long: longCache,
-  redis: redisCache,
 };

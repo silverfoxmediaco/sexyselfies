@@ -4,19 +4,26 @@
 const AnalyticsEvent = require('../models/AnalyticsEvent');
 const CreatorSalesActivity = require('../models/CreatorSalesActivity');
 const MemberAnalytics = require('../models/MemberAnalytics');
-const redis = require('redis');
-const { promisify } = require('util');
 
-// Redis client for real-time analytics
-const redisClient = redis.createClient({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: process.env.REDIS_PORT || 6379,
-});
+// In-memory store for real-time metrics
+const realTimeMetrics = new Map();
 
-const incrAsync = promisify(redisClient.incr).bind(redisClient);
-const getAsync = promisify(redisClient.get).bind(redisClient);
-const setAsync = promisify(redisClient.set).bind(redisClient);
-const expireAsync = promisify(redisClient.expire).bind(redisClient);
+// Memory-based analytics functions
+const memoryIncr = (key) => {
+  const current = realTimeMetrics.get(key) || 0;
+  const newValue = current + 1;
+  realTimeMetrics.set(key, newValue);
+  return newValue;
+};
+
+const memoryGet = (key) => {
+  return realTimeMetrics.get(key) || 0;
+};
+
+const memorySet = (key, value) => {
+  realTimeMetrics.set(key, value);
+  return 'OK';
+};
 
 // ============================================
 // CORE ANALYTICS TRACKING
@@ -422,7 +429,7 @@ exports.revenueAttribution = async (creatorId, period = 'last30Days') => {
 // ============================================
 
 /**
- * Update real-time metrics in Redis
+ * Update real-time metrics in memory
  */
 exports.updateRealTimeMetrics = async eventData => {
   try {
@@ -430,17 +437,16 @@ exports.updateRealTimeMetrics = async eventData => {
     const hour = new Date().getHours();
 
     // Increment counters
-    await incrAsync(`metrics:${eventData.category}:${today}`);
-    await incrAsync(`metrics:${eventData.category}:${today}:${hour}`);
+    memoryIncr(`metrics:${eventData.category}:${today}`);
+    memoryIncr(`metrics:${eventData.category}:${today}:${hour}`);
 
     if (eventData.userId) {
-      await incrAsync(
+      memoryIncr(
         `metrics:user:${eventData.userId}:${eventData.category}:${today}`
       );
     }
 
-    // Set expiration
-    await expireAsync(`metrics:${eventData.category}:${today}`, 86400 * 7); // 7 days
+    // Note: Memory store doesn't need expiration - will reset on server restart
   } catch (error) {
     console.error('Error updating real-time metrics:', error);
   }
@@ -456,16 +462,11 @@ exports.getRealTimeMetrics = async creatorId => {
 
     // Get today's metrics
     const metrics = {
-      profileViews:
-        (await getAsync(`metrics:user:${creatorId}:profile_view:${today}`)) ||
-        0,
-      interactions:
-        (await getAsync(`metrics:user:${creatorId}:interaction:${today}`)) || 0,
-      conversions:
-        (await getAsync(`metrics:user:${creatorId}:conversion:${today}`)) || 0,
-      revenue:
-        (await getAsync(`metrics:user:${creatorId}:revenue:${today}`)) || 0,
-      activeNow: (await getAsync(`metrics:active_users:${hour}`)) || 0,
+      profileViews: memoryGet(`metrics:user:${creatorId}:profile_view:${today}`),
+      interactions: memoryGet(`metrics:user:${creatorId}:interaction:${today}`),
+      conversions: memoryGet(`metrics:user:${creatorId}:conversion:${today}`),
+      revenue: memoryGet(`metrics:user:${creatorId}:revenue:${today}`),
+      activeNow: memoryGet(`metrics:active_users:${hour}`),
     };
 
     // Get hourly trend
@@ -473,14 +474,8 @@ exports.getRealTimeMetrics = async creatorId => {
     for (let i = 0; i < 24; i++) {
       hourlyTrend.push({
         hour: i,
-        views:
-          (await getAsync(
-            `metrics:user:${creatorId}:profile_view:${today}:${i}`
-          )) || 0,
-        interactions:
-          (await getAsync(
-            `metrics:user:${creatorId}:interaction:${today}:${i}`
-          )) || 0,
+        views: memoryGet(`metrics:user:${creatorId}:profile_view:${today}:${i}`),
+        interactions: memoryGet(`metrics:user:${creatorId}:interaction:${today}:${i}`),
       });
     }
 

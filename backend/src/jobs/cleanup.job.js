@@ -268,82 +268,7 @@ function scheduleAbandonedSessionsCleanup() {
         let sessionsCleared = 0;
         let cartsRecovered = 0;
 
-        // Clear Redis sessions older than 24 hours (with graceful degradation)
-        try {
-          const redis = require('redis');
-          const redisClient = redis.createClient({
-            host: process.env.REDIS_HOST || 'localhost',
-            port: process.env.REDIS_PORT || 6379,
-            socket: {
-              connectTimeout: 5000, // 5 second timeout
-            },
-          });
-
-          // Add error handler
-          redisClient.on('error', err => {
-            console.log(
-              'Redis not available for session cleanup:',
-              err.message
-            );
-            redisClient.disconnect();
-          });
-
-          // Only proceed if Redis is available
-          await redisClient.connect();
-
-          // Pattern for session keys
-          const sessionPattern = 'sess:*';
-          const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
-
-          // Get all session keys
-          try {
-            const keys = await redisClient.keys(sessionPattern);
-
-            for (const key of keys) {
-              try {
-                const session = await redisClient.get(key);
-                if (!session) continue;
-
-                const sessionData = JSON.parse(session);
-                const lastActivity =
-                  sessionData.lastActivity || sessionData.cookie?.expires;
-
-                if (
-                  lastActivity &&
-                  new Date(lastActivity) < twentyFourHoursAgo
-                ) {
-                  // Check for abandoned cart
-                  if (sessionData.cart && sessionData.cart.items?.length > 0) {
-                    // Send abandoned cart notification
-                    sendAbandonedCartNotification(sessionData);
-                    cartsRecovered++;
-                  }
-
-                  // Delete expired session
-                  await redisClient.del(key);
-                  sessionsCleared++;
-                }
-              } catch (parseError) {
-                // Invalid session data, delete it
-                await redisClient.del(key);
-                sessionsCleared++;
-              }
-            }
-
-            await redisClient.disconnect();
-          } catch (keysError) {
-            console.log(
-              'Redis keys operation failed, skipping Redis cleanup:',
-              keysError.message
-            );
-            await redisClient.disconnect();
-          }
-        } catch (redisError) {
-          console.log(
-            'Redis not available for cleanup, skipping Redis session cleanup:',
-            redisError.message
-          );
-        }
+        // Redis cleanup removed - no longer using Redis for sessions
 
         // Clean up database sessions
         const UserSession = require('../models/UserSession');
@@ -354,7 +279,7 @@ function scheduleAbandonedSessionsCleanup() {
         sessionsCleared += dbResult.deletedCount;
 
         // Reset daily limits that are stuck
-        await resetStuckDailyLimits();
+        // Daily limits cleanup removed - no longer using Redis
 
         const duration = ((Date.now() - startTime) / 1000).toFixed(2);
         console.log(`✅ [JOB] Session cleanup complete:`);
@@ -649,52 +574,7 @@ async function sendAbandonedCartNotification(sessionData) {
 /**
  * Reset stuck daily limits
  */
-async function resetStuckDailyLimits() {
-  try {
-    const redis = require('redis');
-    const redisClient = redis.createClient({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT || 6379,
-      socket: {
-        connectTimeout: 5000, // 5 second timeout
-      },
-    });
-
-    // Add error handler
-    redisClient.on('error', err => {
-      console.log('Redis not available for daily limits cleanup:', err.message);
-    });
-
-    // Only proceed if Redis is available
-    await redisClient.connect();
-
-    // Get yesterday's date string
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayString = `${yesterday.getFullYear()}-${yesterday.getMonth() + 1}-${yesterday.getDate()}`;
-
-    // Delete all limit keys from yesterday
-    const pattern = `limit:*:*:${yesterdayString}`;
-
-    try {
-      const keys = await redisClient.keys(pattern);
-
-      if (keys.length > 0) {
-        const numDeleted = await redisClient.del(keys);
-        console.log(`  Cleared ${numDeleted} stuck daily limits`);
-      }
-    } catch (keysError) {
-      console.log('Redis daily limits cleanup failed:', keysError.message);
-    }
-
-    await redisClient.disconnect();
-  } catch (redisError) {
-    console.log(
-      'Redis not available for daily limits cleanup, skipping:',
-      redisError.message
-    );
-  }
-}
+// resetStuckDailyLimits function removed - no longer using Redis for daily limits
 
 /**
  * Update member lifecycle stages
