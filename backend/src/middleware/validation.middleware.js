@@ -88,6 +88,42 @@ exports.validateMemberRegistration = [
     .isBoolean()
     .custom(value => value === true)
     .withMessage('Must agree to terms and conditions'),
+  body('gender')
+    .optional()
+    .isIn(['male', 'female'])
+    .withMessage('Gender must be male or female'),
+  body('interestedIn')
+    .optional()
+    .isArray()
+    .withMessage('Interested in must be an array'),
+  body('interestedIn.*')
+    .optional()
+    .isIn(['male', 'female', 'everyone'])
+    .withMessage('Invalid interested in option'),
+  body('ageRange')
+    .optional()
+    .isObject()
+    .withMessage('Age range must be an object'),
+  body('ageRange.min')
+    .optional()
+    .isInt({ min: 18, max: 99 })
+    .withMessage('Minimum age must be between 18 and 99'),
+  body('ageRange.max')
+    .optional()
+    .isInt({ min: 18, max: 99 })
+    .withMessage('Maximum age must be between 18 and 99'),
+  body('orientation')
+    .optional()
+    .isIn(['straight', 'gay', 'bisexual', 'pansexual', 'other'])
+    .withMessage('Invalid orientation'),
+  body('bodyTypePreferences')
+    .optional()
+    .isArray()
+    .withMessage('Body type preferences must be an array'),
+  body('bodyTypePreferences.*')
+    .optional()
+    .isIn(['slim', 'slender', 'athletic', 'average', 'curvy', 'plus-size', 'bbw', 'muscular', 'dad-bod', 'mom-bod'])
+    .withMessage('Invalid body type preference'),
   handleValidationErrors,
 ];
 
