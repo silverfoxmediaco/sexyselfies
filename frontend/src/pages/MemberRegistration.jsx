@@ -299,6 +299,77 @@ const MemberRegistration = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Validate ALL fields for final submission
+  const validateAllFields = () => {
+    const newErrors = {};
+
+    // Step 1 - Account Info
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Invalid email format';
+    }
+
+    if (!formData.username) {
+      newErrors.username = 'Username is required';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
+    } else if (usernameAvailable === false) {
+      newErrors.username = 'Username is already taken';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (passwordStrength < 60) {
+      newErrors.password = 'Password is too weak';
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    // Step 2 - Personal Info
+    if (!formData.firstName) {
+      newErrors.firstName = 'First name is required';
+    }
+
+    if (!formData.lastName) {
+      newErrors.lastName = 'Last name is required';
+    }
+
+    if (!formData.dateOfBirth) {
+      newErrors.dateOfBirth = 'Date of birth is required';
+    } else {
+      const age =
+        new Date().getFullYear() -
+        new Date(formData.dateOfBirth).getFullYear();
+      if (age < 18) {
+        newErrors.dateOfBirth = 'You must be 18 or older';
+      }
+    }
+
+    if (!formData.gender) {
+      newErrors.gender = 'Please select your gender';
+    }
+
+    // Step 3 - Preferences
+    if (formData.interestedIn.length === 0) {
+      newErrors.interestedIn = 'Please select at least one preference';
+    }
+
+    // Step 4 - Terms
+    if (!formData.agreedToTerms) {
+      newErrors.agreedToTerms = 'You must agree to the terms of service';
+    }
+
+    if (!formData.agreedToAge) {
+      newErrors.agreedToAge = 'You must confirm you are 18 or older';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   // Handle step navigation
   const handleNext = () => {
     if (validateStep()) {
@@ -323,8 +394,8 @@ const MemberRegistration = () => {
       return;
     }
 
-    if (!validateStep()) {
-      console.log('❌ Validation failed');
+    if (!validateAllFields()) {
+      console.log('❌ Final validation failed - missing required fields');
       return;
     }
 
@@ -342,7 +413,7 @@ const MemberRegistration = () => {
         birthDate: formData.dateOfBirth
           ? new Date(formData.dateOfBirth).toISOString()
           : null,
-        gender: formData.gender || undefined,
+        gender: formData.gender,
         agreeToTerms: formData.agreedToTerms,
         interestedIn: formData.interestedIn || [],
         ageRange: {
