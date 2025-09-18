@@ -342,6 +342,7 @@ const MemberRegistration = () => {
         birthDate: formData.dateOfBirth
           ? new Date(formData.dateOfBirth).toISOString()
           : null,
+        gender: formData.gender,
         agreeToTerms: formData.agreedToTerms,
         interestedIn: formData.interestedIn || [],
         ageRange: {
