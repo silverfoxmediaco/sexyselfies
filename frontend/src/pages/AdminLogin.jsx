@@ -37,6 +37,7 @@ const AdminLogin = () => {
 
     try {
       const response = await api.post('/admin/auth/login', formData);
+      console.log('Admin login response:', response);
 
       if (response.success) {
         // Store admin token and data
@@ -45,8 +46,12 @@ const AdminLogin = () => {
         localStorage.setItem('token', response.token); // For API requests
         localStorage.setItem('userRole', 'admin');
 
+        console.log('Admin login successful, navigating to /admin');
         // Redirect to admin dashboard
         navigate('/admin');
+      } else {
+        console.log('Response success was false:', response);
+        setError('Login failed. Please try again.');
       }
     } catch (err) {
       console.error('Admin login error:', err);
