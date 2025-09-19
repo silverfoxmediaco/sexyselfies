@@ -247,16 +247,12 @@ const OnboardingFlow = () => {
         </div>
 
         <div className="OnboardingFlow-tutorialFooter">
-          {currentTutorialStep > 0 ? (
-            <button
-              className="OnboardingFlow-backButtonBottom"
-              onClick={handlePrevTutorial}
-            >
-              Back
-            </button>
-          ) : (
-            <div></div>
-          )}
+          <button
+            className="OnboardingFlow-backButtonBottom"
+            onClick={handlePrevTutorial}
+          >
+            {currentTutorialStep > 0 ? 'Back' : 'Previous'}
+          </button>
           <button
             className="OnboardingFlow-nextButton"
             onClick={handleNextTutorial}
