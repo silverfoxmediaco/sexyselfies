@@ -153,13 +153,13 @@ const OnboardingFlow = () => {
                   className="OnboardingFlow-loginLink"
                   onClick={() => navigate('/member/login')}
                 >
-                  Already a Member? Login Here
+                  Member Login
                 </button>
                 <button
                   className="OnboardingFlow-loginLink"
                   onClick={() => navigate('/creator/login')}
                 >
-                  Already a Creator? Login Here
+                  Creator Login
                 </button>
             </div>
           </div>
