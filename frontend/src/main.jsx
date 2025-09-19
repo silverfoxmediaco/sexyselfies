@@ -90,7 +90,7 @@ import LandingPage from './pages/LandingPage';
 import LandingPageV2 from './pages/LandingPageV2';
 
 // Import Onboarding
-import OnboardingFlow from './components/OnboardingFlow';
+import OnboardingFlow from './pages/OnboardingFlow';
 
 // Import Content View
 import ContentView from './pages/ContentView';
