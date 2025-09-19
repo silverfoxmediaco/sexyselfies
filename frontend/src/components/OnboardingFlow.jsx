@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 // Use public folder for build compatibility
 const logoImage = '/sexyselfies_logo.png';
 const backgroundImage = '/onboardingscreen1.png';
-import '../styles/OnboardingFlow.css';
+import './OnboardingFlow.css';
 
 const OnboardingFlow = () => {
   const navigate = useNavigate();
