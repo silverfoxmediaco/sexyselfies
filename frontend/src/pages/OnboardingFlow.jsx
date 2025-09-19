@@ -122,7 +122,7 @@ const OnboardingFlow = () => {
               />
             </div>
             <p className="OnboardingFlow-subtitle">
-              The platform where authentic creators and genuine fans connect
+              The platform where authentic creators and genuine fans connect it's free to join and always will be!
             </p>
 
             <div className="OnboardingFlow-roleButtons">
