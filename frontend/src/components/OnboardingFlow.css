@@ -100,8 +100,15 @@
 .OnboardingFlow-roleButtons {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   margin-bottom: 48px;
+}
+
+.OnboardingFlow-roleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
 }
 
 .OnboardingFlow-roleButton {
@@ -146,6 +153,33 @@
   font-size: 14px;
   font-weight: 400;
   opacity: 0.8;
+}
+
+.OnboardingFlow-loginLink {
+  background: transparent;
+  border: none;
+  color: #47E0D2;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.OnboardingFlow-loginLink:hover {
+  color: #17D2C2;
+  transform: translateY(-1px);
+}
+
+.OnboardingFlow-loginLink:active {
+  transform: translateY(0);
 }
 
 .OnboardingFlow-footer {

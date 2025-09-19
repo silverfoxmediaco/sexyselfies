@@ -109,45 +109,54 @@ const OnboardingFlow = () => {
         </div>
 
         <div className="OnboardingFlow-content">
-          <div className="OnboardingFlow-header">
-            <img
-              src={logoImage}
-              alt="SexySelfies"
-              className="OnboardingFlow-logo"
-              onError={(e) => {e.target.style.display = 'none'}}
-            />
-          </div>
-
           <div className="OnboardingFlow-welcome">
             <h1 className="OnboardingFlow-title">
               Welcome to
             </h1>
-            <img
-              src={logoImage}
-              alt="SexySelfies"
-              className="OnboardingFlow-logo"
-              onError={(e) => {e.target.style.display = 'none'}}
-            />
+            <div className="OnboardingFlow-header">
+              <img
+                src={logoImage}
+                alt="SexySelfies"
+                className="OnboardingFlow-logo"
+                onError={(e) => {e.target.style.display = 'none'}}
+              />
+            </div>
             <p className="OnboardingFlow-subtitle">
               The platform where authentic creators and genuine fans connect
             </p>
 
             <div className="OnboardingFlow-roleButtons">
-              <button
-                className="OnboardingFlow-roleButton OnboardingFlow-memberButton"
-                onClick={() => handleRoleSelection('member')}
-              >
-                <span className="OnboardingFlow-roleTitle">Become a Member</span>
-                <span className="OnboardingFlow-roleDesc">Discover & connect with creators</span>
-              </button>
+              <div className="OnboardingFlow-roleGroup">
+                <button
+                  className="OnboardingFlow-roleButton OnboardingFlow-memberButton"
+                  onClick={() => handleRoleSelection('member')}
+                >
+                  <span className="OnboardingFlow-roleTitle">Become a Member</span>
+                  <span className="OnboardingFlow-roleDesc">Discover & connect with creators</span>
+                </button>
+                <button
+                  className="OnboardingFlow-loginLink"
+                  onClick={() => navigate('/member/login')}
+                >
+                  Already a Member? Login Here
+                </button>
+              </div>
 
-              <button
-                className="OnboardingFlow-roleButton OnboardingFlow-creatorButton"
-                onClick={() => handleRoleSelection('creator')}
-              >
-                <span className="OnboardingFlow-roleTitle">Become a Creator</span>
-                <span className="OnboardingFlow-roleDesc">A Sanctuary of Self Expression</span>
-              </button>
+              <div className="OnboardingFlow-roleGroup">
+                <button
+                  className="OnboardingFlow-roleButton OnboardingFlow-creatorButton"
+                  onClick={() => handleRoleSelection('creator')}
+                >
+                  <span className="OnboardingFlow-roleTitle">Become a Creator</span>
+                  <span className="OnboardingFlow-roleDesc">A Sanctuary of Self Expression</span>
+                </button>
+                <button
+                  className="OnboardingFlow-loginLink"
+                  onClick={() => navigate('/creator/login')}
+                >
+                  Already a Creator? Login Here
+                </button>
+              </div>
             </div>
 
             <div className="OnboardingFlow-footer">
