@@ -120,8 +120,14 @@ const OnboardingFlow = () => {
 
           <div className="OnboardingFlow-welcome">
             <h1 className="OnboardingFlow-title">
-              Welcome to SexySelfies
+              Welcome to
             </h1>
+            <img
+              src={logoImage}
+              alt="SexySelfies"
+              className="OnboardingFlow-logo"
+              onError={(e) => {e.target.style.display = 'none'}}
+            />
             <p className="OnboardingFlow-subtitle">
               The platform where authentic creators and genuine fans connect
             </p>
