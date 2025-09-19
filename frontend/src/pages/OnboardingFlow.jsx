@@ -86,7 +86,12 @@ const OnboardingFlow = () => {
     if (currentTutorialStep < steps.length - 1) {
       setCurrentTutorialStep(currentTutorialStep + 1);
     } else {
-      setCurrentStep('signup');
+      // Go directly to registration instead of signup screen
+      if (selectedRole === 'creator') {
+        navigate('/creator/register');
+      } else {
+        setCurrentStep('signup');
+      }
     }
   };
 

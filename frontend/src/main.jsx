@@ -105,8 +105,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <AppLayout>
           <RedirectHandler />
           <Routes>
+            {/* Default Route - Onboarding Flow */}
+            <Route path='/' element={<OnboardingFlow />} />
+
             {/* Landing Pages */}
-            <Route path='/' element={<LandingPageV2 />} />
+            <Route path='/landing' element={<LandingPageV2 />} />
             <Route path='/landing-v1' element={<LandingPage />} />
 
             {/* Onboarding Flow */}
