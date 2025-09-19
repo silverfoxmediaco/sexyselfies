@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logoImage from '../assets/sexyselfies_logo.png';
-import backgroundImage from '../assets/onboardingscreen1.png';
+// Use public folder for build compatibility
+const logoImage = '/sexyselfies_logo.png';
+const backgroundImage = '/onboardingscreen1.png';
 import '../styles/OnboardingFlow.css';
 
 const OnboardingFlow = () => {
