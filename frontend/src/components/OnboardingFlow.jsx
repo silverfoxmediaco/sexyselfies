@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // Use public folder for build compatibility
 const logoImage = '/sexyselfies_logo.png';
-const backgroundImage = '/onboardingscreen1.png';
+const backgroundImage = '/creatorblonde5.png';
 import './OnboardingFlow.css';
 
 const OnboardingFlow = () => {
@@ -131,8 +131,7 @@ const OnboardingFlow = () => {
                 className="OnboardingFlow-roleButton OnboardingFlow-memberButton"
                 onClick={() => handleRoleSelection('member')}
               >
-                <span className="OnboardingFlow-roleIcon">👤</span>
-                <span className="OnboardingFlow-roleTitle">I'm a Member</span>
+                <span className="OnboardingFlow-roleTitle">Become a Member</span>
                 <span className="OnboardingFlow-roleDesc">Discover & connect with creators</span>
               </button>
 
@@ -140,9 +139,8 @@ const OnboardingFlow = () => {
                 className="OnboardingFlow-roleButton OnboardingFlow-creatorButton"
                 onClick={() => handleRoleSelection('creator')}
               >
-                <span className="OnboardingFlow-roleIcon">⭐</span>
-                <span className="OnboardingFlow-roleTitle">I'm a Creator</span>
-                <span className="OnboardingFlow-roleDesc">Share content & earn money</span>
+                <span className="OnboardingFlow-roleTitle">Become a Creator</span>
+                <span className="OnboardingFlow-roleDesc">A Sanctuary of Self Expression</span>
               </button>
             </div>
 
