@@ -37,24 +37,39 @@ const OnboardingFlow = () => {
   const creatorTutorialSteps = [
     {
       id: 'creator-1',
-      title: 'Upload Your Content',
-      description: 'Share your photos and videos with our "Instagram Plus" standards. Sexy but tasteful content that showcases your personality.',
-      image: '/images/tutorial-creator-1.png',
-      icon: '📸'
+      title: 'Simple Registration',
+      description: '',
+      features: [
+        'Email & secure password',
+        'Choose your creator name',
+        'Verify you\'re 18+',
+        'Select your country'
+      ],
+      icon: '📷'
     },
     {
       id: 'creator-2',
-      title: 'Connect With Members',
-      description: 'Members swipe and connect with you. Browse high-value members and send them personalized messages and special offers.',
-      image: '/images/tutorial-creator-2.png',
-      icon: '💋'
+      title: 'Industry-Leading Earnings',
+      description: '',
+      features: [
+        'Keep 80% of all earnings',
+        'Set prices from $0.99-$9.99',
+        'Weekly payouts starting at $50',
+        'No professional equipment needed'
+      ],
+      icon: '💰'
     },
     {
       id: 'creator-3',
-      title: 'Earn 80% Revenue Share',
-      description: 'Keep 80% of everything you earn! Get paid weekly for content unlocks, tips, and special offers. The highest payout in the industry.',
-      image: '/images/tutorial-creator-3.png',
-      icon: '💸'
+      title: 'Powerful Creator Tools',
+      description: '',
+      features: [
+        'Upload content instantly',
+        'Real-time analytics dashboard',
+        'Direct message your fans',
+        'Track earnings & performance'
+      ],
+      icon: '📊'
     }
   ];
 
@@ -212,9 +227,19 @@ const OnboardingFlow = () => {
             <h2 className="OnboardingFlow-tutorialTitle">
               {currentStepData.title}
             </h2>
-            <p className="OnboardingFlow-tutorialDescription">
-              {currentStepData.description}
-            </p>
+            {selectedRole === 'creator' && currentStepData.features ? (
+              <ul className="OnboardingFlow-featuresList">
+                {currentStepData.features.map((feature, index) => (
+                  <li key={index} className="OnboardingFlow-featureItem">
+                    • {feature}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="OnboardingFlow-tutorialDescription">
+                {currentStepData.description}
+              </p>
+            )}
           </div>
         </div>
 
@@ -234,15 +259,35 @@ const OnboardingFlow = () => {
     return (
       <div className="OnboardingFlow-signupContainer">
         <div className="OnboardingFlow-signupContent">
+          <div className="OnboardingFlow-signupIcon">
+            🛡️
+          </div>
           <h2 className="OnboardingFlow-signupTitle">
-            Ready to get started?
+            {selectedRole === 'creator' ? 'Ready to Start Earning?' : 'Ready to get started?'}
           </h2>
           <p className="OnboardingFlow-signupDescription">
             {selectedRole === 'member'
               ? 'Create your member account to start discovering amazing creators.'
-              : 'Create your creator account to start earning money from your content.'
+              : 'Join thousands of creators earning on their terms. No hidden fees, no equipment needed, just your phone and creativity.'
             }
           </p>
+
+          {selectedRole === 'creator' && (
+            <div className="OnboardingFlow-signupFeatures">
+              <div className="OnboardingFlow-signupFeature">
+                <span className="OnboardingFlow-checkmark">✓</span>
+                <span>Age-verified platform</span>
+              </div>
+              <div className="OnboardingFlow-signupFeature">
+                <span className="OnboardingFlow-checkmark">✓</span>
+                <span>Secure payments</span>
+              </div>
+              <div className="OnboardingFlow-signupFeature">
+                <span className="OnboardingFlow-checkmark">✓</span>
+                <span>24/7 support</span>
+              </div>
+            </div>
+          )}
 
           <div className="OnboardingFlow-signupButtons">
             <button
@@ -256,7 +301,7 @@ const OnboardingFlow = () => {
               className="OnboardingFlow-secondaryButton"
               onClick={() => navigate(selectedRole === 'member' ? '/member/login' : '/creator/login')}
             >
-              I already have an account
+              {selectedRole === 'creator' ? 'Sign up later' : 'I already have an account'}
             </button>
           </div>
 

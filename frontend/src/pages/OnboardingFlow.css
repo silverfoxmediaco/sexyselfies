@@ -336,6 +336,24 @@
   margin: 0;
 }
 
+.OnboardingFlow-featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.OnboardingFlow-featureItem {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #C7C7CC;
+  text-align: left;
+}
+
 .OnboardingFlow-tutorialFooter {
   padding-bottom: 32px;
 }
@@ -387,6 +405,39 @@
 .OnboardingFlow-signupContent {
   text-align: center;
   max-width: 100%;
+}
+
+.OnboardingFlow-signupIcon {
+  font-size: 48px;
+  margin-bottom: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.OnboardingFlow-signupFeatures {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 32px 0;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.OnboardingFlow-signupFeature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #C7C7CC;
+}
+
+.OnboardingFlow-checkmark {
+  color: #22C55E;
+  font-weight: 600;
+  font-size: 18px;
 }
 
 .OnboardingFlow-signupTitle {
