@@ -132,7 +132,7 @@ const OnboardingFlow = () => {
                   onClick={() => handleRoleSelection('member')}
                 >
                   <span className="OnboardingFlow-roleTitle">Become a Member</span>
-                  <span className="OnboardingFlow-roleDesc">Discover & connect with creators</span>
+                  {/* <span className="OnboardingFlow-roleDesc">Discover & connect with creators</span> */}
                 </button>
               </div>
 
@@ -142,7 +142,7 @@ const OnboardingFlow = () => {
                   onClick={() => handleRoleSelection('creator')}
                 >
                   <span className="OnboardingFlow-roleTitle">Become a Creator</span>
-                  <span className="OnboardingFlow-roleDesc">A Sanctuary of Self Expression</span>
+                  {/* <span className="OnboardingFlow-roleDesc">A Sanctuary of Self Expression</span> */}
                 </button>
                 
               </div>
