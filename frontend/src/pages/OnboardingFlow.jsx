@@ -190,13 +190,14 @@ const OnboardingFlow = () => {
 
     return (
       <div className="OnboardingFlow-tutorialContainer">
+        {selectedRole === 'creator' && (
+          <>
+            <div className="OnboardingFlow-tutorialBackground" />
+            <div className="OnboardingFlow-tutorialOverlay" />
+          </>
+        )}
+
         <div className="OnboardingFlow-tutorialHeader">
-          <button
-            className="OnboardingFlow-backButton"
-            onClick={handlePrevTutorial}
-          >
-            ←
-          </button>
           <div className="OnboardingFlow-progress">
             <span className="OnboardingFlow-progressText">
               {currentTutorialStep + 1} of {steps.length}
@@ -217,11 +218,13 @@ const OnboardingFlow = () => {
         </div>
 
         <div className="OnboardingFlow-tutorialContent">
-          <div className="OnboardingFlow-tutorialImage">
-            <div className="OnboardingFlow-tutorialIcon">
-              {currentStepData.icon}
+          {selectedRole === 'member' && (
+            <div className="OnboardingFlow-tutorialImage">
+              <div className="OnboardingFlow-tutorialIcon">
+                {currentStepData.icon}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="OnboardingFlow-tutorialText">
             <h2 className="OnboardingFlow-tutorialTitle">
@@ -244,6 +247,16 @@ const OnboardingFlow = () => {
         </div>
 
         <div className="OnboardingFlow-tutorialFooter">
+          {currentTutorialStep > 0 ? (
+            <button
+              className="OnboardingFlow-backButtonBottom"
+              onClick={handlePrevTutorial}
+            >
+              Back
+            </button>
+          ) : (
+            <div></div>
+          )}
           <button
             className="OnboardingFlow-nextButton"
             onClick={handleNextTutorial}
