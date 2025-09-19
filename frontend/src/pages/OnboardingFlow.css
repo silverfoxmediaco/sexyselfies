@@ -10,6 +10,7 @@
   height: 100vh;
   overflow: hidden;
   background: #0A0A0A;
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
   z-index: 1000;
 }
 
@@ -223,6 +224,7 @@
   display: flex;
   flex-direction: column;
   padding: 24px;
+  padding-bottom: max(env(safe-area-inset-bottom), 20px);
   color: #FFFFFF;
   z-index: 1000;
 }
@@ -234,7 +236,6 @@
   right: 0;
   bottom: 0;
   z-index: -2;
-  background-image: url('/placeholders/creatorbrunette1.png');
   background-size: cover;
   background-position: center;
 }
@@ -377,13 +378,15 @@
 }
 
 .OnboardingFlow-tutorialFooter {
-  padding-bottom: 32px;
+  padding-bottom: max(env(safe-area-inset-bottom), 32px);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   width: 100%;
   max-width: 320px;
   margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
 .OnboardingFlow-nextButton {
@@ -445,6 +448,7 @@
   flex-direction: column;
   justify-content: center;
   padding: 24px;
+  padding-bottom: max(env(safe-area-inset-bottom), 24px);
   color: #FFFFFF;
   z-index: 1000;
 }

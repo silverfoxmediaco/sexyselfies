@@ -188,11 +188,31 @@ const OnboardingFlow = () => {
     const currentStepData = steps[currentTutorialStep];
     const isLastStep = currentTutorialStep === steps.length - 1;
 
+    // Determine which background image to use
+    const getBackgroundImage = () => {
+      if (selectedRole === 'creator') {
+        switch(currentTutorialStep) {
+          case 0:
+            return '/placeholders/creatorbrunette1.png';
+          case 1:
+            return '/placeholders/sexyblondeacceptibleimage.jpg';
+          case 2:
+            return '/placeholders/creatorbrunette1.png';
+          default:
+            return '/placeholders/creatorbrunette1.png';
+        }
+      }
+      return null;
+    };
+
     return (
       <div className="OnboardingFlow-tutorialContainer">
         {selectedRole === 'creator' && (
           <>
-            <div className="OnboardingFlow-tutorialBackground" />
+            <div
+              className="OnboardingFlow-tutorialBackground"
+              style={{ backgroundImage: `url(${getBackgroundImage()})` }}
+            />
             <div className="OnboardingFlow-tutorialOverlay" />
           </>
         )}
