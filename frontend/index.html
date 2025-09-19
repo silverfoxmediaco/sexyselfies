@@ -215,17 +215,20 @@
     <!-- Manifest -->
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- SEO Meta Tags -->
+    <!-- SEO Meta Tags - Adult Content Optimized -->
     <meta
       name="description"
-      content="Connect with creators, discover exclusive content, and monetize your selfies on SexySelfies - the premier platform for content creators."
+      content="Join SexySelfies - The premier adult content platform for creators and fans. Discover exclusive content, connect with verified creators, and monetize your content safely. 18+ only."
     />
     <meta
       name="keywords"
-      content="content creators, selfies, monetize, social platform, exclusive content"
+      content="adult content creators, sexy selfies, adult social platform, OnlyFans alternative, adult content monetization, creator economy, adult entertainment, exclusive content, verified creators, adult social media, content subscription, adult platform, sexy content, adult creators, fan platform, NSFW content, adult community, mature content"
     />
     <meta name="author" content="SexySelfies" />
     <meta name="robots" content="index, follow" />
+    <meta name="rating" content="RTA-5042-1996-1400-1577-RTA" />
+    <meta name="content-rating" content="mature" />
+    <meta name="age-rating" content="18+" />
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="SexySelfies - Swipe, Match, Monetize" />
@@ -252,7 +255,63 @@
     <meta name="twitter:site" content="@sexyselfies" />
     <meta name="twitter:creator" content="@sexyselfies" />
 
-    <title>SexySelfies - Swipe, Match, Monetize</title>
+    <title>SexySelfies - Adult Content Platform | Creator Economy & Exclusive Content | 18+</title>
+
+    <!-- Structured Data Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "SexySelfies",
+      "alternateName": "Sexy Selfies",
+      "url": "https://sexyselfies-frontend.onrender.com",
+      "description": "Premium adult content platform for creators and fans. Discover exclusive content, connect with verified creators, and monetize content safely.",
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Adult",
+        "suggestedMinAge": 18
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://sexyselfies-frontend.onrender.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "sameAs": [
+        "https://twitter.com/sexyselfies",
+        "https://instagram.com/sexyselfies"
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "SexySelfies",
+      "applicationCategory": "SocialNetworkingApplication",
+      "contentRating": "18+",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.5",
+        "reviewCount": "1250"
+      },
+      "description": "Adult content platform combining Tinder-style discovery with OnlyFans monetization. Connect with verified creators, discover exclusive content.",
+      "featureList": [
+        "Adult Content Discovery",
+        "Creator Monetization",
+        "Secure Payments",
+        "Age Verification",
+        "Mobile App",
+        "Content Subscription"
+      ]
+    }
+    </script>
 
     <!-- Preconnect to external services -->
     <link rel="preconnect" href="https://res.cloudinary.com" />

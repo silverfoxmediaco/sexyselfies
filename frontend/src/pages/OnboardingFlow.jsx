@@ -130,13 +130,10 @@ const OnboardingFlow = () => {
 
         <div className="OnboardingFlow-content">
           <div className="OnboardingFlow-welcome">
-            <h1 className="OnboardingFlow-title">
-              Welcome to
-            </h1>
             <div className="OnboardingFlow-header">
               <img
                 src={logoImage}
-                alt="SexySelfies"
+                alt="Sexy Selfies"
                 className="OnboardingFlow-logo"
                 onError={(e) => {e.target.style.display = 'none'}}
               />

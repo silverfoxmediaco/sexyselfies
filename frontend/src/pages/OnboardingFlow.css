@@ -76,15 +76,6 @@
   max-width: 100%;
 }
 
-.OnboardingFlow-title {
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: clamp(32px, 8vw, 48px);
-  font-weight: 700;
-  line-height: 1.15;
-  color: #17D2C2;
-  margin: 38px 0 10px 0;
-  letter-spacing: -0.02em;
-}
 
 .OnboardingFlow-subtitle {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
