@@ -197,7 +197,7 @@ const OnboardingFlow = () => {
           case 1:
             return '/placeholders/sexyblondeacceptibleimage.jpg';
           case 2:
-            return '/placeholders/creatorbrunette1.png';
+            return '/placeholders/sexyjapanesegirl1.png';
           default:
             return '/placeholders/creatorbrunette1.png';
         }
