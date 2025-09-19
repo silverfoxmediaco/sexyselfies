@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // Use public folder for build compatibility
 const logoImage = '/sexyselfies_logo.png';
-const backgroundImage = '/creatorblonde5.png';
+const backgroundImage = '/placeholders/creatorblonde5.png';
 import './OnboardingFlow.css';
 
 const OnboardingFlow = () => {
