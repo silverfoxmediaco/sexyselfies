@@ -134,12 +134,6 @@ const OnboardingFlow = () => {
                   <span className="OnboardingFlow-roleTitle">Become a Member</span>
                   <span className="OnboardingFlow-roleDesc">Discover & connect with creators</span>
                 </button>
-                <button
-                  className="OnboardingFlow-loginLink"
-                  onClick={() => navigate('/member/login')}
-                >
-                  Already a Member? Login Here
-                </button>
               </div>
 
               <div className="OnboardingFlow-roleGroup">
@@ -150,22 +144,23 @@ const OnboardingFlow = () => {
                   <span className="OnboardingFlow-roleTitle">Become a Creator</span>
                   <span className="OnboardingFlow-roleDesc">A Sanctuary of Self Expression</span>
                 </button>
+                
+              </div>
+            </div>
+
+            <div className="OnboardingFlow-footer">
+              <button
+                  className="OnboardingFlow-loginLink"
+                  onClick={() => navigate('/member/login')}
+                >
+                  Already a Member? Login Here
+                </button>
                 <button
                   className="OnboardingFlow-loginLink"
                   onClick={() => navigate('/creator/login')}
                 >
                   Already a Creator? Login Here
                 </button>
-              </div>
-            </div>
-
-            <div className="OnboardingFlow-footer">
-              <button
-                className="OnboardingFlow-skipButton"
-                onClick={() => navigate('/')}
-              >
-                Browse without signing up
-              </button>
             </div>
           </div>
         </div>
