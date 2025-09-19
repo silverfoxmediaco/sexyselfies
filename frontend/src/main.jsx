@@ -89,6 +89,9 @@ import Library from './components/Library';
 import LandingPage from './pages/LandingPage';
 import LandingPageV2 from './pages/LandingPageV2';
 
+// Import Onboarding
+import OnboardingFlow from './components/OnboardingFlow';
+
 // Import Content View
 import ContentView from './pages/ContentView';
 
@@ -105,6 +108,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             {/* Landing Pages */}
             <Route path='/' element={<LandingPageV2 />} />
             <Route path='/landing-v1' element={<LandingPage />} />
+
+            {/* Onboarding Flow */}
+            <Route path='/onboarding' element={<OnboardingFlow />} />
 
             {/* Content View - Public route for viewing individual content */}
             <Route path='/content/:id' element={<ContentView />} />

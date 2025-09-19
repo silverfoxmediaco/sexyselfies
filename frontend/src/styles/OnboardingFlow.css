@@ -1,0 +1,547 @@
+/* OnboardingFlow Styles - Mobile-First Design */
+
+.OnboardingFlow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #0A0A0A;
+  z-index: 1000;
+}
+
+.OnboardingFlow-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.OnboardingFlow-backgroundImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.OnboardingFlow-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0.7) 0%,
+    rgba(10, 10, 10, 0.4) 50%,
+    rgba(10, 10, 10, 0.9) 100%
+  );
+}
+
+.OnboardingFlow-content {
+  position: relative;
+  z-index: 2;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  color: #FFFFFF;
+}
+
+.OnboardingFlow-header {
+  display: flex;
+  justify-content: center;
+  padding-top: 60px;
+  margin-bottom: 32px;
+}
+
+.OnboardingFlow-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.OnboardingFlow-welcome {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  max-width: 100%;
+}
+
+.OnboardingFlow-title {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(32px, 8vw, 48px);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #FFFFFF;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.02em;
+}
+
+.OnboardingFlow-subtitle {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #C7C7CC;
+  margin: 0 0 48px 0;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.OnboardingFlow-roleButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.OnboardingFlow-roleButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px;
+  border-radius: 16px;
+  border: 1px solid #2A2A2C;
+  background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  color: #001310;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 44px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.OnboardingFlow-roleButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(23, 210, 194, 0.3);
+}
+
+.OnboardingFlow-roleButton:active {
+  transform: translateY(0);
+}
+
+.OnboardingFlow-roleIcon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.OnboardingFlow-roleTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.OnboardingFlow-roleDesc {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.OnboardingFlow-footer {
+  margin-top: auto;
+  padding-bottom: 32px;
+}
+
+.OnboardingFlow-skipButton {
+  background: transparent;
+  border: none;
+  color: #8E8E93;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 12px;
+  transition: color 0.2s ease;
+}
+
+.OnboardingFlow-skipButton:hover {
+  color: #C7C7CC;
+}
+
+/* Tutorial Styles */
+.OnboardingFlow-tutorialContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0A0A0A;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  color: #FFFFFF;
+  z-index: 1000;
+}
+
+.OnboardingFlow-tutorialHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 48px;
+  padding-top: 20px;
+}
+
+.OnboardingFlow-backButton {
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 24px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.OnboardingFlow-backButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.OnboardingFlow-progress {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 16px;
+}
+
+.OnboardingFlow-progressText {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #C7C7CC;
+  margin-bottom: 8px;
+}
+
+.OnboardingFlow-progressBar {
+  width: 100%;
+  max-width: 200px;
+  height: 4px;
+  background: #2A2A2C;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.OnboardingFlow-progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  transition: width 0.3s ease;
+}
+
+.OnboardingFlow-tutorialContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 100%;
+}
+
+.OnboardingFlow-tutorialImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+  box-shadow: 0 10px 30px rgba(23, 210, 194, 0.3);
+}
+
+.OnboardingFlow-tutorialIcon {
+  font-size: 48px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.OnboardingFlow-tutorialText {
+  max-width: 320px;
+}
+
+.OnboardingFlow-tutorialTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #FFFFFF;
+  margin: 0 0 16px 0;
+}
+
+.OnboardingFlow-tutorialDescription {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #C7C7CC;
+  margin: 0;
+}
+
+.OnboardingFlow-tutorialFooter {
+  padding-bottom: 32px;
+}
+
+.OnboardingFlow-nextButton {
+  width: 100%;
+  max-width: 320px;
+  padding: 16px 24px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  color: #001310;
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  min-height: 44px;
+}
+
+.OnboardingFlow-nextButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 15px 40px rgba(23, 210, 194, 0.3);
+}
+
+.OnboardingFlow-nextButton:active {
+  transform: translateY(0);
+}
+
+/* Signup Styles */
+.OnboardingFlow-signupContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0A0A0A;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px;
+  color: #FFFFFF;
+  z-index: 1000;
+}
+
+.OnboardingFlow-signupContent {
+  text-align: center;
+  max-width: 100%;
+}
+
+.OnboardingFlow-signupTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #FFFFFF;
+  margin: 0 0 16px 0;
+}
+
+.OnboardingFlow-signupDescription {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #C7C7CC;
+  margin: 0 0 48px 0;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.OnboardingFlow-signupButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.OnboardingFlow-primaryButton {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(135deg, #12B7AB 0%, #17D2C2 50%, #47E0D2 100%);
+  color: #001310;
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  min-height: 44px;
+}
+
+.OnboardingFlow-primaryButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 15px 40px rgba(23, 210, 194, 0.3);
+}
+
+.OnboardingFlow-secondaryButton {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  border-radius: 16px;
+  border: 1px solid #2A2A2C;
+  background: transparent;
+  color: #FFFFFF;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.OnboardingFlow-secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: #47E0D2;
+}
+
+.OnboardingFlow-backToStart {
+  background: transparent;
+  border: none;
+  color: #8E8E93;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 12px;
+  transition: color 0.2s ease;
+}
+
+.OnboardingFlow-backToStart:hover {
+  color: #C7C7CC;
+}
+
+/* Tablet Styles */
+@media (min-width: 768px) {
+  .OnboardingFlow-content {
+    padding: 40px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .OnboardingFlow-tutorialContainer {
+    padding: 40px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .OnboardingFlow-signupContainer {
+    padding: 40px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .OnboardingFlow-roleButtons {
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .OnboardingFlow-roleButton {
+    flex: 1;
+    padding: 32px 24px;
+  }
+
+  .OnboardingFlow-tutorialImage {
+    width: 150px;
+    height: 150px;
+  }
+
+  .OnboardingFlow-tutorialIcon {
+    font-size: 64px;
+  }
+}
+
+/* Desktop Styles */
+@media (min-width: 1024px) {
+  .OnboardingFlow-content {
+    max-width: 800px;
+  }
+
+  .OnboardingFlow-tutorialContainer {
+    max-width: 800px;
+  }
+
+  .OnboardingFlow-signupContainer {
+    max-width: 800px;
+  }
+
+  .OnboardingFlow-welcome {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .OnboardingFlow-roleButtons {
+    max-width: 500px;
+    margin: 0 auto 48px auto;
+  }
+
+  .OnboardingFlow-tutorialContent {
+    max-width: 500px;
+  }
+
+  .OnboardingFlow-signupContent {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+/* Loading States and Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.OnboardingFlow-welcome,
+.OnboardingFlow-tutorialContent,
+.OnboardingFlow-signupContent {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Focus States for Accessibility */
+.OnboardingFlow-roleButton:focus,
+.OnboardingFlow-nextButton:focus,
+.OnboardingFlow-primaryButton:focus,
+.OnboardingFlow-secondaryButton:focus {
+  outline: 2px solid #47E0D2;
+  outline-offset: 2px;
+}
+
+.OnboardingFlow-backButton:focus,
+.OnboardingFlow-skipButton:focus,
+.OnboardingFlow-backToStart:focus {
+  outline: 2px solid #47E0D2;
+  outline-offset: 2px;
+  border-radius: 8px;
+}

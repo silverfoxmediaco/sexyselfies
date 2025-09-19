@@ -84,9 +84,9 @@ const SwipeConnectMonetize = () => {
             <div className='hero-cta-group'>
               <button
                 className='btn btn-primary btn-large btn-glow'
-                onClick={() => navigate('/creator/register')}
+                onClick={() => navigate('/onboarding')}
               >
-                <span>Start Earning Today</span>
+                <span>Get Started</span>
                 <svg
                   className='btn-icon'
                   viewBox='0 0 24 24'
@@ -102,16 +102,9 @@ const SwipeConnectMonetize = () => {
               </button>
               <button
                 className='btn btn-secondary btn-large'
-                onClick={() => navigate('/creator/login')}
+                onClick={() => navigate('/creator/register')}
               >
-                <svg
-                  className='btn-icon'
-                  viewBox='0 0 24 24'
-                  fill='currentColor'
-                >
-                  <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z' />
-                </svg>
-                <span>Creator Login</span>
+                <span>Start Earning Today</span>
               </button>
             </div>
 
@@ -141,7 +134,7 @@ const SwipeConnectMonetize = () => {
               </button>
               <button
                 className='btn btn-primary btn-large member-join-btn'
-                onClick={() => navigate('/member/register')}
+                onClick={() => navigate('/onboarding')}
               >
                 <svg
                   className='btn-icon'
