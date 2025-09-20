@@ -55,7 +55,7 @@ router.get(
       const Content = require('../models/Content');
       const content = await Content.findById(contentId).populate(
         'creator',
-        'username profileImage isVerified'
+        'user username profileImage isVerified'
       );
 
       if (!content) {
@@ -79,7 +79,7 @@ router.get(
         console.log(`👤 Authenticated user: ${userId}`);
 
         // Creator always has access to their own content
-        if (content.creator._id.toString() === userId) {
+        if (content.creator.user.toString() === userId) {
           console.log(`🎨 Creator viewing own content`);
           req.hasAccess = true;
         } else {
@@ -129,7 +129,7 @@ router.use(protect);
 // Unlock single content (micro-transaction)
 router.post(
   '/:id/unlock',
-  authorize('member'),
+  authorize('member', 'creator'), // Allow both members and creators to unlock content
   validateUnlockPrice, // Validates minimum price only ($0.99+)
   checkSpendingLimit, // Checks daily spending limits if set
   trackUnlock, // Analytics tracking

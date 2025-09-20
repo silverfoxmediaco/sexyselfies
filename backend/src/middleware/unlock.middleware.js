@@ -101,10 +101,15 @@ const checkProfileUnlock = async (req, res, next) => {
  */
 const checkSpendingLimit = async (req, res, next) => {
   try {
-    const memberId = req.user.id;
+    const userId = req.user.id;
     const { amount } = req.body;
 
-    const member = await Member.findById(memberId);
+    // Skip spending limits for creators or free content
+    if (req.user.role === 'creator' || amount === 0) {
+      return next();
+    }
+
+    const member = await Member.findOne({ user: userId });
     if (!member) {
       return res.status(404).json({
         success: false,
