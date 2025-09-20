@@ -17,7 +17,6 @@ exports.getSwipeStack = async (req, res) => {
       orientation = 'all',
       gender = 'all',
       ageRange = [18, 99],
-      distance = 50,
       bodyType = 'all',
       ethnicity = 'all',
       contentType = 'all',
@@ -69,23 +68,8 @@ exports.getSwipeStack = async (req, res) => {
         : ethnicity;
     }
 
-    // Get location-based creators if distance specified
-    let creators;
-    if (
-      distance !== 'anywhere' &&
-      member.location &&
-      member.location.coordinates
-    ) {
-      creators = await Creator.find(query)
-        .near('location', {
-          center: member.location.coordinates,
-          maxDistance: distance * 1609.34, // Convert miles to meters
-          spherical: true,
-        })
-        .limit(50);
-    } else {
-      creators = await Creator.find(query).limit(50);
-    }
+    // Get creators - location-based filtering removed since only country data collected
+    const creators = await Creator.find(query).limit(50);
 
     // Shuffle and apply smart algorithm
     const stack = await applySmartAlgorithm(creators, member, {
@@ -111,13 +95,6 @@ exports.getSwipeStack = async (req, res) => {
           coverImage: profile?.branding?.coverImage,
           gallery: creator.gallery?.slice(0, 5), // First 5 images
 
-          location: {
-            city: creator.location?.city,
-            state: creator.location?.state,
-            distance: creator.distance
-              ? Math.round(creator.distance / 1609.34)
-              : null,
-          },
 
           attributes: {
             orientation: creator.orientation,
@@ -766,10 +743,7 @@ async function applySmartAlgorithm(creators, member, filters) {
   const scoredCreators = creators.map(creator => {
     let score = 0;
 
-    // Location proximity
-    if (creator.distance) {
-      score += Math.max(0, 100 - creator.distance / 1000);
-    }
+    // Location proximity removed - only country data collected
 
     // Activity level
     if (isActiveNow(creator.lastActive)) {

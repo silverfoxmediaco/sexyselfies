@@ -159,10 +159,6 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
       <div className='card-info-overlay'>
         <div className='card-header'>
           <h2>{profileData?.displayName || 'Your Name'}, 24</h2>
-          <div className='card-location'>
-            <MapPin size={14} />
-            <span>2 miles away</span>
-          </div>
         </div>
 
         <div className='card-bio'>
@@ -293,10 +289,6 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
               </div>
 
               <div className='profile-meta'>
-                <span className='meta-item'>
-                  <MapPin size={14} />
-                  Los Angeles, CA • 2km away
-                </span>
                 <span className='meta-item'>
                   <Clock size={14} />
                   Online now

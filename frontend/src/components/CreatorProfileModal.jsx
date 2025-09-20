@@ -190,16 +190,11 @@ const CreatorProfileModal = ({
                       </span>
                     )}
                   </h2>
-                  <div className='profile-location-info'>
-                    <MapPin size={16} />
-                    <span>{creator.distance || '2'}km away</span>
-                    {creator.activeNow && (
-                      <>
-                        <span>•</span>
-                        <span className='active-indicator'>Active Now</span>
-                      </>
-                    )}
-                  </div>
+                  {creator.activeNow && (
+                    <div className='profile-status-info'>
+                      <span className='active-indicator'>Active Now</span>
+                    </div>
+                  )}
                 </div>
               </div>
 

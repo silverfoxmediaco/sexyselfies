@@ -139,11 +139,6 @@ const BrowseCreators = () => {
           hairColor: creator.hairColor || 'Brown',
           height: creator.height || 65,
           bio: creator.bio || '',
-          location: creator.location || {
-            city: 'Unknown',
-            state: '',
-            distance: 0,
-          },
           lastActive: creator.lastActive || new Date(),
           createdAt: creator.createdAt || new Date(),
           // Additional fields for connections

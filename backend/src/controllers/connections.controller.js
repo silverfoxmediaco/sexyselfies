@@ -96,15 +96,7 @@ exports.getSwipeStack = async (req, res, next) => {
 
     // Transform creators to match frontend expectations
     const transformedCreators = creatorsWithContent.map(creator => {
-      // Handle location data
-      let location = { city: 'Unknown', state: '', distance: 0 };
-      if (creator.location) {
-        location = {
-          city: creator.location.city || 'Unknown',
-          state: creator.location.state || '',
-          distance: 0, // Calculate if needed
-        };
-      }
+      // Location removed - only country data collected, no point in city/distance display
 
       // Fix profile image URL
       let profileImageUrl = creator.profileImage;
@@ -150,7 +142,6 @@ exports.getSwipeStack = async (req, res, next) => {
         isVerified: creator.isVerified || false,
         isOnline: isUserOnline(creator.lastActive),
         lastActive: creator.lastActive || creator.createdAt,
-        location: location,
         contentPrice: creator.contentPrice || 2.99,
         stats: creator.stats || {},
         createdAt: creator.createdAt,
@@ -180,7 +171,6 @@ exports.getSwipeStack = async (req, res, next) => {
           isVerified: true,
           isOnline: true,
           lastActive: new Date(),
-          location: { city: 'Los Angeles', state: 'CA', distance: 10 },
           contentPrice: 2.99,
           age: 24,
           gender: 'female',
@@ -197,7 +187,6 @@ exports.getSwipeStack = async (req, res, next) => {
           isVerified: true,
           isOnline: false,
           lastActive: new Date(Date.now() - 3600000),
-          location: { city: 'New York', state: 'NY', distance: 25 },
           contentPrice: 3.99,
           age: 26,
           gender: 'female',
