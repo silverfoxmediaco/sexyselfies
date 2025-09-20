@@ -29,7 +29,12 @@ class AuthService {
         displayName: data.displayName || data.username,
         phone: data.phone || undefined,
         birthDate: formattedBirthDate, // ESSENTIAL: Age verification
+        gender: data.gender,
         agreeToTerms: data.agreeToTerms,
+        interestedIn: data.interestedIn,
+        ageRange: data.ageRange,
+        orientation: data.orientation,
+        bodyTypePreferences: data.bodyTypePreferences,
       });
 
       // For new registration flow, no token is returned
