@@ -14,7 +14,7 @@ const OnboardingFlow = () => {
     {
       id: 'member-1',
       title: 'Discover Amazing Creators',
-      description: 'Swipe through profiles of verified creators who share content just for you. Find creators that match your preferences and interests.',
+      description: 'Swipe through profiles of verified creators. Find creators that match your preferences and interests.',
       image: '/images/tutorial-member-1.png',
       icon: '👀'
     },
@@ -28,7 +28,7 @@ const OnboardingFlow = () => {
     {
       id: 'member-3',
       title: 'Pay Only For What You Want',
-      description: 'No subscriptions! Pay small amounts ($0.99-$3.99) to unlock individual photos, videos, or special content you love.',
+      description: 'No subscriptions! Pay small amounts ($0.99-$19.99) to unlock individual photos, videos, or special content you love.',
       image: '/images/tutorial-member-3.png',
       icon: '💰'
     }
@@ -200,12 +200,24 @@ const OnboardingFlow = () => {
               return '/placeholders/creatorbrunette1.png';
           }
         }
+        if (selectedRole === 'member') {
+          switch(currentTutorialStep) {
+            case 0:
+              return '/placeholders/creatorbrunette3.png';
+            case 1:
+              return '/placeholders/creatorblonde5.png';
+            case 2:
+              return '/placeholders/beautifulbrunette2.png';
+            default:
+              return '/placeholders/creatorbrunette3.png';
+          }
+        }
         return null;
       };
 
       return (
         <div className="OnboardingFlow-tutorialContainer">
-          {selectedRole === 'creator' && (
+          {(selectedRole === 'creator' || selectedRole === 'member') && (
             <>
               <div
                 className="OnboardingFlow-tutorialBackground"
@@ -236,14 +248,6 @@ const OnboardingFlow = () => {
           </div>
 
           <div className="OnboardingFlow-tutorialContent">
-            {selectedRole === 'member' && (
-              <div className="OnboardingFlow-tutorialImage">
-                <div className="OnboardingFlow-tutorialIcon">
-                  {currentStepData.icon}
-                </div>
-              </div>
-            )}
-
             <div className="OnboardingFlow-tutorialText">
               <h2 className="OnboardingFlow-tutorialTitle">
                 {currentStepData.title}
@@ -282,172 +286,6 @@ const OnboardingFlow = () => {
       );
     }
 
-  if (currentStep === 'welcome') {
-    return (
-      <div className="OnboardingFlow-container">
-        <div className="OnboardingFlow-background">
-          <img
-            src={backgroundImage}
-            alt="SexySelfies Model"
-            className="OnboardingFlow-backgroundImage"
-            onError={(e) => {e.target.style.display = 'none'}}
-          />
-          <div className="OnboardingFlow-overlay" />
-        </div>
-
-        <div className="OnboardingFlow-content">
-          <div className="OnboardingFlow-welcome">
-            <div className="OnboardingFlow-header">
-              <img
-                src={logoImage}
-                alt="Sexy Selfies"
-                className="OnboardingFlow-logo"
-                onError={(e) => {e.target.style.display = 'none'}}
-              />
-            </div>
-            <p className="OnboardingFlow-subtitle">
-              The platform where authentic creators and genuine fans connect it's free to join and always will be!
-            </p>
-
-            <div className="OnboardingFlow-roleButtons">
-              <div className="OnboardingFlow-roleGroup">
-                <button
-                  className="OnboardingFlow-roleButton OnboardingFlow-memberButton"
-                  onClick={() => handleRoleSelection('member')}
-                >
-                  <span className="OnboardingFlow-roleTitle">Become a Member</span>
-                </button>
-              </div>
-
-              <div className="OnboardingFlow-roleGroup">
-                <button
-                  className="OnboardingFlow-roleButton OnboardingFlow-creatorButton"
-                  onClick={() => handleRoleSelection('creator')}
-                >
-                  <span className="OnboardingFlow-roleTitle">Become a Creator</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="OnboardingFlow-footer">
-              <button
-                  className="OnboardingFlow-loginLink"
-                  onClick={() => navigate('/member/login')}
-                >
-                  Member Login
-                </button>
-                <button
-                  className="OnboardingFlow-loginLink"
-                  onClick={() => navigate('/creator/login')}
-                >
-                  Creator Login
-                </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (currentStep === 'tutorial') {
-    const steps = selectedRole === 'member' ? memberTutorialSteps : creatorTutorialSteps;
-    const currentStepData = steps[currentTutorialStep];
-    const isLastStep = currentTutorialStep === steps.length - 1;
-
-    const getBackgroundImage = () => {
-      if (selectedRole === 'creator') {
-        switch(currentTutorialStep) {
-          case 0:
-            return '/placeholders/creatorbrunette1.png';
-          case 1:
-            return '/placeholders/sexyblondeacceptibleimage.jpg';
-          case 2:
-            return '/placeholders/sexyjapanesegirl1.png';
-          default:
-            return '/placeholders/creatorbrunette1.png';
-        }
-      }
-      return null;
-    };
-
-    return (
-      <div className="OnboardingFlow-tutorialContainer">
-        {selectedRole === 'creator' && (
-          <>
-            <div
-              className="OnboardingFlow-tutorialBackground"
-              style={{ backgroundImage: `url(${getBackgroundImage()})` }}
-            />
-            <div className="OnboardingFlow-tutorialOverlay" />
-          </>
-        )}
-
-        <div className="OnboardingFlow-tutorialHeader">
-          <div className="OnboardingFlow-progress">
-            <span className="OnboardingFlow-progressText">
-              {currentTutorialStep + 1} of {steps.length}
-            </span>
-            <div className="OnboardingFlow-progressBar">
-              <div
-                className="OnboardingFlow-progressFill"
-                style={{ width: `${((currentTutorialStep + 1) / steps.length) * 100}%` }}
-              />
-            </div>
-          </div>
-          <button
-            className="OnboardingFlow-skipButton"
-            onClick={handleSkip}
-          >
-            Skip
-          </button>
-        </div>
-
-        <div className="OnboardingFlow-tutorialContent">
-          {selectedRole === 'member' && (
-            <div className="OnboardingFlow-tutorialImage">
-              <div className="OnboardingFlow-tutorialIcon">
-                {currentStepData.icon}
-              </div>
-            </div>
-          )}
-
-          <div className="OnboardingFlow-tutorialText">
-            <h2 className="OnboardingFlow-tutorialTitle">
-              {currentStepData.title}
-            </h2>
-            {selectedRole === 'creator' && currentStepData.features ? (
-              <ul className="OnboardingFlow-featuresList">
-                {currentStepData.features.map((feature, index) => (
-                  <li key={index} className="OnboardingFlow-featureItem">
-                    • {feature}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="OnboardingFlow-tutorialDescription">
-                {currentStepData.description}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="OnboardingFlow-tutorialFooter">
-          <button
-            className="OnboardingFlow-backButtonBottom"
-            onClick={handlePrevTutorial}
-          >
-            {currentTutorialStep > 0 ? 'Back' : 'Previous'}
-          </button>
-          <button
-            className="OnboardingFlow-nextButton"
-            onClick={handleNextTutorial}
-          >
-            {isLastStep ? 'Get Started' : 'Next'}
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   if (currentStep === 'signup') {
     return (
