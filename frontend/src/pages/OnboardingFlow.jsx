@@ -9,8 +9,6 @@ const OnboardingFlow = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState('welcome');
   const [selectedRole, setSelectedRole] = useState(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionDirection, setTransitionDirection] = useState('forward');
 
   const memberTutorialSteps = [
     {
@@ -77,44 +75,31 @@ const OnboardingFlow = () => {
 
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
 
-  // Transition helper function
-  const performTransition = (newStep, direction = 'forward', tutorialStep = null) => {
-    setIsTransitioning(true);
-    setTransitionDirection(direction);
-
-    setTimeout(() => {
-      setCurrentStep(newStep);
-      if (tutorialStep !== null) {
-        setCurrentTutorialStep(tutorialStep);
-      }
-      setIsTransitioning(false);
-    }, 300); // Half of the transition duration
-  };
-
   const handleRoleSelection = (role) => {
     setSelectedRole(role);
-    performTransition('tutorial', 'forward', 0);
+    setCurrentStep('tutorial');
+    setCurrentTutorialStep(0);
   };
 
   const handleNextTutorial = () => {
     const steps = selectedRole === 'member' ? memberTutorialSteps : creatorTutorialSteps;
     if (currentTutorialStep < steps.length - 1) {
-      performTransition('tutorial', 'forward', currentTutorialStep + 1);
+      setCurrentTutorialStep(currentTutorialStep + 1);
     } else {
       // Go directly to registration instead of signup screen
       if (selectedRole === 'creator') {
         navigate('/creator/register');
       } else {
-        performTransition('signup', 'forward');
+        setCurrentStep('signup');
       }
     }
   };
 
   const handlePrevTutorial = () => {
     if (currentTutorialStep > 0) {
-      performTransition('tutorial', 'backward', currentTutorialStep - 1);
+      setCurrentTutorialStep(currentTutorialStep - 1);
     } else {
-      performTransition('welcome', 'backward');
+      setCurrentStep('welcome');
     }
   };
 
@@ -127,13 +112,10 @@ const OnboardingFlow = () => {
   };
 
   const handleSkip = () => {
-    performTransition('signup', 'forward');
+    setCurrentStep('signup');
   };
 
-
-  // Render the content based on current step
-  const renderContent = () => {
-    if (currentStep === 'welcome') {
+  if (currentStep === 'welcome') {
       return (
         <div className="OnboardingFlow-container">
           <div className="OnboardingFlow-background">
@@ -353,7 +335,7 @@ const OnboardingFlow = () => {
             <button
               className="OnboardingFlow-backToStart"
               onClick={() => {
-                performTransition('welcome', 'backward');
+                setCurrentStep('welcome');
                 setSelectedRole(null);
                 setCurrentTutorialStep(0);
               }}
@@ -368,19 +350,239 @@ const OnboardingFlow = () => {
     return null;
   };
 
-  return (
-    <>
-      {renderContent()}
-      {/* Transition overlay with teal gradient wipe */}
-      {isTransitioning && (
-        <div
-          className={`OnboardingFlow-transitionOverlay ${
-            transitionDirection === 'forward' ? 'OnboardingFlow-wipeForward' : 'OnboardingFlow-wipeBackward'
-          }`}
-        />
-      )}
-    </>
-  );
+  if (currentStep === 'welcome') {
+    return (
+      <div className="OnboardingFlow-container">
+        <div className="OnboardingFlow-background">
+          <img
+            src={backgroundImage}
+            alt="SexySelfies Model"
+            className="OnboardingFlow-backgroundImage"
+            onError={(e) => {e.target.style.display = 'none'}}
+          />
+          <div className="OnboardingFlow-overlay" />
+        </div>
+
+        <div className="OnboardingFlow-content">
+          <div className="OnboardingFlow-welcome">
+            <div className="OnboardingFlow-header">
+              <img
+                src={logoImage}
+                alt="Sexy Selfies"
+                className="OnboardingFlow-logo"
+                onError={(e) => {e.target.style.display = 'none'}}
+              />
+            </div>
+            <p className="OnboardingFlow-subtitle">
+              The platform where authentic creators and genuine fans connect it's free to join and always will be!
+            </p>
+
+            <div className="OnboardingFlow-roleButtons">
+              <div className="OnboardingFlow-roleGroup">
+                <button
+                  className="OnboardingFlow-roleButton OnboardingFlow-memberButton"
+                  onClick={() => handleRoleSelection('member')}
+                >
+                  <span className="OnboardingFlow-roleTitle">Become a Member</span>
+                </button>
+              </div>
+
+              <div className="OnboardingFlow-roleGroup">
+                <button
+                  className="OnboardingFlow-roleButton OnboardingFlow-creatorButton"
+                  onClick={() => handleRoleSelection('creator')}
+                >
+                  <span className="OnboardingFlow-roleTitle">Become a Creator</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="OnboardingFlow-footer">
+              <button
+                  className="OnboardingFlow-loginLink"
+                  onClick={() => navigate('/member/login')}
+                >
+                  Member Login
+                </button>
+                <button
+                  className="OnboardingFlow-loginLink"
+                  onClick={() => navigate('/creator/login')}
+                >
+                  Creator Login
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentStep === 'tutorial') {
+    const steps = selectedRole === 'member' ? memberTutorialSteps : creatorTutorialSteps;
+    const currentStepData = steps[currentTutorialStep];
+    const isLastStep = currentTutorialStep === steps.length - 1;
+
+    const getBackgroundImage = () => {
+      if (selectedRole === 'creator') {
+        switch(currentTutorialStep) {
+          case 0:
+            return '/placeholders/creatorbrunette1.png';
+          case 1:
+            return '/placeholders/sexyblondeacceptibleimage.jpg';
+          case 2:
+            return '/placeholders/sexyjapanesegirl1.png';
+          default:
+            return '/placeholders/creatorbrunette1.png';
+        }
+      }
+      return null;
+    };
+
+    return (
+      <div className="OnboardingFlow-tutorialContainer">
+        {selectedRole === 'creator' && (
+          <>
+            <div
+              className="OnboardingFlow-tutorialBackground"
+              style={{ backgroundImage: `url(${getBackgroundImage()})` }}
+            />
+            <div className="OnboardingFlow-tutorialOverlay" />
+          </>
+        )}
+
+        <div className="OnboardingFlow-tutorialHeader">
+          <div className="OnboardingFlow-progress">
+            <span className="OnboardingFlow-progressText">
+              {currentTutorialStep + 1} of {steps.length}
+            </span>
+            <div className="OnboardingFlow-progressBar">
+              <div
+                className="OnboardingFlow-progressFill"
+                style={{ width: `${((currentTutorialStep + 1) / steps.length) * 100}%` }}
+              />
+            </div>
+          </div>
+          <button
+            className="OnboardingFlow-skipButton"
+            onClick={handleSkip}
+          >
+            Skip
+          </button>
+        </div>
+
+        <div className="OnboardingFlow-tutorialContent">
+          {selectedRole === 'member' && (
+            <div className="OnboardingFlow-tutorialImage">
+              <div className="OnboardingFlow-tutorialIcon">
+                {currentStepData.icon}
+              </div>
+            </div>
+          )}
+
+          <div className="OnboardingFlow-tutorialText">
+            <h2 className="OnboardingFlow-tutorialTitle">
+              {currentStepData.title}
+            </h2>
+            {selectedRole === 'creator' && currentStepData.features ? (
+              <ul className="OnboardingFlow-featuresList">
+                {currentStepData.features.map((feature, index) => (
+                  <li key={index} className="OnboardingFlow-featureItem">
+                    • {feature}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="OnboardingFlow-tutorialDescription">
+                {currentStepData.description}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="OnboardingFlow-tutorialFooter">
+          <button
+            className="OnboardingFlow-backButtonBottom"
+            onClick={handlePrevTutorial}
+          >
+            {currentTutorialStep > 0 ? 'Back' : 'Previous'}
+          </button>
+          <button
+            className="OnboardingFlow-nextButton"
+            onClick={handleNextTutorial}
+          >
+            {isLastStep ? 'Get Started' : 'Next'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentStep === 'signup') {
+    return (
+      <div className="OnboardingFlow-signupContainer">
+        <div className="OnboardingFlow-signupContent">
+          <div className="OnboardingFlow-signupIcon">
+            🛡️
+          </div>
+          <h2 className="OnboardingFlow-signupTitle">
+            {selectedRole === 'creator' ? 'Ready to Start Earning?' : 'Ready to get started?'}
+          </h2>
+          <p className="OnboardingFlow-signupDescription">
+            {selectedRole === 'member'
+              ? 'Create your member account to start discovering amazing creators.'
+              : 'Join thousands of creators earning on their terms. No hidden fees, no equipment needed, just your phone and creativity.'
+            }
+          </p>
+
+          {selectedRole === 'creator' && (
+            <div className="OnboardingFlow-signupFeatures">
+              <div className="OnboardingFlow-signupFeature">
+                <span className="OnboardingFlow-checkmark">✓</span>
+                <span>Age-verified platform</span>
+              </div>
+              <div className="OnboardingFlow-signupFeature">
+                <span className="OnboardingFlow-checkmark">✓</span>
+                <span>Secure payments</span>
+              </div>
+              <div className="OnboardingFlow-signupFeature">
+                <span className="OnboardingFlow-checkmark">✓</span>
+                <span>24/7 support</span>
+              </div>
+            </div>
+          )}
+
+          <div className="OnboardingFlow-signupButtons">
+            <button
+              className="OnboardingFlow-primaryButton"
+              onClick={handleSignup}
+            >
+              Create {selectedRole === 'member' ? 'Member' : 'Creator'} Account
+            </button>
+
+            <button
+              className="OnboardingFlow-secondaryButton"
+              onClick={() => navigate(selectedRole === 'member' ? '/member/login' : '/creator/login')}
+            >
+              {selectedRole === 'creator' ? 'Sign up later' : 'I already have an account'}
+            </button>
+          </div>
+
+          <button
+            className="OnboardingFlow-backToStart"
+            onClick={() => {
+              setCurrentStep('welcome');
+              setSelectedRole(null);
+              setCurrentTutorialStep(0);
+            }}
+          >
+            ← Back to start
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default OnboardingFlow;
