@@ -314,9 +314,8 @@ const ContentView = () => {
                 <button
                   onClick={handleUnlock}
                   className='content-view-unlock-btn'
-                  disabled={content.price === 0}
                 >
-                  {content.price === 0 ? 'Free Content' : 'Unlock Now'}
+                  {content.price === 0 ? 'View Free Content' : 'Unlock Now'}
                 </button>
               </div>
             </div>
