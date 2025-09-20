@@ -169,13 +169,13 @@ const CreatorProfileSetup = () => {
   };
 
   const calculateCompletion = () => {
-    const totalFields = 24; // Updated: removed displayName from required fields count
+    const totalFields = 23; // Updated: removed bio from required fields count
     let completed = 0;
 
     // Check each field (displayName always counts as completed since it's from registration)
     if (formData.profilePhoto) completed++;
     if (formData.displayName) completed++; // This will be pre-populated from registration
-    if (formData.bio && formData.bio.length > 50) completed++;
+    // Bio is now optional - not counted in completion
     if (formData.gender) completed++;
     if (formData.orientation) completed++;
     // ... add more field checks
@@ -192,9 +192,7 @@ const CreatorProfileSetup = () => {
       case 1:
         if (!formData.profilePhoto)
           newErrors.profilePhoto = 'Profile photo is required';
-        if (!formData.bio || formData.bio.length < 50) {
-          newErrors.bio = 'Bio must be at least 50 characters';
-        }
+        // Bio is now optional - no validation required
         break;
 
       case 2:
@@ -700,7 +698,6 @@ const StepOne = ({ formData, setFormData, errors }) => {
       <div className='form-group'>
         <label className='form-label'>
           Bio
-          <span className='required'>*</span>
         </label>
         <textarea
           className={`form-input ${errors.bio ? 'error' : ''}`}
