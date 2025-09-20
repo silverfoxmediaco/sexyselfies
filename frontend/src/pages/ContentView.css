@@ -88,9 +88,9 @@
 }
 
 .content-view-back-button {
-  background: var(--surface-700);
-  border: 1px solid var(--border-600);
-  color: var(--text-primary);
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  color: white;
   width: 40px;
   height: 40px;
   border-radius: 8px;
@@ -99,6 +99,8 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .content-view-back-button:hover {
@@ -112,9 +114,9 @@
 }
 
 .content-view-action-btn {
-  background: var(--surface-700);
-  border: 1px solid var(--border-600);
-  color: var(--text-primary);
+  background: white;
+  border: 1px solid white;
+  color: #333;
   width: 40px;
   height: 40px;
   border-radius: 8px;
@@ -123,11 +125,14 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .content-view-action-btn:hover {
   background: var(--primary);
   border-color: var(--primary);
+  color: white;
 }
 
 .content-view-action-btn.content-view-liked {
