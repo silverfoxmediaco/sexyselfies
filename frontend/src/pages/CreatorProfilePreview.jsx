@@ -208,9 +208,13 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
         <div className='profile-header'>
           {/* Cover Photo */}
           <div className='cover-photo-container'>
-            {profileData?.coverImage ||
-            profileData?.coverImagePreview ||
-            profileData?.coverPhoto ? (
+            {(profileData?.coverImage &&
+              profileData.coverImage !== 'default-cover.jpg' &&
+              (profileData.coverImage.startsWith('http') || profileData.coverImage.startsWith('data:'))) ||
+            (profileData?.coverImagePreview &&
+              profileData.coverImagePreview.startsWith('data:')) ||
+            (profileData?.coverPhoto &&
+              profileData.coverPhoto.startsWith('http')) ? (
               <img
                 src={
                   profileData?.coverImage ||
@@ -364,10 +368,10 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
         <div className='tab-content'>
           {/* Content Filter */}
           <div className='content-filter'>
-            <button className='filter-option active'>All (156)</button>
-            <button className='filter-option'>Photos (124)</button>
-            <button className='filter-option'>Videos (32)</button>
-            <button className='filter-option'>Locked (89)</button>
+            <button className='filter-option active'>All ({sampleContent.length})</button>
+            <button className='filter-option'>Photos ({sampleContent.filter(c => c.type === 'photo').length})</button>
+            <button className='filter-option'>Videos ({sampleContent.filter(c => c.type === 'video').length})</button>
+            <button className='filter-option'>Locked ({sampleContent.filter(c => c.locked).length})</button>
           </div>
 
           {/* Content Grid */}
