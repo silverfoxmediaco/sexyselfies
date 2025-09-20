@@ -9,6 +9,8 @@ const OnboardingFlow = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState('welcome');
   const [selectedRole, setSelectedRole] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState('forward');
 
   const memberTutorialSteps = [
     {
@@ -75,31 +77,48 @@ const OnboardingFlow = () => {
 
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
 
+  // Mobile-native stack transition helper
+  const performTransition = (newStep, direction = 'forward', tutorialStep = null) => {
+    setIsTransitioning(true);
+    setTransitionDirection(direction);
+
+    setTimeout(() => {
+      setCurrentStep(newStep);
+      if (tutorialStep !== null) {
+        setCurrentTutorialStep(tutorialStep);
+      }
+
+      // Clear transition after animation completes
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 400); // Duration of the CSS animation
+    }, 200); // Start content change partway through
+  };
+
   const handleRoleSelection = (role) => {
     setSelectedRole(role);
-    setCurrentStep('tutorial');
-    setCurrentTutorialStep(0);
+    performTransition('tutorial', 'forward', 0);
   };
 
   const handleNextTutorial = () => {
     const steps = selectedRole === 'member' ? memberTutorialSteps : creatorTutorialSteps;
     if (currentTutorialStep < steps.length - 1) {
-      setCurrentTutorialStep(currentTutorialStep + 1);
+      performTransition('tutorial', 'forward', currentTutorialStep + 1);
     } else {
       // Go directly to registration instead of signup screen
       if (selectedRole === 'creator') {
         navigate('/creator/register');
       } else {
-        setCurrentStep('signup');
+        performTransition('signup', 'forward');
       }
     }
   };
 
   const handlePrevTutorial = () => {
     if (currentTutorialStep > 0) {
-      setCurrentTutorialStep(currentTutorialStep - 1);
+      performTransition('tutorial', 'backward', currentTutorialStep - 1);
     } else {
-      setCurrentStep('welcome');
+      performTransition('welcome', 'backward');
     }
   };
 
@@ -112,12 +131,18 @@ const OnboardingFlow = () => {
   };
 
   const handleSkip = () => {
-    setCurrentStep('signup');
+    performTransition('signup', 'forward');
   };
 
   if (currentStep === 'welcome') {
       return (
-        <div className="OnboardingFlow-container">
+        <div className={`OnboardingFlow-container ${
+          isTransitioning ?
+            `OnboardingFlow-transition-${transitionDirection === 'forward' ? 'enter' : 'exit'}${
+              transitionDirection === 'backward' ? ' OnboardingFlow-backward' : ''
+            }` :
+            ''
+        }`}>
           <div className="OnboardingFlow-background">
             <img
               src={backgroundImage}
@@ -371,7 +396,13 @@ const OnboardingFlow = () => {
     };
 
     return (
-      <div className="OnboardingFlow-tutorialContainer">
+      <div className={`OnboardingFlow-tutorialContainer ${
+        isTransitioning ?
+          `OnboardingFlow-transition-${transitionDirection === 'forward' ? 'enter' : 'exit'}${
+            transitionDirection === 'backward' ? ' OnboardingFlow-backward' : ''
+          }` :
+          ''
+      }`}>
         {selectedRole === 'creator' && (
           <>
             <div
@@ -451,7 +482,13 @@ const OnboardingFlow = () => {
 
   if (currentStep === 'signup') {
     return (
-      <div className="OnboardingFlow-signupContainer">
+      <div className={`OnboardingFlow-signupContainer ${
+        isTransitioning ?
+          `OnboardingFlow-transition-${transitionDirection === 'forward' ? 'enter' : 'exit'}${
+            transitionDirection === 'backward' ? ' OnboardingFlow-backward' : ''
+          }` :
+          ''
+      }`}>
         <div className="OnboardingFlow-signupContent">
           <div className="OnboardingFlow-signupIcon">
             🛡️
@@ -502,7 +539,7 @@ const OnboardingFlow = () => {
           <button
             className="OnboardingFlow-backToStart"
             onClick={() => {
-              setCurrentStep('welcome');
+              performTransition('welcome', 'backward');
               setSelectedRole(null);
               setCurrentTutorialStep(0);
             }}
