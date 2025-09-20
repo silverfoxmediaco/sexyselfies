@@ -86,11 +86,11 @@ const OnboardingFlow = () => {
     if (currentTutorialStep < steps.length - 1) {
       setCurrentTutorialStep(currentTutorialStep + 1);
     } else {
-      // Go directly to registration instead of signup screen
+      // Go directly to registration for both creators and members
       if (selectedRole === 'creator') {
         navigate('/creator/register');
       } else {
-        setCurrentStep('signup');
+        navigate('/member/register');
       }
     }
   };
@@ -239,12 +239,6 @@ const OnboardingFlow = () => {
                 />
               </div>
             </div>
-            <button
-              className="OnboardingFlow-skipButton"
-              onClick={handleSkip}
-            >
-              Skip
-            </button>
           </div>
 
           <div className="OnboardingFlow-tutorialContent">
@@ -274,6 +268,12 @@ const OnboardingFlow = () => {
               onClick={handlePrevTutorial}
             >
               {currentTutorialStep > 0 ? 'Back' : 'Previous'}
+            </button>
+            <button
+              className="OnboardingFlow-skipButton"
+              onClick={handleSkip}
+            >
+              Skip
             </button>
             <button
               className="OnboardingFlow-nextButton"

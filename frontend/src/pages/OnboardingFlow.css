@@ -196,6 +196,7 @@
   cursor: pointer;
   padding: 12px;
   transition: color 0.2s ease;
+  justify-self: center;
 }
 
 .OnboardingFlow-skipButton:hover {
@@ -371,13 +372,14 @@
 .OnboardingFlow-tutorialFooter {
   padding-bottom: max(env(safe-area-inset-bottom), 32px);
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr auto 1fr;
   gap: 16px;
   width: 100%;
-  max-width: 320px;
+  max-width: 400px;
   margin: 0 auto;
   padding-left: 24px;
   padding-right: 24px;
+  align-items: center;
 }
 
 .OnboardingFlow-nextButton {
