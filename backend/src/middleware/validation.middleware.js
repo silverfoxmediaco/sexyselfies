@@ -463,18 +463,7 @@ exports.validateFilters = [
     .withMessage('Body types must be an array'),
   body('bodyTypes.*')
     .optional()
-    .isIn([
-      'Slim',
-      'Slender',
-      'Athletic',
-      'Average',
-      'Curvy',
-      'Plus Size',
-      'BBW',
-      'Muscular',
-      'Dad Bod',
-      'Mom Bod',
-    ])
+    .isIn(['slim', 'slender', 'athletic', 'average', 'curvy', 'plus-size', 'bbw', 'muscular', 'dad-bod', 'mom-bod'])
     .withMessage('Invalid body type'),
   body('onlineOnly')
     .optional()

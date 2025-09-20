@@ -35,7 +35,7 @@ const creatorSchema = new mongoose.Schema(
     },
     bodyType: {
       type: String,
-      enum: ['slim', 'athletic', 'average', 'curvy', 'plus-size', 'muscular'],
+      enum: ['slim', 'slender', 'athletic', 'average', 'curvy', 'plus-size', 'bbw', 'muscular', 'dad-bod', 'mom-bod'],
     },
     ethnicity: String,
     bio: {

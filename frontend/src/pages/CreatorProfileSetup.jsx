@@ -803,10 +803,15 @@ const StepTwo = ({ formData, setFormData, errors }) => {
         >
           <option value=''>Select...</option>
           <option value='slim'>Slim</option>
+          <option value='slender'>Slender</option>
           <option value='athletic'>Athletic</option>
           <option value='average'>Average</option>
           <option value='curvy'>Curvy</option>
-          <option value='plus-size'>Plus-size</option>
+          <option value='plus-size'>Plus Size</option>
+          <option value='bbw'>BBW</option>
+          <option value='muscular'>Muscular</option>
+          <option value='dad-bod'>Dad Bod</option>
+          <option value='mom-bod'>Mom Bod</option>
         </select>
       </div>
     </div>

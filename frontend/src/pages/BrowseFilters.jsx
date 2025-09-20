@@ -46,16 +46,16 @@ const BrowseFilters = () => {
 
   // Filter options
   const bodyTypeOptions = [
-    'Slim',
-    'Slender',
-    'Athletic',
-    'Average',
-    'Curvy',
-    'Plus Size',
-    'BBW',
-    'Muscular',
-    'Dad Bod',
-    'Mom Bod',
+    { label: 'Slim', value: 'slim' },
+    { label: 'Slender', value: 'slender' },
+    { label: 'Athletic', value: 'athletic' },
+    { label: 'Average', value: 'average' },
+    { label: 'Curvy', value: 'curvy' },
+    { label: 'Plus Size', value: 'plus-size' },
+    { label: 'BBW', value: 'bbw' },
+    { label: 'Muscular', value: 'muscular' },
+    { label: 'Dad Bod', value: 'dad-bod' },
+    { label: 'Mom Bod', value: 'mom-bod' },
   ];
 
   const countryOptions = [
@@ -415,14 +415,14 @@ const BrowseFilters = () => {
             Body Type
           </h2>
           <div className='bf-chip-grid'>
-            {bodyTypeOptions.map(type => (
+            {bodyTypeOptions.map(option => (
               <button
-                key={type}
-                className={`bf-chip ${filters.bodyTypes.includes(type) ? 'bf-selected' : ''}`}
-                onClick={() => toggleArrayFilter('bodyTypes', type)}
+                key={option.value}
+                className={`bf-chip ${filters.bodyTypes.includes(option.value) ? 'bf-selected' : ''}`}
+                onClick={() => toggleArrayFilter('bodyTypes', option.value)}
               >
-                {filters.bodyTypes.includes(type) && <Check size={14} />}
-                {type}
+                {filters.bodyTypes.includes(option.value) && <Check size={14} />}
+                {option.label}
               </button>
             ))}
           </div>
