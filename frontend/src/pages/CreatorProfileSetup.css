@@ -388,6 +388,7 @@
 .photo-upload-box.cover {
   height: 200px;
   border-radius: 16px;
+  margin-top: 20px;
 }
 
 .photo-upload-box.has-image {
