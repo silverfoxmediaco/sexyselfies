@@ -163,10 +163,9 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         },
       ];
     } else {
-      // Guest navigation
+      // Guest navigation - no Explore for non-logged-in users
       return [
         { icon: Home, label: 'Home', path: '/', color: '#17D2C2' },
-        { icon: Search, label: 'Explore', path: '/explore', color: '#EF4444' },
         { icon: Menu, label: 'Menu', action: 'menu', color: '#6B7280' },
         { icon: User, label: 'Login', path: '/member/login', color: '#8B5CF6' },
         {
