@@ -122,7 +122,7 @@ const ContentView = () => {
 
   const handleUnlock = async () => {
     try {
-      await contentService.unlockContent(id);
+      await contentService.unlockContent(id, content.price);
       setHasAccess(true);
       loadContent(); // Reload to get full content
     } catch (error) {

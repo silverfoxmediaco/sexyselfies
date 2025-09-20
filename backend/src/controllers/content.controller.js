@@ -185,52 +185,87 @@ const unlockContent = async (req, res) => {
 
     const amount = content.price;
 
-    // Process payment
-    const paymentResult = await processPayment({
-      amount,
-      memberId,
-      creatorId: content.creatorId._id,
-      paymentMethodId,
-      description: `Unlock: ${content.title}`,
-      metadata: {
+    let paymentResult = null;
+    let transaction;
+
+    if (amount === 0) {
+      // Free content - skip payment processing
+      console.log(`💰 Free content unlock for: ${content.title}`);
+
+      // Create transaction record for free content
+      transaction = await Transaction.create({
+        transactionId: `free_${Date.now()}_${content._id}`,
+        memberId,
+        creatorId: content.creatorId._id,
         contentId: content._id,
         type: 'content_unlock',
-      },
-    });
+        amount: 0,
+        status: 'completed',
+        paymentMethod: 'free',
+        paymentDetails: { type: 'free_content' },
+        unlockDetails: {
+          unlockedAt: new Date(),
+          deviceInfo: {
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+            deviceType: req.headers['user-agent']?.includes('Mobile')
+              ? 'mobile'
+              : 'desktop',
+          },
+        },
+        analytics: {
+          source: req.query.source || 'direct',
+          memberSegment: req.user.segment || 'regular',
+        },
+      });
+    } else {
+      // Paid content - process payment
+      paymentResult = await processPayment({
+        amount,
+        memberId,
+        creatorId: content.creatorId._id,
+        paymentMethodId,
+        description: `Unlock: ${content.title}`,
+        metadata: {
+          contentId: content._id,
+          type: 'content_unlock',
+        },
+      });
 
-    if (!paymentResult.success) {
-      return res.status(402).json({
-        success: false,
-        message: paymentResult.message || 'Payment failed',
+      if (!paymentResult.success) {
+        return res.status(402).json({
+          success: false,
+          message: paymentResult.message || 'Payment failed',
+        });
+      }
+
+      // Create transaction record for paid content
+      transaction = await Transaction.create({
+        transactionId: paymentResult.transactionId,
+        memberId,
+        creatorId: content.creatorId._id,
+        contentId: content._id,
+        type: 'content_unlock',
+        amount,
+        status: 'completed',
+        paymentMethod: paymentResult.paymentMethod,
+        paymentDetails: paymentResult.details,
+        unlockDetails: {
+          unlockedAt: new Date(),
+          deviceInfo: {
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+            deviceType: req.headers['user-agent']?.includes('Mobile')
+              ? 'mobile'
+              : 'desktop',
+          },
+        },
+        analytics: {
+          source: req.query.source || 'direct',
+          memberSegment: req.user.segment || 'regular',
+        },
       });
     }
-
-    // Create transaction record
-    const transaction = await Transaction.create({
-      transactionId: paymentResult.transactionId,
-      memberId,
-      creatorId: content.creatorId._id,
-      contentId: content._id,
-      type: 'content_unlock',
-      amount,
-      status: 'completed',
-      paymentMethod: paymentResult.paymentMethod,
-      paymentDetails: paymentResult.details,
-      unlockDetails: {
-        unlockedAt: new Date(),
-        deviceInfo: {
-          ip: req.ip,
-          userAgent: req.headers['user-agent'],
-          deviceType: req.headers['user-agent']?.includes('Mobile')
-            ? 'mobile'
-            : 'desktop',
-        },
-      },
-      analytics: {
-        source: req.query.source || 'direct',
-        memberSegment: req.user.segment || 'regular',
-      },
-    });
 
     // Update content stats
     content.stats.unlocks += 1;
@@ -256,17 +291,33 @@ const unlockContent = async (req, res) => {
     );
 
     // Send notifications
-    await sendNotification({
-      userId: content.creatorId._id,
-      type: 'content_unlocked',
-      title: 'Content Unlocked! 💰',
-      message: `${req.user.username} unlocked "${content.title}" for $${amount}`,
-      data: {
-        contentId: content._id,
-        memberId,
-        earnings: amount * 0.8, // Creator gets 80%
-      },
-    });
+    if (amount === 0) {
+      // Free content notification
+      await sendNotification({
+        userId: content.creatorId._id,
+        type: 'content_unlocked',
+        title: 'Free Content Accessed! 👀',
+        message: `${req.user.username} accessed your free content "${content.title}"`,
+        data: {
+          contentId: content._id,
+          memberId,
+          earnings: 0,
+        },
+      });
+    } else {
+      // Paid content notification
+      await sendNotification({
+        userId: content.creatorId._id,
+        type: 'content_unlocked',
+        title: 'Content Unlocked! 💰',
+        message: `${req.user.username} unlocked "${content.title}" for $${amount}`,
+        data: {
+          contentId: content._id,
+          memberId,
+          earnings: amount * 0.8, // Creator gets 80%
+        },
+      });
+    }
 
     // Track analytics
     await trackEvent({

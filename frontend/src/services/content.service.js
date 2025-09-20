@@ -892,9 +892,12 @@ class ContentService {
   }
 
   // Unlock content (purchase/unlock)
-  async unlockContent(contentId) {
+  async unlockContent(contentId, amount = 0) {
     try {
-      const response = await api.post(`/content/${contentId}/unlock`);
+      const response = await api.post(`/content/${contentId}/unlock`, {
+        amount: amount,
+        paymentMethodId: amount === 0 ? null : undefined // No payment method needed for free content
+      });
 
       // Update cached content to show as unlocked
       this.updateCachedContentAccess(contentId, true);

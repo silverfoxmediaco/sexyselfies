@@ -212,11 +212,11 @@ const trackUnlock = async (req, res, next) => {
 const validateUnlockPrice = (req, res, next) => {
   const { amount } = req.body;
 
-  // Just validate it's a positive number with reasonable minimum
-  if (!amount || amount < 0.99) {
+  // Allow free content (amount = 0) or validate minimum paid price
+  if (amount !== 0 && (!amount || amount < 0.99)) {
     return res.status(400).json({
       success: false,
-      message: 'Invalid unlock price. Minimum price is $0.99',
+      message: 'Invalid unlock price. Minimum paid price is $0.99 or free ($0)',
       minPrice: 0.99,
     });
   }
