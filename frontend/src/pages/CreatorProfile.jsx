@@ -286,9 +286,13 @@ const CreatorProfile = () => {
           <div className='profile-header'>
             {/* Cover Photo */}
             <div className='cover-photo-container'>
-              {creator.coverImage ? (
+              {(creator.coverImage &&
+                creator.coverImage !== 'default-cover.jpg' &&
+                (creator.coverImage.startsWith('http') || creator.coverImage.startsWith('data:'))) ||
+              (creator.coverImagePreview &&
+                creator.coverImagePreview.startsWith('data:')) ? (
                 <img
-                  src={creator.coverImage}
+                  src={creator.coverImage || creator.coverImagePreview}
                   alt='Cover'
                   className='cover-photo'
                 />
@@ -327,7 +331,20 @@ const CreatorProfile = () => {
               <div className='profile-info-overlay'>
                 <div className='profile-avatar-section'>
                   <div className='profile-avatar'>
-                    <img src={creator.profileImage} alt={creator.displayName} />
+                    {(creator.profileImage &&
+                      creator.profileImage !== 'default-avatar.jpg' &&
+                      (creator.profileImage.startsWith('http') || creator.profileImage.startsWith('data:'))) ||
+                    (creator.profilePhotoPreview &&
+                      creator.profilePhotoPreview.startsWith('data:')) ? (
+                      <img
+                        src={creator.profileImage || creator.profilePhotoPreview}
+                        alt={creator.displayName}
+                      />
+                    ) : (
+                      <div className='avatar-placeholder'>
+                        <Camera size={32} />
+                      </div>
+                    )}
                     {creator.isOnline && (
                       <span className='online-indicator'></span>
                     )}
@@ -522,13 +539,24 @@ const CreatorProfile = () => {
                       }}
                     >
                       <div className='content-thumbnail'>
-                        <img
-                          src={item.thumbnail}
-                          alt={item.title}
-                          className={
-                            item.isLocked && !item.isPurchased ? 'blurred' : ''
-                          }
-                        />
+                        {item.thumbnail &&
+                        (item.thumbnail.startsWith('http') || item.thumbnail.startsWith('data:')) ? (
+                          <img
+                            src={item.thumbnail}
+                            alt={item.title}
+                            className={
+                              item.isLocked && !item.isPurchased ? 'blurred' : ''
+                            }
+                          />
+                        ) : (
+                          <div className='content-placeholder'>
+                            {item.type === 'photo' ? (
+                              <Camera size={24} />
+                            ) : (
+                              <Video size={24} />
+                            )}
+                          </div>
+                        )}
 
                         {/* Content Type Indicator */}
                         {item.type === 'video' && (
@@ -685,11 +713,22 @@ const CreatorProfile = () => {
 
                   <div className='purchase-content'>
                     <div className='purchase-preview'>
-                      <img
-                        src={selectedContent.thumbnail}
-                        alt={selectedContent.title}
-                        className='blurred'
-                      />
+                      {selectedContent.thumbnail &&
+                      (selectedContent.thumbnail.startsWith('http') || selectedContent.thumbnail.startsWith('data:')) ? (
+                        <img
+                          src={selectedContent.thumbnail}
+                          alt={selectedContent.title}
+                          className='blurred'
+                        />
+                      ) : (
+                        <div className='content-placeholder blurred'>
+                          {selectedContent.type === 'photo' ? (
+                            <Camera size={48} />
+                          ) : (
+                            <Video size={48} />
+                          )}
+                        </div>
+                      )}
                       <div className='unlock-icon'>
                         <Unlock size={32} />
                       </div>
