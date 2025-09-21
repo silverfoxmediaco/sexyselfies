@@ -529,6 +529,21 @@ app.use('/api', (req, res, next) => {
 // SERVE FRONTEND IN PRODUCTION
 // ==========================================
 
+// ==========================================
+// STATIC ASSETS SERVING
+// ==========================================
+
+// Serve backend public assets (like email logos)
+app.use(
+  '/assets',
+  express.static(path.join(__dirname, 'public', 'assets'), {
+    maxAge: '7d',
+    setHeaders: (res, filePath) => {
+      res.setHeader('Cache-Control', 'public, max-age=604800'); // 7 days
+    },
+  })
+);
+
 // IMPORTANT: Frontend serving MUST come AFTER all API routes
 if (process.env.NODE_ENV === 'production') {
   const frontendBuildPath = path.join(

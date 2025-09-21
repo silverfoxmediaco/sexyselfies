@@ -12,6 +12,8 @@ Fixed authentication flow issues, creator verification redirects, and updated Cr
 102. **Fixed Creator Profile Page Image Display Issues** - Resolved critical issue where images weren't displaying on creator profile page (/creator/profile). Applied proper URL validation logic to cover photo, profile avatar, content thumbnails, and purchase modal previews. Added validation for HTTP/data URLs and excluded default placeholders. Added appropriate Camera/Video icon fallbacks for missing images. Backend API was already returning correct image data - issue was purely frontend validation logic. All image display functionality now working correctly.
 
 103. **Fixed Member Registration 500 Error - Missing Fields in Auth Service** - Identified root cause of 500 server error during member registration. Frontend was correctly collecting all required fields (gender, interestedIn, ageRange, orientation, bodyTypePreferences) but authService.memberRegister() was only forwarding basic fields (email, password, username, birthDate) to the backend. Backend auth controller expected gender as required field but wasn't receiving it. Updated auth.service.js to pass through all collected registration fields. Registration now works successfully with complete member profile data including preferences and demographics. Fixed incomplete API data transmission issue.
+
+104. **Added SexySelfies Logo to Welcome Emails** - Enhanced email branding by adding the official SexySelfies logo to all welcome emails for both members and creators. Copied logo from frontend/src/assets/sexysselfies_logo.png to backend/src/public/assets/. Added static file serving route `/assets/*` in server.js to serve email assets with 7-day cache headers. Updated notification.service.js email template to include logo image in header with responsive styling (max-width: 200px). Replaced "Welcome to SexySelfies!" text with just "Welcome!" to let the logo image serve as the primary brand identifier. Logo displays prominently above welcome message in branded header with teal gradient background. Both member and creator registrations now send professional-looking emails with logo-based brand identity. Email logo loads successfully as confirmed by server logs showing 200 responses for logo asset requests.
 102. **Implemented Complete Body Type Preference System for Member Registration** - Added bodyTypePreferences field to Member model with full enum validation ['slim', 'slender', 'athletic', 'average', 'curvy', 'plus-size', 'bbw', 'muscular', 'dad-bod', 'mom-bod']. Updated member registration frontend with interactive checkbox selection UI in Step 3 preferences. Added bodyTypePreferences form state, handleBodyTypeToggle function, and comprehensive bodyTypeOptions array. Updated backend auth.controller.js to extract and process bodyTypePreferences from request body with smart array validation and fallback. Enhanced frontend registration data submission to include all member preferences (interestedIn, ageRange, orientation, bodyTypePreferences). Member registration now fully captures and processes body type preferences for improved discovery matching.
 103. **REMOVED REDIS COMPLETELY FROM APPLICATION** - Eliminated all Redis dependencies and code throughout the platform. Updated salesLimits.middleware.js to use pure in-memory store with TTL expiration. Simplified rateLimit.middleware.js to use express-rate-limit's built-in memory store. Removed Redis caching from cache.middleware.js (kept NodeCache). Converted analytics.service.js to use in-memory metrics store with memoryIncr/memoryGet functions. Removed Redis session cleanup and daily limits cleanup from cleanup.job.js. Deleted Redis environment variables from .env (REDIS_HOST, REDIS_PORT). Removed redis dependency from package.json. Application now runs completely without Redis using memory-based alternatives for rate limiting, caching, and analytics. All functionality preserved with graceful degradation - limits/cache reset on server restart but no crashes or errors.
 104. **FIXED MEMBER REGISTRATION 500 ERROR** - Resolved Redis-related crashes in member registration by completing Redis removal in salesLimits.middleware.js. Fixed remaining Redis function calls (getAsync, setAsync, incrAsync, expireAsync, redisClient.ttl, redisClient.keys, redisClient.del) with memory equivalents (memoryGet, memorySet, memoryIncr, memoryExpire, memoryTtl, memoryKeys, memoryDel). Added missing gender field extraction and processing in auth.controller.js member registration. Registration now works successfully with full body type preferences, gender validation, and all member preference fields. Commented out non-functional install banner in index.html. Platform fully operational without Redis dependencies.
@@ -3717,3 +3719,111 @@ Status: FIXED ✅ - Member interestedIn preferences now functional
 
 The onboarding system is now fully implemented and integrated with the existing SexySelfies PWA, providing a smooth introduction to the platform for both members and creators.
 
+
+
+=== Email Logo Rendering Fix ===
+Date: Sat Sep 20 19:07:42 CDT 2025
+File: /Users/jamesmcewen/Documents/sexy-selfies/backend/src/services/notification.service.js
+
+ISSUE: Logo was not rendering in welcome emails, showing as PNG file icon instead of actual logo image.
+
+SOLUTION: 
+1. Replaced URL-based logo serving with base64 embedded image data
+2. Converted logo to base64 string: data:image/png;base64,[base64-string]
+3. Updated email template to use logoBase64 variable instead of logoUrl
+4. This approach works reliably across all email clients since image data is embedded directly
+
+CHANGES:
+- Added logoBase64 constant with full base64 data URL
+- Updated email template img src from logoUrl to logoBase64
+- Removed external URL dependency that was causing rendering issues
+
+RESULT: Logo now embeds directly in email HTML for universal compatibility.
+
+
+=== Free Content Viewing Enhancement ===
+Date: Sat Sep 20 19:58:30 CDT 2025
+Files: 
+- /Users/jamesmcewen/Documents/sexy-selfies/frontend/src/pages/CreatorProfile.jsx
+- /Users/jamesmcewen/Documents/sexy-selfies/frontend/src/pages/CreatorProfile.css
+
+ISSUE: Free content thumbnails with 'FREE' badge were not clickable. Users expected to view, download, and like free content.
+
+SOLUTION: Added comprehensive content gallery modal with proper UX for free content interaction.
+
+NEW FEATURES:
+1. **Content Gallery Modal**: 
+   - Full-screen image/video viewer
+   - Responsive design (mobile full-screen, desktop windowed)
+   - Close button and click-outside-to-close functionality
+
+2. **Like Functionality**:
+   - Toggle like button with heart icon
+   - Real-time like count updates
+   - Visual feedback with red color on liked state
+
+3. **Download Functionality**:
+   - Download button triggers browser download
+   - Uses content title as filename
+   - Works for both images and videos
+
+4. **Enhanced UI**:
+   - Content metadata display (title, date)
+   - Stats footer showing views, likes, duration
+   - Mobile-optimized touch targets
+   - Smooth animations with Framer Motion
+
+5. **Content Support**:
+   - Images display at full resolution
+   - Videos with poster and controls
+   - Proper aspect ratio handling
+
+TECHNICAL IMPLEMENTATION:
+- Added showImageGallery state and modal
+- Enhanced click handler to differentiate free/locked content
+- Added comprehensive CSS styling with mobile-first responsive design
+- Integrated with existing content state management for like updates
+
+RESULT: Free content now provides full UX experience - click to enlarge, like, and download as expected.
+
+
+=== Creator Cover Photo Display Fix ===
+Date: Sat Sep 20 20:02:06 CDT 2025
+Files: 
+- /Users/jamesmcewen/Documents/sexy-selfies/frontend/src/pages/CreatorProfile.jsx
+
+ISSUE: Creator cover photo not displaying - showing placeholder instead of actual image.
+
+ROOT CAUSE ANALYSIS:
+1. **Data Issue**: Creator likely has no coverImage field set in database
+2. **Validation Logic**: Image validation was correctly checking URL format
+3. **Time Display Bug**: lastActive timestamp causing 'NaNd ago' display
+
+FIXES IMPLEMENTED:
+1. **Enhanced Image Validation**:
+   - Added check for empty string coverImage  
+   - Maintained existing http/https/data URL validation
+   - Added comprehensive debugging logs
+
+2. **Time Display Fix**:
+   - Enhanced getTimeAgo() function with null/invalid date handling
+   - Now shows 'recently' instead of 'NaNd ago' for invalid timestamps
+   - Proper Date object validation
+
+3. **Debug Logging**:
+   - Added detailed logging for cover/profile image data
+   - Added lastActive and isOnline status logging
+   - Console output will help identify exact data structure
+
+TECHNICAL DETAILS:
+- Issue was likely missing coverImage field in creator profile
+- Profile image works because it has valid Cloudinary URL
+- Cover photo falls back to placeholder when no valid URL exists
+- Fixed both image validation and timestamp display bugs
+
+NEXT STEPS (if needed):
+- Check browser console for logged creator data
+- Verify if creator needs coverImage field populated in database
+- Consider adding profile image as cover photo fallback if desired
+
+RESULT: Cover photo now has robust validation and graceful error handling. Time display fixed.

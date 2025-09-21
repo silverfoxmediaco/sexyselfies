@@ -109,6 +109,14 @@ const CreatorProfile = () => {
             '✅ Creator profile loaded:',
             creatorData.username || creatorData.displayName
           );
+          console.log('🖼️ Cover image data:', {
+            coverImage: creatorData.coverImage,
+            coverImagePreview: creatorData.coverImagePreview,
+            profileImage: creatorData.profileImage,
+            profilePhotoPreview: creatorData.profilePhotoPreview,
+            lastActive: creatorData.lastActive,
+            isOnline: creatorData.isOnline
+          });
           setCreator(creatorData);
 
           // Set content if available
@@ -232,7 +240,10 @@ const CreatorProfile = () => {
 
   // Calculate time ago
   const getTimeAgo = timestamp => {
-    const minutes = Math.floor((Date.now() - timestamp) / 60000);
+    if (!timestamp || timestamp === 'Invalid Date' || isNaN(new Date(timestamp))) {
+      return 'recently';
+    }
+    const minutes = Math.floor((Date.now() - new Date(timestamp)) / 60000);
     if (minutes < 1) return 'Just now';
     if (minutes < 60) return `${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
@@ -288,6 +299,7 @@ const CreatorProfile = () => {
             <div className='cover-photo-container'>
               {(creator.coverImage &&
                 creator.coverImage !== 'default-cover.jpg' &&
+                creator.coverImage !== '' &&
                 (creator.coverImage.startsWith('http') || creator.coverImage.startsWith('data:'))) ||
               (creator.coverImagePreview &&
                 creator.coverImagePreview.startsWith('data:')) ? (
@@ -333,6 +345,7 @@ const CreatorProfile = () => {
                   <div className='profile-avatar'>
                     {(creator.profileImage &&
                       creator.profileImage !== 'default-avatar.jpg' &&
+                      creator.profileImage !== '' &&
                       (creator.profileImage.startsWith('http') || creator.profileImage.startsWith('data:'))) ||
                     (creator.profilePhotoPreview &&
                       creator.profilePhotoPreview.startsWith('data:')) ? (
@@ -532,7 +545,7 @@ const CreatorProfile = () => {
                           setSelectedContent(item);
                           setShowPurchaseModal(true);
                         } else {
-                          // View content
+                          // Free content or purchased content - show full view
                           setSelectedContent(item);
                           setShowImageGallery(true);
                         }
@@ -686,6 +699,117 @@ const CreatorProfile = () => {
               </div>
             )}
           </div>
+
+          {/* Content Gallery Modal */}
+          <AnimatePresence>
+            {showImageGallery && selectedContent && (
+              <motion.div
+                className='content-gallery-overlay'
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowImageGallery(false)}
+              >
+                <motion.div
+                  className='content-gallery-modal'
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  <button
+                    className='modal-close'
+                    onClick={() => setShowImageGallery(false)}
+                  >
+                    <X size={24} />
+                  </button>
+
+                  <div className='content-gallery-header'>
+                    <div className='content-meta'>
+                      <h3 className='content-title'>{selectedContent.title}</h3>
+                      <span className='content-date'>
+                        {new Date(selectedContent.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className='content-actions'>
+                      <button
+                        className='action-btn like-btn'
+                        onClick={() => {
+                          // Toggle like
+                          setContent(prev => prev.map(item =>
+                            item.id === selectedContent.id
+                              ? { ...item, isLiked: !item.isLiked, likes: item.isLiked ? item.likes - 1 : item.likes + 1 }
+                              : item
+                          ));
+                          setSelectedContent(prev => ({
+                            ...prev,
+                            isLiked: !prev.isLiked,
+                            likes: prev.isLiked ? prev.likes - 1 : prev.likes + 1
+                          }));
+                        }}
+                      >
+                        <Heart size={20} fill={selectedContent.isLiked ? 'currentColor' : 'none'} />
+                        <span>{selectedContent.likes}</span>
+                      </button>
+                      <button
+                        className='action-btn download-btn'
+                        onClick={() => {
+                          // Download content
+                          const link = document.createElement('a');
+                          link.href = selectedContent.thumbnail;
+                          link.download = selectedContent.title || 'content';
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
+                      >
+                        <Download size={20} />
+                        <span>Download</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className='content-gallery-body'>
+                    {selectedContent.type === 'video' ? (
+                      <video
+                        controls
+                        className='content-media'
+                        poster={selectedContent.thumbnail}
+                      >
+                        <source src={selectedContent.url || selectedContent.thumbnail} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : (
+                      <img
+                        src={selectedContent.url || selectedContent.thumbnail}
+                        alt={selectedContent.title}
+                        className='content-media'
+                      />
+                    )}
+                  </div>
+
+                  <div className='content-gallery-footer'>
+                    <div className='content-stats'>
+                      <span className='stat-item'>
+                        <Eye size={16} />
+                        {selectedContent.views || 0} views
+                      </span>
+                      <span className='stat-item'>
+                        <Heart size={16} />
+                        {selectedContent.likes || 0} likes
+                      </span>
+                      {selectedContent.type === 'video' && selectedContent.duration && (
+                        <span className='stat-item'>
+                          <Clock size={16} />
+                          {selectedContent.duration}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Purchase Modal */}
           <AnimatePresence>
