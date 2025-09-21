@@ -463,7 +463,7 @@ exports.getMessageAnalytics = async (req, res) => {
     if (!hasMessages && !hasConnections) {
       return res.json({
         success: true,
-        data: {
+        analytics: {
           totalMessages: 0,
           paidMessages: 0,
           purchasedMessages: 0,
@@ -486,6 +486,7 @@ exports.getMessageAnalytics = async (req, res) => {
             },
           ],
         },
+        recentActivity: [], // Add empty array for frontend compatibility
       });
     }
 
@@ -633,9 +634,21 @@ exports.getMessageAnalytics = async (req, res) => {
       recommendations: generateMessageRecommendations(analytics),
     };
 
+    // Add recentActivity for frontend compatibility
+    const recentActivity = topConversationsWithDetails.slice(0, 5).map(conv => ({
+      id: conv._id?._id,
+      type: 'message',
+      member: conv._id?.member,
+      messageCount: conv.messageCount,
+      revenue: conv.revenue,
+      lastActivity: conv.lastMessage,
+      status: 'active'
+    }));
+
     res.json({
       success: true,
       analytics,
+      recentActivity, // Add this field for frontend compatibility
     });
   } catch (error) {
     console.error('Get message analytics error:', error);
