@@ -102,6 +102,8 @@ const CreatorProfile = () => {
       try {
         console.log('🔍 Fetching creator profile for username:', username);
         const response = await memberService.getCreatorProfile(username);
+        console.log('📸 Creator cover image data:', response.creator?.coverImage);
+        console.log('👤 Full creator object:', response.creator);
 
         if (response.success && response.data?.creator) {
           const creatorData = response.data.creator;

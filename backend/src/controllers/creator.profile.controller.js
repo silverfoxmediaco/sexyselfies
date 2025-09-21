@@ -105,6 +105,9 @@ exports.setupProfile = async (req, res) => {
     let profileImageUrl = creator.profileImage;
     let coverImageUrl = creator.coverImage;
 
+    console.log('🐛 DEBUG: req.files received:', req.files);
+    console.log('🐛 DEBUG: req.body data:', req.body.data ? JSON.parse(req.body.data) : req.body);
+
     // Upload profile photo if provided
     if (req.files && req.files.profilePhoto && req.files.profilePhoto[0]) {
       try {
