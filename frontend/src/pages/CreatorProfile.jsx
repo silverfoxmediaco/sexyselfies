@@ -408,12 +408,12 @@ const CreatorProfile = () => {
                     {isFollowing ? (
                       <>
                         <CheckCircle size={18} />
-                        <span>Following</span>
+                        <span>Connected</span>
                       </>
                     ) : (
                       <>
                         <Bell size={18} />
-                        <span>Follow</span>
+                        <span>Connect</span>
                       </>
                     )}
                   </button>
@@ -437,37 +437,6 @@ const CreatorProfile = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Stats Bar - Now outside of profile-header */}
-          <div className='profile-stats'>
-            <div className='stat-item'>
-              <span className='stat-value'>{content?.length || 0}</span>
-              <span className='stat-label'>Content</span>
-            </div>
-            <div className='stat-item'>
-              <span className='stat-value'>
-                {(creator.stats?.totalConnections || 0) > 1000
-                  ? `${((creator.stats?.totalConnections || 0) / 1000).toFixed(1)}k`
-                  : creator.stats?.totalConnections || 0}
-              </span>
-              <span className='stat-label'>Connections</span>
-            </div>
-            <div className='stat-item'>
-              <span className='stat-value'>
-                {(creator.stats?.totalLikes || 0) > 1000
-                  ? `${((creator.stats?.totalLikes || 0) / 1000).toFixed(1)}k`
-                  : creator.stats?.totalLikes || 0}
-              </span>
-              <span className='stat-label'>Likes</span>
-            </div>
-            <div className='stat-item'>
-              <span className='stat-value'>
-                <Star size={14} />
-                {creator.stats?.rating?.toFixed(1) || '0.0'}
-              </span>
-              <span className='stat-label'>Rating</span>
             </div>
           </div>
 

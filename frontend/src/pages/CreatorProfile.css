@@ -155,9 +155,9 @@
   display: none !important;
 }
 
-/* FIXED: Hide old profile-info to prevent duplication */
+/* FIXED: Hide old profile-info on mobile only to prevent duplication */
 .profile-info {
-  display: none !important;
+  display: none;
 }
 
 /* NEW: Floating action buttons for mobile only */
