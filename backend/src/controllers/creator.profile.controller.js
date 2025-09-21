@@ -105,8 +105,22 @@ exports.setupProfile = async (req, res) => {
     let profileImageUrl = creator.profileImage;
     let coverImageUrl = creator.coverImage;
 
+    console.log('📸 INITIAL VALUES:');
+    console.log('📸 creator.profileImage:', creator.profileImage);
+    console.log('📸 creator.coverImage:', creator.coverImage);
+    console.log('📸 profileImageUrl (initial):', profileImageUrl);
+    console.log('📸 coverImageUrl (initial):', coverImageUrl);
+
     console.log('🐛 DEBUG: req.files received:', req.files);
     console.log('🐛 DEBUG: req.body data:', req.body.data ? JSON.parse(req.body.data) : req.body);
+    console.log('🔍 COVER IMAGE DEBUG: Checking for cover image upload...');
+    console.log('🔍 req.files exists:', !!req.files);
+    console.log('🔍 req.files.coverImage exists:', !!(req.files && req.files.coverImage));
+    console.log('🔍 req.files.coverImage[0] exists:', !!(req.files && req.files.coverImage && req.files.coverImage[0]));
+    if (req.files && req.files.coverImage) {
+      console.log('🔍 coverImage array length:', req.files.coverImage.length);
+      console.log('🔍 coverImage file details:', req.files.coverImage[0]);
+    }
 
     // Upload profile photo if provided
     if (req.files && req.files.profilePhoto && req.files.profilePhoto[0]) {
@@ -131,6 +145,7 @@ exports.setupProfile = async (req, res) => {
     // Upload cover image if provided
     if (req.files && req.files.coverImage && req.files.coverImage[0]) {
       try {
+        console.log('🔵 Starting cover image upload for creator:', creator._id);
         const result = await cloudinary.uploader.upload(
           req.files.coverImage[0].path,
           {
@@ -142,9 +157,9 @@ exports.setupProfile = async (req, res) => {
           }
         );
         coverImageUrl = result.secure_url;
-        console.log('Cover image uploaded:', result.secure_url);
+        console.log('✅ Cover image uploaded successfully:', result.secure_url);
       } catch (uploadError) {
-        console.error('Cover image upload error:', uploadError);
+        console.error('❌ Cover image upload error:', uploadError);
       }
     }
 
@@ -173,13 +188,31 @@ exports.setupProfile = async (req, res) => {
       instantPayout: formData.instantPayout || false,
     };
 
+    console.log('🔶 BEFORE DATABASE UPDATE:');
+    console.log('🔶 Creator ID:', creator._id);
+    console.log('🔶 coverImageUrl variable:', coverImageUrl);
+    console.log('🔶 updates.coverImage:', updates.coverImage);
+    console.log('🔶 Full updates object:', JSON.stringify(updates, null, 2));
+
     const updatedCreator = await Creator.findByIdAndUpdate(
       creator._id,
       { $set: updates },
       { new: true }
     );
 
-    res.json({
+    console.log('🔶 AFTER DATABASE UPDATE:');
+    console.log('🔶 updatedCreator.coverImage:', updatedCreator.coverImage);
+    console.log('🔶 updatedCreator.profileImage:', updatedCreator.profileImage);
+    console.log('🔶 Database update operation completed successfully');
+
+    // Verify with a fresh database query
+    const verifyCreator = await Creator.findById(creator._id).select('coverImage profileImage displayName');
+    console.log('🔍 VERIFICATION QUERY:');
+    console.log('🔍 Fresh DB query coverImage:', verifyCreator.coverImage);
+    console.log('🔍 Fresh DB query profileImage:', verifyCreator.profileImage);
+    console.log('🔍 Fresh DB query displayName:', verifyCreator.displayName);
+
+    const responseData = {
       success: true,
       message: 'Profile setup completed successfully',
       creator: {
@@ -189,7 +222,13 @@ exports.setupProfile = async (req, res) => {
         coverImage: updatedCreator.coverImage,
         profileComplete: updatedCreator.profileComplete,
       },
-    });
+    };
+
+    console.log('📤 RESPONSE DATA:');
+    console.log('📤 Sending response with coverImage:', responseData.creator.coverImage);
+    console.log('📤 Sending response with profileImage:', responseData.creator.profileImage);
+
+    res.json(responseData);
   } catch (error) {
     console.error('Profile setup error:', error);
     res.status(500).json({
