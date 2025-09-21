@@ -459,34 +459,43 @@ exports.getMessageAnalytics = async (req, res) => {
     const hasConnections =
       (await CreatorConnection.countDocuments({ creator: creatorId })) > 0;
 
-    // Return default analytics for new creators
+    // Return default analytics for new creators with consistent structure
     if (!hasMessages && !hasConnections) {
-      return res.json({
-        success: true,
-        analytics: {
+      const defaultAnalytics = {
+        overview: {
           totalMessages: 0,
           paidMessages: 0,
           purchasedMessages: 0,
-          revenue: 0,
-          averagePrice: 0,
-          responseRate: 0,
           conversionRate: 0,
-          topPerforming: [],
-          recent: [],
-          trends: {
-            messages: [],
-            revenue: [],
-            purchases: [],
-          },
-          insights: [
-            {
-              type: 'getting_started',
-              message: 'Connect with members to start messaging',
-              action: 'Browse members to connect with',
-            },
-          ],
+          revenue: 0,
+          avgMessageValue: 0,
         },
-        recentActivity: [], // Add empty array for frontend compatibility
+        engagement: {
+          sentMessages: 0,
+          receivedResponses: 0,
+          responseRate: 0,
+          avgResponseTime: '0 hours',
+        },
+        topConversations: [],
+        trends: {
+          daily: [],
+          hourly: Array(24).fill(0), // 24 hours, all zeros
+        },
+        recommendations: [
+          {
+            type: 'getting_started',
+            title: 'Start Connecting',
+            message: 'Connect with members to start messaging',
+            action: 'Browse members to connect with',
+            priority: 'high'
+          }
+        ],
+      };
+
+      return res.json({
+        success: true,
+        analytics: defaultAnalytics,
+        recentActivity: [], // Empty array for frontend compatibility
       });
     }
 
@@ -630,9 +639,10 @@ exports.getMessageAnalytics = async (req, res) => {
         daily: await getDailyMessageTrends(creatorId, startDate),
         hourly: await getHourlyMessagePattern(creatorId),
       },
-
-      recommendations: generateMessageRecommendations(analytics),
     };
+
+    // Add recommendations after analytics object is created
+    analytics.recommendations = generateMessageRecommendations(analytics);
 
     // Add recentActivity for frontend compatibility
     const recentActivity = topConversationsWithDetails.slice(0, 5).map(conv => ({
