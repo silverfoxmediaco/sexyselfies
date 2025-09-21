@@ -819,7 +819,7 @@
   }
 
   .card-info-overlay {
-    margin-bottom: 60px;
+    /* Removed margin-bottom: 60px to fix positioning */
   }
 
   .view-toggle {
