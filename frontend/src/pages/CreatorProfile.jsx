@@ -728,7 +728,10 @@ const CreatorProfile = () => {
                     <div className='content-meta'>
                       <h3 className='content-title'>{selectedContent.title}</h3>
                       <span className='content-date'>
-                        {new Date(selectedContent.date).toLocaleDateString()}
+                        {selectedContent.date && !isNaN(new Date(selectedContent.date))
+                          ? new Date(selectedContent.date).toLocaleDateString()
+                          : 'Recently uploaded'
+                        }
                       </span>
                     </div>
                     <div className='content-actions'>
@@ -738,18 +741,18 @@ const CreatorProfile = () => {
                           // Toggle like
                           setContent(prev => prev.map(item =>
                             item.id === selectedContent.id
-                              ? { ...item, isLiked: !item.isLiked, likes: item.isLiked ? item.likes - 1 : item.likes + 1 }
+                              ? { ...item, isLiked: !item.isLiked, likes: item.isLiked ? (item.likes || 1) - 1 : (item.likes || 0) + 1 }
                               : item
                           ));
                           setSelectedContent(prev => ({
                             ...prev,
                             isLiked: !prev.isLiked,
-                            likes: prev.isLiked ? prev.likes - 1 : prev.likes + 1
+                            likes: prev.isLiked ? (prev.likes || 1) - 1 : (prev.likes || 0) + 1
                           }));
                         }}
                       >
                         <Heart size={20} fill={selectedContent.isLiked ? 'currentColor' : 'none'} />
-                        <span>{selectedContent.likes}</span>
+                        <span>{selectedContent.likes || 0}</span>
                       </button>
                       <button
                         className='action-btn download-btn'
@@ -788,24 +791,6 @@ const CreatorProfile = () => {
                     )}
                   </div>
 
-                  <div className='content-gallery-footer'>
-                    <div className='content-stats'>
-                      <span className='stat-item'>
-                        <Eye size={16} />
-                        {selectedContent.views || 0} views
-                      </span>
-                      <span className='stat-item'>
-                        <Heart size={16} />
-                        {selectedContent.likes || 0} likes
-                      </span>
-                      {selectedContent.type === 'video' && selectedContent.duration && (
-                        <span className='stat-item'>
-                          <Clock size={16} />
-                          {selectedContent.duration}
-                        </span>
-                      )}
-                    </div>
-                  </div>
                 </motion.div>
               </motion.div>
             )}

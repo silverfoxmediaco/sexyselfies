@@ -1196,6 +1196,7 @@ button:focus-visible,
   justify-content: space-between;
   align-items: center;
   padding: var(--creator-profile-spacing-md);
+  padding-right: calc(var(--creator-profile-spacing-md) + 48px); /* Extra space for close button */
   border-bottom: 1px solid var(--creator-profile-border-color);
   flex-shrink: 0;
 }
@@ -1309,7 +1310,8 @@ button:focus-visible,
   }
   
   .content-gallery-header {
-    padding: var(--creator-profile-spacing-md) var(--creator-profile-spacing-md);
+    padding: var(--creator-profile-spacing-md);
+    padding-right: calc(var(--creator-profile-spacing-md) + 48px); /* Extra space for close button on mobile too */
   }
   
   .content-actions {

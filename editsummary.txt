@@ -3827,3 +3827,63 @@ NEXT STEPS (if needed):
 - Consider adding profile image as cover photo fallback if desired
 
 RESULT: Cover photo now has robust validation and graceful error handling. Time display fixed.
+
+
+=== Content Gallery Modal UI Cleanup ===
+Date: Sat Sep 20 20:10:01 CDT 2025
+Files: 
+- /Users/jamesmcewen/Documents/sexy-selfies/frontend/src/pages/CreatorProfile.jsx
+- /Users/jamesmcewen/Documents/sexy-selfies/frontend/src/pages/CreatorProfile.css
+
+ISSUES FIXED:
+
+1. **Invalid Date Display**:
+   - Problem: Content gallery showed 'Invalid Date' for content date
+   - Fix: Added date validation in content-date span
+   - Now shows 'Recently uploaded' for invalid/missing dates
+   - Proper date formatting with fallback
+
+2. **Empty Like Count**:
+   - Problem: Like button showed empty span (no number)
+   - Fix: Added fallback {selectedContent.likes || 0} to display 0 for undefined likes
+   - Enhanced like toggle logic to handle undefined/null like counts
+   - Like increment/decrement now works with missing initial values
+
+3. **Overlapping Close Button**:
+   - Problem: Modal close button covered the download action button
+   - Fix: Added extra padding-right to content-gallery-header (48px for close button space)
+   - Applied to both desktop and mobile views
+   - Close button maintains absolute positioning with proper z-index
+
+TECHNICAL IMPROVEMENTS:
+- Enhanced date validation: checks for null, undefined, and invalid Date objects
+- Robust like count handling: (item.likes || 0) + 1 for increment logic
+- Responsive layout: close button space accounted for on all screen sizes
+- Better UX: no more UI overlaps or data display errors
+
+RESULT: Content gallery modal now displays clean, accurate information with proper layout spacing and no UI conflicts.
+
+
+=== Remove Redundant Stats Footer from Content Gallery Modal ===
+Date: Sat Sep 20 20:11:23 CDT 2025
+Files: 
+- /Users/jamesmcewen/Documents/sexy-selfies/frontend/src/pages/CreatorProfile.jsx
+
+CLEANUP PERFORMED:
+- Removed entire content-gallery-footer section from modal
+- Eliminated redundant stats display (views count and duplicate likes count)
+- Cleaned up unnecessary Clock icon for video duration in footer
+
+RATIONALE:
+- Like count already displayed in header action button (interactive)
+- Views count not essential for user interaction in modal context
+- Footer stats created visual clutter without functional value
+- Cleaner modal focuses user attention on content and primary actions
+
+REMOVED ELEMENTS:
+- content-gallery-footer div
+- content-stats div  
+- stat-item spans for views, likes, and duration
+- Redundant Eye, Heart, and Clock icons
+
+RESULT: Cleaner, more focused content gallery modal with essential functionality only.
