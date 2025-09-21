@@ -142,15 +142,6 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
           </div>
         )}
 
-        {/* Image dots indicator */}
-        <div className='image-dots'>
-          {[1, 2, 3, 4].map((_, i) => (
-            <span
-              key={i}
-              className={`dot ${i === activeImageIndex ? 'active' : ''}`}
-            />
-          ))}
-        </div>
 
         {/* Verified badge */}
         <div className='verified-badge'>

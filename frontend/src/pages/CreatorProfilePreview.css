@@ -142,12 +142,18 @@
   width: 100%;
   height: 100vh;
   background: linear-gradient(135deg, #1c1c1e 0%, #2a2a2c 100%);
+  display: flex;
+  flex-direction: column;
 }
 
 .card-main-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
 .card-image-placeholder {
@@ -161,26 +167,6 @@
   gap: 12px;
 }
 
-.image-dots {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 6px;
-}
-
-.dot {
-  width: 32px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
-  transition: background 0.3s ease;
-}
-
-.dot.active {
-  background: white;
-}
 
 .verified-badge {
   position: absolute;
@@ -233,13 +219,13 @@
 
 /* Card Info Overlay */
 .card-info-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: relative;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
   padding: 20px;
+  padding-bottom: 80px; /* Add space for the button */
   color: white;
+  margin-top: auto; /* Push to bottom naturally */
+  z-index: 2; /* Above the image */
 }
 
 .card-header h2 {
@@ -364,6 +350,7 @@
   gap: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+  z-index: 3; /* Above the overlay */
 }
 
 /* Full Profile View */
