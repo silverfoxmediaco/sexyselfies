@@ -69,6 +69,10 @@ router.get('/creator/:identifier', async (req, res) => {
       });
     }
 
+    // Debug: Log cover image data
+    console.log('🖼️ Creator cover image from DB:', creator.coverImage);
+    console.log('📸 Creator profile image from DB:', creator.profileImage);
+
     // Get creator's content (public previews and locked content)
     const content = await Content.find({
       creator: creator._id,

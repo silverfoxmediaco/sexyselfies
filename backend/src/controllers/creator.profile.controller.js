@@ -73,7 +73,7 @@ exports.getProfile = async (req, res) => {
 // Setup creator profile with images - Initial profile creation
 exports.setupProfile = async (req, res) => {
   try {
-    console.log('Profile setup request received');
+    console.log('🚀 SETUP PROFILE ENDPOINT HIT! Profile setup request received');
     console.log('Files:', req.files);
     console.log('Body:', req.body);
 
