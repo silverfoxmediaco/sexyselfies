@@ -237,9 +237,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-  padding: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 50%, transparent 100%);
+  padding: 24px 20px;
   color: white;
+  z-index: 2;
 }
 
 .card-header h2 {
@@ -819,7 +820,8 @@
   }
 
   .card-info-overlay {
-    margin-bottom: 60px;
+    padding: 20px 16px;
+    /* Remove margin-bottom that was causing overlap */
   }
 
   .view-toggle {
@@ -828,8 +830,9 @@
 
   .swipe-card {
     max-width: 100%;
-    height: 100%;
+    height: 70vh; /* Use viewport height instead of 100% to prevent overflow */
     margin-bottom: 40px;
+    position: relative;
   }
 
   .full-profile {
