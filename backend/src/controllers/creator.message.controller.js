@@ -434,8 +434,24 @@ exports.deleteMessage = async (req, res) => {
 // Get message analytics
 exports.getMessageAnalytics = async (req, res) => {
   try {
-    const creatorId = req.user.id;
+    console.log('🔍 Message Analytics Debug - req.user:', req.user);
+    const userId = req.user.id;
     const { period = '7d' } = req.query;
+    console.log('🔍 Message Analytics Debug - userId:', userId, 'period:', period);
+
+    // First find the Creator document by user ID
+    const Creator = require('../models/Creator');
+    const creator = await Creator.findOne({ user: userId });
+
+    if (!creator) {
+      return res.status(404).json({
+        success: false,
+        message: 'Creator not found'
+      });
+    }
+
+    const creatorId = creator._id;
+    console.log('🔍 Message Analytics Debug - found creatorId:', creatorId);
 
     // Check if creator has any messages or connections
     const hasMessages =
@@ -498,7 +514,9 @@ exports.getMessageAnalytics = async (req, res) => {
     const messageRevenue = await CreatorMessage.aggregate([
       {
         $match: {
-          creator: new mongoose.Types.ObjectId(creatorId),
+          creator: mongoose.Types.ObjectId.isValid(creatorId)
+            ? new mongoose.Types.ObjectId(creatorId)
+            : creatorId,
           'pricing.isPaid': true,
           'purchase.status': 'unlocked',
           createdAt: { $gte: startDate },
@@ -531,7 +549,9 @@ exports.getMessageAnalytics = async (req, res) => {
     const topConversations = await CreatorMessage.aggregate([
       {
         $match: {
-          creator: new mongoose.Types.ObjectId(creatorId),
+          creator: mongoose.Types.ObjectId.isValid(creatorId)
+            ? new mongoose.Types.ObjectId(creatorId)
+            : creatorId,
           createdAt: { $gte: startDate },
         },
       },
@@ -619,9 +639,16 @@ exports.getMessageAnalytics = async (req, res) => {
     });
   } catch (error) {
     console.error('Get message analytics error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code
+    });
     res.status(500).json({
       success: false,
       message: 'Error fetching message analytics',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 };
