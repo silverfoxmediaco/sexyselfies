@@ -787,6 +787,18 @@
   color: var(--text-2, #c7c7cc);
 }
 
+/* Override profile stats for single rating item */
+.profile-preview-container .profile-stats {
+  grid-template-columns: 1fr;
+  justify-content: center;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.profile-preview-container .stat-item {
+  text-align: center;
+}
+
 /* Preview Note */
 .preview-note {
   padding: 12px;

@@ -328,20 +328,8 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Stats Bar */}
+          {/* Rating - Social proof for quality assessment */}
           <div className='profile-stats'>
-            <div className='stat-item'>
-              <span className='stat-value'>{profileData?.stats?.totalContent || 0}</span>
-              <span className='stat-label'>Content</span>
-            </div>
-            <div className='stat-item'>
-              <span className='stat-value'>{formatNumber(profileData?.stats?.totalConnections || 0)}</span>
-              <span className='stat-label'>Connections</span>
-            </div>
-            <div className='stat-item'>
-              <span className='stat-value'>{formatNumber(profileData?.stats?.totalLikes || 0)}</span>
-              <span className='stat-label'>Likes</span>
-            </div>
             <div className='stat-item'>
               <span className='stat-value'>
                 <Star size={14} />
@@ -352,7 +340,8 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Content Tabs */}
+        {/* Content Tabs - TODO: Implement functionality or remove */}
+        {/*
         <div className='profile-tabs'>
           <button className='tab-btn active'>
             <Grid3x3 size={18} />
@@ -367,6 +356,7 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
             <span>Reviews</span>
           </button>
         </div>
+        */}
 
         {/* Tab Content */}
         <div className='tab-content'>
