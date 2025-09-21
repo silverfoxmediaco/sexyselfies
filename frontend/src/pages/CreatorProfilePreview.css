@@ -129,18 +129,18 @@
 /* Swipe Card View */
 .swipe-card {
   width: 100%;
-  height: 600px;
+  height: 100vh;
   background: var(--surface-700, #1c1c1e);
-  border-radius: 24px;
+  border-radius: 0;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
 }
 
 .card-image-container {
   position: relative;
   width: 100%;
-  height: 500px;
+  height: 100vh;
   background: linear-gradient(135deg, #1c1c1e 0%, #2a2a2c 100%);
   display: flex;
   flex-direction: column;
