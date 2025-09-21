@@ -818,9 +818,6 @@
     padding: 16px;
   }
 
-  .card-info-overlay {
-    /* Removed margin-bottom: 60px to fix positioning */
-  }
 
   .view-toggle {
     display: none;
