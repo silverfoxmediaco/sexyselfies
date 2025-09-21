@@ -822,6 +822,12 @@
   .preview-header {
     padding: 16px;
     position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(28, 28, 30, 0.8);
+    backdrop-filter: blur(10px);
   }
 
 
