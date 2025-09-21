@@ -34,6 +34,16 @@ import BottomNavigation from '../components/BottomNavigation';
 import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import './CreatorProfilePreview.css';
 
+// Helper function to format numbers (e.g., 2300 -> 2.3k)
+const formatNumber = (num) => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'k';
+  }
+  return num.toString();
+};
+
 const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
   const isMobile = useIsMobile();
   const userRole = getUserRole();
@@ -170,15 +180,15 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
         <div className='card-stats'>
           <div className='stat'>
             <Heart size={14} />
-            <span>2.3k likes</span>
+            <span>{formatNumber(profileData?.stats?.totalLikes || 0)} likes</span>
           </div>
           <div className='stat'>
             <Camera size={14} />
-            <span>24 photos</span>
+            <span>{profileData?.stats?.totalContent || 0} content</span>
           </div>
           <div className='stat'>
             <Video size={14} />
-            <span>8 videos</span>
+            <span>${formatNumber(profileData?.stats?.totalEarnings || 0)} earned</span>
           </div>
         </div>
       </div>
@@ -330,21 +340,21 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
           {/* Stats Bar */}
           <div className='profile-stats'>
             <div className='stat-item'>
-              <span className='stat-value'>156</span>
+              <span className='stat-value'>{profileData?.stats?.totalContent || 0}</span>
               <span className='stat-label'>Content</span>
             </div>
             <div className='stat-item'>
-              <span className='stat-value'>8.2k</span>
-              <span className='stat-label'>Subscribers</span>
+              <span className='stat-value'>{formatNumber(profileData?.stats?.totalConnections || 0)}</span>
+              <span className='stat-label'>Connections</span>
             </div>
             <div className='stat-item'>
-              <span className='stat-value'>45.6k</span>
+              <span className='stat-value'>{formatNumber(profileData?.stats?.totalLikes || 0)}</span>
               <span className='stat-label'>Likes</span>
             </div>
             <div className='stat-item'>
               <span className='stat-value'>
                 <Star size={14} />
-                4.9
+                {profileData?.stats?.rating || 0}
               </span>
               <span className='stat-label'>Rating</span>
             </div>
