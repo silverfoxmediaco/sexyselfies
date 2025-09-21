@@ -209,11 +209,14 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
           {/* Cover Photo */}
           <div className='cover-photo-container'>
             {(profileData?.coverImage &&
+              typeof profileData.coverImage === 'string' &&
               profileData.coverImage !== 'default-cover.jpg' &&
               (profileData.coverImage.startsWith('http') || profileData.coverImage.startsWith('data:'))) ||
             (profileData?.coverImagePreview &&
+              typeof profileData.coverImagePreview === 'string' &&
               profileData.coverImagePreview.startsWith('data:')) ||
             (profileData?.coverPhoto &&
+              typeof profileData.coverPhoto === 'string' &&
               profileData.coverPhoto.startsWith('http')) ? (
               <img
                 src={

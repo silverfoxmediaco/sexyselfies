@@ -300,10 +300,12 @@ const CreatorProfile = () => {
             {/* Cover Photo */}
             <div className='cover-photo-container'>
               {(creator.coverImage &&
+                typeof creator.coverImage === 'string' &&
                 creator.coverImage !== 'default-cover.jpg' &&
                 creator.coverImage !== '' &&
                 (creator.coverImage.startsWith('http') || creator.coverImage.startsWith('data:'))) ||
               (creator.coverImagePreview &&
+                typeof creator.coverImagePreview === 'string' &&
                 creator.coverImagePreview.startsWith('data:')) ? (
                 <img
                   src={creator.coverImage || creator.coverImagePreview}
@@ -346,10 +348,12 @@ const CreatorProfile = () => {
                 <div className='profile-avatar-section'>
                   <div className='profile-avatar'>
                     {(creator.profileImage &&
+                      typeof creator.profileImage === 'string' &&
                       creator.profileImage !== 'default-avatar.jpg' &&
                       creator.profileImage !== '' &&
                       (creator.profileImage.startsWith('http') || creator.profileImage.startsWith('data:'))) ||
                     (creator.profilePhotoPreview &&
+                      typeof creator.profilePhotoPreview === 'string' &&
                       creator.profilePhotoPreview.startsWith('data:')) ? (
                       <img
                         src={creator.profileImage || creator.profilePhotoPreview}
@@ -524,6 +528,7 @@ const CreatorProfile = () => {
                     >
                       <div className='content-thumbnail'>
                         {item.thumbnail &&
+                        typeof item.thumbnail === 'string' &&
                         (item.thumbnail.startsWith('http') || item.thumbnail.startsWith('data:')) ? (
                           <img
                             src={item.thumbnail}
@@ -794,6 +799,7 @@ const CreatorProfile = () => {
                   <div className='purchase-content'>
                     <div className='purchase-preview'>
                       {selectedContent.thumbnail &&
+                      typeof selectedContent.thumbnail === 'string' &&
                       (selectedContent.thumbnail.startsWith('http') || selectedContent.thumbnail.startsWith('data:')) ? (
                         <img
                           src={selectedContent.thumbnail}
