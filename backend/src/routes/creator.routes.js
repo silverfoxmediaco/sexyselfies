@@ -210,7 +210,32 @@ if (creatorMessageController.getMessageThreads) {
   router.get('/messages', creatorMessageController.getMessageThreads);
 }
 
-// Get messages for specific connection
+// IMPORTANT: Specific routes must come before parameterized routes
+
+// Get message analytics (MUST be before /messages/:connectionId)
+if (creatorMessageController.getMessageAnalytics) {
+  router.get(
+    '/messages/analytics',
+    creatorMessageController.getMessageAnalytics
+  );
+}
+
+// Send bulk message (MUST be before /messages/:connectionId)
+if (creatorMessageController.sendBulkMessage) {
+  router.post('/messages/bulk', creatorMessageController.sendBulkMessage);
+}
+
+// Upload message media (MUST be before /messages/:connectionId)
+if (creatorMessageController.uploadMessageMedia) {
+  // For messages, we'll use the content image upload middleware
+  router.post(
+    '/messages/media',
+    contentImagesUpload,
+    creatorMessageController.uploadMessageMedia
+  );
+}
+
+// Get messages for specific connection (parameterized route - must come after specific routes)
 if (creatorMessageController.getMessages) {
   router.get('/messages/:connectionId', creatorMessageController.getMessages);
 }
@@ -218,11 +243,6 @@ if (creatorMessageController.getMessages) {
 // Send message
 if (creatorMessageController.sendMessage) {
   router.post('/messages', creatorMessageController.sendMessage);
-}
-
-// Send bulk message
-if (creatorMessageController.sendBulkMessage) {
-  router.post('/messages/bulk', creatorMessageController.sendBulkMessage);
 }
 
 // Mark message as read
@@ -233,24 +253,6 @@ if (creatorMessageController.markAsRead) {
 // Delete message
 if (creatorMessageController.deleteMessage) {
   router.delete('/messages/:messageId', creatorMessageController.deleteMessage);
-}
-
-// Upload message media (can be image or video)
-if (creatorMessageController.uploadMessageMedia) {
-  // For messages, we'll use the content image upload middleware
-  router.post(
-    '/messages/media',
-    contentImagesUpload,
-    creatorMessageController.uploadMessageMedia
-  );
-}
-
-// Get message analytics
-if (creatorMessageController.getMessageAnalytics) {
-  router.get(
-    '/messages/analytics',
-    creatorMessageController.getMessageAnalytics
-  );
 }
 
 // ==========================================
