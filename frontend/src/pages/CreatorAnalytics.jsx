@@ -282,7 +282,7 @@ const CreatorAnalytics = () => {
               <div className='card-icon'>
                 <Heart size={20} />
               </div>
-              <span className='card-title'>New Matches</span>
+              <span className='card-title'>New Connections</span>
             </div>
             <div className='card-value'>
               {formatNumber(analyticsData?.overview?.totalConnections || 0)}
