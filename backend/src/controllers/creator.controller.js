@@ -1,7 +1,7 @@
 const Creator = require('../models/Creator');
 const Content = require('../models/Content');
 const Transaction = require('../models/Transaction');
-const CreatorCreatorConnection = require('../models/CreatorCreatorConnection');
+const CreatorConnection = require('../models/CreatorConnection');
 
 // @desc    Get all creators
 // @route   GET /api/creator

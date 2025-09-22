@@ -9,14 +9,14 @@ const {
   swipeAction,
 
   // Connections Management (MyConnections page)
-  getConnections,
-  getConnectionStats,
-  acceptConnection,
-  declineConnection,
-  pinConnection,
-  archiveConnection,
-  blockConnection,
-  bulkConnectionAction,
+  getCreatorConnections,
+  getCreatorConnectionStats,
+  acceptCreatorConnection,
+  declineCreatorConnection,
+  pinCreatorConnection,
+  archiveCreatorConnection,
+  blockCreatorConnection,
+  bulkCreatorConnectionAction,
 
   // Legacy Match Support
   getMatches,
@@ -48,18 +48,18 @@ router.post('/swipe', swipeAction); // Process swipe (like/pass/superlike)
 // ============================================
 // CONNECTIONS MANAGEMENT ROUTES (MyConnections)
 // ============================================
-router.get('/', getConnections); // Get all connections with filters
-router.get('/stats', getConnectionStats); // Get connection statistics
+router.get('/', getCreatorConnections); // Get all connections with filters
+router.get('/stats', getCreatorConnectionStats); // Get connection statistics
 
 // Individual connection actions
-router.post('/:connectionId/accept', acceptConnection); // Accept pending connection
-router.post('/:connectionId/decline', declineConnection); // Decline pending connection
-router.put('/:connectionId/pin', pinConnection); // Pin/Unpin connection
-router.put('/:connectionId/archive', archiveConnection); // Archive connection
-router.post('/:connectionId/block', blockConnection); // Block connection
+router.post('/:connectionId/accept', acceptCreatorConnection); // Accept pending connection
+router.post('/:connectionId/decline', declineCreatorConnection); // Decline pending connection
+router.put('/:connectionId/pin', pinCreatorConnection); // Pin/Unpin connection
+router.put('/:connectionId/archive', archiveCreatorConnection); // Archive connection
+router.post('/:connectionId/block', blockCreatorConnection); // Block connection
 
 // Bulk actions
-router.post('/bulk', bulkConnectionAction); // Bulk actions on multiple connections
+router.post('/bulk', bulkCreatorConnectionAction); // Bulk actions on multiple connections
 
 // ============================================
 // LEGACY MATCH ROUTES (for backwards compatibility)

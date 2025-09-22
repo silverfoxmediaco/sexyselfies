@@ -2,7 +2,7 @@
 // WebSocket handlers for real-time messaging
 
 const Message = require('../models/Message');
-const CreatorCreatorConnection = require('../models/CreatorCreatorConnection');
+const CreatorConnection = require('../models/CreatorConnection');
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
 const { protect } = require('../middleware/auth.middleware');

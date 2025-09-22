@@ -9,7 +9,7 @@ class NotificationManager {
   constructor() {
     this.permission = Notification.permission || 'default';
     this.subscription = null;
-    this.vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';
+    this.vapidPublicKey = '';
     this.notificationQueue = [];
     this.isAppActive = true;
     this.soundEnabled = true;
@@ -95,6 +95,17 @@ class NotificationManager {
    */
   async initializePushNotifications() {
     try {
+      // First, fetch the VAPID public key from the backend
+      if (!this.vapidPublicKey) {
+        await this.fetchVapidPublicKey();
+      }
+
+      // If we still don't have a public key, push notifications aren't available
+      if (!this.vapidPublicKey) {
+        console.warn('Push notifications not available - VAPID key not configured');
+        return null;
+      }
+
       const registration = await navigator.serviceWorker.ready;
 
       // Check for existing subscription
@@ -121,6 +132,22 @@ class NotificationManager {
     } catch (error) {
       console.error('Push initialization error:', error);
       return null;
+    }
+  }
+
+  /**
+   * Fetch VAPID public key from backend
+   */
+  async fetchVapidPublicKey() {
+    try {
+      const response = await api.get('/auth/push/public-key');
+      if (response.data.success && response.data.data.publicKey) {
+        this.vapidPublicKey = response.data.data.publicKey;
+        console.log('VAPID public key fetched successfully');
+      }
+    } catch (error) {
+      console.warn('Failed to fetch VAPID public key:', error.response?.status || error.message);
+      // Don't throw - push notifications just won't be available
     }
   }
 

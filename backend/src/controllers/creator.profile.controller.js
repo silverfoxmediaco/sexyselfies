@@ -273,9 +273,9 @@ exports.updateProfile = async (req, res) => {
     }
 
     // Handle profile image upload
-    if (req.files && req.files.profileImage) {
+    if (req.files && req.files.profileImage && req.files.profileImage[0]) {
       const result = await cloudinary.uploader.upload(
-        req.files.profileImage.path,
+        req.files.profileImage[0].path,
         {
           folder: 'creators/profiles',
           transformation: { width: 500, height: 500, crop: 'fill' },
@@ -285,9 +285,9 @@ exports.updateProfile = async (req, res) => {
     }
 
     // Handle cover image upload
-    if (req.files && req.files.coverImage) {
+    if (req.files && req.files.coverImage && req.files.coverImage[0]) {
       const result = await cloudinary.uploader.upload(
-        req.files.coverImage.path,
+        req.files.coverImage[0].path,
         {
           folder: 'creators/covers',
           transformation: { width: 1920, height: 480, crop: 'fill' },

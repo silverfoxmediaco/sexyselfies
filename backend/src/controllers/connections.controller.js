@@ -1,5 +1,5 @@
 // backend/src/controllers/connections.controller.js
-const CreatorCreatorConnection = require('../models/CreatorCreatorConnection');
+const CreatorConnection = require('../models/CreatorConnection');
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
 const Message = require('../models/Message');

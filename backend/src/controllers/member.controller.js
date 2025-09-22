@@ -1,6 +1,6 @@
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
-const CreatorCreatorConnection = require('../models/CreatorCreatorConnection');
+const CreatorConnection = require('../models/CreatorConnection');
 const Content = require('../models/Content');
 const Transaction = require('../models/Transaction');
 
