@@ -2,7 +2,7 @@
 // WebSocket handlers for real-time messaging
 
 const Message = require('../models/Message');
-const Connection = require('../models/Connections');
+const CreatorCreatorConnection = require('../models/CreatorCreatorConnection');
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
 const { protect } = require('../middleware/auth.middleware');
@@ -70,9 +70,9 @@ exports.initializeMessagingSockets = io => {
         const { connectionId } = data;
 
         // Verify user has access to this connection
-        const connection = await Connection.findById(connectionId);
+        const connection = await CreatorConnection.findById(connectionId);
         if (!connection) {
-          return socket.emit('error', { message: 'Connection not found' });
+          return socket.emit('error', { message: 'CreatorConnection not found' });
         }
 
         // Check if user is part of this connection
@@ -155,11 +155,11 @@ exports.initializeMessagingSockets = io => {
         const { connectionId, content, replyTo, clientId } = data;
 
         // Verify connection access
-        const connection = await Connection.findById(connectionId);
+        const connection = await CreatorConnection.findById(connectionId);
         if (!connection || !connection.isConnected) {
           return socket.emit('message_error', {
             clientId,
-            error: 'Connection not found or not active',
+            error: 'CreatorConnection not found or not active',
           });
         }
 
@@ -246,7 +246,7 @@ exports.initializeMessagingSockets = io => {
         const { connectionId } = data;
 
         // Update unread count in connection
-        const connection = await Connection.findById(connectionId);
+        const connection = await CreatorConnection.findById(connectionId);
         if (connection) {
           if (socket.userRole === 'member') {
             connection.unreadCount.member = 0;

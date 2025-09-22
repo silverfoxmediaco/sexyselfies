@@ -205,17 +205,17 @@ creatorSchema.pre('findOneAndDelete', async function () {
     console.log(`🧹 Cleaning up data for deleted creator: ${creatorId}`);
 
     // Import models (avoid circular dependency by requiring here)
-    const Connection = require('./Connections');
+    const CreatorConnection = require('./CreatorConnection');
     const Message = require('./Message');
     const Content = require('./Content');
 
     try {
       // Delete all connections where this creator is involved
-      const deletedConnections = await Connection.deleteMany({
+      const deletedCreatorConnections = await CreatorConnection.deleteMany({
         creator: creatorId,
       });
       console.log(
-        `🗑️ Deleted ${deletedConnections.deletedCount} connections for creator ${creatorId}`
+        `🗑️ Deleted ${deletedCreatorConnections.deletedCount} connections for creator ${creatorId}`
       );
 
       // Delete all messages where this creator is sender or recipient
@@ -246,17 +246,17 @@ creatorSchema.pre('deleteOne', async function () {
     console.log(`🧹 Cleaning up data for deleted creator: ${creatorId}`);
 
     // Import models
-    const Connection = require('./Connections');
+    const CreatorConnection = require('./CreatorConnection');
     const Message = require('./Message');
     const Content = require('./Content');
 
     try {
       // Delete all connections where this creator is involved
-      const deletedConnections = await Connection.deleteMany({
+      const deletedCreatorConnections = await CreatorConnection.deleteMany({
         creator: creatorId,
       });
       console.log(
-        `🗑️ Deleted ${deletedConnections.deletedCount} connections for creator ${creatorId}`
+        `🗑️ Deleted ${deletedCreatorConnections.deletedCount} connections for creator ${creatorId}`
       );
 
       // Delete all messages where this creator is sender or recipient

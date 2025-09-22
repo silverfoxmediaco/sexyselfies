@@ -448,5 +448,5 @@ creatorConnectionSchema.statics.findAtRiskConnections = function (creatorId) {
 module.exports = mongoose.model(
   'CreatorConnection',
   creatorConnectionSchema,
-  'creatormatches'
+  'creatorconnections'
 );

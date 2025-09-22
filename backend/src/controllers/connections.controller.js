@@ -1,5 +1,5 @@
 // backend/src/controllers/connections.controller.js
-const Connection = require('../models/Connections');
+const CreatorCreatorConnection = require('../models/CreatorCreatorConnection');
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
 const Message = require('../models/Message');
@@ -27,11 +27,11 @@ exports.getSwipeStack = async (req, res, next) => {
     }
 
     // Get IDs of creators already interacted with
-    const existingConnections = await Connection.find({
+    const existingCreatorConnections = await CreatorConnection.find({
       member: member._id,
     }).select('creator');
 
-    const excludedIds = existingConnections.map(c => c.creator);
+    const excludedIds = existingCreatorConnections.map(c => c.creator);
     console.log('Excluding creators:', excludedIds.length);
 
     // Build query for available creators
@@ -228,7 +228,7 @@ exports.swipeAction = async (req, res, next) => {
     const userRole = req.user.role;
 
     let connection;
-    let isNewConnection = false;
+    let isNewCreatorConnection = false;
 
     if (userRole === 'member') {
       const member = await Member.findOne({ user: userId });
@@ -242,13 +242,13 @@ exports.swipeAction = async (req, res, next) => {
       }
 
       // Check if connection exists
-      connection = await Connection.findOne({
+      connection = await CreatorConnection.findOne({
         member: member._id,
         creator: creator._id,
       });
 
       if (!connection) {
-        connection = new Connection({
+        connection = new CreatorConnection({
           member: member._id,
           creator: creator._id,
         });
@@ -277,12 +277,12 @@ exports.swipeAction = async (req, res, next) => {
 
       // Check if it's a mutual connection
       if (connection.memberLiked && connection.creatorLiked) {
-        await connection.establishConnection();
-        isNewConnection = true;
+        await connection.establishCreatorConnection();
+        isNewCreatorConnection = true;
 
         // Update creator stats
-        creator.stats.totalConnections =
-          (creator.stats.totalConnections || 0) + 1;
+        creator.stats.totalCreatorConnections =
+          (creator.stats.totalCreatorConnections || 0) + 1;
         await creator.save();
       }
 
@@ -292,7 +292,7 @@ exports.swipeAction = async (req, res, next) => {
     res.status(200).json({
       success: true,
       isConnected: connection.isConnected,
-      isNewConnection,
+      isNewCreatorConnection,
       data: connection,
     });
   } catch (error) {
@@ -308,13 +308,13 @@ exports.swipeAction = async (req, res, next) => {
 // MY CONNECTIONS PAGE FUNCTIONS
 // ============================================
 
-// @desc    Get all connections for MyConnections page
+// @desc    Get all connections for MyCreatorConnections page
 // @route   GET /api/connections
 // @access  Private
-exports.getConnections = async (req, res, next) => {
+exports.getCreatorConnections = async (req, res, next) => {
   try {
     console.log(
-      '🔗 GetConnections called by user:',
+      '🔗 GetCreatorConnections called by user:',
       req.user.id,
       'role:',
       req.user.role
@@ -359,7 +359,7 @@ exports.getConnections = async (req, res, next) => {
     if (type) query.connectionType = type;
 
     // Get connections
-    let connections = await Connection.find(query)
+    let connections = await CreatorConnection.find(query)
       .populate('member', 'username profileImage')
       .populate({
         path: 'creator',
@@ -395,7 +395,7 @@ exports.getConnections = async (req, res, next) => {
     }
 
     // Format for frontend
-    const formattedConnections = connections.map(conn => {
+    const formattedCreatorConnections = connections.map(conn => {
       // Fix profile image URL for creators (same logic as getSwipeStack)
       let creatorAvatarUrl = conn.creator?.profileImage;
       if (userRole === 'member' && conn.creator) {
@@ -457,11 +457,11 @@ exports.getConnections = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      count: formattedConnections.length,
-      data: formattedConnections,
+      count: formattedCreatorConnections.length,
+      data: formattedCreatorConnections,
     });
   } catch (error) {
-    console.error('GetConnections error:', error);
+    console.error('GetCreatorConnections error:', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -472,7 +472,7 @@ exports.getConnections = async (req, res, next) => {
 // @desc    Get connection statistics
 // @route   GET /api/connections/stats
 // @access  Private
-exports.getConnectionStats = async (req, res, next) => {
+exports.getCreatorConnectionStats = async (req, res, next) => {
   try {
     const userRole = req.user.role;
     let query = {};
@@ -485,7 +485,7 @@ exports.getConnectionStats = async (req, res, next) => {
       query.creator = creator._id;
     }
 
-    const stats = await Connection.aggregate([
+    const stats = await CreatorConnection.aggregate([
       { $match: query },
       {
         $group: {
@@ -523,14 +523,14 @@ exports.getConnectionStats = async (req, res, next) => {
 // @desc    Accept connection request
 // @route   POST /api/connections/:connectionId/accept
 // @access  Private
-exports.acceptConnection = async (req, res, next) => {
+exports.acceptCreatorConnection = async (req, res, next) => {
   try {
-    const connection = await Connection.findById(req.params.connectionId);
+    const connection = await CreatorConnection.findById(req.params.connectionId);
 
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found',
+        error: 'CreatorConnection not found',
       });
     }
 
@@ -538,7 +538,7 @@ exports.acceptConnection = async (req, res, next) => {
     if (req.user.role === 'member') {
       connection.memberLiked = true;
       if (connection.creatorLiked) {
-        await connection.establishConnection();
+        await connection.establishCreatorConnection();
       }
     }
     // Creator accepting member's request
@@ -546,7 +546,7 @@ exports.acceptConnection = async (req, res, next) => {
       connection.creatorLiked = true;
       connection.creatorAccepted = true;
       if (connection.memberLiked) {
-        await connection.establishConnection();
+        await connection.establishCreatorConnection();
       }
     }
 
@@ -567,9 +567,9 @@ exports.acceptConnection = async (req, res, next) => {
 // @desc    Decline connection request
 // @route   POST /api/connections/:connectionId/decline
 // @access  Private
-exports.declineConnection = async (req, res, next) => {
+exports.declineCreatorConnection = async (req, res, next) => {
   try {
-    const connection = await Connection.findByIdAndUpdate(
+    const connection = await CreatorConnection.findByIdAndUpdate(
       req.params.connectionId,
       {
         status: 'rejected',
@@ -581,7 +581,7 @@ exports.declineConnection = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found',
+        error: 'CreatorConnection not found',
       });
     }
 
@@ -600,14 +600,14 @@ exports.declineConnection = async (req, res, next) => {
 // @desc    Pin/Unpin connection
 // @route   PUT /api/connections/:connectionId/pin
 // @access  Private
-exports.pinConnection = async (req, res, next) => {
+exports.pinCreatorConnection = async (req, res, next) => {
   try {
-    const connection = await Connection.findById(req.params.connectionId);
+    const connection = await CreatorConnection.findById(req.params.connectionId);
 
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found',
+        error: 'CreatorConnection not found',
       });
     }
 
@@ -629,9 +629,9 @@ exports.pinConnection = async (req, res, next) => {
 // @desc    Archive connection
 // @route   PUT /api/connections/:connectionId/archive
 // @access  Private
-exports.archiveConnection = async (req, res, next) => {
+exports.archiveCreatorConnection = async (req, res, next) => {
   try {
-    const connection = await Connection.findByIdAndUpdate(
+    const connection = await CreatorConnection.findByIdAndUpdate(
       req.params.connectionId,
       {
         isArchived: true,
@@ -643,7 +643,7 @@ exports.archiveConnection = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found',
+        error: 'CreatorConnection not found',
       });
     }
 
@@ -662,9 +662,9 @@ exports.archiveConnection = async (req, res, next) => {
 // @desc    Block connection
 // @route   POST /api/connections/:connectionId/block
 // @access  Private
-exports.blockConnection = async (req, res, next) => {
+exports.blockCreatorConnection = async (req, res, next) => {
   try {
-    const connection = await Connection.findByIdAndUpdate(
+    const connection = await CreatorConnection.findByIdAndUpdate(
       req.params.connectionId,
       {
         status: 'blocked',
@@ -679,7 +679,7 @@ exports.blockConnection = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found',
+        error: 'CreatorConnection not found',
       });
     }
 
@@ -698,7 +698,7 @@ exports.blockConnection = async (req, res, next) => {
 // @desc    Bulk action on connections
 // @route   POST /api/connections/bulk
 // @access  Private
-exports.bulkConnectionAction = async (req, res, next) => {
+exports.bulkCreatorConnectionAction = async (req, res, next) => {
   try {
     const { connectionIds, action } = req.body;
 
@@ -726,7 +726,7 @@ exports.bulkConnectionAction = async (req, res, next) => {
 
     updateData.lastInteraction = Date.now();
 
-    const result = await Connection.updateMany(
+    const result = await CreatorConnection.updateMany(
       { _id: { $in: connectionIds } },
       updateData
     );
@@ -747,12 +747,12 @@ exports.bulkConnectionAction = async (req, res, next) => {
 // EXISTING FUNCTIONS (LEGACY SUPPORT)
 // ============================================
 
-// @desc    Get all connections (legacy - redirects to getConnections)
+// @desc    Get all connections (legacy - redirects to getCreatorConnections)
 // @route   GET /api/connections/matches
 // @access  Private
 exports.getMatches = async (req, res, next) => {
   req.query.status = 'active';
-  return exports.getConnections(req, res, next);
+  return exports.getCreatorConnections(req, res, next);
 };
 
 // @desc    Get specific connection
@@ -760,14 +760,14 @@ exports.getMatches = async (req, res, next) => {
 // @access  Private
 exports.getMatch = async (req, res, next) => {
   try {
-    const connection = await Connection.findById(req.params.connectionId)
+    const connection = await CreatorConnection.findById(req.params.connectionId)
       .populate('member', 'username profileImage')
       .populate('creator', 'displayName profileImage bio');
 
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found',
+        error: 'CreatorConnection not found',
       });
     }
 
@@ -788,12 +788,12 @@ exports.getMatch = async (req, res, next) => {
 // @access  Private
 exports.unmatch = async (req, res, next) => {
   try {
-    const connection = await Connection.findById(req.params.connectionId);
+    const connection = await CreatorConnection.findById(req.params.connectionId);
 
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found',
+        error: 'CreatorConnection not found',
       });
     }
 
@@ -825,12 +825,12 @@ exports.unmatch = async (req, res, next) => {
 exports.sendMessage = async (req, res, next) => {
   try {
     const { text, media } = req.body;
-    const connection = await Connection.findById(req.params.connectionId);
+    const connection = await CreatorConnection.findById(req.params.connectionId);
 
     if (!connection || !connection.isConnected) {
       return res.status(404).json({
         success: false,
-        error: 'Connection not found or not active',
+        error: 'CreatorConnection not found or not active',
       });
     }
 
@@ -901,7 +901,7 @@ exports.getMessages = async (req, res, next) => {
 // @access  Private
 exports.markMessagesAsRead = async (req, res, next) => {
   try {
-    const connection = await Connection.findById(req.params.connectionId);
+    const connection = await CreatorConnection.findById(req.params.connectionId);
     const userRole = req.user.role;
 
     // Reset unread count

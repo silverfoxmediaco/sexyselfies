@@ -438,14 +438,16 @@ exports.getConnections = async (req, res) => {
     const skip = (page - 1) * limit;
 
     // Build query
-    const query = {
-      status: 'connected',
-    };
+    const query = {};
 
     if (userType === 'creator') {
       query.creator = userId;
+      // Creators should see both pending (incoming likes) and connected
+      query.status = { $in: ['pending', 'connected'] };
     } else {
       query.member = userId;
+      // Members only see connected relationships
+      query.status = 'connected';
     }
 
     // Apply filters
@@ -462,7 +464,7 @@ exports.getConnections = async (req, res) => {
     const connections = await CreatorConnection.find(query)
       .populate('creator', 'username profileImage bio isVerified')
       .populate('member', 'username profileImage lastActive')
-      .sort('-engagement.lastActiveAt')
+      .sort('-createdAt')
       .skip(skip)
       .limit(parseInt(limit));
 

@@ -166,16 +166,16 @@ memberSchema.pre('findOneAndDelete', async function () {
     console.log(`🧹 Cleaning up data for deleted member: ${memberId}`);
 
     // Import models (avoid circular dependency by requiring here)
-    const Connection = require('./Connections');
+    const CreatorConnection = require('./CreatorConnection');
     const Message = require('./Message');
 
     try {
       // Delete all connections where this member is involved
-      const deletedConnections = await Connection.deleteMany({
+      const deletedCreatorConnections = await CreatorConnection.deleteMany({
         member: memberId,
       });
       console.log(
-        `🗑️ Deleted ${deletedConnections.deletedCount} connections for member ${memberId}`
+        `🗑️ Deleted ${deletedCreatorConnections.deletedCount} connections for member ${memberId}`
       );
 
       // Delete all messages where this member is sender or recipient
@@ -200,16 +200,16 @@ memberSchema.pre('deleteOne', async function () {
     console.log(`🧹 Cleaning up data for deleted member: ${memberId}`);
 
     // Import models
-    const Connection = require('./Connections');
+    const CreatorConnection = require('./CreatorConnection');
     const Message = require('./Message');
 
     try {
       // Delete all connections where this member is involved
-      const deletedConnections = await Connection.deleteMany({
+      const deletedCreatorConnections = await CreatorConnection.deleteMany({
         member: memberId,
       });
       console.log(
-        `🗑️ Deleted ${deletedConnections.deletedCount} connections for member ${memberId}`
+        `🗑️ Deleted ${deletedCreatorConnections.deletedCount} connections for member ${memberId}`
       );
 
       // Delete all messages where this member is sender or recipient

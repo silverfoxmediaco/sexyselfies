@@ -1,6 +1,6 @@
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
-const Connection = require('../models/Connections');
+const CreatorCreatorConnection = require('../models/CreatorCreatorConnection');
 const Content = require('../models/Content');
 const Transaction = require('../models/Transaction');
 
@@ -304,13 +304,13 @@ exports.likeCreator = async (req, res, next) => {
     await member.save();
 
     // Check for existing connection record
-    let connection = await Connection.findOne({
+    let connection = await CreatorConnection.findOne({
       member: member._id,
       creator: creator._id,
     });
 
     if (!connection) {
-      connection = await Connection.create({
+      connection = await CreatorConnection.create({
         member: member._id,
         creator: creator._id,
         memberLiked: true,
@@ -323,7 +323,7 @@ exports.likeCreator = async (req, res, next) => {
         connection.connectedAt = Date.now();
 
         // Update creator stats
-        creator.stats.totalConnections += 1;
+        creator.stats.totalCreatorConnections += 1;
         await creator.save();
       }
       await connection.save();
@@ -402,13 +402,13 @@ exports.passCreator = async (req, res, next) => {
 //     await member.save();
 
 //     // Create or update connection
-//     let connection = await Connection.findOne({
+//     let connection = await CreatorConnection.findOne({
 //       member: member._id,
 //       creator: creator._id
 //     });
 
 //     if (!connection) {
-//       connection = await Connection.create({
+//       connection = await CreatorConnection.create({
 //         member: member._id,
 //         creator: creator._id,
 //         memberLiked: true,
@@ -420,7 +420,7 @@ exports.passCreator = async (req, res, next) => {
 //       if (connection.creatorLiked) {
 //         connection.isConnected = true;
 //         connection.connectedAt = Date.now();
-//         creator.stats.totalConnections += 1;
+//         creator.stats.totalCreatorConnections += 1;
 //         await creator.save();
 //       }
 //       await connection.save();
@@ -449,11 +449,11 @@ exports.passCreator = async (req, res, next) => {
 // @desc    Get connections
 // @route   GET /api/members/connections
 // @access  Private (Member only)
-exports.getConnections = async (req, res, next) => {
+exports.getCreatorConnections = async (req, res, next) => {
   try {
     const member = await Member.findOne({ user: req.user.id });
 
-    const connections = await Connection.find({
+    const connections = await CreatorConnection.find({
       member: member._id,
       isConnected: true,
       isActive: true,

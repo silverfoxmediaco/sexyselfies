@@ -1,7 +1,7 @@
 const Creator = require('../models/Creator');
 const Content = require('../models/Content');
 const Transaction = require('../models/Transaction');
-const Connection = require('../models/Connections');
+const CreatorCreatorConnection = require('../models/CreatorCreatorConnection');
 
 // @desc    Get all creators
 // @route   GET /api/creator
@@ -215,7 +215,7 @@ exports.getCreatorStats = async (req, res, next) => {
       creator: creator._id,
     });
 
-    const totalConnections = await Connection.countDocuments({
+    const totalCreatorConnections = await CreatorConnection.countDocuments({
       creator: creator._id,
       isConnected: true,
     });
@@ -243,7 +243,7 @@ exports.getCreatorStats = async (req, res, next) => {
       success: true,
       data: {
         totalContent,
-        totalConnections,
+        totalCreatorConnections,
         monthlyEarnings: monthlyEarnings[0]?.total || 0,
         ...creator.stats,
       },
