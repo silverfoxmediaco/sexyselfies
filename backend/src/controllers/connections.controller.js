@@ -4,6 +4,7 @@ const Member = require('../models/Member');
 const Creator = require('../models/Creator');
 const Message = require('../models/Message');
 const { sendNotification } = require('../utils/notifications');
+const connectionService = require('../services/connections.service');
 
 // ============================================
 // SWIPE/BROWSE FUNCTIONS
@@ -224,95 +225,73 @@ exports.getSwipeStack = async (req, res, next) => {
 // @access  Private
 exports.swipeAction = async (req, res, next) => {
   try {
+    console.log('🎯 SwipeAction called:', req.body);
+
     const { creatorId, action } = req.body; // action: 'like', 'pass' (superlike removed)
     const userId = req.user.id;
     const userRole = req.user.role;
 
-    let connection;
-    let isNewCreatorConnection = false;
-
-    if (userRole === 'member') {
-      const member = await Member.findOne({ user: userId });
-      const creator = await Creator.findById(creatorId);
-
-      if (!creator) {
-        return res.status(404).json({
-          success: false,
-          error: 'Creator not found',
-        });
-      }
-
-      // Check if connection exists
-      connection = await CreatorConnection.findOne({
-        member: member._id,
-        creator: creator._id,
+    // Only members can swipe
+    if (userRole !== 'member') {
+      return res.status(403).json({
+        success: false,
+        error: 'Only members can swipe on creators',
       });
-
-      if (!connection) {
-        connection = new CreatorConnection({
-          member: member._id,
-          creator: creator._id,
-        });
-      }
-
-      switch (action) {
-        case 'like':
-          member.likes.push({ creator: creator._id });
-          connection.memberLiked = true;
-          connection.status = 'pending';
-
-          // Send notification to creator about new like/connection request
-          await sendNotification(creator.user, {
-            type: 'connection_request',
-            title: 'New Connection Request! 💕',
-            body: `${member.username} wants to connect with you!`,
-            data: {
-              connectionId: connection._id,
-              memberId: member._id,
-              memberUsername: member.username,
-              type: 'connection_request'
-            },
-            category: 'connection',
-            actionUrl: `/creator/connections?filter=pending`
-          });
-          break;
-        // case 'superlike': // Super Like feature disabled
-        // member.superLikes.push({ creator: creator._id });
-        // connection.memberLiked = true;
-        // connection.memberSuperLiked = true;
-        // connection.connectionType = 'premium';
-        // connection.status = 'pending';
-        // break;
-        case 'pass':
-          member.passes.push({ creator: creator._id });
-          connection.status = 'rejected';
-          break;
-      }
-
-      await member.save();
-
-      // Check if it's a mutual connection
-      if (connection.memberLiked && connection.creatorLiked) {
-        await connection.establishCreatorConnection();
-        isNewCreatorConnection = true;
-
-        // Update creator stats
-        creator.stats.totalCreatorConnections =
-          (creator.stats.totalCreatorConnections || 0) + 1;
-        await creator.save();
-      }
-
-      await connection.save();
     }
+
+    // Get member profile
+    const member = await Member.findOne({ user: userId });
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        error: 'Member profile not found',
+      });
+    }
+
+    // Validate action
+    const direction = action === 'like' ? 'right' : action === 'pass' ? 'left' : action;
+
+    // Use ConnectionService to process the swipe
+    const result = await connectionService.processSwipe(
+      member._id,
+      creatorId,
+      direction,
+      {
+        sessionTime: req.body.sessionTime || 0,
+        viewedPhotos: req.body.viewedPhotos || 1,
+        readBio: req.body.readBio || false,
+        filters: req.body.filters || {},
+        sessionId: req.body.sessionId
+      }
+    );
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: result.message,
+      });
+    }
+
+    // Update member's like/pass arrays for compatibility
+    if (direction === 'right') {
+      member.likes.push({ creator: creatorId });
+    } else if (direction === 'left') {
+      member.passes.push({ creator: creatorId });
+    }
+    await member.save();
+
+    console.log(`✅ Swipe processed: ${action} → ${result.isNewConnection ? 'CONNECTED' : 'PENDING'}`);
 
     res.status(200).json({
       success: true,
-      isConnected: connection.isConnected,
-      isNewCreatorConnection,
-      data: connection,
+      isConnected: result.isNewConnection,
+      isNewCreatorConnection: result.isNewConnection,
+      data: result.connection,
+      message: result.message
     });
+
   } catch (error) {
-    console.error('SwipeAction error:', error);
+    console.error('❌ SwipeAction error:', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -338,146 +317,65 @@ exports.getCreatorConnections = async (req, res, next) => {
     console.log('🔗 Request query params:', req.query);
 
     const userRole = req.user.role;
-    const { status, type, sort = '-lastInteraction', search } = req.query;
+    const filters = {
+      status: req.query.status,
+      type: req.query.type,
+      sort: req.query.sort || '-lastInteraction',
+      search: req.query.search
+    };
 
-    let query = {};
+    // Use ConnectionService to get connections
+    const result = await connectionService.getConnectionsForUser(
+      req.user.id,
+      userRole,
+      filters
+    );
 
-    // Build query based on user role
-    if (userRole === 'member') {
-      const member = await Member.findOne({ user: req.user.id });
-      if (!member) {
-        return res.status(404).json({
-          success: false,
-          error: 'Member profile not found',
-        });
-      }
-      query.member = member._id;
-    } else if (userRole === 'creator') {
-      const creator = await Creator.findOne({ user: req.user.id });
-      if (!creator) {
-        return res.status(404).json({
-          success: false,
-          error: 'Creator profile not found',
-        });
-      }
-      query.creator = creator._id;
-    }
-
-    // Apply filters
-    if (status) {
-      if (status === 'active') {
-        query.isConnected = true;
-        query.status = 'active';
-      } else {
-        query.status = status;
-      }
-    }
-    if (type) query.connectionType = type;
-
-    // Get connections
-    let connections = await CreatorConnection.find(query)
-      .populate('member', 'username profileImage')
-      .populate({
-        path: 'creator',
-        select: 'displayName profileImage bio isOnline contentPrice',
-      })
-      .populate('lastMessage')
-      .sort(sort);
-
-    // Filter out connections with deleted creators/members (null populate results)
-    connections = connections.filter(conn => {
-      if (userRole === 'member' && !conn.creator) {
-        console.log(`⚠️ Skipping connection with deleted creator: ${conn._id}`);
-        return false;
-      }
-      if (userRole === 'creator' && !conn.member) {
-        console.log(`⚠️ Skipping connection with deleted member: ${conn._id}`);
-        return false;
-      }
-      return true;
-    });
-
-    // Apply search filter if provided
-    if (search) {
-      connections = connections.filter(conn => {
-        const searchTarget = userRole === 'member' ? conn.creator : conn.member;
-        return (
-          searchTarget?.displayName
-            ?.toLowerCase()
-            .includes(search.toLowerCase()) ||
-          searchTarget?.username?.toLowerCase().includes(search.toLowerCase())
-        );
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: 'Failed to retrieve connections',
       });
     }
 
-    // Format for frontend
-    const formattedCreatorConnections = connections.map(conn => {
-      // Fix profile image URL for creators (same logic as getSwipeStack)
-      let creatorAvatarUrl = conn.creator?.profileImage;
-      if (userRole === 'member' && conn.creator) {
-        if (
-          creatorAvatarUrl === 'default-avatar.jpg' ||
-          !creatorAvatarUrl ||
-          !creatorAvatarUrl.startsWith('http')
-        ) {
-          creatorAvatarUrl = '/placeholders/beaufitulbrunette1.png';
-        }
-      }
+    // Format connections for legacy compatibility
+    const formattedConnections = result.connections.map(conn => ({
+      id: conn.id,
+      connectionData: userRole === 'member' ? {
+        creatorName: conn.otherUser.displayName,
+        creatorUsername: `@${conn.otherUser.username}`,
+        avatar: conn.otherUser.profileImage,
+        isOnline: conn.otherUser.isOnline,
+      } : {
+        memberName: conn.otherUser.username,
+        memberUsername: `@${conn.otherUser.username}`,
+        avatar: conn.otherUser.profileImage,
+      },
+      connectionType: conn.connectionType || 'standard',
+      status: conn.status,
+      lastMessage: 'No messages yet', // Can be enhanced later
+      lastMessageTime: formatTime(conn.lastInteraction),
+      unreadCount: 0, // Can be enhanced later
+      isPinned: conn.isPinned,
+      subscriptionAmount: 0,
+      totalSpent: conn.engagement.totalSpent,
+      connectedSince: conn.connectedAt,
+      messageCount: conn.engagement.totalMessages,
+      contentUnlocked: conn.engagement.contentUnlocked,
+      specialOffers: [],
+    }));
 
-      // Fix profile image URL for members
-      let memberAvatarUrl = conn.member?.profileImage;
-      if (userRole === 'creator' && conn.member) {
-        if (
-          memberAvatarUrl === 'default-avatar.jpg' ||
-          !memberAvatarUrl ||
-          !memberAvatarUrl.startsWith('http')
-        ) {
-          memberAvatarUrl = '/placeholders/member-default.png';
-        }
-      }
-
-      return {
-        id: conn._id,
-        connectionData:
-          userRole === 'member'
-            ? {
-                creatorName: conn.creator.displayName,
-                creatorUsername: `@${conn.creator.username || conn.creator.displayName}`,
-                avatar: creatorAvatarUrl,
-                isOnline: conn.creator.isOnline,
-              }
-            : {
-                memberName: conn.member.username,
-                memberUsername: `@${conn.member.username}`,
-                avatar: memberAvatarUrl,
-              },
-        connectionType: conn.connectionType,
-        status: conn.status,
-        lastMessage: conn.lastMessagePreview?.content || 'No messages yet',
-        lastMessageTime: formatTime(
-          conn.lastMessagePreview?.createdAt || conn.lastInteraction
-        ),
-        unreadCount:
-          userRole === 'member'
-            ? conn.unreadCount.member
-            : conn.unreadCount.creator,
-        isPinned: conn.isPinned,
-        subscriptionAmount: conn.subscriptionAmount,
-        totalSpent: conn.totalSpent,
-        connectedSince: conn.connectedAt,
-        messageCount: conn.messageCount,
-        contentUnlocked: conn.contentUnlocked,
-        specialOffers: conn.specialOffers,
-      };
-    });
+    console.log(`✅ Retrieved ${formattedConnections.length} connections for ${userRole}`);
 
     res.status(200).json({
       success: true,
-      count: formattedCreatorConnections.length,
-      data: formattedCreatorConnections,
+      count: formattedConnections.length,
+      data: formattedConnections,
+      stats: result.stats
     });
+
   } catch (error) {
-    console.error('GetCreatorConnections error:', error);
+    console.error('❌ GetCreatorConnections error:', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -541,38 +439,41 @@ exports.getCreatorConnectionStats = async (req, res, next) => {
 // @access  Private
 exports.acceptCreatorConnection = async (req, res, next) => {
   try {
-    const connection = await CreatorConnection.findById(req.params.connectionId);
+    console.log(`🎯 Accept connection: ${req.params.connectionId} by ${req.user.role} ${req.user.id}`);
 
-    if (!connection) {
-      return res.status(404).json({
+    // Only creators can accept connection requests (members send requests)
+    if (req.user.role !== 'creator') {
+      return res.status(403).json({
         success: false,
-        error: 'CreatorConnection not found',
+        error: 'Only creators can accept connection requests',
       });
     }
 
-    // Member accepting creator's request
-    if (req.user.role === 'member') {
-      connection.memberLiked = true;
-      if (connection.creatorLiked) {
-        await connection.establishCreatorConnection();
-      }
-    }
-    // Creator accepting member's request
-    else if (req.user.role === 'creator') {
-      connection.creatorLiked = true;
-      connection.creatorAccepted = true;
-      if (connection.memberLiked) {
-        await connection.establishCreatorConnection();
-      }
+    // Use ConnectionService to handle the response
+    const result = await connectionService.handleConnectionResponse(
+      req.user.id,
+      req.params.connectionId,
+      'accept'
+    );
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: result.message || 'Failed to accept connection',
+      });
     }
 
-    await connection.save();
+    console.log(`✅ Connection accepted: ${req.params.connectionId}`);
 
     res.status(200).json({
       success: true,
-      data: connection,
+      data: result.connection,
+      isNewConnection: result.isNewConnection,
+      message: result.message
     });
+
   } catch (error) {
+    console.error('❌ Accept connection error:', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -585,27 +486,40 @@ exports.acceptCreatorConnection = async (req, res, next) => {
 // @access  Private
 exports.declineCreatorConnection = async (req, res, next) => {
   try {
-    const connection = await CreatorConnection.findByIdAndUpdate(
-      req.params.connectionId,
-      {
-        status: 'rejected',
-        lastInteraction: Date.now(),
-      },
-      { new: true }
-    );
+    console.log(`🎯 Decline connection: ${req.params.connectionId} by ${req.user.role} ${req.user.id}`);
 
-    if (!connection) {
-      return res.status(404).json({
+    // Only creators can decline connection requests (members send requests)
+    if (req.user.role !== 'creator') {
+      return res.status(403).json({
         success: false,
-        error: 'CreatorConnection not found',
+        error: 'Only creators can decline connection requests',
       });
     }
 
+    // Use ConnectionService to handle the response
+    const result = await connectionService.handleConnectionResponse(
+      req.user.id,
+      req.params.connectionId,
+      'decline'
+    );
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: result.message || 'Failed to decline connection',
+      });
+    }
+
+    console.log(`✅ Connection declined: ${req.params.connectionId}`);
+
     res.status(200).json({
       success: true,
-      data: connection,
+      data: result.connection,
+      message: result.message
     });
+
   } catch (error) {
+    console.error('❌ Decline connection error:', error);
     res.status(500).json({
       success: false,
       error: error.message,
