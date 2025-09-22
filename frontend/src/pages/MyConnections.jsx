@@ -43,7 +43,7 @@ const MyConnections = () => {
       const data = await api.get('/connections/stats');
 
       setStats(
-        data.data || {
+        data.stats || data.data || {
           total: 0,
           active: 0,
           pending: 0,
@@ -65,8 +65,6 @@ const MyConnections = () => {
   const fetchConnections = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('token');
-
       // Build query parameters
       const params = new URLSearchParams();
       if (activeTab !== 'all') {
@@ -80,33 +78,36 @@ const MyConnections = () => {
       }
       params.append('sort', sortBy);
 
-      const data = await api.get(`/connections?${params}`);
+      const response = await api.get(`/connections?${params}`);
 
-      // Transform API response to match component structure
-      const transformedConnections = data.data.map(conn => ({
-        id: conn.id,
-        creatorName: conn.connectionData.creatorName,
-        creatorUsername: conn.connectionData.creatorUsername,
-        avatar:
-          conn.connectionData.avatar || '/placeholders/beautifulbrunette2.png',
-        connectionType: conn.connectionType,
-        status: conn.status,
-        memberLiked: conn.memberLiked || false,
-        creatorLiked: conn.creatorLiked || false,
-        lastMessage: conn.lastMessage,
-        lastMessageTime: conn.lastMessageTime,
-        unreadCount: conn.unreadCount,
-        isOnline: conn.connectionData.isOnline,
-        isPinned: conn.isPinned,
-        subscriptionAmount: conn.subscriptionAmount,
-        totalSpent: conn.totalSpent,
-        connectedSince: conn.connectedSince,
-        messageCount: conn.messageCount,
-        contentUnlocked: conn.contentUnlocked,
-        specialOffers: conn.specialOffers,
-      }));
+      if (response.success) {
+        // Transform API response to match component structure
+        const transformedConnections = (response.connections || response.data || []).map(conn => ({
+          id: conn._id || conn.id,
+          creatorName: conn.creator?.displayName || conn.connectionData?.creatorName || 'Unknown Creator',
+          creatorUsername: conn.creator?.username || conn.connectionData?.creatorUsername || '',
+          avatar: conn.creator?.profileImage || conn.connectionData?.avatar || '/placeholders/beautifulbrunette2.png',
+          connectionType: conn.connectionType || 'basic',
+          status: conn.status,
+          memberLiked: conn.memberLiked !== undefined ? conn.memberLiked : (conn.swipeData?.memberSwiped?.direction === 'right'),
+          creatorLiked: conn.creatorLiked !== undefined ? conn.creatorLiked : (conn.swipeData?.creatorSwiped?.direction === 'right'),
+          lastMessage: conn.lastMessage || 'No messages yet',
+          lastMessageTime: conn.lastMessageTime || conn.createdAt,
+          unreadCount: conn.unreadCount || 0,
+          isOnline: conn.creator?.isOnline || conn.connectionData?.isOnline || false,
+          isPinned: conn.isPinned || false,
+          subscriptionAmount: conn.subscriptionAmount || 0,
+          totalSpent: conn.totalSpent || 0,
+          connectedSince: conn.connectedSince || conn.createdAt,
+          messageCount: conn.messageCount || 0,
+          contentUnlocked: conn.contentUnlocked || 0,
+          specialOffers: conn.specialOffers || 0,
+        }));
 
-      setConnections(transformedConnections);
+        setConnections(transformedConnections);
+      } else {
+        setConnections([]);
+      }
     } catch (error) {
       console.error('Error fetching connections:', error);
       // Empty array for new members - real connections will appear when they connect with creators

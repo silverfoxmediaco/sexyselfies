@@ -11,7 +11,7 @@ import {
   Clock,
   ChevronRight,
   Eye,
-  Gift,
+  CreditCard,
   DollarSign,
   Calendar,
   MapPin,
@@ -19,8 +19,8 @@ import {
   Camera,
   MoreHorizontal,
 } from 'lucide-react';
-import CreatorMainHeader from '../components/CreatorMainHeader';
-import CreatorMainFooter from '../components/CreatorMainFooter';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import {
   useIsMobile,
@@ -28,9 +28,9 @@ import {
   getUserRole,
 } from '../utils/mobileDetection';
 import api from '../services/api.config';
-import './CreatorConnections.css';
+import './MemberConnections.css';
 
-const CreatorConnections = () => {
+const MemberConnections = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
@@ -42,7 +42,7 @@ const CreatorConnections = () => {
   const [stats, setStats] = useState({
     totalConnections: 0,
     activeChats: 0,
-    totalEarnings: 0,
+    totalSpent: 0,
     avgResponse: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -77,7 +77,7 @@ const CreatorConnections = () => {
           response.stats || {
             totalConnections: 0,
             activeChats: 0,
-            totalEarnings: 0,
+            totalSpent: 0,
             avgResponse: 0,
           }
         );
@@ -87,7 +87,7 @@ const CreatorConnections = () => {
         setStats({
           totalConnections: 0,
           activeChats: 0,
-          totalEarnings: 0,
+          totalSpent: 0,
           avgResponse: 0,
         });
         setConnections([]);
@@ -98,7 +98,7 @@ const CreatorConnections = () => {
       setStats({
         totalConnections: 0,
         activeChats: 0,
-        totalEarnings: 0,
+        totalSpent: 0,
         avgResponse: 0,
       });
       setConnections([]);
@@ -108,7 +108,7 @@ const CreatorConnections = () => {
   };
 
   const filteredConnections = connections.filter(connection => {
-    const searchableText = `${connection.member?.displayName || connection.member?.username || connection.name || ''}`;
+    const searchableText = `${connection.creator?.displayName || ''} ${connection.creator?.username || ''}`;
     const matchesSearch = searchableText
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
@@ -135,35 +135,35 @@ const CreatorConnections = () => {
       <Star
         key={i}
         size={12}
-        className={i < rating ? 'star-filled' : 'star-empty'}
+        className={i < rating ? 'member-connections-star-filled' : 'member-connections-star-empty'}
       />
     ));
   };
 
   if (loading) {
     return (
-      <div className='connections-loading'>
-        <div className='loading-spinner'></div>
+      <div className='member-connections-loading'>
+        <div className='member-connections-loading-spinner'></div>
         <p>Loading your connections...</p>
       </div>
     );
   }
 
   return (
-    <div className='creator-connections'>
+    <div className='member-connections'>
       {/* Desktop Header */}
-      {isDesktop && <CreatorMainHeader />}
+      {isDesktop && <MainHeader />}
 
       {/* Header */}
-      <div className='connections-header'>
-        <div className='connections-header-content'>
+      <div className='member-connections-header'>
+        <div className='member-connections-header-content'>
           <h1>
             <Users size={24} />
             My Connections
           </h1>
-          <div className='connections-header-actions'>
+          <div className='member-connections-header-actions'>
             <button
-              className='connections-filter-btn'
+              className='member-connections-filter-btn'
               onClick={() => setShowFilters(!showFilters)}
             >
               <Filter size={18} />
@@ -173,95 +173,95 @@ const CreatorConnections = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className='connections-overview'>
-        <div className='connections-stats-grid'>
+      <div className='member-connections-overview'>
+        <div className='member-connections-stats-grid'>
           <motion.div
-            className='connections-stat-card'
+            className='member-connections-stat-card'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <div className='connections-stat-icon matches'>
+            <div className='member-connections-stat-icon connections'>
               <Users size={20} />
             </div>
-            <div className='connections-stat-content'>
-              <span className='connections-stat-value'>
+            <div className='member-connections-stat-content'>
+              <span className='member-connections-stat-value'>
                 {stats.totalConnections}
               </span>
-              <span className='connections-stat-label'>Total Connections</span>
+              <span className='member-connections-stat-label'>Total Connections</span>
             </div>
           </motion.div>
 
           <motion.div
-            className='connections-stat-card'
+            className='member-connections-stat-card'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className='connections-stat-icon chats'>
+            <div className='member-connections-stat-icon chats'>
               <MessageCircle size={20} />
             </div>
-            <div className='connections-stat-content'>
-              <span className='connections-stat-value'>
+            <div className='member-connections-stat-content'>
+              <span className='member-connections-stat-value'>
                 {stats.activeChats}
               </span>
-              <span className='connections-stat-label'>Active Chats</span>
+              <span className='member-connections-stat-label'>Active Chats</span>
             </div>
           </motion.div>
 
           <motion.div
-            className='connections-stat-card'
+            className='member-connections-stat-card'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className='connections-stat-icon earnings'>
+            <div className='member-connections-stat-icon spent'>
               <DollarSign size={20} />
             </div>
-            <div className='connections-stat-content'>
-              <span className='connections-stat-value'>
-                {formatCurrency(stats.totalEarnings)}
+            <div className='member-connections-stat-content'>
+              <span className='member-connections-stat-value'>
+                {formatCurrency(stats.totalSpent)}
               </span>
-              <span className='connections-stat-label'>From Connections</span>
+              <span className='member-connections-stat-label'>Total Spent</span>
             </div>
           </motion.div>
 
           <motion.div
-            className='connections-stat-card'
+            className='member-connections-stat-card'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <div className='connections-stat-icon response'>
+            <div className='member-connections-stat-icon response'>
               <Clock size={20} />
             </div>
-            <div className='connections-stat-content'>
-              <span className='connections-stat-value'>
+            <div className='member-connections-stat-content'>
+              <span className='member-connections-stat-value'>
                 {stats.avgResponse}min
               </span>
-              <span className='connections-stat-label'>Avg Response</span>
+              <span className='member-connections-stat-label'>Avg Response</span>
             </div>
           </motion.div>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className='connections-controls'>
-        <div className='connections-search-bar'>
+      <div className='member-connections-controls'>
+        <div className='member-connections-search-bar'>
           <Search size={20} />
           <input
             type='text'
-            placeholder='Search connections...'
+            placeholder='Search creators...'
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className='connections-tabs'>
+        <div className='member-connections-tabs'>
           {tabs.map(tab => (
             <button
               key={tab.id}
-              className={`connections-tab ${activeTab === tab.id ? 'active' : ''}`}
+              className={`member-connections-tab ${activeTab === tab.id ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.id)}
             >
               <tab.icon size={18} />
@@ -272,103 +272,109 @@ const CreatorConnections = () => {
       </div>
 
       {/* Connections List */}
-      <div className='connections-list'>
+      <div className='member-connections-list'>
         {filteredConnections.length === 0 ? (
-          <div className='connections-empty'>
+          <div className='member-connections-empty'>
             <Users size={64} />
             <h3>No connections found</h3>
-            <p>Start connecting with members who love your content!</p>
+            <p>Start swiping to connect with amazing creators!</p>
+            <button
+              className='member-connections-browse-btn'
+              onClick={() => navigate('/browse-creators')}
+            >
+              Browse Creators
+            </button>
           </div>
         ) : (
           filteredConnections.map((connection, index) => (
             <motion.div
               key={connection._id || connection.id}
-              className='connections-item'
+              className='member-connections-item'
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              onClick={() => navigate(`/creator/chat/${connection._id || connection.id}`)}
+              onClick={() => navigate(`/chat/${connection._id || connection.id}`)}
             >
-              <div className='connections-avatar'>
-                {connection.member?.profileImage ? (
-                  <img src={connection.member.profileImage} alt={connection.member.displayName || connection.member.username} />
+              <div className='member-connections-avatar'>
+                {connection.creator?.profileImage ? (
+                  <img src={connection.creator.profileImage} alt={connection.creator.displayName} />
                 ) : (
-                  <div className='connections-avatar-placeholder'>
-                    {(connection.member?.displayName || connection.member?.username || connection.name || 'U').charAt(0)}
+                  <div className='member-connections-avatar-placeholder'>
+                    {(connection.creator?.displayName || connection.creator?.username || 'U').charAt(0)}
                   </div>
                 )}
-                {connection.member?.isOnline && (
-                  <div className='connections-online-indicator'></div>
+                {connection.creator?.isOnline && (
+                  <div className='member-connections-online-indicator'></div>
                 )}
-                {connection.member?.isPremium && (
-                  <div className='connections-premium-badge'>
+                {connection.creator?.isVerified && (
+                  <div className='member-connections-verified-badge'>
                     <Star size={12} />
                   </div>
                 )}
               </div>
 
-              <div className='connections-info'>
-                <div className='connections-main-info'>
-                  <div className='connections-name-section'>
-                    <h3>{connection.member?.displayName || connection.member?.username || connection.name}</h3>
-                    <div className='connections-rating'>
-                      {getRatingStars(connection.member?.rating || connection.rating || 0)}
+              <div className='member-connections-info'>
+                <div className='member-connections-main-info'>
+                  <div className='member-connections-name-section'>
+                    <h3>{connection.creator?.displayName || connection.creator?.username}</h3>
+                    <div className='member-connections-rating'>
+                      {getRatingStars(connection.creator?.rating || 0)}
                     </div>
                   </div>
-                  <div className='connections-meta'>
-                    <span className='connections-age'>{connection.member?.age || connection.age}</span>
-                    <span className='connections-location'>
+                  <div className='member-connections-meta'>
+                    <span className='member-connections-age'>{connection.creator?.age}</span>
+                    <span className='member-connections-location'>
                       <MapPin size={12} />
-                      {connection.member?.location?.city || connection.location || 'Unknown'}
+                      {connection.creator?.location?.city || 'Unknown'}
                     </span>
                   </div>
                 </div>
 
-                <div className='connections-message'>
+                <div className='member-connections-message'>
                   <p>{connection.lastMessage || 'No messages yet'}</p>
-                  <span className='connections-message-time'>
+                  <span className='member-connections-message-time'>
                     {formatTimeAgo(connection.lastMessageTime || connection.createdAt)}
                   </span>
                 </div>
 
-                <div className='connections-stats-row'>
-                  <div className='connections-spent'>
+                <div className='member-connections-stats-row'>
+                  <div className='member-connections-spent'>
                     <DollarSign size={14} />
                     <span>{formatCurrency(connection.totalSpent || 0)}</span>
                   </div>
-                  <div className='connections-match-date'>
+                  <div className='member-connections-connect-date'>
                     <Calendar size={14} />
                     <span>Connected {formatTimeAgo(connection.createdAt)}</span>
                   </div>
                 </div>
               </div>
 
-              <div className='connections-actions'>
+              <div className='member-connections-actions'>
                 {connection.hasUnread && (
-                  <div className='connections-unread-badge'>
+                  <div className='member-connections-unread-badge'>
                     {connection.unreadCount}
                   </div>
                 )}
                 <button
-                  className='connections-action-btn'
+                  className='member-connections-action-btn'
                   onClick={e => {
                     e.stopPropagation();
-                    navigate(`/creator/chat/${connection._id || connection.id}`);
+                    navigate(`/chat/${connection._id || connection.id}`);
                   }}
                 >
                   <MessageCircle size={18} />
                 </button>
                 <button
-                  className='connections-action-btn'
+                  className='member-connections-action-btn'
                   onClick={e => {
                     e.stopPropagation();
-                    navigate(`/member-profile/${connection.member?._id || connection.member?.id}`);
+                    navigate(`/creator-profile/${connection.creator?._id || connection.creator?.id}`);
                   }}
                 >
                   <Eye size={18} />
                 </button>
                 <button
-                  className='connections-action-btn'
+                  className='member-connections-action-btn'
                   onClick={e => {
                     e.stopPropagation();
                     // Handle more actions
@@ -376,7 +382,7 @@ const CreatorConnections = () => {
                 >
                   <MoreHorizontal size={18} />
                 </button>
-                <ChevronRight size={20} className='connections-chevron' />
+                <ChevronRight size={20} className='member-connections-chevron' />
               </div>
             </motion.div>
           ))
@@ -384,52 +390,53 @@ const CreatorConnections = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className='connections-quick-actions'>
+      <div className='member-connections-quick-actions'>
         <h3>Quick Actions</h3>
-        <div className='connections-actions-grid'>
+        <div className='member-connections-actions-grid'>
           <motion.button
-            className='connections-quick-action-btn'
-            onClick={() => navigate('/creator/analytics')}
+            className='member-connections-quick-action-btn'
+            onClick={() => navigate('/browse-creators')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <TrendingUp size={20} />
-            <span>View Analytics</span>
+            <span>Browse Creators</span>
           </motion.button>
 
           <motion.button
-            className='connections-quick-action-btn'
-            onClick={() => navigate('/creator/content-upload')}
+            className='member-connections-quick-action-btn'
+            onClick={() => navigate('/trending-creators')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <Camera size={20} />
-            <span>Upload Content</span>
+            <Star size={20} />
+            <span>Trending</span>
           </motion.button>
 
           <motion.button
-            className='connections-quick-action-btn'
+            className='member-connections-quick-action-btn'
+            onClick={() => navigate('/favorites')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <Gift size={20} />
-            <span>Send Offers</span>
+            <Heart size={20} />
+            <span>Favorites</span>
           </motion.button>
 
           <motion.button
-            className='connections-quick-action-btn'
-            onClick={() => navigate('/creator/profile')}
+            className='member-connections-quick-action-btn'
+            onClick={() => navigate('/member/profile')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <Eye size={20} />
-            <span>View Profile</span>
+            <span>My Profile</span>
           </motion.button>
         </div>
       </div>
 
       {/* Desktop Footer */}
-      {isDesktop && <CreatorMainFooter />}
+      {isDesktop && <MainFooter />}
 
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}
@@ -437,4 +444,4 @@ const CreatorConnections = () => {
   );
 };
 
-export default CreatorConnections;
+export default MemberConnections;
