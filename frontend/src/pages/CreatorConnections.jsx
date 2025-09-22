@@ -140,6 +140,30 @@ const CreatorConnections = () => {
     ));
   };
 
+  const handleAcceptConnection = async (connectionId, event) => {
+    event.stopPropagation();
+    try {
+      await api.post(`/connections/${connectionId}/accept`);
+
+      // Refresh connections list
+      loadConnections();
+    } catch (error) {
+      console.error('Error accepting connection:', error);
+    }
+  };
+
+  const handleDeclineConnection = async (connectionId, event) => {
+    event.stopPropagation();
+    try {
+      await api.post(`/connections/${connectionId}/decline`);
+
+      // Refresh connections list
+      loadConnections();
+    } catch (error) {
+      console.error('Error declining connection:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className='connections-loading'>
@@ -245,6 +269,32 @@ const CreatorConnections = () => {
         </div>
       </div>
 
+      {/* Simple Stats Bar */}
+      <div className='connections-stats'>
+        <div className='stat-item'>
+          <span className='stat-value'>{stats.totalConnections || 0}</span>
+          <span className='stat-label'>Total</span>
+        </div>
+        <div className='stat-item'>
+          <span className='stat-value' style={{ color: 'rgb(34, 197, 94)' }}>
+            {stats.activeChats || 0}
+          </span>
+          <span className='stat-label'>Active</span>
+        </div>
+        <div className='stat-item'>
+          <span className='stat-value' style={{ color: 'rgb(245, 158, 11)' }}>
+            {stats.pending || 0}
+          </span>
+          <span className='stat-label'>Pending</span>
+        </div>
+        <div className='stat-item'>
+          <span className='stat-value' style={{ color: 'rgb(239, 68, 68)' }}>
+            {stats.expired || 0}
+          </span>
+          <span className='stat-label'>Expired</span>
+        </div>
+      </div>
+
       {/* Search and Filters */}
       <div className='connections-controls'>
         <div className='connections-search-bar'>
@@ -258,16 +308,33 @@ const CreatorConnections = () => {
         </div>
 
         <div className='connections-tabs'>
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              className={`connections-tab ${activeTab === tab.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <tab.icon size={18} />
-              <span>{tab.label}</span>
-            </button>
-          ))}
+          <button
+            className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
+            onClick={() => setActiveTab('all')}
+          >
+            All
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'active' ? 'active' : ''}`}
+            onClick={() => setActiveTab('active')}
+          >
+            Active
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'pending' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pending')}
+          >
+            Pending
+            {stats.pending > 0 && (
+              <span className='tab-badge pending'>{stats.pending}</span>
+            )}
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'expired' ? 'active' : ''}`}
+            onClick={() => setActiveTab('expired')}
+          >
+            Expired
+          </button>
         </div>
       </div>
 
@@ -281,104 +348,62 @@ const CreatorConnections = () => {
           </div>
         ) : (
           filteredConnections.map((connection, index) => (
-            <motion.div
+            <div
               key={connection._id || connection.id}
-              className='connections-item'
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+              className={`connection-card ${connection.status || 'pending'}`}
               onClick={() => navigate(`/creator/chat/${connection._id || connection.id}`)}
             >
-              <div className='connections-avatar'>
-                {connection.member?.profileImage ? (
-                  <img src={connection.member.profileImage} alt={connection.member.displayName || connection.member.username} />
-                ) : (
-                  <div className='connections-avatar-placeholder'>
-                    {(connection.member?.displayName || connection.member?.username || connection.name || 'U').charAt(0)}
-                  </div>
-                )}
-                {connection.member?.isOnline && (
-                  <div className='connections-online-indicator'></div>
-                )}
-                {connection.member?.isPremium && (
-                  <div className='connections-premium-badge'>
-                    <Star size={12} />
-                  </div>
-                )}
+              <div className='connection-select'>
+                <input
+                  type='checkbox'
+                  onClick={e => e.stopPropagation()}
+                />
               </div>
 
-              <div className='connections-info'>
-                <div className='connections-main-info'>
-                  <div className='connections-name-section'>
-                    <h3>{connection.member?.displayName || connection.member?.username || connection.name}</h3>
-                    <div className='connections-rating'>
-                      {getRatingStars(connection.member?.rating || connection.rating || 0)}
-                    </div>
-                  </div>
-                  <div className='connections-meta'>
-                    <span className='connections-age'>{connection.member?.age || connection.age}</span>
-                    <span className='connections-location'>
-                      <MapPin size={12} />
-                      {connection.member?.location?.city || connection.location || 'Unknown'}
-                    </span>
+              <div className='connection-avatar'>
+                <img
+                  src={connection.member?.profileImage || '/placeholders/beautifulbrunette2.png'}
+                  alt={connection.member?.displayName || connection.member?.username || 'Member'}
+                />
+                <span
+                  className='connection-type-badge'
+                  style={{ backgroundColor: 'rgb(142, 142, 147)' }}
+                >
+                  S
+                </span>
+              </div>
+
+              <div className='connection-info'>
+                <div className='connection-header'>
+                  <div className='connection-names'>
+                    <h3>{connection.member?.displayName || connection.member?.username || 'Unknown Member'}</h3>
+                    <span className='username'>@{connection.member?.username || 'username'}</span>
                   </div>
                 </div>
 
-                <div className='connections-message'>
+                <div className='connection-message'>
                   <p>{connection.lastMessage || 'No messages yet'}</p>
-                  <span className='connections-message-time'>
-                    {formatTimeAgo(connection.lastMessageTime || connection.createdAt)}
-                  </span>
+                  <span className='message-time'>{formatTimeAgo(connection.lastMessageTime || connection.createdAt)}</span>
                 </div>
 
-                <div className='connections-stats-row'>
-                  <div className='connections-spent'>
-                    <DollarSign size={14} />
-                    <span>{formatCurrency(connection.totalSpent || 0)}</span>
-                  </div>
-                  <div className='connections-match-date'>
-                    <Calendar size={14} />
-                    <span>Connected {formatTimeAgo(connection.createdAt)}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className='connections-actions'>
-                {connection.hasUnread && (
-                  <div className='connections-unread-badge'>
-                    {connection.unreadCount}
+                {connection.status === 'pending' && (
+                  <div className='pending-actions' onClick={e => e.stopPropagation()}>
+                    <button
+                      className='accept-btn'
+                      onClick={e => handleAcceptConnection(connection._id || connection.id, e)}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      className='decline-btn'
+                      onClick={e => handleDeclineConnection(connection._id || connection.id, e)}
+                    >
+                      Decline
+                    </button>
                   </div>
                 )}
-                <button
-                  className='connections-action-btn'
-                  onClick={e => {
-                    e.stopPropagation();
-                    navigate(`/creator/chat/${connection._id || connection.id}`);
-                  }}
-                >
-                  <MessageCircle size={18} />
-                </button>
-                <button
-                  className='connections-action-btn'
-                  onClick={e => {
-                    e.stopPropagation();
-                    navigate(`/member-profile/${connection.member?._id || connection.member?.id}`);
-                  }}
-                >
-                  <Eye size={18} />
-                </button>
-                <button
-                  className='connections-action-btn'
-                  onClick={e => {
-                    e.stopPropagation();
-                    // Handle more actions
-                  }}
-                >
-                  <MoreHorizontal size={18} />
-                </button>
-                <ChevronRight size={20} className='connections-chevron' />
               </div>
-            </motion.div>
+            </div>
           ))
         )}
       </div>
