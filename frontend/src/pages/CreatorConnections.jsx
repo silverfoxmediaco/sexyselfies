@@ -132,14 +132,25 @@ const CreatorConnections = () => {
   };
 
   const filteredConnections = connections.filter(connection => {
-    const searchableText = `${connection.member?.displayName || connection.member?.username || connection.name || ''}`;
+    const memberData = connection.member || connection.otherUser;
+    const searchableText = `${memberData?.displayName || memberData?.username || ''}`;
     const matchesSearch = searchableText
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
-    const matchesTab =
-      activeTab === 'all' ||
-      connection.status === activeTab ||
-      (activeTab === 'active' && connection.hasUnread);
+
+    let matchesTab = false;
+    if (activeTab === 'all') {
+      matchesTab = true;
+    } else if (activeTab === 'pending') {
+      matchesTab = connection.status === 'pending';
+    } else if (activeTab === 'active') {
+      matchesTab = connection.status === 'connected' || connection.status === 'active';
+    } else if (activeTab === 'expired') {
+      matchesTab = connection.status === 'expired';
+    } else {
+      matchesTab = connection.status === activeTab;
+    }
+
     return matchesSearch && matchesTab;
   });
 
@@ -384,30 +395,27 @@ const CreatorConnections = () => {
                 />
               </div>
 
-              <div className='connection-avatar'>
-                <img
-                  src={connection.member?.profileImage || '/placeholders/beautifulbrunette2.png'}
-                  alt={connection.member?.displayName || connection.member?.username || 'Member'}
-                />
-                <span
-                  className='connection-type-badge'
-                  style={{ backgroundColor: 'rgb(142, 142, 147)' }}
-                >
-                  S
-                </span>
-              </div>
-
               <div className='connection-info'>
                 <div className='connection-header'>
                   <div className='connection-names'>
-                    <h3>{connection.member?.displayName || connection.member?.username || 'Unknown Member'}</h3>
-                    <span className='username'>@{connection.member?.username || 'username'}</span>
+                    {(() => {
+                      const memberData = connection.member || connection.otherUser;
+                      return (
+                        <h3>@{memberData?.username || 'member'}</h3>
+                      );
+                    })()}
                   </div>
                 </div>
 
-                <div className='connection-message'>
-                  <p>{connection.lastMessage || 'No messages yet'}</p>
-                  <span className='message-time'>{formatTimeAgo(connection.lastMessageTime || connection.createdAt)}</span>
+                <div className='connection-stats'>
+                  <div className='member-spend'>
+                    <span className='stat-label'>Total Spend:</span>
+                    <span className='stat-value'>{formatCurrency(connection.totalSpent || connection.engagement?.totalSpent || 0)}</span>
+                  </div>
+                  <div className='member-purchases'>
+                    <span className='stat-label'>Purchases:</span>
+                    <span className='stat-value'>{connection.contentUnlocked || connection.engagement?.contentUnlocked || 0}</span>
+                  </div>
                 </div>
 
                 {connection.status === 'pending' && (

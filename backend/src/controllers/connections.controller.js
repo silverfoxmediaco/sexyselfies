@@ -338,32 +338,38 @@ exports.getCreatorConnections = async (req, res, next) => {
       });
     }
 
-    // Format connections for legacy compatibility
-    const formattedConnections = result.connections.map(conn => ({
-      id: conn.id,
-      connectionData: userRole === 'member' ? {
-        creatorName: conn.otherUser.displayName,
-        creatorUsername: `@${conn.otherUser.username}`,
-        avatar: conn.otherUser.profileImage,
-        isOnline: conn.otherUser.isOnline,
-      } : {
-        memberName: conn.otherUser.username,
-        memberUsername: `@${conn.otherUser.username}`,
-        avatar: conn.otherUser.profileImage,
-      },
-      connectionType: conn.connectionType || 'standard',
-      status: conn.status,
-      lastMessage: 'No messages yet', // Can be enhanced later
-      lastMessageTime: formatTime(conn.lastInteraction),
-      unreadCount: 0, // Can be enhanced later
-      isPinned: conn.isPinned,
-      subscriptionAmount: 0,
-      totalSpent: conn.engagement.totalSpent,
-      connectedSince: conn.connectedAt,
-      messageCount: conn.engagement.totalMessages,
-      contentUnlocked: conn.engagement.contentUnlocked,
-      specialOffers: [],
-    }));
+    // Debug logging to see actual data structure
+    console.log('🔍 Raw connection data sample:', JSON.stringify(result.connections[0], null, 2));
+
+    // Format connections for frontend compatibility
+    const formattedConnections = result.connections.map(conn => {
+      // Handle both nested and flat data structures
+      const totalSpent = conn.engagement?.totalSpent || conn.totalSpent || 0;
+      const contentUnlocked = conn.engagement?.contentUnlocked || conn.contentUnlocked || 0;
+      const totalMessages = conn.engagement?.totalMessages || conn.messageCount || 0;
+
+      return {
+        _id: conn.id,
+        id: conn.id,
+        status: conn.status,
+        member: conn.otherUser, // For creators, otherUser is the member
+        otherUser: conn.otherUser, // Keep both for compatibility
+        connectionType: conn.connectionType || 'standard',
+        lastMessage: 'No messages yet',
+        lastMessageTime: conn.lastInteraction,
+        createdAt: conn.connectedAt || conn.lastInteraction,
+        totalSpent: totalSpent,
+        contentUnlocked: contentUnlocked,
+        engagement: {
+          totalSpent: totalSpent,
+          contentUnlocked: contentUnlocked,
+          totalMessages: totalMessages,
+        },
+        isPinned: conn.isPinned || false,
+        isArchived: false,
+        isMuted: false,
+      };
+    });
 
     console.log(`✅ Retrieved ${formattedConnections.length} connections for ${userRole}`);
 
@@ -371,6 +377,7 @@ exports.getCreatorConnections = async (req, res, next) => {
       success: true,
       count: formattedConnections.length,
       data: formattedConnections,
+      connections: formattedConnections, // For frontend compatibility
       stats: result.stats
     });
 
