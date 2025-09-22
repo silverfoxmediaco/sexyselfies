@@ -144,7 +144,8 @@ const CreatorConnections = () => {
     } else if (activeTab === 'pending') {
       matchesTab = connection.status === 'pending';
     } else if (activeTab === 'active') {
-      matchesTab = connection.status === 'connected' || connection.status === 'active';
+      // Active tab shows all established connections (connected, not pending/expired)
+      matchesTab = connection.status === 'connected' || connection.status === 'active' || connection.isConnected;
     } else if (activeTab === 'expired') {
       matchesTab = connection.status === 'expired';
     } else {
