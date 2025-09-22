@@ -3,6 +3,7 @@ const CreatorConnection = require('../models/CreatorConnection');
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
 const Message = require('../models/Message');
+const { sendNotification } = require('../utils/notifications');
 
 // ============================================
 // SWIPE/BROWSE FUNCTIONS
@@ -259,6 +260,21 @@ exports.swipeAction = async (req, res, next) => {
           member.likes.push({ creator: creator._id });
           connection.memberLiked = true;
           connection.status = 'pending';
+
+          // Send notification to creator about new like/connection request
+          await sendNotification(creator.user, {
+            type: 'connection_request',
+            title: 'New Connection Request! 💕',
+            body: `${member.username} wants to connect with you!`,
+            data: {
+              connectionId: connection._id,
+              memberId: member._id,
+              memberUsername: member.username,
+              type: 'connection_request'
+            },
+            category: 'connection',
+            actionUrl: `/creator/connections?filter=pending`
+          });
           break;
         // case 'superlike': // Super Like feature disabled
         // member.superLikes.push({ creator: creator._id });
@@ -324,7 +340,7 @@ exports.getCreatorConnections = async (req, res, next) => {
     const userRole = req.user.role;
     const { status, type, sort = '-lastInteraction', search } = req.query;
 
-    let query = { isActive: true };
+    let query = {};
 
     // Build query based on user role
     if (userRole === 'member') {

@@ -26,21 +26,30 @@ const creatorConnectionSchema = new mongoose.Schema(
     connectedAt: Date,
     disconnectedAt: Date,
 
+    // Like tracking (for controller compatibility)
+    memberLiked: {
+      type: Boolean,
+      default: false
+    },
+    creatorLiked: {
+      type: Boolean,
+      default: false
+    },
+    creatorAccepted: {
+      type: Boolean,
+      default: false
+    },
+
     // SWIPE TRACKING
     swipeData: {
       memberSwiped: {
         direction: {
           type: String,
-          enum: ['right', 'left', 'super'],
-          required: true,
+          enum: ['right', 'left'],
         },
         swipedAt: {
           type: Date,
           default: Date.now,
-        },
-        superLike: {
-          type: Boolean,
-          default: false,
         },
         sessionTime: Number, // How long they viewed before swiping
         viewedPhotos: Number, // How many photos they looked at
@@ -403,6 +412,45 @@ creatorConnectionSchema.methods.updateRelationshipHealth = function () {
 
   this.relationship.health.daysSinceLastInteraction =
     Math.floor(daysSinceInteraction);
+};
+
+// Establish creator connection (required by controller)
+creatorConnectionSchema.methods.establishCreatorConnection = function() {
+  this.status = 'connected';
+  this.connectedAt = new Date();
+  this.engagement.lastActiveAt = new Date();
+  this.relationship.health.status = 'active';
+  this.relationship.health.lastInteraction = new Date();
+  return this.save();
+};
+
+// Virtual property for isConnected compatibility
+creatorConnectionSchema.virtual('isConnected').get(function() {
+  return this.status === 'connected';
+});
+
+// Method to update last message (required by controller)
+creatorConnectionSchema.methods.updateLastMessage = function(content, sender) {
+  this.engagement.lastMessageAt = new Date();
+  this.engagement.lastActiveAt = new Date();
+
+  if (sender === 'member') {
+    this.engagement.totalMessages.fromMember += 1;
+  } else {
+    this.engagement.totalMessages.fromCreator += 1;
+  }
+
+  this.relationship.health.lastInteraction = new Date();
+  this.updateRelationshipHealth();
+
+  return this.save();
+};
+
+// Method to mark messages as read (required by controller)
+creatorConnectionSchema.methods.markAsRead = function(userRole) {
+  this.engagement.lastActiveAt = new Date();
+  this.relationship.health.lastInteraction = new Date();
+  return this.save();
 };
 
 // STATICS
