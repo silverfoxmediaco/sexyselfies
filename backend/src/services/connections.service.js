@@ -436,9 +436,10 @@ class ConnectionService {
     if (filters.status) {
       if (filters.status === 'active') {
         query.status = 'connected';
-        query['relationship.health.status'] = { $in: ['thriving', 'active'] };
+        query.isConnected = true;
       } else if (filters.status === 'pending') {
         query.status = 'pending';
+        query.memberLiked = true; // Only show pending where member actually liked
       } else {
         query.status = filters.status;
       }
@@ -483,18 +484,17 @@ class ConnectionService {
         lastActive: otherUser.lastActive
       },
       engagement: {
-        totalMessages: (connection.engagement?.totalMessages?.fromCreator || 0) +
-                      (connection.engagement?.totalMessages?.fromMember || 0),
-        lastMessageAt: connection.engagement?.lastMessageAt,
-        contentUnlocked: connection.engagement?.contentUnlocked?.count || 0,
-        totalSpent: connection.monetization?.totalRevenue || 0
+        totalMessages: connection.messageCount || 0,
+        lastMessageAt: connection.lastMessagePreview?.createdAt,
+        contentUnlocked: connection.contentUnlocked || 0,
+        totalSpent: connection.totalSpent || 0
       },
       relationship: {
-        health: connection.relationship?.health?.status || 'active',
-        churnRisk: connection.relationship?.health?.churnRisk || 0,
-        spendingLevel: connection.relationship?.memberScore?.spendingLevel || 'free'
+        health: 'active', // Default for flat schema
+        churnRisk: 0,
+        spendingLevel: connection.totalSpent > 50 ? 'regular' : connection.totalSpent > 0 ? 'casual' : 'free'
       },
-      lastInteraction: connection.engagement?.lastActiveAt || connection.createdAt,
+      lastInteraction: connection.lastInteraction || connection.createdAt,
       isPinned: connection.isPinned || false,
       isMuted: connection.isMuted || false
     };
@@ -513,12 +513,18 @@ class ConnectionService {
     };
 
     connections.forEach(conn => {
-      if (conn.status === 'connected') stats.connected++;
+      if (conn.status === 'connected' || conn.isConnected) stats.connected++;
       if (conn.status === 'pending') stats.pending++;
 
-      const healthStatus = conn.relationship?.health?.status;
-      if (['thriving', 'active'].includes(healthStatus)) stats.active++;
-      if (healthStatus === 'dormant') stats.dormant++;
+      // For flat schema, consider active if connected and recent activity
+      if (conn.isConnected && conn.lastInteraction) {
+        const daysSinceInteraction = (Date.now() - new Date(conn.lastInteraction)) / (1000 * 60 * 60 * 24);
+        if (daysSinceInteraction < 7) {
+          stats.active++;
+        } else {
+          stats.dormant++;
+        }
+      }
     });
 
     return stats;
@@ -548,9 +554,9 @@ class ConnectionService {
     switch (sort) {
       case 'newest': return { createdAt: -1 };
       case 'oldest': return { createdAt: 1 };
-      case 'active': return { 'engagement.lastActiveAt': -1 };
-      case 'spending': return { 'monetization.totalRevenue': -1 };
-      default: return { 'engagement.lastActiveAt': -1, isPinned: -1 };
+      case 'active': return { lastInteraction: -1 };
+      case 'spending': return { totalSpent: -1 };
+      default: return { lastInteraction: -1, isPinned: -1 };
     }
   }
 

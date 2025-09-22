@@ -73,15 +73,39 @@ const CreatorConnections = () => {
       const response = await api.get(`/connections?${params}`);
 
       if (response.success) {
-        setStats(
-          response.stats || {
-            totalConnections: 0,
-            activeChats: 0,
-            totalEarnings: 0,
-            avgResponse: 0,
+        // Map backend stats to frontend expected format
+        const backendStats = response.stats || {};
+        setStats({
+          totalConnections: backendStats.total || 0,
+          activeChats: backendStats.connected || 0,
+          pending: backendStats.pending || 0,
+          expired: 0, // Can be added later
+          totalEarnings: 0, // Can be calculated from connections
+          avgResponse: 0, // Can be calculated from response times
+        });
+
+        // Process connections data for frontend display
+        const processedConnections = (response.data || response.connections || []).map(conn => {
+          // Handle different response structures from backend
+          if (conn.otherUser) {
+            // New format from ConnectionService
+            return {
+              _id: conn.id,
+              id: conn.id,
+              status: conn.status,
+              member: conn.otherUser, // For creators, otherUser is the member
+              lastMessage: 'No messages yet',
+              lastMessageTime: conn.lastInteraction,
+              createdAt: conn.connectedAt || new Date(),
+              totalSpent: conn.engagement?.totalSpent || 0,
+            };
+          } else {
+            // Legacy format - keep as is
+            return conn;
           }
-        );
-        setConnections(response.connections || []);
+        });
+
+        setConnections(processedConnections);
       } else {
         // Handle API error - set empty state
         setStats({

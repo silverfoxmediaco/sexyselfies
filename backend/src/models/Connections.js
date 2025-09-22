@@ -32,10 +32,6 @@ const connectionSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  memberSuperLiked: {
-    type: Boolean,
-    default: false
-  },
   
   // Creator actions
   creatorLiked: {
@@ -154,7 +150,7 @@ connectionSchema.methods.establishConnection = function() {
   this.isConnected = true;
   this.status = 'active';
   this.connectedAt = Date.now();
-  this.connectionType = this.memberSuperLiked ? 'premium' : 'verified';
+  this.connectionType = 'verified';
   return this.save();
 };
 
