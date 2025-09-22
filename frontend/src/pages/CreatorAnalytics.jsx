@@ -74,6 +74,59 @@ const CreatorAnalytics = () => {
           conversionRate: 0,
           conversionChange: 0,
         },
+        revenue: {
+          photos: 0,
+          videos: 0,
+          messages: 0,
+        },
+        topContent: [
+          {
+            id: 'demo1',
+            title: 'Sample Content 1',
+            type: 'photo',
+            views: 245,
+            engagement: 12,
+            earnings: 89.50,
+          },
+          {
+            id: 'demo2',
+            title: 'Sample Content 2',
+            type: 'video',
+            views: 189,
+            engagement: 18,
+            earnings: 156.25,
+          },
+        ],
+        goals: {
+          monthlyEarnings: {
+            current: 0,
+            target: 1000,
+            progress: 0,
+          },
+          weeklyViews: {
+            current: 0,
+            target: 500,
+            progress: 0,
+          },
+          conversionRate: {
+            current: 0,
+            target: 15,
+            progress: 0,
+          },
+        },
+        demographics: {
+          ageGroups: [
+            { range: '18-24', percentage: 25 },
+            { range: '25-34', percentage: 45 },
+            { range: '35-44', percentage: 20 },
+            { range: '45+', percentage: 10 },
+          ],
+          topLocations: [
+            { country: 'United States', count: 150, percentage: 35 },
+            { country: 'Canada', count: 80, percentage: 20 },
+            { country: 'United Kingdom', count: 65, percentage: 15 },
+          ],
+        },
         performance: {
           topContent: [],
           recentActivity: [],
@@ -277,8 +330,8 @@ const CreatorAnalytics = () => {
             </div>
             <div className='revenue-percentage'>
               {analyticsData?.overview?.totalEarnings ? Math.round(
-                (analyticsData?.revenue?.photos || 0) /
-                  analyticsData.overview.totalEarnings *
+                ((analyticsData?.revenue?.photos || 0) /
+                  analyticsData.overview.totalEarnings) *
                   100
               ) : 0}
               % of total
@@ -295,8 +348,8 @@ const CreatorAnalytics = () => {
             </div>
             <div className='revenue-percentage'>
               {analyticsData?.overview?.totalEarnings ? Math.round(
-                (analyticsData?.revenue?.videos || 0) /
-                  analyticsData.overview.totalEarnings *
+                ((analyticsData?.revenue?.videos || 0) /
+                  analyticsData.overview.totalEarnings) *
                   100
               ) : 0}
               % of total
@@ -313,8 +366,8 @@ const CreatorAnalytics = () => {
             </div>
             <div className='revenue-percentage'>
               {analyticsData?.overview?.totalEarnings ? Math.round(
-                (analyticsData?.revenue?.messages || 0) /
-                  analyticsData.overview.totalEarnings *
+                ((analyticsData?.revenue?.messages || 0) /
+                  analyticsData.overview.totalEarnings) *
                   100
               ) : 0}
               % of total
@@ -327,7 +380,7 @@ const CreatorAnalytics = () => {
       <div className='content-section'>
         <h2>Top Performing Content</h2>
         <div className='content-list'>
-          {analyticsData.topContent.map((content, index) => (
+          {(analyticsData.topContent || []).map((content, index) => (
             <div key={content.id} className='content-item'>
               <div className='content-rank'>#{index + 1}</div>
               <div className='content-type'>
@@ -366,13 +419,13 @@ const CreatorAnalytics = () => {
                 <div
                   className='progress-fill'
                   style={{
-                    width: `${analyticsData.goals.monthlyEarnings.progress}%`,
+                    width: `${analyticsData.goals?.monthlyEarnings?.progress || 0}%`,
                   }}
                 ></div>
               </div>
               <span className='progress-text'>
-                {formatCurrency(analyticsData.goals.monthlyEarnings.current)} /{' '}
-                {formatCurrency(analyticsData.goals.monthlyEarnings.target)}
+                {formatCurrency(analyticsData.goals?.monthlyEarnings?.current || 0)} /{' '}
+                {formatCurrency(analyticsData.goals?.monthlyEarnings?.target || 1000)}
               </span>
             </div>
           </div>
@@ -387,13 +440,13 @@ const CreatorAnalytics = () => {
                 <div
                   className='progress-fill'
                   style={{
-                    width: `${analyticsData.goals.weeklyViews.progress}%`,
+                    width: `${analyticsData.goals?.weeklyViews?.progress || 0}%`,
                   }}
                 ></div>
               </div>
               <span className='progress-text'>
-                {formatNumber(analyticsData.goals.weeklyViews.current)} /{' '}
-                {formatNumber(analyticsData.goals.weeklyViews.target)}
+                {formatNumber(analyticsData.goals?.weeklyViews?.current || 0)} /{' '}
+                {formatNumber(analyticsData.goals?.weeklyViews?.target || 500)}
               </span>
             </div>
           </div>
@@ -408,13 +461,13 @@ const CreatorAnalytics = () => {
                 <div
                   className='progress-fill'
                   style={{
-                    width: `${analyticsData.goals.conversionRate.progress}%`,
+                    width: `${analyticsData.goals?.conversionRate?.progress || 0}%`,
                   }}
                 ></div>
               </div>
               <span className='progress-text'>
-                {analyticsData.goals.conversionRate.current}% /{' '}
-                {analyticsData.goals.conversionRate.target}%
+                {analyticsData.goals?.conversionRate?.current || 0}% /{' '}
+                {analyticsData.goals?.conversionRate?.target || 15}%
               </span>
             </div>
           </div>
@@ -428,7 +481,7 @@ const CreatorAnalytics = () => {
           <div className='demo-card'>
             <h3>Age Groups</h3>
             <div className='age-groups'>
-              {analyticsData.demographics.ageGroups.map(group => (
+              {(analyticsData.demographics?.ageGroups || []).map(group => (
                 <div key={group.range} className='age-group'>
                   <div className='age-range'>{group.range}</div>
                   <div className='age-bar'>
@@ -446,7 +499,7 @@ const CreatorAnalytics = () => {
           <div className='demo-card'>
             <h3>Top Locations</h3>
             <div className='location-list'>
-              {analyticsData.demographics.topLocations.map(location => (
+              {(analyticsData.demographics?.topLocations || []).map(location => (
                 <div key={location.country} className='location-item'>
                   <span className='location-name'>{location.country}</span>
                   <div className='location-stats'>
