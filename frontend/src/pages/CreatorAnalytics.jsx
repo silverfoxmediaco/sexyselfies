@@ -190,10 +190,10 @@ const CreatorAnalytics = () => {
               <span className='card-title'>Total Earnings</span>
             </div>
             <div className='card-value'>
-              {formatCurrency(analyticsData.overview.totalEarnings)}
+              {formatCurrency(analyticsData?.overview?.totalEarnings || 0)}
             </div>
             <div className='card-change'>
-              {renderChangeIndicator(analyticsData.overview.earningsChange)}
+              {renderChangeIndicator(analyticsData?.overview?.earningsChange || 0)}
               <span className='change-label'>vs last period</span>
             </div>
           </motion.div>
@@ -211,10 +211,10 @@ const CreatorAnalytics = () => {
               <span className='card-title'>Profile Views</span>
             </div>
             <div className='card-value'>
-              {formatNumber(analyticsData.overview.totalViews)}
+              {formatNumber(analyticsData?.overview?.totalViews || 0)}
             </div>
             <div className='card-change'>
-              {renderChangeIndicator(analyticsData.overview.viewsChange)}
+              {renderChangeIndicator(analyticsData?.overview?.viewsChange || 0)}
               <span className='change-label'>vs last period</span>
             </div>
           </motion.div>
@@ -232,10 +232,10 @@ const CreatorAnalytics = () => {
               <span className='card-title'>New Matches</span>
             </div>
             <div className='card-value'>
-              {formatNumber(analyticsData.overview.totalConnections)}
+              {formatNumber(analyticsData?.overview?.totalConnections || 0)}
             </div>
             <div className='card-change'>
-              {renderChangeIndicator(analyticsData.overview.connectionsChange)}
+              {renderChangeIndicator(analyticsData?.overview?.connectionsChange || 0)}
               <span className='change-label'>vs last period</span>
             </div>
           </motion.div>
@@ -253,10 +253,10 @@ const CreatorAnalytics = () => {
               <span className='card-title'>Conversion Rate</span>
             </div>
             <div className='card-value'>
-              {analyticsData.overview.conversionRate}%
+              {analyticsData?.overview?.conversionRate || 0}%
             </div>
             <div className='card-change'>
-              {renderChangeIndicator(analyticsData.overview.conversionChange)}
+              {renderChangeIndicator(analyticsData?.overview?.conversionChange || 0)}
               <span className='change-label'>vs last period</span>
             </div>
           </motion.div>
@@ -273,14 +273,14 @@ const CreatorAnalytics = () => {
               <span>Photos</span>
             </div>
             <div className='revenue-amount'>
-              {formatCurrency(analyticsData.revenue.photos)}
+              {formatCurrency(analyticsData?.revenue?.photos || 0)}
             </div>
             <div className='revenue-percentage'>
-              {Math.round(
-                (analyticsData.revenue.photos /
-                  analyticsData.overview.totalEarnings) *
+              {analyticsData?.overview?.totalEarnings ? Math.round(
+                (analyticsData?.revenue?.photos || 0) /
+                  analyticsData.overview.totalEarnings *
                   100
-              )}
+              ) : 0}
               % of total
             </div>
           </div>
@@ -291,14 +291,14 @@ const CreatorAnalytics = () => {
               <span>Videos</span>
             </div>
             <div className='revenue-amount'>
-              {formatCurrency(analyticsData.revenue.videos)}
+              {formatCurrency(analyticsData?.revenue?.videos || 0)}
             </div>
             <div className='revenue-percentage'>
-              {Math.round(
-                (analyticsData.revenue.videos /
-                  analyticsData.overview.totalEarnings) *
+              {analyticsData?.overview?.totalEarnings ? Math.round(
+                (analyticsData?.revenue?.videos || 0) /
+                  analyticsData.overview.totalEarnings *
                   100
-              )}
+              ) : 0}
               % of total
             </div>
           </div>
@@ -309,14 +309,14 @@ const CreatorAnalytics = () => {
               <span>Messages</span>
             </div>
             <div className='revenue-amount'>
-              {formatCurrency(analyticsData.revenue.messages)}
+              {formatCurrency(analyticsData?.revenue?.messages || 0)}
             </div>
             <div className='revenue-percentage'>
-              {Math.round(
-                (analyticsData.revenue.messages /
-                  analyticsData.overview.totalEarnings) *
+              {analyticsData?.overview?.totalEarnings ? Math.round(
+                (analyticsData?.revenue?.messages || 0) /
+                  analyticsData.overview.totalEarnings *
                   100
-              )}
+              ) : 0}
               % of total
             </div>
           </div>
