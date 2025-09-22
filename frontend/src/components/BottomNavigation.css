@@ -407,6 +407,7 @@
   .nav-container {
     max-width: 600px;
     height: 70px;
+    margin-top: 26px;
   }
 
   .nav-label {
