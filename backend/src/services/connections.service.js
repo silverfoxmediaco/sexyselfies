@@ -125,27 +125,50 @@ class ConnectionService {
     try {
       console.log(`🎯 Creator ${creatorId} ${action}ing connection ${connectionId}`);
 
-      // 1. Find the pending connection
+      // 1. Get creator profile to find the actual creator document ID
+      const creator = await Creator.findOne({ user: creatorId });
+      if (!creator) {
+        throw new Error('Creator profile not found');
+      }
+
+      console.log(`🔍 Looking for connection ${connectionId} with creator ${creator._id}`);
+
+      // 2. Find the pending connection using creator document ID
       const connection = await CreatorConnection.findOne({
         _id: connectionId,
-        creator: creatorId,
+        creator: creator._id,
         status: 'pending'
       }).populate('member', 'username profileImage')
         .populate('creator', 'displayName username profileImage');
 
       if (!connection) {
+        // Try without creator filter to see if connection exists at all
+        const anyConnection = await CreatorConnection.findById(connectionId);
+        console.log('🔍 Connection exists:', !!anyConnection);
+        if (anyConnection) {
+          console.log('🔍 Connection creator:', anyConnection.creator);
+          console.log('🔍 Connection status:', anyConnection.status);
+        }
         throw new Error('Pending connection not found');
       }
 
-      // 2. Record creator's response
-      connection.swipeData.creatorSwiped = {
-        direction: action === 'accept' ? 'right' : 'left',
-        swipedAt: new Date(),
-        autoConnected: false
-      };
+      console.log(`✅ Found connection: ${connection._id}`);
 
+      // 3. Update flat fields (compatible with database structure)
       connection.creatorLiked = action === 'accept';
       connection.creatorAccepted = action === 'accept';
+
+      // 4. Also update nested fields if they exist
+      if (!connection.swipeData) {
+        connection.swipeData = { creatorSwiped: {} };
+      }
+      if (!connection.swipeData.creatorSwiped) {
+        connection.swipeData.creatorSwiped = {};
+      }
+
+      connection.swipeData.creatorSwiped.direction = action === 'accept' ? 'right' : 'left';
+      connection.swipeData.creatorSwiped.swipedAt = new Date();
+      connection.swipeData.creatorSwiped.autoConnected = false;
 
       let isNewConnection = false;
 
@@ -350,15 +373,20 @@ class ConnectionService {
     try {
       console.log(`🤝 Establishing connection ${connection._id}`);
 
-      // 1. Update connection status
+      // 1. Update connection status (flat schema)
       connection.status = 'connected';
       connection.connectedAt = new Date();
       connection.isConnected = true;
+      connection.lastInteraction = new Date();
 
-      // 2. Initialize engagement tracking
-      connection.engagement.lastActiveAt = new Date();
-      connection.relationship.health.status = 'active';
-      connection.relationship.health.lastInteraction = new Date();
+      // 2. Initialize engagement tracking (handle both nested and flat)
+      if (connection.engagement) {
+        connection.engagement.lastActiveAt = new Date();
+      }
+      if (connection.relationship?.health) {
+        connection.relationship.health.status = 'active';
+        connection.relationship.health.lastInteraction = new Date();
+      }
 
       // 3. Send notifications to both parties
       await this.notifyBothPartiesOfConnection(connection);
