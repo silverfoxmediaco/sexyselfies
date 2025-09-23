@@ -1063,7 +1063,7 @@
   }
 
   .creator-content-upload-file-preview-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
     gap: 12px;
   }
 
