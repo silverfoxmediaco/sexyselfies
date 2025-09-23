@@ -412,7 +412,7 @@ const CreatorDashboard = () => {
             label: 'Messages',
             path: '/creator/messages',
             color: 'blue',
-            badge: 3,
+            badge: dashboardData.stats.unreadMessages || 0,
           },
         ].map((action, index) => (
           <motion.button
@@ -424,7 +424,7 @@ const CreatorDashboard = () => {
           >
             <div className='creator-dashboard-action-icon'>
               <action.icon size={24} />
-              {action.badge && (
+              {action.badge > 0 && (
                 <span className='creator-dashboard-action-badge'>
                   {action.badge}
                 </span>
