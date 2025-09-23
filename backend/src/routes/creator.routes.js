@@ -8,6 +8,7 @@ const creatorAnalyticsController = require('../controllers/creator.analytics.con
 const creatorProfileController = require('../controllers/creator.profile.controller');
 const creatorContentController = require('../controllers/creator.content.controller');
 const creatorConnectionController = require('../controllers/creator.connection.controller');
+const creatorMembersController = require('../controllers/creator.members.controller');
 const notificationController = require('../controllers/notification.controller');
 const uploadController = require('../controllers/upload.controller');
 
@@ -462,7 +463,11 @@ router.put('/notifications/preferences', (req, res) => {
 // ==========================================
 
 // Discover high-value members for active sales
-router.get('/members/discover', async (req, res) => {
+router.get('/members/discover', creatorMembersController.discoverMembers);
+
+// OLD IMPLEMENTATION - REPLACED WITH CONTROLLER
+/*
+router.get('/members/discover-old', async (req, res) => {
   try {
     // Import models (require here to avoid circular dependency)
     const Member = require('../models/Member');
@@ -647,7 +652,8 @@ router.get('/members/discover', async (req, res) => {
       error: error.message,
     });
   }
-});
+}); // END OF OLD IMPLEMENTATION
+*/
 
 // Search members with filters
 router.post('/members/search', (req, res) => {
