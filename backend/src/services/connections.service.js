@@ -213,14 +213,17 @@ class ConnectionService {
     try {
       console.log(`🔍 Getting connections for ${userRole} ${userId}`);
 
-      // 1. Get user profile
+      // 1. Get user profile and verify we get the correct document ID
       const userProfile = await this.getUserProfile(userId, userRole);
       if (!userProfile) {
         throw new Error(`${userRole} profile not found`);
       }
 
-      // 2. Build base query
+      console.log(`🔍 User profile found: ${userProfile._id} (${userRole})`);
+
+      // 2. Build base query using the profile document ID (not user ID)
       const query = this.buildConnectionQuery(userProfile._id, userRole, filters);
+      console.log('🔍 ConnectionService query built:', JSON.stringify(query, null, 2));
 
       // 3. Execute query with proper population
       const connections = await CreatorConnection.find(query)
@@ -463,8 +466,8 @@ class ConnectionService {
     // Apply status filter
     if (filters.status) {
       if (filters.status === 'active') {
+        // Active means connected status (don't require isConnected flag)
         query.status = 'connected';
-        query.isConnected = true;
       } else if (filters.status === 'pending') {
         query.status = 'pending';
         query.memberLiked = true; // Only show pending where member actually liked
@@ -728,6 +731,38 @@ class ConnectionService {
       console.log(`📊 Analytics updated: ${direction} swipe → ${isConnected ? 'connected' : 'pending'}`);
     } catch (error) {
       console.error('❌ Error updating analytics:', error);
+    }
+  }
+
+  /**
+   * Find ideal members for a creator (placeholder implementation)
+   * @param {String} creatorId - Creator's ObjectId
+   * @param {Object} options - Search options
+   * @returns {Object} Match results
+   */
+  async findIdealMembers(creatorId, options = {}) {
+    try {
+      console.log(`🔍 Finding ideal members for creator ${creatorId}`);
+
+      // Placeholder implementation - return empty matches for now
+      return {
+        success: true,
+        matches: [],
+        summary: {
+          avgCompatibility: 0,
+          totalChecked: 0
+        }
+      };
+    } catch (error) {
+      console.error('❌ Error finding ideal members:', error);
+      return {
+        success: false,
+        matches: [],
+        summary: {
+          avgCompatibility: 0,
+          totalChecked: 0
+        }
+      };
     }
   }
 }

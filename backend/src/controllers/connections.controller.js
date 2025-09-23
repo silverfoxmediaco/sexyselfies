@@ -340,6 +340,8 @@ exports.getCreatorConnections = async (req, res, next) => {
 
     // Debug logging to see actual data structure
     console.log('🔍 Raw connection data sample:', JSON.stringify(result.connections[0], null, 2));
+    console.log('🔍 Query used:', JSON.stringify(result.query || 'no query info'));
+    console.log('🔍 All connection statuses:', result.connections.map(c => `${c.id}: ${c.status}`));
 
     // Format connections for frontend compatibility
     const formattedConnections = result.connections.map(conn => {
