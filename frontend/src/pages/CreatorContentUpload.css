@@ -326,13 +326,13 @@
 .creator-content-upload-preview-container {
   position: relative;
   width: 100%;
-  height: 220px;
+  height: 550px;
   background: rgba(255, 255, 255, 0.02);
 }
 
 .creator-content-upload-preview-container img {
   width: 100%;
-  height: 500px;
+  height: 100%;
   object-fit: cover;
 }
 
