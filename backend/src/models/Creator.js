@@ -143,28 +143,6 @@ const creatorSchema = new mongoose.Schema(
       twitter: String,
       tiktok: String,
     },
-    preferences: {
-      // Discovery preferences - who should see this creator's profile
-      minAge: {
-        type: Number,
-        default: 18,
-        min: 18,
-      },
-      maxAge: {
-        type: Number,
-        default: 99,
-      },
-      interestedIn: [
-        {
-          type: String,
-          enum: ['male', 'female', 'everyone'],
-        },
-      ],
-      showInBrowse: {
-        type: Boolean,
-        default: true,
-      },
-    },
     location: {
       type: {
         type: String,

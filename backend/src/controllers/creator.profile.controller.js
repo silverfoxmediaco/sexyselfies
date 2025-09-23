@@ -45,7 +45,6 @@ exports.getProfile = async (req, res) => {
         rating: 0,
         ratingCount: 0,
       },
-      preferences: creator.preferences,
       contentPrice: creator.contentPrice,
       galleries: creator.galleries || [],
       isPaused: creator.isPaused || false,
@@ -175,13 +174,6 @@ exports.setupProfile = async (req, res) => {
       orientation: formData.orientation,
       bodyType: formData.bodyType,
       ethnicity: formData.ethnicity,
-      // Discovery preferences (who can see this creator)
-      preferences: {
-        minAge: formData.ageRange?.[0] || 18,
-        maxAge: formData.ageRange?.[1] || 99,
-        interestedIn: formData.interestedIn || ['everyone'],
-        showInBrowse: formData.showInBrowse !== false,
-      },
       contentTypes: formData.contentTypes || {},
       pricing: formData.pricing || {},
       automation: formData.automation || {},
