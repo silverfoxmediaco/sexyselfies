@@ -326,7 +326,7 @@
 .creator-content-upload-preview-container {
   position: relative;
   width: 100%;
-  height: 150px;
+  height: 220px;
   background: rgba(255, 255, 255, 0.02);
 }
 
@@ -389,7 +389,7 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  width: 28px;
+  
   height: 28px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.6);

@@ -578,7 +578,9 @@ const CreatorDashboard = () => {
             <div className='chart-placeholder'>
               <div className='trend-line conversion-trend'></div>
             </div>
-            <div className='chart-value'>4.2%</div>
+            <div className='chart-value'>
+              {(dashboardData.stats.conversionRate || 0).toFixed(1)}%
+            </div>
           </div>
         </div>
       </motion.div>
