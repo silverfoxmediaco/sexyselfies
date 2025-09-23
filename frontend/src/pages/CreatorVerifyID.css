@@ -351,6 +351,28 @@
   line-height: 1.5;
 }
 
+.success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  align-items: center;
+}
+
+.success-actions .btn-secondary {
+  width: 100%;
+  max-width: 400px;
+  padding: 14px 24px;
+  background: transparent;
+  color: #c7c7cc;
+  border: 1px solid #2a2a2c;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
 /* Timeline */
 .timeline-card {
   background: #1c1c1e;
