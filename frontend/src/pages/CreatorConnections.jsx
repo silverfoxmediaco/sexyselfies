@@ -265,7 +265,7 @@ const CreatorConnections = () => {
               <span className='connections-stat-value'>
                 {stats.activeChats}
               </span>
-              <span className='connections-stat-label'>Active Chats</span>
+              <span className='connections-stat-label'>Active Connections</span>
             </div>
           </motion.div>
 
