@@ -488,50 +488,14 @@ router.get('/members/discover', async (req, res) => {
       `🎯 Creator ${creator.username || creator.displayName} browsing members`
     );
     console.log(
-      `📋 Creator preferences: interested in ${creator.preferences?.interestedIn || ['everyone']}`
+      `📋 Creator browsing all available members (no preference filtering)`
     );
 
-    // Helper function to check preference compatibility
+    // Helper function to check compatibility
     const isCompatible = (member, creator) => {
-      // Get gender and preference data
-      const creatorGender = creator.gender; // Need to add this field to Creator model
-      const memberGender = member.gender; // Need to add this field to Member model
-
-      const creatorInterestedIn = creator.preferences?.interestedIn || [];
-      const memberInterestedIn = member.preferences?.interestedIn || [];
-
-      console.log(`🔍 Checking compatibility:`);
-      console.log(
-        `   Creator: ${creatorGender} interested in [${creatorInterestedIn.join(', ')}]`
-      );
-      console.log(
-        `   Member: ${memberGender} interested in [${memberInterestedIn.join(', ')}]`
-      );
-
-      // If gender fields are missing, we can't properly filter
-      if (!creatorGender || !memberGender) {
-        console.log(`   ⚠️  Missing gender data - allowing for now`);
-        return true; // Allow until proper gender fields are added
-      }
-
-      // Check if creator is interested in member's gender
-      const creatorWantsMember =
-        creatorInterestedIn.includes('everyone') ||
-        creatorInterestedIn.includes(memberGender);
-
-      // Check if member is interested in creator's gender
-      const memberWantsCreator =
-        memberInterestedIn.includes('everyone') ||
-        memberInterestedIn.includes(creatorGender);
-
-      // Both parties must be interested in each other's gender
-      const compatible = creatorWantsMember && memberWantsCreator;
-
-      console.log(`   Creator wants member: ${creatorWantsMember}`);
-      console.log(`   Member wants creator: ${memberWantsCreator}`);
-      console.log(`   💫 Compatible: ${compatible}`);
-
-      return compatible;
+      // Creators want maximum exposure - no filtering by creator preferences
+      // Only check if member is active and has completed profile
+      return member.profileComplete && member.user?.isActive;
     };
 
     // Get all members first, with preference filtering

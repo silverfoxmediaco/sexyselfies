@@ -424,10 +424,7 @@ creatorConnectionSchema.methods.establishCreatorConnection = function() {
   return this.save();
 };
 
-// Virtual property for isConnected compatibility
-creatorConnectionSchema.virtual('isConnected').get(function() {
-  return this.status === 'connected';
-});
+// Removed virtual isConnected - conflicts with existing schema field
 
 // Method to update last message (required by controller)
 creatorConnectionSchema.methods.updateLastMessage = function(content, sender) {
