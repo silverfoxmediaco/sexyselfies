@@ -12,7 +12,13 @@ const connectionSchema = new mongoose.Schema({
     ref: 'Creator',
     required: true
   },
-  
+
+  // Username field for quick access to member username
+  username: {
+    type: String,
+    default: ''
+  },
+
   // Connection status
   status: {
     type: String,
