@@ -56,6 +56,12 @@ const processQueue = (error, token = null) => {
 // Request interceptor
 api.interceptors.request.use(
   async config => {
+    // Debug logging for BrowseMembers debugging
+    console.log('🚀 [API Request] Starting request:');
+    console.log('   URL:', `${config.baseURL}${config.url}`);
+    console.log('   Method:', config.method?.toUpperCase());
+    console.log('   Full config URL:', config.url);
+
     // Add auth token based on user role
     const token =
       localStorage.getItem('token') ||
@@ -63,7 +69,9 @@ api.interceptors.request.use(
       localStorage.getItem('creatorToken') ||
       localStorage.getItem('memberToken');
 
+    console.log('   Auth token found:', !!token);
     if (token) {
+      console.log('   Token preview:', token.substring(0, 20) + '...');
       config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -71,6 +79,7 @@ api.interceptors.request.use(
     const userRole = localStorage.getItem('userRole');
     if (userRole) {
       config.headers['X-User-Role'] = userRole;
+      console.log('   User role:', userRole);
     }
 
     // Add device information for mobile optimization
@@ -126,6 +135,15 @@ api.interceptors.response.use(
       );
     }
 
+    // Debug logging for BrowseMembers debugging
+    console.log('✅ [API Response] Success:');
+    console.log('   URL:', response.config.url);
+    console.log('   Status:', response.status);
+    console.log('   Response data structure:', Object.keys(response.data || {}));
+    if (response.config.url?.includes('/members/discover')) {
+      console.log('   🎯 DISCOVER MEMBERS Response data:', response.data);
+    }
+
     // Store successful responses in cache for offline access
     if (response.config.method === 'get' && response.config.cache !== false) {
       const cacheKey = `api_cache_${response.config.url}`;
@@ -150,12 +168,19 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // Debug logging for error structure
-    console.log('[API] Error details:', {
-      hasResponse: !!error.response,
-      status: error.response?.status,
-      url: originalRequest?.url,
-      method: originalRequest?.method,
-    });
+    console.error('❌ [API Error] Request failed:');
+    console.error('   URL:', originalRequest?.url);
+    console.error('   Method:', originalRequest?.method);
+    console.error('   Has Response:', !!error.response);
+    console.error('   Status:', error.response?.status);
+    console.error('   Status Text:', error.response?.statusText);
+    console.error('   Error Message:', error.message);
+    if (originalRequest?.url?.includes('/members/discover')) {
+      console.error('   🎯 DISCOVER MEMBERS Error details:', {
+        responseData: error.response?.data,
+        fullError: error
+      });
+    }
 
     // Handle network errors / offline
     if (!error.response) {

@@ -93,28 +93,50 @@ const BrowseMembers = () => {
 
   // Fetch members from API (production only)
   const fetchMembers = useCallback(async () => {
+    console.log('🚀 [BrowseMembers] fetchMembers function started');
+    console.log('   API object exists:', !!api);
+    console.log('   API base URL:', api?.defaults?.baseURL);
+
     setLoading(true);
     setError(null);
 
     try {
       // Use the discover endpoint which returns high-value members
-      console.log('🔍 Fetching members from /creator/members/discover');
-      const response = await api.get('/creator/members/discover');
+      const endpoint = '/creator/members/discover';
+      console.log('🔍 [BrowseMembers] About to call API endpoint:', endpoint);
+      console.log('   Full URL will be:', `${api?.defaults?.baseURL}${endpoint}`);
+      console.log('   Auth token present:', !!localStorage.getItem('creatorToken'));
+      console.log('   User role:', localStorage.getItem('userRole'));
 
-      console.log('📊 API Response:', response);
-      console.log('✅ Success:', response.success);
-      console.log('👥 Members:', response.members);
+      const response = await api.get(endpoint);
 
-      if (response.success) {
+      console.log('📊 [BrowseMembers] Raw API response received:');
+      console.log('   Response type:', typeof response);
+      console.log('   Response keys:', Object.keys(response || {}));
+      console.log('   Full response:', response);
+      console.log('✅ Success property:', response?.success);
+      console.log('👥 Members property:', response?.members);
+      console.log('   Members array length:', response?.members?.length);
+
+      if (response && response.success) {
         const membersData = response.members || [];
-        console.log(`📈 Found ${membersData.length} members`);
+        console.log(`📈 [BrowseMembers] Processing ${membersData.length} members`);
+        console.log('   First member sample:', membersData[0]);
         setMembers(membersData);
         setFilteredMembers(membersData);
         calculateAnalytics(membersData);
+      } else {
+        console.warn('⚠️ [BrowseMembers] API response success was false or missing');
+        console.warn('   Full response structure:', response);
       }
     } catch (err) {
-      console.error('Error fetching members:', err);
-      console.log('Error details:', err.response?.data);
+      console.error('❌ [BrowseMembers] Error in fetchMembers:');
+      console.error('   Error type:', typeof err);
+      console.error('   Error message:', err?.message);
+      console.error('   Has response:', !!err?.response);
+      console.error('   Response status:', err?.response?.status);
+      console.error('   Response data:', err?.response?.data);
+      console.error('   Full error object:', err);
 
       // Provide more specific error messages
       if (err.response?.status === 403) {
@@ -337,8 +359,9 @@ const BrowseMembers = () => {
 
   // Initial load
   useEffect(() => {
+    console.log('🎯 [BrowseMembers] useEffect running - calling fetchMembers');
     fetchMembers();
-  }, []);
+  }, [fetchMembers]);
 
   return (
     <div className='browse-members-page'>
