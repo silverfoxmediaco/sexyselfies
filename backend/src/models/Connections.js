@@ -202,4 +202,4 @@ connectionSchema.methods.addSpending = function(amount, type = 'tip') {
   return this.save();
 };
 
-module.exports = mongoose.model('Connection', connectionSchema, 'matches');
+module.exports = mongoose.model('Connection', connectionSchema, 'connections');
