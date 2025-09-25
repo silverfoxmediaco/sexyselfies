@@ -234,8 +234,8 @@
 /* Connection Avatar with Badge */
 .connection-avatar {
   position: relative;
-  width: 100%;
-  height: 300px;
+  width: 40%;
+  height: 40%;
   border-radius: 12px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.05);
