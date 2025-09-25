@@ -30,8 +30,13 @@ exports.sendMessage = async (req, res) => {
     const message = new CreatorMessage({
       creator: creatorId,
       member: connection.member,
-      connection: connectionId,
+      match: connectionId,  // Required field
+      sender: {
+        id: creatorId,
+        type: 'creator'
+      },
       content: {
+        type: mediaType || 'text',  // Required field - default to 'text' if no media
         text: content,
         media: mediaUrl
           ? [
@@ -54,7 +59,7 @@ exports.sendMessage = async (req, res) => {
       },
       metadata: {
         connectionContext: connection.context,
-        memberTier: connection.relationship.memberScore.tier,
+        memberTier: connection.relationship?.memberScore?.tier,
       },
     });
 
