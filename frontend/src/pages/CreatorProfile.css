@@ -160,6 +160,29 @@
   display: none;
 }
 
+/* Ensure profile name is always visible in overlay on mobile */
+.profile-info-overlay .profile-name-section {
+  display: block !important;
+  margin-bottom: var(--creator-profile-spacing-sm);
+}
+
+.profile-info-overlay .profile-name {
+  display: flex !important;
+  align-items: center;
+  gap: var(--creator-profile-spacing-sm);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--creator-profile-text-primary);
+  margin: 0;
+}
+
+.profile-info-overlay .profile-username {
+  display: block !important;
+  font-size: 14px;
+  color: var(--creator-profile-text-tertiary);
+  margin-top: 2px;
+}
+
 /* NEW: Floating action buttons for mobile only */
 .floating-header-actions {
   position: fixed;
