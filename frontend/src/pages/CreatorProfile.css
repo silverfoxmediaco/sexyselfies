@@ -155,9 +155,27 @@
   display: none !important;
 }
 
-/* FIXED: Hide old profile-info on mobile only to prevent duplication */
-.profile-info {
-  display: none;
+/* Mobile/Desktop profile info separation */
+/* For mobile - ensure overlay is the ONLY place profile info shows */
+@media (max-width: 1023px) {
+  .profile-info {
+    display: none !important;
+  }
+
+  .profile-info-overlay {
+    display: block !important;
+  }
+}
+
+/* For desktop - swap the display */
+@media (min-width: 1024px) {
+  .profile-info-overlay {
+    display: none !important;
+  }
+
+  .profile-info {
+    display: block !important;
+  }
 }
 
 /* Ensure profile name is always visible in overlay on mobile */
@@ -184,6 +202,7 @@
 }
 
 .profile-info-overlay .profile-details {
+  flex: 1;
   display: block !important;
 }
 
@@ -230,7 +249,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: var(--creator-profile-spacing-md);
+  padding: 16px;
   background: linear-gradient(
     to top,
     rgba(0, 0, 0, 0.95),
@@ -238,14 +257,15 @@
     transparent
   );
   z-index: 10;
-  display: block !important;
+  display: flex;
+  flex-direction: column;
 }
 
 .profile-info-overlay .profile-avatar-section {
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-start; /* Changed from space-between to flex-start */
-  margin-bottom: var(--creator-profile-spacing-md);
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .profile-avatar {
@@ -301,10 +321,10 @@
   gap: var(--creator-profile-spacing-sm);
 }
 
-/* Position profile actions below profile details in overlay */
 .profile-info-overlay .profile-actions {
-  margin-top: var(--creator-profile-spacing-md);
-  justify-content: flex-start; /* Left-align with the text content */
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .follow-btn {
@@ -1091,16 +1111,7 @@
     display: none;
   }
 
-  /* Restore normal layout on desktop */
-  .profile-info-overlay {
-    display: none;
-  }
-
-  /* Show regular profile-info on desktop */
-  .profile-info {
-    display: block !important;
-    padding: var(--creator-profile-spacing-xl);
-  }
+  /* Desktop profile layout handled by media query above */
 
   .profile-info .profile-avatar-section {
     display: flex;
