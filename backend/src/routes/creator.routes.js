@@ -208,22 +208,22 @@ if (creatorContentController.getContentAnalytics) {
 // ==========================================
 
 // Get creator's content library available for gifting
-if (giftController.getCreatorContentLibrary) {
-  router.get('/content/giftable', protect, authorize('creator'), giftController.getCreatorContentLibrary);
-} else {
-  router.get('/content/giftable', (req, res) => {
-    res.status(501).json({ message: 'Gift content library coming soon' });
-  });
-}
+router.get('/content/giftable', protect, authorize('creator'), (req, res, next) => {
+  if (giftController.getCreatorContentLibrary) {
+    return giftController.getCreatorContentLibrary(req, res, next);
+  } else {
+    return res.status(501).json({ error: 'Gift content library not available' });
+  }
+});
 
 // Get gift analytics
-if (giftController.getGiftAnalytics) {
-  router.get('/gifts/analytics', protect, authorize('creator'), giftController.getGiftAnalytics);
-} else {
-  router.get('/gifts/analytics', (req, res) => {
-    res.status(501).json({ message: 'Gift analytics coming soon' });
-  });
-}
+router.get('/gifts/analytics', protect, authorize('creator'), (req, res, next) => {
+  if (giftController.getGiftAnalytics) {
+    return giftController.getGiftAnalytics(req, res, next);
+  } else {
+    return res.status(501).json({ error: 'Gift analytics not available' });
+  }
+});
 
 // ==========================================
 // MESSAGING SYSTEM
@@ -265,9 +265,13 @@ if (creatorMessageController.getMessages) {
 }
 
 // Send message
-if (creatorMessageController.sendMessage) {
-  router.post('/messages', creatorMessageController.sendMessage);
-}
+router.post('/messages', protect, authorize('creator'), (req, res, next) => {
+  if (creatorMessageController.sendMessage) {
+    return creatorMessageController.sendMessage(req, res, next);
+  } else {
+    return res.status(501).json({ error: 'Send message functionality not available' });
+  }
+});
 
 // Mark message as read
 if (creatorMessageController.markAsRead) {
