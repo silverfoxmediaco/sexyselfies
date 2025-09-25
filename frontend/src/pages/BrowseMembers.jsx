@@ -340,15 +340,45 @@ const BrowseMembers = () => {
   const sendMessageToMember = async (memberId, message) => {
     setSendingMessage(true);
     try {
-      await api.post('/creator/messages', {
-        recipientId: memberId,
-        message: message,
-        type: 'personal',
+      console.log('🔧 [sendMessageToMember] Starting message send process:', { memberId, message });
+
+      // Step 1: Find or create connection
+      console.log('📝 [sendMessageToMember] Step 1: Find or create connection');
+      const connectionResponse = await api.post('/creator/connections/find-or-create', {
+        memberId: memberId
       });
 
-      alert('Message sent successfully!');
+      if (!connectionResponse.success || !connectionResponse.connection) {
+        throw new Error('Failed to create connection');
+      }
+
+      const connectionId = connectionResponse.connection.id;
+      console.log('✅ [sendMessageToMember] Connection ready:', connectionId);
+
+      // Step 2: Send message using the connection
+      console.log('💬 [sendMessageToMember] Step 2: Sending message with connection');
+      const messageResponse = await api.post('/creator/messages', {
+        connectionId: connectionId,
+        content: message,
+        mediaType: null,
+        mediaUrl: null,
+        price: 0
+      });
+
+      if (messageResponse.success) {
+        console.log('✅ [sendMessageToMember] Message sent successfully');
+        alert('Message sent successfully!');
+      } else {
+        throw new Error('Failed to send message');
+      }
+
     } catch (err) {
       console.error('Error sending message:', err);
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
       alert('Failed to send message');
     } finally {
       setSendingMessage(false);

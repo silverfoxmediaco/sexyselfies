@@ -303,6 +303,15 @@ router.post('/connections/swipe', (req, res) => {
   res.status(501).json({ message: 'Swipe functionality coming soon' });
 });
 
+// Find or create connection for messaging
+if (creatorConnectionController.findOrCreateConnection) {
+  router.post('/connections/find-or-create', protect, authorize('creator'), creatorConnectionController.findOrCreateConnection);
+} else {
+  router.post('/connections/find-or-create', (req, res) => {
+    res.status(501).json({ message: 'Find or create connection not available' });
+  });
+}
+
 // Get creator connections
 if (creatorConnectionController.getConnections) {
   router.get('/connections', creatorConnectionController.getConnections);

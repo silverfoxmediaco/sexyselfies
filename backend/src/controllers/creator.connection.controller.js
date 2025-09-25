@@ -1051,4 +1051,86 @@ function generateConnectionInsights(analytics, activeConnections) {
   return insights;
 }
 
+// Find or create connection for messaging
+exports.findOrCreateConnection = async (req, res) => {
+  try {
+    const creatorId = req.user.id;
+    const { memberId } = req.body;
+
+    console.log('🔍 [findOrCreateConnection] Looking for connection:', { creatorId, memberId });
+
+    // First try to find existing connection
+    let connection = await CreatorConnection.findOne({
+      $or: [
+        { creator: creatorId, member: memberId },
+        { member: creatorId, creator: memberId } // In case of reversed roles
+      ]
+    });
+
+    if (connection) {
+      console.log('✅ [findOrCreateConnection] Found existing connection:', connection._id);
+      return res.json({
+        success: true,
+        connection: {
+          id: connection._id,
+          status: connection.status,
+          createdAt: connection.createdAt
+        },
+        existed: true
+      });
+    }
+
+    // Create new connection if none exists
+    console.log('📝 [findOrCreateConnection] Creating new connection');
+
+    connection = new CreatorConnection({
+      creator: creatorId,
+      member: memberId,
+      status: 'connected', // Auto-connect for messaging
+      context: 'direct_message',
+      createdAt: new Date(),
+      connectionSource: 'creator_initiated',
+      swipeData: {
+        creatorSwiped: {
+          direction: 'right',
+          swipedAt: new Date()
+        }
+      },
+      relationship: {
+        memberScore: {
+          tier: 'new',
+          score: 0
+        }
+      },
+      monetization: {
+        totalRevenue: 0
+      },
+      engagement: {
+        lastActiveAt: new Date()
+      }
+    });
+
+    await connection.save();
+    console.log('✅ [findOrCreateConnection] Created new connection:', connection._id);
+
+    res.json({
+      success: true,
+      connection: {
+        id: connection._id,
+        status: connection.status,
+        createdAt: connection.createdAt
+      },
+      existed: false
+    });
+
+  } catch (error) {
+    console.error('Find or create connection error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error finding or creating connection',
+      error: error.message
+    });
+  }
+};
+
 module.exports = exports;
