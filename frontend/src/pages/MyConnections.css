@@ -594,3 +594,74 @@
     background: #14b5a8;
   }
 }
+
+/* Delete Action Styles */
+.delete-action {
+  background-color: #ef4444 !important;
+  color: white !important;
+  border: 1px solid #ef4444 !important;
+}
+
+.delete-action:hover {
+  background-color: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+/* Connection Actions Container */
+.connection-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Individual Delete Button */
+.delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.connection-card:hover .delete-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: scale(1.1);
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
+}
+
+/* Pin button styling updates */
+.pin-btn {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pin-btn:hover {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.5);
+}

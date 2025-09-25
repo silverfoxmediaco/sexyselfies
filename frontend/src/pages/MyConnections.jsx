@@ -193,8 +193,24 @@ const MyConnections = () => {
       // Refresh connections list
       fetchConnections();
       setSelectedConnections([]);
+      fetchStats();
     } catch (error) {
       console.error(`Error performing bulk ${action}:`, error);
+      alert(`Failed to ${action} connections. Please try again.`);
+    }
+  };
+
+  const handleDeleteConnection = async (connectionId, event) => {
+    event.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this connection? This cannot be undone.')) {
+      try {
+        await api.delete(`/connections/${connectionId}`);
+        fetchConnections();
+        fetchStats();
+      } catch (error) {
+        console.error('Error deleting connection:', error);
+        alert('Failed to delete connection');
+      }
     }
   };
 
@@ -386,6 +402,7 @@ const MyConnections = () => {
                 Archive
               </button>
               <button onClick={() => handleBulkAction('mute')}>Mute</button>
+              <button onClick={() => handleBulkAction('delete')} className="delete-action">Delete</button>
               <button onClick={() => setSelectedConnections([])}>Cancel</button>
             </div>
           </div>
@@ -478,21 +495,37 @@ const MyConnections = () => {
                         {connection.creatorUsername}
                       </span>
                     </div>
-                    {connection.isPinned && (
+                    <div className='connection-actions'>
+                      {connection.isPinned && (
+                        <button
+                          className='pin-btn pinned'
+                          onClick={e => handlePinConnection(connection.id, e)}
+                          title="Unpin connection"
+                        >
+                          <svg
+                            className='pinned-icon'
+                            width='16'
+                            height='16'
+                            fill='currentColor'
+                          >
+                            <path d='M8 2L6 8l-4 1 4 1 2 6 2-6 4-1-4-1L8 2z' />
+                          </svg>
+                        </button>
+                      )}
                       <button
-                        className='pin-btn pinned'
-                        onClick={e => handlePinConnection(connection.id, e)}
+                        className='delete-btn'
+                        onClick={e => handleDeleteConnection(connection.id, e)}
+                        title="Delete connection"
                       >
                         <svg
-                          className='pinned-icon'
                           width='16'
                           height='16'
                           fill='currentColor'
                         >
-                          <path d='M8 2L6 8l-4 1 4 1 2 6 2-6 4-1-4-1L8 2z' />
+                          <path d='M3 6v10c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V6H3zm1.5-4h5l1 1h2.5v2h-11V3h2.5l1-1z' />
                         </svg>
                       </button>
-                    )}
+                    </div>
                   </div>
 
                   <div className='connection-message'>
