@@ -16,9 +16,9 @@ const creatorMessageSchema = new mongoose.Schema(
       index: true,
     },
 
-    match: {
+    connection: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CreatorMatch',
+      ref: 'CreatorConnection',
       required: true,
     },
 

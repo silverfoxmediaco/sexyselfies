@@ -30,7 +30,7 @@ exports.sendMessage = async (req, res) => {
     const message = new CreatorMessage({
       creator: creatorId,
       member: connection.member,
-      match: connectionId,  // Required field
+      connection: connectionId,  // Fixed: use 'connection' not 'match'
       sender: {
         id: creatorId,
         type: 'creator'
@@ -63,7 +63,13 @@ exports.sendMessage = async (req, res) => {
       },
     });
 
+    console.log('🚀 [sendMessage] About to save CreatorMessage to database');
+    console.log('🚀 [sendMessage] Message data:', JSON.stringify(message.toObject(), null, 2));
+
     await message.save();
+
+    console.log('✅ [sendMessage] CreatorMessage saved successfully with ID:', message._id);
+    console.log('📊 [sendMessage] Database collection should be: creatormessages');
 
     // Update connection's last message info
     connection.lastMessageAt = new Date();
