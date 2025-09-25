@@ -562,6 +562,12 @@
   color: #fbbf24;
 }
 
+.action-btn.gift-btn:hover {
+  background: rgba(23, 210, 194, 0.15);
+  border-color: rgba(23, 210, 194, 0.3);
+  color: #17d2c2;
+}
+
 .action-btn.view-btn:hover {
   background: rgba(56, 189, 248, 0.15);
   border-color: rgba(56, 189, 248, 0.3);

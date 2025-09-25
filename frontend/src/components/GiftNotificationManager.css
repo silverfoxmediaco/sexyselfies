@@ -1,0 +1,33 @@
+/* GiftNotificationManager.css - Styles for notification management */
+
+.GiftNotificationManager {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 1999;
+}
+
+.GiftNotificationManager-item {
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Stacking effect for multiple notifications */
+.GiftNotificationManager-item + .GiftNotificationManager-item {
+  margin-top: -10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .GiftNotificationManager-item + .GiftNotificationManager-item {
+    margin-top: -8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .GiftNotificationManager-item + .GiftNotificationManager-item {
+    margin-top: -6px;
+  }
+}

@@ -43,6 +43,7 @@ import {
   useIsDesktop,
   getUserRole,
 } from '../utils/mobileDetection';
+import GiftContentModal from '../components/GiftContentModal';
 import './BrowseMembers.css';
 
 const BrowseMembers = () => {
@@ -90,6 +91,8 @@ const BrowseMembers = () => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [bulkMessageModal, setBulkMessageModal] = useState(false);
   const [specialOfferModal, setSpecialOfferModal] = useState(false);
+  const [giftModalOpen, setGiftModalOpen] = useState(false);
+  const [selectedMemberForGift, setSelectedMemberForGift] = useState(null);
 
   // Fetch members from API (production only)
   const fetchMembers = useCallback(async () => {
@@ -350,6 +353,20 @@ const BrowseMembers = () => {
     } finally {
       setSendingMessage(false);
     }
+  };
+
+  // Handle gift modal open
+  const handleOpenGiftModal = (member) => {
+    setSelectedMemberForGift(member);
+    setGiftModalOpen(true);
+  };
+
+  // Handle gift sent successfully
+  const handleGiftSent = (giftData) => {
+    console.log('Gift sent successfully:', giftData);
+    // Show success message
+    alert(`🎁 Gift sent successfully to @${giftData.member.username}!`);
+    // Could also update member stats here if needed
   };
 
   // Apply filters when they change
@@ -751,14 +768,14 @@ const BrowseMembers = () => {
                       </button>
 
                       <button
-                        className='action-btn offer-btn'
+                        className='action-btn gift-btn'
                         onClick={e => {
                           e.stopPropagation();
-                          // Open special offer modal for this member
+                          handleOpenGiftModal(member);
                         }}
                       >
                         <Gift size={16} />
-                        <span>Offer</span>
+                        <span>Gift</span>
                       </button>
 
                       <button
@@ -905,6 +922,17 @@ const BrowseMembers = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Gift Content Modal */}
+        <GiftContentModal
+          isOpen={giftModalOpen}
+          onClose={() => {
+            setGiftModalOpen(false);
+            setSelectedMemberForGift(null);
+          }}
+          member={selectedMemberForGift}
+          onGiftSent={handleGiftSent}
+        />
       </div>
 
       {/* Desktop Footer */}

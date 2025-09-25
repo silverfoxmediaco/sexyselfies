@@ -2,6 +2,7 @@
 
 const router = require('express').Router();
 const memberProfileController = require('../controllers/memberProfile.controller');
+const giftController = require('../controllers/gift.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
 const {
   verifiedCreatorOnly,
@@ -237,6 +238,54 @@ router.post(
   checkVerificationLevel('vip'),
   bulkActionLimits,
   memberProfileController.sendBulkOffer
+);
+
+// ====================================
+// GIFT SYSTEM ROUTES
+// ====================================
+
+/**
+ * @route   GET /api/v1/creator/content/giftable
+ * @desc    Get creator's content library available for gifting
+ * @access  Private - Verified Creators Only
+ */
+router.get(
+  '/content/giftable',
+  protect,
+  authorize('creator'),
+  verifiedCreatorOnly,
+  giftController.getCreatorContentLibrary
+);
+
+/**
+ * @route   POST /api/v1/creator/members/profile/:memberId/gift
+ * @desc    Send a content gift to a specific member
+ * @access  Private - Verified Creators Only
+ * @limits  10 gifts per day, 1 per member per day
+ */
+router.post(
+  '/profile/:memberId/gift',
+  protect,
+  authorize('creator'),
+  verifiedCreatorOnly,
+  checkMemberOptIn,
+  respectBlockList,
+  checkDailyInteractionLimit('gift', 10),
+  preventSpam,
+  giftController.sendGift
+);
+
+/**
+ * @route   GET /api/v1/creator/gifts/analytics
+ * @desc    Get gift analytics and conversion metrics for creator
+ * @access  Private - Verified Creators Only
+ */
+router.get(
+  '/gifts/analytics',
+  protect,
+  authorize('creator'),
+  verifiedCreatorOnly,
+  giftController.getGiftAnalytics
 );
 
 module.exports = router;

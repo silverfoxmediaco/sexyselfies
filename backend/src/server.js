@@ -32,6 +32,7 @@ const creatorSalesRoutes = require('./routes/creatorSales.routes');
 const memberProfileRoutes = require('./routes/memberProfile.routes');
 const memberPrivacyRoutes = require('./routes/memberPrivacy.routes');
 const sessionRoutes = require('./routes/session.routes');
+const giftRoutes = require('./routes/gift.routes');
 
 // Import middleware
 const errorMiddleware = require('./middleware/error.middleware');
@@ -461,6 +462,10 @@ app.use(`${API_V1}/public`, publicRoutes);
 app.use(`${API_V1}/payouts`, payoutRoutes);
 app.use(`${API_V1}/sessions`, sessionRoutes);
 console.log('Session routes mounted at:', `${API_V1}/sessions`);
+
+// Gift routes
+app.use(`${API_V1}/member/gifts`, giftRoutes);
+console.log('Gift routes mounted at:', `${API_V1}/member/gifts`);
 
 console.log('All API routes mounted successfully');
 

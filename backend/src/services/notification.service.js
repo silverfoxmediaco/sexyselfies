@@ -165,7 +165,160 @@ exports.sendVerificationEmail = async (
   }
 };
 
-// Keep all other existing functions unchanged...
-// [Rest of your notification.service.js code remains the same]
+/**
+ * Send gift notification email to member
+ * @param {string} memberEmail - Member's email address
+ * @param {string} memberUsername - Member's username
+ * @param {Object} giftData - Gift information
+ */
+exports.sendGiftNotificationEmail = async (memberEmail, memberUsername, giftData) => {
+  if (!emailTransporter) {
+    console.log(
+      `📧 [DEV MODE] Would send gift notification email to: ${memberEmail}`
+    );
+    return { success: true, dev: true };
+  }
+
+  const APP_URL =
+    process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5174';
+  const APP_NAME = process.env.APP_NAME || 'SexySelfies';
+
+  const viewGiftUrl = `${APP_URL}/member/gifts`;
+
+  const mailOptions = {
+    from: `${APP_NAME} <${EMAIL_USER}>`,
+    to: memberEmail,
+    subject: `🎁 You received "${giftData.contentTitle}" from @${giftData.creatorUsername}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #17D2C2 0%, #12B7AB 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: white; padding: 30px; border: 1px solid #e0e0e0; border-radius: 0 0 10px 10px; }
+          .gift-box { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
+          .button { display: inline-block; padding: 15px 40px; background: #17D2C2; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🎁 You Got a Gift!</h1>
+          </div>
+          <div class="content">
+            <p style="font-size: 18px;">Hi ${memberUsername},</p>
+            <p><strong>@${giftData.creatorUsername}</strong> sent you a special gift!</p>
+
+            <div class="gift-box">
+              <h3>"${giftData.contentTitle}"</h3>
+              <p><strong>Original Value:</strong> $${giftData.originalPrice}</p>
+              <p><strong>Message:</strong> "${giftData.message}"</p>
+            </div>
+
+            <div style="text-align: center;">
+              <a href="${viewGiftUrl}" class="button">View Your Gift</a>
+            </div>
+
+            <p>Click the button above to see what @${giftData.creatorUsername} shared with you!</p>
+          </div>
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  try {
+    const result = await emailTransporter.sendMail(mailOptions);
+    console.log('✅ Gift notification email sent to:', memberEmail);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    console.error('❌ Gift notification email failed:', error.message);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Send gift viewed notification email to creator
+ * @param {string} creatorEmail - Creator's email address
+ * @param {string} creatorUsername - Creator's username
+ * @param {Object} viewData - Gift view information
+ */
+exports.sendGiftViewedNotificationEmail = async (creatorEmail, creatorUsername, viewData) => {
+  if (!emailTransporter) {
+    console.log(
+      `📧 [DEV MODE] Would send gift viewed notification to: ${creatorEmail}`
+    );
+    return { success: true, dev: true };
+  }
+
+  const APP_URL =
+    process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5174';
+  const APP_NAME = process.env.APP_NAME || 'SexySelfies';
+
+  const analyticsUrl = `${APP_URL}/creator/gifts/analytics`;
+
+  const mailOptions = {
+    from: `${APP_NAME} <${EMAIL_USER}>`,
+    to: creatorEmail,
+    subject: `👀 ${viewData.memberUsername} viewed your gift "${viewData.contentTitle}"`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #17D2C2 0%, #12B7AB 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: white; padding: 30px; border: 1px solid #e0e0e0; border-radius: 0 0 10px 10px; }
+          .stats-box { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .button { display: inline-block; padding: 15px 40px; background: #17D2C2; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>👀 Gift Viewed!</h1>
+          </div>
+          <div class="content">
+            <p style="font-size: 18px;">Hi ${creatorUsername},</p>
+            <p>Great news! <strong>${viewData.memberUsername}</strong> just viewed your gift.</p>
+
+            <div class="stats-box">
+              <h3>"${viewData.contentTitle}"</h3>
+              <p><strong>Viewed:</strong> ${new Date().toLocaleString()}</p>
+              <p><strong>Member:</strong> @${viewData.memberUsername}</p>
+            </div>
+
+            <p>This shows your gift was well-received! Consider following up with a personalized message.</p>
+
+            <div style="text-align: center;">
+              <a href="${analyticsUrl}" class="button">View Gift Analytics</a>
+            </div>
+          </div>
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  try {
+    const result = await emailTransporter.sendMail(mailOptions);
+    console.log('✅ Gift viewed notification sent to:', creatorEmail);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    console.error('❌ Gift viewed notification failed:', error.message);
+    return { success: false, error: error.message };
+  }
+};
 
 module.exports = exports;

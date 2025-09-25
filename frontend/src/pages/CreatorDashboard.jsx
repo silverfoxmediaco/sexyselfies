@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import creatorService from '../services/creator.service';
+import { getGiftAnalytics } from '../services/gift.service';
 import './CreatorDashboard.css';
 import {
   TrendingUp,
@@ -17,6 +18,7 @@ import {
   Video,
   Star,
   ShoppingBag,
+  Gift,
 } from 'lucide-react';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
@@ -49,6 +51,12 @@ const CreatorDashboard = () => {
     },
     recentActivity: [],
     topContent: [],
+    giftStats: {
+      totalSent: 0,
+      totalValue: 0,
+      conversionRate: 0,
+      topGifts: [],
+    },
   });
   const [creatorName, setCreatorName] = useState('Creator');
 
@@ -142,10 +150,34 @@ const CreatorDashboard = () => {
       });
       let topContent = contentResponse.error ? [] : contentResponse.data || [];
 
+      // Get gift analytics data
+      let giftStats = {
+        totalSent: 0,
+        totalValue: 0,
+        conversionRate: 0,
+        topGifts: [],
+      };
+
+      try {
+        const giftResponse = await getGiftAnalytics({ period: timeRange });
+        if (!giftResponse.error && giftResponse.data) {
+          giftStats = {
+            totalSent: giftResponse.data.totalSent || 0,
+            totalValue: giftResponse.data.totalValue || 0,
+            conversionRate: giftResponse.data.conversionRate || 0,
+            topGifts: giftResponse.data.topGifts || [],
+          };
+        }
+      } catch (giftError) {
+        console.log('Could not load gift analytics:', giftError);
+        // Use default zero values
+      }
+
       setDashboardData({
         stats: statsData,
         recentActivity: recentActivity,
         topContent: topContent,
+        giftStats: giftStats,
       });
     } catch (error) {
       console.error('Dashboard load error:', error);
@@ -165,6 +197,12 @@ const CreatorDashboard = () => {
         },
         recentActivity: [],
         topContent: [],
+        giftStats: {
+          totalSent: 0,
+          totalValue: 0,
+          conversionRate: 0,
+          topGifts: [],
+        },
       });
     } finally {
       setIsLoading(false);
@@ -224,6 +262,13 @@ const CreatorDashboard = () => {
           change: dashboardData.stats.ratingChange,
           icon: Star,
           color: 'yellow',
+        },
+        {
+          label: 'Gifts Sent',
+          value: formatNumber(dashboardData.giftStats.totalSent),
+          change: dashboardData.giftStats.conversionRate,
+          icon: Gift,
+          color: 'teal',
         },
       ].map((stat, index) => (
         <motion.div
@@ -375,6 +420,78 @@ const CreatorDashboard = () => {
           ))
         )}
       </div>
+    </motion.div>
+  );
+
+  // Gift Analytics Component
+  const GiftAnalytics = () => (
+    <motion.div
+      className='creator-dashboard-gift-analytics'
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.6 }}
+    >
+      <h3 className='creator-dashboard-section-title'>Gift Performance</h3>
+
+      <div className='creator-dashboard-gift-stats-grid'>
+        <div className='gift-stat-card'>
+          <div className='gift-stat-icon'>
+            <Gift size={20} />
+          </div>
+          <div className='gift-stat-info'>
+            <span className='gift-stat-value'>{formatNumber(dashboardData.giftStats.totalSent)}</span>
+            <span className='gift-stat-label'>Total Gifts Sent</span>
+          </div>
+        </div>
+
+        <div className='gift-stat-card'>
+          <div className='gift-stat-icon'>
+            <DollarSign size={20} />
+          </div>
+          <div className='gift-stat-info'>
+            <span className='gift-stat-value'>${formatNumber(dashboardData.giftStats.totalValue)}</span>
+            <span className='gift-stat-label'>Gift Value</span>
+          </div>
+        </div>
+
+        <div className='gift-stat-card'>
+          <div className='gift-stat-icon'>
+            <TrendingUp size={20} />
+          </div>
+          <div className='gift-stat-info'>
+            <span className='gift-stat-value'>{dashboardData.giftStats.conversionRate.toFixed(1)}%</span>
+            <span className='gift-stat-label'>Conversion Rate</span>
+          </div>
+        </div>
+      </div>
+
+      {dashboardData.giftStats.topGifts.length > 0 && (
+        <div className='creator-dashboard-top-gifts'>
+          <h4 className='creator-dashboard-subsection-title'>Most Popular Gifts</h4>
+          <div className='top-gifts-list'>
+            {dashboardData.giftStats.topGifts.slice(0, 3).map((gift, index) => (
+              <div key={gift.contentId || index} className='top-gift-item'>
+                <div className='top-gift-thumbnail'>
+                  {gift.thumbnailUrl ? (
+                    <img src={gift.thumbnailUrl} alt={gift.title} />
+                  ) : (
+                    <div className='gift-placeholder'>
+                      {gift.type === 'video' ? '🎥' : '📸'}
+                    </div>
+                  )}
+                </div>
+                <div className='top-gift-details'>
+                  <h5>{gift.title}</h5>
+                  <div className='top-gift-stats'>
+                    <span className='gift-count'>{gift.sentCount} sent</span>
+                    <span className='gift-revenue'>${formatNumber(gift.revenue)}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 
@@ -595,6 +712,9 @@ const CreatorDashboard = () => {
           <TopContent />
         </div>
       </div>
+
+      {/* Gift Analytics */}
+      <GiftAnalytics />
 
       {/* Quick Actions */}
       <QuickActions />
