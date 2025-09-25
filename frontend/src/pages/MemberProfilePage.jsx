@@ -91,7 +91,6 @@ const MemberProfilePage = () => {
             0
           ) || 0,
         totalPurchases: userData.purchasedContent?.length || 0,
-        favoriteCategory: userData.preferences?.favoriteCategory || 'Lifestyle',
         favoriteCreators: userData.likes?.length || 0,
         totalMessages: totalMessages,
       };
@@ -157,7 +156,6 @@ const MemberProfilePage = () => {
         stats: {
           totalSpent: 0,
           totalPurchases: 0,
-          favoriteCategory: 'Not set',
           favoriteCreators: 0,
           totalMessages: 0,
         },
@@ -447,14 +445,6 @@ const MemberProfilePage = () => {
                     Activity Overview
                   </h3>
                   <div className='mpp-activity-list'>
-                    <div className='mpp-activity-item'>
-                      <span className='mpp-activity-label'>
-                        Favorite Category
-                      </span>
-                      <span className='mpp-activity-value'>
-                        {member.stats.favoriteCategory}
-                      </span>
-                    </div>
                     <div className='mpp-activity-item'>
                       <span className='mpp-activity-label'>
                         Total Purchases
