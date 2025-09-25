@@ -556,6 +556,15 @@
   .connection-avatar {
     height: 350px;
   }
+
+   .delete-btn {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  
+  .connection-card:hover .delete-btn {
+    opacity: 1;
+  }
 }
 
 /* Desktop Support */
@@ -616,9 +625,9 @@
 
 /* Individual Delete Button */
 .delete-btn {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1.5px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
+  background: #ef4444;
+  border: none;
+  color: #000000;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -627,8 +636,8 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  opacity: 0;
-  transform: scale(0.9);
+  opacity: 0.8;
+  transform: scale(1);
 }
 
 .connection-card {
@@ -641,15 +650,20 @@
 }
 
 .delete-btn:hover {
-  background: rgba(239, 68, 68, 0.9);
-  border-color: #ef4444;
-  color: white;
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  background: #dc2626;
+  opacity: 1;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
 .delete-btn:active {
   transform: scale(0.95);
+}
+
+.delete-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: #000000;
 }
 
 /* Pin button styling updates */
@@ -670,15 +684,4 @@
 .pin-btn:hover {
   background: rgba(255, 215, 0, 0.2);
   border-color: rgba(255, 215, 0, 0.5);
-}
-
-@media (max-width: 768px) {
-  .delete-btn {
-    opacity: 0.7;
-    transform: scale(1);
-  }
-  
-  .connection-card:hover .delete-btn {
-    opacity: 1;
-  }
 }
