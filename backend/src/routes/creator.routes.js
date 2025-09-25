@@ -11,6 +11,7 @@ const creatorConnectionController = require('../controllers/creator.connection.c
 const creatorMembersController = require('../controllers/creator.members.controller');
 const notificationController = require('../controllers/notification.controller');
 const uploadController = require('../controllers/upload.controller');
+const giftController = require('../controllers/gift.controller');
 
 // Import middleware with error handling
 let protect, authorize;
@@ -199,6 +200,28 @@ if (creatorContentController.getContentAnalytics) {
 } else {
   router.get('/content/:contentId/analytics', (req, res) => {
     res.status(501).json({ message: 'Content analytics coming soon' });
+  });
+}
+
+// ==========================================
+// GIFT SYSTEM
+// ==========================================
+
+// Get creator's content library available for gifting
+if (giftController.getCreatorContentLibrary) {
+  router.get('/content/giftable', protect, authorize('creator'), giftController.getCreatorContentLibrary);
+} else {
+  router.get('/content/giftable', (req, res) => {
+    res.status(501).json({ message: 'Gift content library coming soon' });
+  });
+}
+
+// Get gift analytics
+if (giftController.getGiftAnalytics) {
+  router.get('/gifts/analytics', protect, authorize('creator'), giftController.getGiftAnalytics);
+} else {
+  router.get('/gifts/analytics', (req, res) => {
+    res.status(501).json({ message: 'Gift analytics coming soon' });
   });
 }
 
