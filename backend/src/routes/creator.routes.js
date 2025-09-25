@@ -283,6 +283,11 @@ if (creatorMessageController.deleteMessage) {
   router.delete('/messages/:messageId', creatorMessageController.deleteMessage);
 }
 
+// Get message stats
+if (creatorMessageController.getMessageStats) {
+  router.get('/messages/stats', protect, authorize('creator'), creatorMessageController.getMessageStats);
+}
+
 // ==========================================
 // CONNECTION MANAGEMENT
 // ==========================================

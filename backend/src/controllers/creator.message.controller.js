@@ -831,4 +831,47 @@ function generateMessageRecommendations(analytics) {
   return recommendations;
 }
 
+// Get simple message stats for member profile
+exports.getMessageStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    console.log('📊 [getMessageStats] Getting stats for user:', userId);
+
+    // Count messages where this user is the member (received messages)
+    const receivedCount = await CreatorMessage.countDocuments({
+      member: userId
+    });
+
+    // Count messages where this user is creator (sent messages)
+    const sentCount = await CreatorMessage.countDocuments({
+      creator: userId
+    });
+
+    const totalMessages = receivedCount + sentCount;
+
+    console.log('📊 [getMessageStats] Results:', {
+      received: receivedCount,
+      sent: sentCount,
+      total: totalMessages
+    });
+
+    res.json({
+      success: true,
+      stats: {
+        totalMessages,
+        sentMessages: sentCount,
+        receivedMessages: receivedCount
+      }
+    });
+
+  } catch (error) {
+    console.error('Get message stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error getting message stats'
+    });
+  }
+};
+
 module.exports = exports;
