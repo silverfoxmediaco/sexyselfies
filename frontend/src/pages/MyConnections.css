@@ -616,12 +616,12 @@
 
 /* Individual Delete Button */
 .delete-btn {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
+  background: red;
+  border: 1px solid black;
+  color: #fdfdfd;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
