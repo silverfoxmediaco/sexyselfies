@@ -197,10 +197,39 @@ const Messages = () => {
   };
 
   const handleBulkAction = async action => {
-    // Implement bulk actions (delete, mute, archive)
-    console.log(`Bulk ${action} for:`, selectedConversations);
-    setSelectedConversations([]);
-    fetchConversations();
+    try {
+      const token = localStorage.getItem('token');
+
+      // Map delete action to appropriate backend action
+      const apiAction = action === 'delete' ? 'archive' : action;
+
+      const response = await fetch('/api/v1/connections/bulk', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          connectionIds: selectedConversations,
+          action: apiAction
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`✅ Bulk ${action} completed for ${data.modified} connections`);
+
+        // Clear selections and refresh list
+        setSelectedConversations([]);
+        fetchConversations();
+      } else {
+        console.error(`❌ Failed to ${action} conversations:`, response.status);
+        const error = await response.json();
+        console.error('Error details:', error);
+      }
+    } catch (error) {
+      console.error(`❌ Error performing bulk ${action}:`, error);
+    }
   };
 
   const markAsRead = async (conversationId, event) => {
