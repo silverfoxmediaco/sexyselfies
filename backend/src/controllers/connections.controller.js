@@ -639,22 +639,85 @@ exports.blockCreatorConnection = async (req, res, next) => {
 // @access  Private
 exports.bulkCreatorConnectionAction = async (req, res, next) => {
   try {
+    console.log('🔄 Bulk connection action:', req.body);
     const { connectionIds, action } = req.body;
 
-    let updateData = {};
+    if (!connectionIds || !Array.isArray(connectionIds) || connectionIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Connection IDs are required',
+      });
+    }
+
+    let result;
 
     switch (action) {
       case 'archive':
-        updateData = { isArchived: true };
+        result = await CreatorConnection.updateMany(
+          { _id: { $in: connectionIds } },
+          { isArchived: true, lastInteraction: Date.now() }
+        );
         break;
       case 'unarchive':
-        updateData = { isArchived: false };
+        result = await CreatorConnection.updateMany(
+          { _id: { $in: connectionIds } },
+          { isArchived: false, lastInteraction: Date.now() }
+        );
         break;
       case 'mute':
-        updateData = { isMuted: true };
+        result = await CreatorConnection.updateMany(
+          { _id: { $in: connectionIds } },
+          { isMuted: true, lastInteraction: Date.now() }
+        );
         break;
       case 'unmute':
-        updateData = { isMuted: false };
+        result = await CreatorConnection.updateMany(
+          { _id: { $in: connectionIds } },
+          { isMuted: false, lastInteraction: Date.now() }
+        );
+        break;
+      case 'delete':
+        // For bulk delete, we need to verify authorization for each connection
+        const userId = req.user.id;
+        const userRole = req.user.role;
+
+        // Get user profile
+        const userProfile = userRole === 'member'
+          ? await Member.findOne({ user: userId })
+          : await Creator.findOne({ user: userId });
+
+        if (!userProfile) {
+          return res.status(403).json({
+            success: false,
+            error: 'User profile not found',
+          });
+        }
+
+        // Get all connections to verify ownership
+        const connections = await CreatorConnection.find({ _id: { $in: connectionIds } });
+        const userProfileId = userProfile._id.toString();
+
+        // Verify user owns all connections
+        const unauthorizedConnections = connections.filter(conn => {
+          const isMember = conn.member?.toString() === userProfileId;
+          const isCreator = conn.creator?.toString() === userProfileId;
+          return !isMember && !isCreator;
+        });
+
+        if (unauthorizedConnections.length > 0) {
+          return res.status(403).json({
+            success: false,
+            error: `Not authorized to delete ${unauthorizedConnections.length} connections`,
+          });
+        }
+
+        // Delete all authorized connections
+        result = await CreatorConnection.deleteMany({ _id: { $in: connectionIds } });
+
+        // Optionally clean up related messages
+        // await Message.deleteMany({ connection: { $in: connectionIds } });
+
+        console.log(`✅ Bulk deleted ${result.deletedCount} connections`);
         break;
       default:
         return res.status(400).json({
@@ -663,18 +726,13 @@ exports.bulkCreatorConnectionAction = async (req, res, next) => {
         });
     }
 
-    updateData.lastInteraction = Date.now();
-
-    const result = await CreatorConnection.updateMany(
-      { _id: { $in: connectionIds } },
-      updateData
-    );
-
     res.status(200).json({
       success: true,
-      modified: result.modifiedCount,
+      modified: result.modifiedCount || result.deletedCount || 0,
+      action: action
     });
   } catch (error) {
+    console.error('❌ Bulk action error:', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -727,29 +785,80 @@ exports.getMatch = async (req, res, next) => {
 // @access  Private
 exports.unmatch = async (req, res, next) => {
   try {
+    console.log('🗑️ Delete connection request:', {
+      connectionId: req.params.connectionId,
+      userId: req.user.id,
+      userRole: req.user.role
+    });
+
     const connection = await CreatorConnection.findById(req.params.connectionId);
 
     if (!connection) {
       return res.status(404).json({
         success: false,
-        error: 'CreatorConnection not found',
+        error: 'Connection not found',
+        message: 'Connection not found'
       });
     }
 
-    connection.isActive = false;
-    connection.status = 'expired';
-    connection.disconnectedBy = req.user.id;
-    connection.disconnectedAt = Date.now();
-    await connection.save();
+    // Verify user authorization - user must be either the member or creator in this connection
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    // Get user profile based on role
+    const userProfile = userRole === 'member'
+      ? await Member.findOne({ user: userId })
+      : await Creator.findOne({ user: userId });
+
+    if (!userProfile) {
+      return res.status(403).json({
+        success: false,
+        error: 'User profile not found',
+        message: 'User profile not found'
+      });
+    }
+
+    // Check if user is authorized to delete this connection
+    const userProfileId = userProfile._id.toString();
+    const isMember = connection.member?.toString() === userProfileId;
+    const isCreator = connection.creator?.toString() === userProfileId;
+
+    console.log('🔐 Authorization check:', {
+      userProfileId,
+      connectionMember: connection.member?.toString(),
+      connectionCreator: connection.creator?.toString(),
+      isMember,
+      isCreator
+    });
+
+    if (!isMember && !isCreator) {
+      return res.status(403).json({
+        success: false,
+        error: 'Not authorized to delete this connection',
+        message: 'Not authorized to delete this connection'
+      });
+    }
+
+    // Delete the connection completely
+    await CreatorConnection.findByIdAndDelete(req.params.connectionId);
+
+    // Optionally clean up related messages (uncomment if needed)
+    // const deletedMessages = await Message.deleteMany({ connection: req.params.connectionId });
+    // console.log(`🧹 Cleaned up ${deletedMessages.deletedCount} messages`);
+
+    console.log('✅ Connection deleted successfully:', req.params.connectionId);
 
     res.status(200).json({
       success: true,
-      message: 'Successfully disconnected',
+      message: 'Connection deleted successfully'
     });
+
   } catch (error) {
+    console.error('❌ Delete connection error:', error);
     res.status(500).json({
       success: false,
       error: error.message,
+      message: 'Failed to delete connection'
     });
   }
 };
