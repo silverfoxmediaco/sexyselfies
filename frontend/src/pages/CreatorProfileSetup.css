@@ -519,6 +519,7 @@
 /* Form elements */
 .form-group {
   margin-bottom: 25px;
+  margin-top: 60px;
 }
 
 .form-label {
