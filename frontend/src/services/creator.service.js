@@ -118,7 +118,7 @@ class CreatorService {
   async updateCoverPhoto(file) {
     try {
       const formData = new FormData();
-      formData.append('coverPhoto', file);
+      formData.append('coverImage', file);
 
       const response = await uploadApi.post(
         '/creator/profile/cover',

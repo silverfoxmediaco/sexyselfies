@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Camera, Upload, Edit, Trash2, Save, AlertCircle } from 'lucide-react';
+import creatorService from '../services/creator.service';
 import './EditProfileImagesModal.css';
 
 const EditProfileImagesModal = ({
@@ -77,66 +78,75 @@ const EditProfileImagesModal = ({
     setErrors({});
 
     try {
-      const formData = new FormData();
-
-      if (profilePhoto) {
-        formData.append('profilePhoto', profilePhoto);
-      }
-
-      if (coverImage) {
-        formData.append('coverImage', coverImage);
-      }
-
       // If no images selected, just close
       if (!profilePhoto && !coverImage) {
         onClose();
         return;
       }
 
-      const response = await fetch('/api/v1/creator/profile/images', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: formData
-      });
+      const results = {};
+      let hasError = false;
 
-      if (response.ok) {
-        let data = {};
-
-        // Check if response has content before parsing JSON
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          const text = await response.text();
-          if (text) {
-            data = JSON.parse(text);
-          }
-        }
-
-        // Call the callback to refresh parent component
-        if (onImagesUpdated) {
-          onImagesUpdated({
-            profileImage: data.data?.profileImage || profilePhotoPreview,
-            coverImage: data.data?.coverImage || coverImagePreview
-          });
-        }
-
-        onClose();
-      } else {
-        let errorMessage = 'Failed to update images';
-
+      // Upload profile photo if selected (using working endpoint)
+      if (profilePhoto) {
         try {
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const errorData = await response.json();
-            errorMessage = errorData.message || errorMessage;
-          }
-        } catch (jsonError) {
-          console.error('Error parsing error response:', jsonError);
-        }
+          const response = await creatorService.updateProfilePhoto(profilePhoto);
+          if (response && response.success) {
+            let newImageUrl =
+              response.data?.profileImage ||
+              response.data?.imageUrl ||
+              response.profileImage;
 
-        setErrors({ general: errorMessage });
+            // Ensure HTTPS for Cloudinary URLs
+            if (newImageUrl && newImageUrl.includes('cloudinary')) {
+              newImageUrl = newImageUrl.replace('http://', 'https://');
+            }
+
+            results.profileImage = newImageUrl;
+          } else {
+            throw new Error(response?.message || 'Failed to upload profile photo');
+          }
+        } catch (profileError) {
+          console.error('Profile photo upload error:', profileError);
+          setErrors({ general: `Profile photo: ${profileError.message}` });
+          hasError = true;
+        }
       }
+
+      // Upload cover image if selected (using working endpoint)
+      if (coverImage && !hasError) {
+        try {
+          const response = await creatorService.updateCoverPhoto(coverImage);
+          if (response && response.success) {
+            let newImageUrl =
+              response.data?.coverImage ||
+              response.data?.imageUrl ||
+              response.coverImage;
+
+            // Ensure HTTPS for Cloudinary URLs
+            if (newImageUrl && newImageUrl.includes('cloudinary')) {
+              newImageUrl = newImageUrl.replace('http://', 'https://');
+            }
+
+            results.coverImage = newImageUrl;
+          } else {
+            throw new Error(response?.message || 'Failed to upload cover image');
+          }
+        } catch (coverError) {
+          console.error('Cover image upload error:', coverError);
+          setErrors({ general: `Cover image: ${coverError.message}` });
+          hasError = true;
+        }
+      }
+
+      // If no errors, call callback and close
+      if (!hasError) {
+        if (onImagesUpdated) {
+          onImagesUpdated(results);
+        }
+        onClose();
+      }
+
     } catch (error) {
       console.error('Error uploading images:', error);
       setErrors({ general: 'Failed to upload images. Please try again.' });

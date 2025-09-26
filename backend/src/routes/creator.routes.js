@@ -105,6 +105,7 @@ router.post('/profile/cover', profileImageUpload, creatorProfileController.updat
 // Combined profile images upload (profile + cover)
 router.post('/profile/images', profileImageUpload, creatorProfileController.updateProfileImages);
 
+
 router.put('/profile/settings', (req, res) => {
   res.status(501).json({ message: 'Settings update coming soon' });
 });
