@@ -13,6 +13,7 @@ const CreatorQuickActions = ({
   showPreview = true,
   showEditProfileImages = true,
   onEditProfile,
+  onProfileUpdate,
   additionalActions = [],
   className = ''
 }) => {
@@ -49,8 +50,13 @@ const CreatorQuickActions = ({
   };
 
   const handleImagesUpdated = (updatedImages) => {
-    // Refresh the page to show updated images
-    window.location.reload();
+    if (onProfileUpdate) {
+      // Call parent callback to update profile data without full page reload
+      onProfileUpdate(updatedImages);
+    } else {
+      // Fallback: refresh the page to show updated images
+      window.location.reload();
+    }
   };
 
   const handleShare = async () => {
@@ -160,7 +166,7 @@ const CreatorQuickActions = ({
         <CreatorProfilePreview
           isOpen={showPreviewModal}
           onClose={() => setShowPreviewModal(false)}
-          creatorData={profileData}
+          profileData={profileData}
         />
       )}
 

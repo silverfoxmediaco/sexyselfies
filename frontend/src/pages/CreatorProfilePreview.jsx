@@ -126,21 +126,31 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
     >
       {/* Card Images */}
       <div className='card-image-container'>
-        {(profileData?.profileImage || profileData?.profilePhotoPreview) &&
-        profileData.profileImage !== 'default-avatar.jpg' &&
-        (profileData.profileImage?.startsWith('http') ||
-          profileData.profilePhotoPreview?.startsWith('data:')) ? (
-          <img
-            src={profileData.profileImage || profileData.profilePhotoPreview}
-            alt={profileData.displayName}
-            className='card-main-image'
-          />
-        ) : (
-          <div className='card-image-placeholder'>
-            <Camera size={48} />
-            <span>Your photo here</span>
-          </div>
-        )}
+        {(() => {
+          const profileImage = profileData?.profileImage || profileData?.profilePhotoPreview;
+          const isValidImage = profileImage &&
+            profileImage !== 'default-avatar.jpg' &&
+            profileImage !== 'placeholder.jpg' &&
+            (profileImage.startsWith('http') || profileImage.startsWith('https://') || profileImage.startsWith('data:'));
+
+          return isValidImage ? (
+            <img
+              src={profileImage}
+              alt={profileData?.displayName || 'Profile'}
+              className='card-main-image'
+              onError={(e) => {
+                console.warn('Failed to load profile image:', profileImage);
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+          ) : (
+            <div className='card-image-placeholder'>
+              <Camera size={48} />
+              <span>Your photo here</span>
+            </div>
+          );
+        })()}
 
 
         {/* Verified badge */}
@@ -251,23 +261,29 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
           <div className='profile-info'>
             <div className='profile-avatar-section'>
               <div className='profile-avatar'>
-                {(profileData?.profileImage ||
-                  profileData?.profilePhotoPreview) &&
-                profileData.profileImage !== 'default-avatar.jpg' &&
-                (profileData.profileImage?.startsWith('http') ||
-                  profileData.profilePhotoPreview?.startsWith('data:')) ? (
-                  <img
-                    src={
-                      profileData.profileImage ||
-                      profileData.profilePhotoPreview
-                    }
-                    alt={profileData.displayName}
-                  />
-                ) : (
-                  <div className='avatar-placeholder'>
-                    <Camera size={32} />
-                  </div>
-                )}
+                {(() => {
+                  const profileImage = profileData?.profileImage || profileData?.profilePhotoPreview;
+                  const isValidImage = profileImage &&
+                    profileImage !== 'default-avatar.jpg' &&
+                    profileImage !== 'placeholder.jpg' &&
+                    (profileImage.startsWith('http') || profileImage.startsWith('https://') || profileImage.startsWith('data:'));
+
+                  return isValidImage ? (
+                    <img
+                      src={profileImage}
+                      alt={profileData?.displayName || 'Profile'}
+                      onError={(e) => {
+                        console.warn('Failed to load profile avatar:', profileImage);
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                  ) : (
+                    <div className='avatar-placeholder'>
+                      <Camera size={32} />
+                    </div>
+                  );
+                })()}
                 <span className='online-indicator'></span>
               </div>
 
