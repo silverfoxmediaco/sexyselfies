@@ -1,0 +1,162 @@
+/* CreatorQuickActions.css */
+
+.CreatorQuickActions-container {
+  margin: var(--space-md) 0;
+}
+
+.CreatorQuickActions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  max-width: 100%;
+}
+
+/* Desktop: 4 columns */
+@media (min-width: 768px) {
+  .CreatorQuickActions-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+  }
+}
+
+.CreatorQuickActions-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  min-height: 80px;
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+
+  /* Touch target minimum */
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+}
+
+.CreatorQuickActions-button:hover {
+  background: var(--primary-700);
+  border-color: var(--primary-600);
+  transform: translateY(-2px);
+}
+
+.CreatorQuickActions-button:active {
+  transform: translateY(0);
+}
+
+.CreatorQuickActions-button.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.CreatorQuickActions-button.disabled:hover {
+  background: var(--surface-700);
+  border-color: var(--border-600);
+  transform: none;
+}
+
+.CreatorQuickActions-button-icon {
+  margin-bottom: var(--space-xs);
+  color: var(--primary);
+  transition: color 0.2s ease;
+}
+
+.CreatorQuickActions-button:hover .CreatorQuickActions-button-icon {
+  color: var(--text-primary);
+}
+
+.CreatorQuickActions-button-label {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+.CreatorQuickActions-button:hover .CreatorQuickActions-button-label {
+  color: var(--text-primary);
+}
+
+/* Mobile optimizations */
+@media (max-width: 767px) {
+  .CreatorQuickActions-button {
+    padding: var(--space-sm);
+    min-height: 70px;
+  }
+
+  .CreatorQuickActions-button-label {
+    font-size: 11px;
+  }
+
+  .CreatorQuickActions-grid {
+    gap: var(--space-sm);
+  }
+}
+
+/* Responsive text for smaller screens */
+@media (max-width: 480px) {
+  .CreatorQuickActions-button-label {
+    font-size: 10px;
+    word-break: break-word;
+  }
+}
+
+/* Focus styles for accessibility */
+.CreatorQuickActions-button:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Loading state */
+.CreatorQuickActions-button.loading {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.CreatorQuickActions-button.loading .CreatorQuickActions-button-icon {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Dark theme adjustments */
+.CreatorQuickActions-button {
+  background: linear-gradient(145deg, var(--surface-700), #1a1a1c);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.CreatorQuickActions-button:hover {
+  background: linear-gradient(145deg, var(--primary-700), var(--primary-600));
+  box-shadow: 0 4px 12px rgba(23, 210, 194, 0.2);
+}
+
+/* Additional action buttons (from props) */
+.CreatorQuickActions-button.additional-action {
+  border-color: var(--primary-300);
+}
+
+.CreatorQuickActions-button.additional-action:hover {
+  background: var(--primary-300);
+  color: var(--bg-900);
+}
+
+.CreatorQuickActions-button.additional-action:hover .CreatorQuickActions-button-icon,
+.CreatorQuickActions-button.additional-action:hover .CreatorQuickActions-button-label {
+  color: var(--bg-900);
+}

@@ -3,16 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   User,
-  Edit3,
-  Eye,
-  Settings,
   Camera,
   MapPin,
   Heart,
   Users,
   DollarSign,
-  TrendingUp,
-  Share2,
   Star,
   Calendar,
   Check,
@@ -24,6 +19,7 @@ import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import CreatorProfilePreview from './CreatorProfilePreview';
+import CreatorQuickActions from '../components/CreatorQuickActions';
 import {
   useIsMobile,
   useIsDesktop,
@@ -43,7 +39,6 @@ const CreatorProfilePage = () => {
   const fileInputRef = useRef(null);
 
   const [profileData, setProfileData] = useState(null);
-  const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [error, setError] = useState(null);
@@ -537,72 +532,18 @@ const CreatorProfilePage = () => {
         </div>
       </div>
 
-      {/* Quick Actions - Only for own profile */}
-      {profileData?.isOwnProfile && (
-        <div className='quick-actions'>
-          <h3>Quick Actions</h3>
-          <div className='actions-grid'>
-            <motion.button
-              className='quick-action-btn'
-              onClick={() => navigate('/creator/profile-setup')}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Edit3 size={20} />
-              <span>Edit Profile</span>
-            </motion.button>
-
-            <motion.button
-              className='quick-action-btn'
-              onClick={() => setShowPreview(true)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Eye size={20} />
-              <span>Preview Profile</span>
-            </motion.button>
-
-            <motion.button
-              className='quick-action-btn'
-              onClick={() => navigate('/creator/settings')}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Settings size={20} />
-              <span>Settings</span>
-            </motion.button>
-
-            <motion.button
-              className='quick-action-btn'
-              onClick={() => {
-                const profileUrl = `${window.location.origin}/creator/profile/${profileData.id || 'preview'}`;
-                if (navigator.share) {
-                  navigator.share({
-                    title: `Check out ${profileData?.displayName}'s profile`,
-                    text: `${profileData?.displayName} is on SexySelfies!`,
-                    url: profileUrl,
-                  });
-                } else {
-                  navigator.clipboard.writeText(profileUrl);
-                  alert('Profile link copied to clipboard!');
-                }
-              }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Share2 size={20} />
-              <span>Share Profile</span>
-            </motion.button>
-          </div>
-        </div>
-      )}
-
-      {/* Profile Preview Modal */}
-      <CreatorProfilePreview
+      {/* Quick Actions - Using CreatorQuickActions component */}
+      <CreatorQuickActions
         profileData={profileData}
-        isOpen={showPreview}
-        onClose={() => setShowPreview(false)}
+        additionalActions={[
+          {
+            icon: <Upload size={20} />,
+            label: 'Upload Content',
+            onClick: () => navigate('/creator/upload')
+          }
+        ]}
       />
+
 
       {/* Desktop Footer */}
       {isDesktop && <CreatorMainFooter />}
