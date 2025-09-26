@@ -917,29 +917,28 @@ const StepThree = ({ formData, setFormData, errors }) => {
             it per photo)
           </p>
           <div className='pricing-input-wrapper'>
-            <span className='currency-symbol'>$</span>
-            <input
-              type='number'
-              className='form-input pricing-input'
-              min='0.99'
-              max='9.99'
-              step='0.01'
-              placeholder='2.99'
-              value={formData.pricing.photos.default}
-              onChange={e =>
-                setFormData(prev => ({
-                  ...prev,
-                  pricing: {
-                    ...prev.pricing,
-                    photos: {
-                      ...prev.pricing.photos,
-                      default: parseFloat(e.target.value),
-                    },
-                  },
-                }))
-              }
-            />
-          </div>
+    <input
+      type='number'
+      className='form-input pricing-input'
+      min='0.99'
+      max='9.99'
+      step='0.01'
+      placeholder='2.99'
+      value={formData.pricing.photos.default}
+      onChange={e =>
+        setFormData(prev => ({
+          ...prev,
+          pricing: {
+            ...prev.pricing,
+            photos: {
+              ...prev.pricing.photos,
+              default: parseFloat(e.target.value),
+            },
+          },
+        }))
+      }
+    />
+  </div>
         </div>
       )}
 
