@@ -2368,6 +2368,12 @@
     min-height: 100px;
   }
 
+  .photo-upload-box.cover {
+  height: 400px !important;
+  border-radius: 16px;
+  margin-top: 20px;
+}
+
   .preview-profile-section {
     margin-top: 40px;
   }

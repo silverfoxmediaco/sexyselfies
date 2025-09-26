@@ -558,9 +558,20 @@
   }
 
    .delete-btn {
-    opacity: 0.7;
-    transform: scale(1);
-  }
+  background: #ef4444;
+  border: none;
+  color: #000000;
+  width: 100px !important;
+  height: 36px;
+  border-radius: 6px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+  transform: scale(1);
+}
   
   .connection-card:hover .delete-btn {
     opacity: 1;
