@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Edit3, Eye, Settings, Share2 } from 'lucide-react';
+import { Edit3, Eye, Settings, Share2, Camera } from 'lucide-react';
 import CreatorProfilePreview from '../pages/CreatorProfilePreview';
+import EditProfileImagesModal from './EditProfileImagesModal';
 import './CreatorQuickActions.css';
 
 const CreatorQuickActions = ({
@@ -10,11 +11,13 @@ const CreatorQuickActions = ({
   showSettings = true,
   showShare = true,
   showPreview = true,
+  showEditProfileImages = true,
   onEditProfile,
   additionalActions = [],
   className = ''
 }) => {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [showEditImagesModal, setShowEditImagesModal] = useState(false);
   const [shareLoading, setShareLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -39,6 +42,15 @@ const CreatorQuickActions = ({
   const handleSettings = () => {
     // Use short route pattern to match dashboard navigation
     navigate('/creator/settings');
+  };
+
+  const handleEditProfileImages = () => {
+    setShowEditImagesModal(true);
+  };
+
+  const handleImagesUpdated = (updatedImages) => {
+    // Refresh the page to show updated images
+    window.location.reload();
   };
 
   const handleShare = async () => {
@@ -80,6 +92,13 @@ const CreatorQuickActions = ({
       label: 'Edit Profile',
       onClick: handleEditProfile,
       show: true
+    },
+    {
+      id: 'edit-profile-images',
+      icon: <Camera size={20} />,
+      label: 'Edit Profile Images',
+      onClick: handleEditProfileImages,
+      show: showEditProfileImages
     },
     {
       id: 'preview',
@@ -144,6 +163,15 @@ const CreatorQuickActions = ({
           creatorData={profileData}
         />
       )}
+
+      <EditProfileImagesModal
+        isOpen={showEditImagesModal}
+        onClose={() => setShowEditImagesModal(false)}
+        currentProfileImage={profileData?.profileImage}
+        currentCoverImage={profileData?.coverImage}
+        creatorId={profileData?._id || profileData?.id}
+        onImagesUpdated={handleImagesUpdated}
+      />
     </>
   );
 };

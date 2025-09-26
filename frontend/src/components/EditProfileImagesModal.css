@@ -1,0 +1,326 @@
+/* EditProfileImagesModal.css */
+
+.EditProfileImagesModal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-md);
+}
+
+.EditProfileImagesModal-container {
+  background: var(--bg-800);
+  border-radius: 16px;
+  border: 1px solid var(--border-600);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.EditProfileImagesModal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--border-600);
+}
+
+.EditProfileImagesModal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.EditProfileImagesModal-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.EditProfileImagesModal-close:hover {
+  background: var(--surface-700);
+  color: var(--text-primary);
+}
+
+.EditProfileImagesModal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.EditProfileImagesModal-content {
+  padding: var(--space-lg);
+}
+
+.EditProfileImagesModal-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: var(--error);
+  margin-bottom: var(--space-lg);
+  font-size: 14px;
+}
+
+.EditProfileImagesModal-photos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.EditProfileImagesModal-photo-section h3 {
+  margin: 0 0 var(--space-md) 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.EditProfileImagesModal-photo-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.EditProfileImagesModal-photo-box {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border: 2px dashed var(--border-600);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.EditProfileImagesModal-photo-box:hover {
+  border-color: var(--primary);
+  background: rgba(23, 210, 194, 0.05);
+}
+
+.EditProfileImagesModal-photo-box.has-image {
+  border: 1px solid var(--border-600);
+  border-style: solid;
+}
+
+.EditProfileImagesModal-photo-box.cover {
+  height: 150px;
+}
+
+.EditProfileImagesModal-photo-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.EditProfileImagesModal-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.EditProfileImagesModal-photo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.EditProfileImagesModal-photo-preview:hover .EditProfileImagesModal-photo-overlay {
+  opacity: 1;
+}
+
+.EditProfileImagesModal-photo-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.EditProfileImagesModal-action-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.EditProfileImagesModal-action-btn.change {
+  background: var(--primary);
+  color: var(--bg-900);
+}
+
+.EditProfileImagesModal-action-btn.change:hover {
+  background: var(--primary-600);
+}
+
+.EditProfileImagesModal-action-btn.delete {
+  background: var(--error);
+  color: white;
+}
+
+.EditProfileImagesModal-action-btn.delete:hover {
+  background: #dc2626;
+}
+
+.EditProfileImagesModal-upload-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--space-sm);
+  color: var(--text-secondary);
+}
+
+.EditProfileImagesModal-upload-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.EditProfileImagesModal-upload-hint {
+  font-size: 14px;
+}
+
+.EditProfileImagesModal-field-error {
+  color: var(--error);
+  font-size: 14px;
+  margin-top: var(--space-xs);
+}
+
+.EditProfileImagesModal-tips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.EditProfileImagesModal-tips span {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--surface-700);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 6px;
+}
+
+.EditProfileImagesModal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-top: 1px solid var(--border-600);
+}
+
+.EditProfileImagesModal-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.EditProfileImagesModal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.EditProfileImagesModal-btn.cancel {
+  background: var(--surface-700);
+  color: var(--text-primary);
+  border: 1px solid var(--border-600);
+}
+
+.EditProfileImagesModal-btn.cancel:hover:not(:disabled) {
+  background: var(--bg-700);
+}
+
+.EditProfileImagesModal-btn.save {
+  background: var(--primary);
+  color: var(--bg-900);
+}
+
+.EditProfileImagesModal-btn.save:hover:not(:disabled) {
+  background: var(--primary-600);
+}
+
+.EditProfileImagesModal-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-top: 2px solid var(--bg-900);
+  border-radius: 50%;
+  animation: EditProfileImagesModal-spin 1s linear infinite;
+}
+
+@keyframes EditProfileImagesModal-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile responsive */
+@media (max-width: 767px) {
+  .EditProfileImagesModal-overlay {
+    padding: var(--space-sm);
+  }
+
+  .EditProfileImagesModal-container {
+    max-height: 95vh;
+  }
+
+  .EditProfileImagesModal-header,
+  .EditProfileImagesModal-content,
+  .EditProfileImagesModal-footer {
+    padding: var(--space-md);
+  }
+
+  .EditProfileImagesModal-photo-box {
+    height: 160px;
+  }
+
+  .EditProfileImagesModal-photo-box.cover {
+    height: 120px;
+  }
+
+  .EditProfileImagesModal-footer {
+    flex-direction: column;
+  }
+
+  .EditProfileImagesModal-btn {
+    width: 100%;
+  }
+
+  .EditProfileImagesModal-tips {
+    justify-content: center;
+  }
+}
