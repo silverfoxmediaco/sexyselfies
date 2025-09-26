@@ -878,4 +878,151 @@ function hasAchievement(profile, achievementId) {
   return profile.gamification.achievements.some(a => a.id === achievementId);
 }
 
+// Update cover image
+exports.updateCoverImage = async (req, res) => {
+  try {
+    console.log('Cover image upload request received');
+    console.log('User ID:', req.user?.id);
+    console.log('Files:', req.files);
+    console.log('File:', req.file);
+
+    const creatorId = req.user.id;
+
+    // Check if file was uploaded
+    const file =
+      req.file ||
+      (req.files && req.files.coverImage && req.files.coverImage[0]);
+
+    if (!file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No cover image file uploaded',
+      });
+    }
+
+    // Find creator
+    const creator = await Creator.findOne({ user: creatorId });
+    if (!creator) {
+      return res.status(404).json({
+        success: false,
+        message: 'Creator not found',
+      });
+    }
+
+    // Upload to Cloudinary with cover image dimensions
+    const uploadResult = await cloudinary.uploader.upload(file.path, {
+      folder: `sexyselfies/creators/${creatorId}`,
+      public_id: `cover_${Date.now()}`,
+      transformation: [
+        { width: 1920, height: 480, crop: 'fill', gravity: 'center' },
+        { quality: 'auto', fetch_format: 'auto' },
+      ],
+    });
+
+    // Update creator cover image
+    creator.coverImage = uploadResult.secure_url;
+    await creator.save();
+
+    console.log('Cover image updated successfully:', uploadResult.secure_url);
+
+    res.json({
+      success: true,
+      message: 'Cover image updated successfully',
+      data: {
+        coverImage: uploadResult.secure_url,
+      },
+    });
+  } catch (error) {
+    console.error('Cover image upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error uploading cover image',
+      error: error.message,
+    });
+  }
+};
+
+// Update both profile and cover images
+exports.updateProfileImages = async (req, res) => {
+  try {
+    console.log('Profile images upload request received');
+    console.log('User ID:', req.user?.id);
+    console.log('Files:', req.files);
+
+    const creatorId = req.user.id;
+    const results = {};
+
+    // Find creator
+    const creator = await Creator.findOne({ user: creatorId });
+    if (!creator) {
+      return res.status(404).json({
+        success: false,
+        message: 'Creator not found',
+      });
+    }
+
+    // Handle profile photo upload
+    const profileFile =
+      req.files && req.files.profilePhoto && req.files.profilePhoto[0];
+
+    if (profileFile) {
+      const profileUploadResult = await cloudinary.uploader.upload(profileFile.path, {
+        folder: `sexyselfies/creators/${creatorId}`,
+        public_id: `profile_${Date.now()}`,
+        transformation: [
+          { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+          { quality: 'auto', fetch_format: 'auto' },
+        ],
+      });
+
+      creator.profileImage = profileUploadResult.secure_url;
+      results.profileImage = profileUploadResult.secure_url;
+    }
+
+    // Handle cover image upload
+    const coverFile =
+      req.files && req.files.coverImage && req.files.coverImage[0];
+
+    if (coverFile) {
+      const coverUploadResult = await cloudinary.uploader.upload(coverFile.path, {
+        folder: `sexyselfies/creators/${creatorId}`,
+        public_id: `cover_${Date.now()}`,
+        transformation: [
+          { width: 1920, height: 480, crop: 'fill', gravity: 'center' },
+          { quality: 'auto', fetch_format: 'auto' },
+        ],
+      });
+
+      creator.coverImage = coverUploadResult.secure_url;
+      results.coverImage = coverUploadResult.secure_url;
+    }
+
+    // Check if at least one image was uploaded
+    if (!profileFile && !coverFile) {
+      return res.status(400).json({
+        success: false,
+        message: 'No image files uploaded',
+      });
+    }
+
+    // Save creator with updated images
+    await creator.save();
+
+    console.log('Profile images updated successfully:', results);
+
+    res.json({
+      success: true,
+      message: 'Profile images updated successfully',
+      data: results,
+    });
+  } catch (error) {
+    console.error('Profile images upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error uploading profile images',
+      error: error.message,
+    });
+  }
+};
+
 module.exports = exports;

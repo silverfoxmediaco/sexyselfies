@@ -102,20 +102,40 @@ const EditProfileImagesModal = ({
       });
 
       if (response.ok) {
-        const data = await response.json();
+        let data = {};
+
+        // Check if response has content before parsing JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const text = await response.text();
+          if (text) {
+            data = JSON.parse(text);
+          }
+        }
 
         // Call the callback to refresh parent component
         if (onImagesUpdated) {
           onImagesUpdated({
-            profileImage: data.profileImage || profilePhotoPreview,
-            coverImage: data.coverImage || coverImagePreview
+            profileImage: data.data?.profileImage || profilePhotoPreview,
+            coverImage: data.data?.coverImage || coverImagePreview
           });
         }
 
         onClose();
       } else {
-        const errorData = await response.json();
-        setErrors({ general: errorData.message || 'Failed to update images' });
+        let errorMessage = 'Failed to update images';
+
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+          }
+        } catch (jsonError) {
+          console.error('Error parsing error response:', jsonError);
+        }
+
+        setErrors({ general: errorMessage });
       }
     } catch (error) {
       console.error('Error uploading images:', error);

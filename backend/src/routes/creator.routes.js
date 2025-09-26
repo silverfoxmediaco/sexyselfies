@@ -99,10 +99,11 @@ router.post(
   creatorProfileController.updateProfilePhoto
 );
 
-// Cover image upload (using same profile image middleware)
-router.post('/profile/cover', profileImageUpload, (req, res) => {
-  res.status(501).json({ message: 'Cover upload coming soon' });
-});
+// Cover image upload
+router.post('/profile/cover', profileImageUpload, creatorProfileController.updateCoverImage);
+
+// Combined profile images upload (profile + cover)
+router.post('/profile/images', profileImageUpload, creatorProfileController.updateProfileImages);
 
 router.put('/profile/settings', (req, res) => {
   res.status(501).json({ message: 'Settings update coming soon' });
