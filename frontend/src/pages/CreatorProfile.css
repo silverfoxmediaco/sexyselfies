@@ -116,7 +116,7 @@
   position: relative;
   background: #121212;
   display: block !important;
-  min-height: 250px;
+  height: 250px;
 }
 
 /* Cover Photo */
@@ -1082,8 +1082,7 @@
   }
 
   .profile-header {
-  
-  min-height: 50px;
+  height: 50px important;
 }
 
   .cover-photo-container {
