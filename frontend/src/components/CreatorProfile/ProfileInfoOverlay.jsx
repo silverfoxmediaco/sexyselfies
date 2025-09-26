@@ -1,0 +1,135 @@
+import React from 'react';
+import { Camera, Shield, Bell, CheckCircle, Heart, MessageCircle, MapPin, Clock, Calendar } from 'lucide-react';
+import './ProfileInfoOverlay.css';
+
+const ProfileInfoOverlay = ({
+  creator,
+  isFollowing = false,
+  hasMatched = false,
+  onFollow,
+  onLike,
+  onMessage
+}) => {
+  const getTimeAgo = (timestamp) => {
+    if (!timestamp || timestamp === 'Invalid Date' || isNaN(new Date(timestamp))) {
+      return 'recently';
+    }
+    const minutes = Math.floor((Date.now() - new Date(timestamp)) / 60000);
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  };
+
+  return (
+    <div className="ProfileInfoOverlay-container">
+      {/* Avatar Section */}
+      <div className="ProfileInfoOverlay-avatar-section">
+        <div className="ProfileInfoOverlay-avatar">
+          {(creator?.profileImage &&
+            typeof creator.profileImage === 'string' &&
+            creator.profileImage !== 'default-avatar.jpg' &&
+            creator.profileImage !== '' &&
+            (creator.profileImage.startsWith('http') || creator.profileImage.startsWith('data:'))) ||
+          (creator?.profilePhotoPreview &&
+            typeof creator.profilePhotoPreview === 'string' &&
+            creator.profilePhotoPreview.startsWith('data:')) ? (
+            <img
+              src={creator.profileImage || creator.profilePhotoPreview}
+              alt={creator.displayName || creator.username}
+            />
+          ) : (
+            <div className="ProfileInfoOverlay-avatar-placeholder">
+              <Camera size={24} />
+            </div>
+          )}
+          {creator?.isOnline && (
+            <span className="ProfileInfoOverlay-online-indicator"></span>
+          )}
+        </div>
+
+        {/* Profile Details */}
+        <div className="ProfileInfoOverlay-details">
+          <div className="ProfileInfoOverlay-name-section">
+            <h1 className="ProfileInfoOverlay-name">
+              {creator?.displayName || creator?.username || 'Creator'}
+              {creator?.verified && (
+                <Shield className="ProfileInfoOverlay-verified-icon" size={16} />
+              )}
+            </h1>
+            <span className="ProfileInfoOverlay-username">
+              @{creator?.username || 'username'}
+            </span>
+          </div>
+
+          {creator?.bio && (
+            <p className="ProfileInfoOverlay-bio">{creator.bio}</p>
+          )}
+
+          <div className="ProfileInfoOverlay-meta">
+            {creator?.location?.country && (
+              <span className="ProfileInfoOverlay-meta-item">
+                <MapPin size={12} />
+                {creator.location.country}
+              </span>
+            )}
+            <span className="ProfileInfoOverlay-meta-item">
+              <Clock size={12} />
+              {creator?.isOnline
+                ? 'Online now'
+                : `Active ${getTimeAgo(creator?.lastActive)}`}
+            </span>
+            {creator?.createdAt && (
+              <span className="ProfileInfoOverlay-meta-item">
+                <Calendar size={12} />
+                Joined {new Date(creator.createdAt).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="ProfileInfoOverlay-actions">
+        <button
+          className={`ProfileInfoOverlay-follow-btn ${isFollowing ? 'following' : ''}`}
+          onClick={onFollow}
+        >
+          {isFollowing ? (
+            <>
+              <CheckCircle size={16} />
+              <span>Connected</span>
+            </>
+          ) : (
+            <>
+              <Bell size={16} />
+              <span>Connect</span>
+            </>
+          )}
+        </button>
+
+        <button
+          className={`ProfileInfoOverlay-like-btn ${hasMatched ? 'matched' : ''}`}
+          onClick={onLike}
+        >
+          <Heart
+            size={16}
+            fill={hasMatched ? 'currentColor' : 'none'}
+          />
+        </button>
+
+        <button
+          className="ProfileInfoOverlay-message-btn"
+          onClick={onMessage}
+          disabled={!hasMatched}
+        >
+          <MessageCircle size={16} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ProfileInfoOverlay;

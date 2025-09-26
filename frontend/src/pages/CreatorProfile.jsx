@@ -61,6 +61,10 @@ import {
 
 import './CreatorProfile.css';
 
+// Import new components
+import ProfileCoverPhoto from '../components/CreatorProfile/ProfileCoverPhoto';
+import ContentGrid from '../components/CreatorProfile/ContentGrid';
+
 const CreatorProfile = () => {
   const { username } = useParams();
   const navigate = useNavigate();
@@ -295,8 +299,250 @@ const CreatorProfile = () => {
       {isDesktop && <MainHeader />}
       <div className='creator-profile-page'>
         <div className='profile-container'>
-          {/* Profile Header - FIXED: No duplicate header actions */}
-          <div className='profile-header'>
+          {/* NEW COMPONENT STRUCTURE */}
+          {/* Cover Photo with Overlay */}
+          <ProfileCoverPhoto
+            creator={creator}
+            coverImage={creator.coverImage || creator.coverImagePreview}
+            isMobile={isMobile}
+            isFollowing={isFollowing}
+            hasMatched={hasMatched}
+            onBack={() => navigate(-1)}
+            onFollow={handleFollow}
+            onLike={handleLike}
+            onMessage={handleMessage}
+            onShare={() => setShowShareMenu(!showShareMenu)}
+            onMore={() => setShowMoreMenu(!showMoreMenu)}
+            showShareMenu={showShareMenu}
+            showMoreMenu={showMoreMenu}
+          />
+
+          {/* Content Tabs */}
+          <div className='profile-tabs'>
+            <button
+              className={`tab-btn ${activeTab === 'content' ? 'active' : ''}`}
+              onClick={() => setActiveTab('content')}
+            >
+              <Grid3x3 size={18} />
+              <span>Content</span>
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'about' ? 'active' : ''}`}
+              onClick={() => setActiveTab('about')}
+            >
+              <User size={18} />
+              <span>About</span>
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+              onClick={() => setActiveTab('reviews')}
+            >
+              <Star size={18} />
+              <span>Reviews</span>
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          <div className='tab-content'>
+            {activeTab === 'content' && (
+              <>
+                {/* Content Filter */}
+                <div className='content-filter'>
+                  <button
+                    className={`filter-option ${contentFilter === 'all' ? 'active' : ''}`}
+                    onClick={() => setContentFilter('all')}
+                  >
+                    All ({content.length})
+                  </button>
+                  <button
+                    className={`filter-option ${contentFilter === 'photos' ? 'active' : ''}`}
+                    onClick={() => setContentFilter('photos')}
+                  >
+                    <Camera size={16} />
+                    Photos ({content.filter(c => c.type === 'photo').length})
+                  </button>
+                  <button
+                    className={`filter-option ${contentFilter === 'videos' ? 'active' : ''}`}
+                    onClick={() => setContentFilter('videos')}
+                  >
+                    <Video size={16} />
+                    Videos ({content.filter(c => c.type === 'video').length})
+                  </button>
+                  <button
+                    className={`filter-option ${contentFilter === 'locked' ? 'active' : ''}`}
+                    onClick={() => setContentFilter('locked')}
+                  >
+                    <Lock size={16} />
+                    Locked ({content.filter(c => c.isLocked && !c.isPurchased).length})
+                  </button>
+                </div>
+
+                {/* NEW CONTENT GRID COMPONENT */}
+                <ContentGrid
+                  content={getFilteredContent()}
+                  onContentClick={(contentItem, index) => {
+                    setSelectedContent(contentItem);
+                    setImageGalleryIndex(index);
+                    setShowImageGallery(true);
+                  }}
+                  purchasedContent={purchasedContent}
+                />
+              </>
+            )}
+
+            {activeTab === 'about' && (
+              <div className='about-section'>
+                <div className='about-group'>
+                  <h3>Profile Information</h3>
+                  <div className='about-items'>
+                    <div className='about-item'>
+                      <span className='about-label'>Username</span>
+                      <span className='about-value'>@{creator.username}</span>
+                    </div>
+                    <div className='about-item'>
+                      <span className='about-label'>Display Name</span>
+                      <span className='about-value'>{creator.displayName}</span>
+                    </div>
+                    <div className='about-item'>
+                      <span className='about-label'>Location</span>
+                      <span className='about-value'>{creator.location?.country || 'Not specified'}</span>
+                    </div>
+                    <div className='about-item'>
+                      <span className='about-label'>Member Since</span>
+                      <span className='about-value'>
+                        {creator.createdAt ? new Date(creator.createdAt).toLocaleDateString() : 'Unknown'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <div className='reviews-section'>
+                <div className='reviews-header'>
+                  <div className='overall-rating'>
+                    <span className='rating-value'>
+                      {creator.stats?.rating?.toFixed(1) || '0.0'}
+                    </span>
+                    <div className='rating-stars'>
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          size={20}
+                          fill={
+                            i < Math.floor(creator.stats?.rating || 0)
+                              ? 'currentColor'
+                              : 'none'
+                          }
+                        />
+                      ))}
+                    </div>
+                    <span className='review-count'>
+                      {creator.stats?.reviewCount || 0} reviews
+                    </span>
+                  </div>
+                </div>
+                <div className='reviews-list'>
+                  <p className='reviews-placeholder'>Reviews coming soon...</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Content Gallery Modal - Keep from original */}
+          <AnimatePresence>
+            {showImageGallery && selectedContent && (
+              <motion.div
+                className='content-gallery-overlay'
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowImageGallery(false)}
+              >
+                <motion.div
+                  className='content-gallery-modal'
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  <button
+                    className='modal-close'
+                    onClick={() => setShowImageGallery(false)}
+                  >
+                    <X size={24} />
+                  </button>
+
+                  <div className='content-gallery-header'>
+                    <div className='content-meta'>
+                      <h3 className='content-title'>{selectedContent.title}</h3>
+                      <span className='content-date'>
+                        {selectedContent.date && !isNaN(new Date(selectedContent.date))
+                          ? new Date(selectedContent.date).toLocaleDateString()
+                          : 'Recently uploaded'
+                        }
+                      </span>
+                    </div>
+                    <div className='content-actions'>
+                      <button
+                        className='action-btn like-btn'
+                        onClick={() => {
+                          setContent(prev => prev.map(item =>
+                            item.id === selectedContent.id
+                              ? { ...item, isLiked: !item.isLiked, likes: item.isLiked ? (item.likes || 1) - 1 : (item.likes || 0) + 1 }
+                              : item
+                          ));
+                          setSelectedContent(prev => ({
+                            ...prev,
+                            isLiked: !prev.isLiked,
+                            likes: prev.isLiked ? (prev.likes || 1) - 1 : (prev.likes || 0) + 1
+                          }));
+                        }}
+                      >
+                        <Heart size={20} fill={selectedContent.isLiked ? 'currentColor' : 'none'} />
+                        <span>{selectedContent.likes || 0}</span>
+                      </button>
+                      <button
+                        className='action-btn download-btn'
+                        onClick={() => {
+                          const link = document.createElement('a');
+                          link.href = selectedContent.thumbnail;
+                          link.download = selectedContent.title || 'content';
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
+                      >
+                        <Download size={20} />
+                        <span>Download</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className='content-gallery-body'>
+                    {selectedContent.type === 'video' ? (
+                      <video
+                        src={selectedContent.thumbnail}
+                        controls
+                        className='content-media'
+                        autoPlay
+                      />
+                    ) : (
+                      <img
+                        src={selectedContent.thumbnail}
+                        alt={selectedContent.title}
+                        className='content-media'
+                      />
+                    )}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* COMMENTED OUT OLD STRUCTURE */}
+          {/*
             {/* Cover Photo */}
             <div className='cover-photo-container'>
               {(creator.coverImage &&
@@ -944,13 +1190,8 @@ const CreatorProfile = () => {
                   <UserX size={18} />
                   Block User
                 </button>
-                <button className='more-option'>
-                  <BellOff size={18} />
-                  Mute Notifications
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          */}
+          {/* END OF COMMENTED OLD STRUCTURE */}
         </div>
       </div>
 

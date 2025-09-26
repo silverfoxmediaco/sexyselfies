@@ -1,4 +1,7 @@
 /* CreatorProfile.css - Mobile-First Responsive Design */
+/* TEMPORARILY COMMENTING OUT STYLES THAT CONFLICT WITH NEW COMPONENTS */
+
+/*
 
 /* CSS Variables */
 :root {
@@ -1193,4 +1196,4 @@ button:focus-visible,
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
+}*/

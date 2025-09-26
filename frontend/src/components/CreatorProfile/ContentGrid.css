@@ -1,0 +1,53 @@
+/* ContentGrid.css - Clean Grid Layout with 1fr for Mobile/Tablet */
+
+/* Container */
+.ContentGrid-container {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* Grid Layout - Mobile First (1fr single column) */
+.ContentGrid-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 8px;
+  width: 100%;
+}
+
+/* Empty State */
+.ContentGrid-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #8e8e93;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Tablet Styles - 768px and up (still 1fr for optimal mobile experience) */
+@media (min-width: 768px) {
+  .ContentGrid-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+}
+
+/* Desktop Styles - 1024px and up (3 columns) */
+@media (min-width: 1024px) {
+  .ContentGrid-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+}
+
+/* Large Desktop - 1440px and up (4 columns) */
+@media (min-width: 1440px) {
+  .ContentGrid-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
