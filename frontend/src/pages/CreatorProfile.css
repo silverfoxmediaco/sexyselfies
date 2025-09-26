@@ -1081,6 +1081,11 @@
     max-width: 768px;
   }
 
+  .profile-header {
+  
+  min-height: 50px;
+}
+
   .cover-photo-container {
     height: 600px;
   }
