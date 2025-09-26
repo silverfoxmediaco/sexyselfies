@@ -315,7 +315,8 @@ const CreatorProfile = () => {
               ) : (
                 <div className='cover-photo placeholder-cover'></div>
               )}
-              <div className='cover-overlay'></div>
+              
+              {/* REMOVED COVER OVERLAY FOR TESTING */}
 
               {/* Floating Action Buttons - Mobile Only */}
               {isMobile && (
