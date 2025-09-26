@@ -38,8 +38,6 @@ import {
   Clock,
   Shield,
   Eye,
-  Trash2,
-  Edit,
 } from 'lucide-react';
 
 const CreatorProfileSetup = () => {
@@ -169,13 +167,13 @@ const CreatorProfileSetup = () => {
   };
 
   const calculateCompletion = () => {
-    const totalFields = 23; // Updated: removed bio from required fields count
+    const totalFields = 22; // Updated: removed profilePhoto and bio from required fields count
     let completed = 0;
 
     // Check each field (displayName always counts as completed since it's from registration)
-    if (formData.profilePhoto) completed++;
     if (formData.displayName) completed++; // This will be pre-populated from registration
     // Bio is now optional - not counted in completion
+    // Profile images can be uploaded later - not counted in completion
     if (formData.gender) completed++;
     if (formData.orientation) completed++;
     // ... add more field checks
@@ -190,9 +188,8 @@ const CreatorProfileSetup = () => {
 
     switch (step) {
       case 1:
-        if (!formData.profilePhoto)
-          newErrors.profilePhoto = 'Profile photo is required';
         // Bio is now optional - no validation required
+        // Profile images can be uploaded later via EditProfileImagesModal
         break;
 
       case 2:
@@ -245,27 +242,16 @@ const CreatorProfileSetup = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const formDataToSend = new FormData();
 
-      // Append files
-      if (formData.profilePhoto) {
-        formDataToSend.append('profilePhoto', formData.profilePhoto);
-      }
-      if (formData.coverImage) {
-        formDataToSend.append('coverImage', formData.coverImage);
-      }
+      // Send profile data as JSON (no files to upload during setup)
+      const profileData = { ...formData };
+      // Remove any image-related fields that aren't needed
+      delete profileData.profilePhoto;
+      delete profileData.coverImage;
+      delete profileData.profilePhotoPreview;
+      delete profileData.coverImagePreview;
 
-      // Append other data as JSON
-      const dataWithoutFiles = { ...formData };
-      delete dataWithoutFiles.profilePhoto;
-      delete dataWithoutFiles.coverImage;
-      delete dataWithoutFiles.profilePhotoPreview;
-      delete dataWithoutFiles.coverImagePreview;
-
-      formDataToSend.append('data', JSON.stringify(dataWithoutFiles));
-
-      // Don't set Content-Type header - let browser handle it for multipart data
-      const response = await api.post('/creator/profile/setup', formDataToSend);
+      const response = await api.post('/creator/profile/setup', profileData);
 
       if (response.success) {
         setShowSuccess(true);
@@ -532,47 +518,6 @@ const CreatorProfileSetup = () => {
 
 // Step 1: Visual Identity
 const StepOne = ({ formData, setFormData, errors }) => {
-  const profileInputRef = useRef(null);
-  const coverInputRef = useRef(null);
-
-  const handlePhotoChange = (e, type) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (type === 'profile') {
-        setFormData(prev => ({
-          ...prev,
-          profilePhoto: file,
-          profilePhotoPreview: reader.result,
-        }));
-      } else {
-        setFormData(prev => ({
-          ...prev,
-          coverImage: file,
-          coverImagePreview: reader.result,
-        }));
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handlePhotoDelete = type => {
-    if (type === 'profile') {
-      setFormData(prev => ({
-        ...prev,
-        profilePhoto: null,
-        profilePhotoPreview: null,
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        coverImage: null,
-        coverImagePreview: null,
-      }));
-    }
-  };
 
   return (
     <div className='step-one'>
@@ -581,116 +526,12 @@ const StepOne = ({ formData, setFormData, errors }) => {
         <p>Make a stunning first impression that converts viewers into fans</p>
       </div>
 
-      {/* Photo uploads with preview */}
-      <div className='photo-section'>
-        <div className='photo-upload-grid'>
-          {/* Profile photo */}
-          <div className='profile-photo-container'>
-            <label className='photo-upload-label'>
-              <input
-                ref={profileInputRef}
-                type='file'
-                accept='image/*'
-                onChange={e => handlePhotoChange(e, 'profile')}
-                hidden
-              />
-              <div
-                className={`photo-upload-box profile ${formData.profilePhotoPreview ? 'has-image' : ''}`}
-              >
-                {formData.profilePhotoPreview ? (
-                  <div className='photo-preview'>
-                    <img src={formData.profilePhotoPreview} alt='Profile' />
-                    <div className='photo-overlay'>
-                      <div className='photo-actions'>
-                        <button
-                          type='button'
-                          className='photo-action-btn change-btn'
-                          onClick={() => profileInputRef.current?.click()}
-                        >
-                          <Edit size={16} />
-                          <span>Change</span>
-                        </button>
-                        <button
-                          type='button'
-                          className='photo-action-btn delete-btn'
-                          onClick={() => handlePhotoDelete('profile')}
-                        >
-                          <Trash2 size={16} />
-                          <span>Delete</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className='upload-prompt'>
-                    <Camera size={32} />
-                    <span className='upload-title'>Profile Photo</span>
-                    <span className='upload-hint'>Click to upload</span>
-                  </div>
-                )}
-              </div>
-            </label>
-            {errors.profilePhoto && (
-              <span className='error-message'>{errors.profilePhoto}</span>
-            )}
-            <div className='photo-tips'>
-              <span className='tip'>✔ Clear face photo</span>
-              <span className='tip'>✔ Good lighting</span>
-              <span className='tip'>✔ Min 400x400px</span>
-            </div>
-          </div>
-
-          {/* Cover image */}
-          <div className='cover-photo-container'>
-            <label className='photo-upload-label'>
-              <input
-                ref={coverInputRef}
-                type='file'
-                accept='image/*'
-                onChange={e => handlePhotoChange(e, 'cover')}
-                hidden
-              />
-              <div
-                className={`photo-upload-box cover ${formData.coverImagePreview ? 'has-image' : ''}`}
-              >
-                {formData.coverImagePreview ? (
-                  <div className='photo-preview'>
-                    <img src={formData.coverImagePreview} alt='Cover' />
-                    <div className='photo-overlay'>
-                      <div className='photo-actions'>
-                        <button
-                          type='button'
-                          className='photo-action-btn change-btn'
-                          onClick={() => coverInputRef.current?.click()}
-                        >
-                          <Edit size={16} />
-                          <span>Change</span>
-                        </button>
-                        <button
-                          type='button'
-                          className='photo-action-btn delete-btn'
-                          onClick={() => handlePhotoDelete('cover')}
-                        >
-                          <Trash2 size={16} />
-                          <span>Delete</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className='upload-prompt'>
-                    <Upload size={32} />
-                    <span className='upload-title'>Cover Image (Optional)</span>
-                    <span className='upload-hint'>Showcase your style</span>
-                  </div>
-                )}
-              </div>
-            </label>
-            <div className='photo-tips'>
-              <span className='tip'>✔ 1920x480px ideal</span>
-              <span className='tip'>✔ Represents your brand</span>
-            </div>
-          </div>
+      {/* Note about profile images */}
+      <div className='info-section'>
+        <div className='info-card'>
+          <Camera size={24} />
+          <h3>Profile Images</h3>
+          <p>You can upload your profile photo and cover image after completing setup using the "Edit Profile Images" button in your quick actions menu.</p>
         </div>
       </div>
 
