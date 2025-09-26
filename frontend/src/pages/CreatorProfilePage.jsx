@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   User,
+  Eye,
   Camera,
   MapPin,
   Heart,
