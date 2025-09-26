@@ -369,6 +369,15 @@
   display: none;
 }
 
+/* Ensure single column grid on mobile */
+@media (max-width: 767px) {
+  .content-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2px;
+    padding: 2px;
+  }
+}
+
 /* Profile Tabs */
 .profile-tabs {
   display: flex;
