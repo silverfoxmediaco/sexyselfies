@@ -137,7 +137,7 @@
 /* Header section */
 .setup-header {
   margin-bottom: 40px;
-  animation: slideDown 0.6s ease;
+  animation: fadeIn 0.4s ease;
 }
 
 .logo-section {
@@ -1270,7 +1270,7 @@
 
   .setup-header {
   margin-bottom: 40px;
-  animation: slideDown 0.6s ease;
+  animation: fadeIn 0.4s ease;
 }
 
   .preview-profile-section {
@@ -1449,7 +1449,7 @@
 
   /* Step 5 specific mobile padding */
   .profile-setup-container.step-five-container {
-    padding-top: 160px;
+    padding-top: 160px !important;
   }
 
   .step-content-wrapper {
@@ -1491,6 +1491,15 @@
 }
 
 /* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -1510,15 +1519,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 
