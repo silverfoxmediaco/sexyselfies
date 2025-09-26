@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Edit3, Eye, Settings, Share2 } from 'lucide-react';
-import CreatorProfilePreview from './CreatorProfilePreview';
+import CreatorProfilePreview from '../pages/CreatorProfilePreview';
 import './CreatorQuickActions.css';
 
 const CreatorQuickActions = ({
@@ -27,6 +27,7 @@ const CreatorQuickActions = ({
     if (onEditProfile) {
       onEditProfile();
     } else {
+      // Use short route pattern to match dashboard navigation
       navigate('/creator/profile-setup');
     }
   };
@@ -36,6 +37,7 @@ const CreatorQuickActions = ({
   };
 
   const handleSettings = () => {
+    // Use short route pattern to match dashboard navigation
     navigate('/creator/settings');
   };
 
