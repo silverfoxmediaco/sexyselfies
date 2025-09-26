@@ -129,6 +129,11 @@
   flex-direction: column;
 }
 
+/* Step 5 specific - extra top padding for profile preview */
+.profile-setup-container.step-five-container {
+  padding-top: 160px;
+}
+
 /* Header section */
 .setup-header {
   margin-bottom: 40px;
@@ -1265,7 +1270,6 @@
 
   .setup-header {
   margin-bottom: 40px;
-  margin-top: 160px !important;
   animation: slideDown 0.6s ease;
 }
 
@@ -1441,6 +1445,11 @@
 @media (max-width: 768px) {
   .profile-setup-container {
     padding: 20px 15px;
+  }
+
+  /* Step 5 specific mobile padding */
+  .profile-setup-container.step-five-container {
+    padding-top: 160px;
   }
 
   .step-content-wrapper {
