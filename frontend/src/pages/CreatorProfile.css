@@ -178,7 +178,7 @@
 }
 
 /* Profile Info Overlay - Properly positioned at bottom of cover */
-/*.profile-info-overlay {
+.profile-info-overlay {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -196,7 +196,7 @@
   flex-direction: column;
   gap: 12px;
   pointer-events: auto;
-}*/
+}
 
 /* Avatar Section */
 .profile-avatar-section {
