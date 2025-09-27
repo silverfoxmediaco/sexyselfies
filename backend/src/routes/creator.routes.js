@@ -210,13 +210,7 @@ if (creatorContentController.getContentAnalytics) {
 // ==========================================
 
 // Get creator's content library available for gifting
-router.get('/content/giftable', protect, authorize('creator'), (req, res, next) => {
-  if (giftController.getCreatorContentLibrary) {
-    return giftController.getCreatorContentLibrary(req, res, next);
-  } else {
-    return res.status(501).json({ error: 'Gift content library not available' });
-  }
-});
+router.get('/content/giftable', protect, authorize('creator'), giftController.getCreatorContentLibrary);
 
 // Get gift analytics
 router.get('/gifts/analytics', protect, authorize('creator'), (req, res, next) => {
