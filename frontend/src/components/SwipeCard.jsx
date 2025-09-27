@@ -189,7 +189,7 @@ const SwipeCard = ({
         <img
           src={allPhotos[currentPhotoIndex]?.url || creator.profileImage}
           alt={creator.displayName || ''}
-          className={`swipecard-photo ${allPhotos[currentPhotoIndex]?.isPaid ? 'swipecard-photo-blurred' : ''}`}
+          className={`swipecard-photo ${allPhotos[currentPhotoIndex]?.isPaid === true ? 'swipecard-photo-blurred' : ''}`}
           draggable='false'
         />
 
