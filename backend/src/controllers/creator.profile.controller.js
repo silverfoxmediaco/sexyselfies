@@ -90,9 +90,10 @@ exports.setupProfile = async (req, res) => {
       });
     }
 
-    // Parse form data (sent as JSON string)
+    // Parse form data (handle both direct JSON and FormData with JSON string)
     let formData = {};
     if (req.body.data) {
+      // Old format: FormData with JSON string in 'data' field
       try {
         formData = JSON.parse(req.body.data);
       } catch (e) {
@@ -102,6 +103,9 @@ exports.setupProfile = async (req, res) => {
           message: 'Invalid form data',
         });
       }
+    } else {
+      // New format: Direct JSON body
+      formData = req.body;
     }
 
     // Handle image uploads
