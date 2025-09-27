@@ -42,9 +42,10 @@
 /* Container */
 .swipecard-container {
   position: absolute;
-  width: 100%;
-  max-width: 400px;
-  height: 700px;
+  width: 90vw;
+  max-width: 450px;
+  height: 75vh;
+  max-height: 800px;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
