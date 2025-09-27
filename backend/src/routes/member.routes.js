@@ -69,9 +69,17 @@ router.get('/creator/:identifier', async (req, res) => {
       });
     }
 
-    // Debug: Log cover image data
+    // Debug: Log creator data
     console.log('🖼️ Creator cover image from DB:', creator.coverImage);
     console.log('📸 Creator profile image from DB:', creator.profileImage);
+    console.log('👤 Creator demographics:', {
+      gender: creator.gender,
+      orientation: creator.orientation,
+      bodyType: creator.bodyType,
+      ethnicity: creator.ethnicity,
+      age: creator.age,
+      location: creator.location
+    });
 
     // Get creator's content (public previews and locked content)
     const content = await Content.find({
@@ -90,6 +98,10 @@ router.get('/creator/:identifier', async (req, res) => {
       profileImage: creator.profileImage,
       coverImage: creator.coverImage,
       age: creator.age,
+      gender: creator.gender,
+      orientation: creator.orientation,
+      bodyType: creator.bodyType,
+      ethnicity: creator.ethnicity,
       isVerified: creator.isVerified,
       isOnline: creator.lastActive > new Date(Date.now() - 15 * 60 * 1000), // Online if active in last 15 min
       lastActive: creator.lastActive,
