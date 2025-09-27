@@ -44,6 +44,7 @@ import {
   getUserRole,
 } from '../utils/mobileDetection';
 import GiftContentModal from '../components/GiftContentModal';
+import MemberCard from '../components/MemberCard';
 import './BrowseMembers.css';
 
 const BrowseMembers = () => {
@@ -660,165 +661,46 @@ const BrowseMembers = () => {
           ) : (
             <div className={`members-${viewMode}`}>
               {filteredMembers.map(member => {
-                const tierInfo = getSpendingTierInfo(member.spendingTier);
-                const activityStatus = getActivityStatus(
-                  member.lastActive,
-                  member.isOnline
-                );
+                // Transform member data to match MemberCard expected structure
+                const transformedMember = {
+                  id: member.id,
+                  username: member.username,
+                  lastActive: member.lastActive,
+                  tier: getSpendingTierInfo(member.spendingTier).label,
+                  isNew: member.badges?.includes('newcomer') || false,
+                  stats: {
+                    monthlySpend: member.stats?.last30DaySpend || 0,
+                    totalPurchases: member.stats?.contentPurchases || 0,
+                    messageCount: member.stats?.messagesExchanged || 0,
+                    tipTotal: member.stats?.tipsGiven || 0
+                  },
+                  badges: member.badges || []
+                };
 
                 return (
                   <motion.div
                     key={member.id}
-                    className='member-card'
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    whileHover={{ y: -4 }}
-                    onClick={() => handleSelectMember(member)}
+                    transition={{ duration: 0.3 }}
                   >
-                    {/* Selection Checkbox */}
-                    <div
-                      className='selection-checkbox'
-                      onClick={e => {
-                        e.stopPropagation();
-                        toggleMemberSelection(member.id);
+                    <MemberCard
+                      member={transformedMember}
+                      isSelected={selectedMembers.includes(member.id)}
+                      onSelect={() => toggleMemberSelection(member.id)}
+                      onMessage={(memberData) => {
+                        sendMessageToMember(
+                          memberData.id,
+                          'Hi! Thanks for being an amazing supporter! 💕'
+                        );
                       }}
-                    >
-                      <input
-                        type='checkbox'
-                        checked={selectedMembers.includes(member.id)}
-                        onChange={() => {}}
-                      />
-                    </div>
-
-                    {/* Member Header - NO AVATAR */}
-                    <div className='member-header'>
-                      <div className='member-identity'>
-                        <h3 className='member-username'>
-                          {member.username}
-                          {member.isOnline && (
-                            <span className='online-indicator pulse'></span>
-                          )}
-                        </h3>
-                        <div className='member-status'>
-                          <span
-                            className='activity-status'
-                            style={{ color: activityStatus.color }}
-                          >
-                            {activityStatus.text}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div
-                        className='member-tier'
-                        style={{ color: tierInfo.color }}
-                      >
-                        {tierInfo.icon}
-                        <span>{tierInfo.label}</span>
-                      </div>
-                    </div>
-
-                    {/* Member Stats */}
-                    <div className='member-stats'>
-                      <div className='stat-row'>
-                        <div className='stat'>
-                          <DollarSign size={14} />
-                          <span className='stat-label'>30d:</span>
-                          <span className='stat-value'>
-                            ${member.stats.last30DaySpend}
-                          </span>
-                        </div>
-                        <div className='stat'>
-                          <Package size={14} />
-                          <span className='stat-label'>Total:</span>
-                          <span className='stat-value'>
-                            {member.stats.contentPurchases}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className='stat-row'>
-                        <div className='stat'>
-                          <MessageCircle size={14} />
-                          <span className='stat-label'>Messages:</span>
-                          <span className='stat-value'>
-                            {member.stats.messagesExchanged}
-                          </span>
-                        </div>
-                        <div className='stat'>
-                          <Gift size={14} />
-                          <span className='stat-label'>Tips:</span>
-                          <span className='stat-value'>
-                            {member.stats.tipsGiven}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Member Badges */}
-                    {member.badges && member.badges.length > 0 && (
-                      <div className='member-badges'>
-                        {member.badges.map((badge, index) => (
-                          <span
-                            key={index}
-                            className={`member-badge member-badge-${badge}`}
-                          >
-                            {badge === 'whale' && <Diamond size={12} />}
-                            {badge === 'vip' && <Crown size={12} />}
-                            {badge === 'loyal-fan' && <Heart size={12} />}
-                            {badge === 'big-spender' && (
-                              <DollarSign size={12} />
-                            )}
-                            {badge === 'top-supporter' && <Trophy size={12} />}
-                            {badge === 'newcomer' && <Sparkles size={12} />}
-                            {badge === 'supporter' && <Star size={12} />}
-                            {badge === 'engaged' && <Zap size={12} />}
-                            {badge === 'night-owl' && <Flame size={12} />}
-                            {badge === 'regular' && <Shield size={12} />}
-                            <span>{badge.replace('-', ' ')}</span>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Quick Actions */}
-                    <div className='member-actions'>
-                      <button
-                        className='action-btn message-btn'
-                        onClick={e => {
-                          e.stopPropagation();
-                          sendMessageToMember(
-                            member.id,
-                            'Hi! Thanks for being an amazing supporter! 💕'
-                          );
-                        }}
-                      >
-                        <MessageCircle size={16} />
-                        <span>Message</span>
-                      </button>
-
-                      <button
-                        className='action-btn gift-btn'
-                        onClick={e => {
-                          e.stopPropagation();
-                          handleOpenGiftModal(member);
-                        }}
-                      >
-                        <Gift size={16} />
-                        <span>Gift</span>
-                      </button>
-
-                      <button
-                        className='action-btn view-btn'
-                        onClick={e => {
-                          e.stopPropagation();
-                          handleSelectMember(member);
-                        }}
-                      >
-                        <Eye size={16} />
-                        <span>View</span>
-                      </button>
-                    </div>
+                      onGift={(memberData) => {
+                        handleOpenGiftModal(member);
+                      }}
+                      onView={(memberData) => {
+                        handleSelectMember(member);
+                      }}
+                    />
                   </motion.div>
                 );
               })}

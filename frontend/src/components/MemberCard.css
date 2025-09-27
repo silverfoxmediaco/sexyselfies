@@ -1,0 +1,357 @@
+/* MemberCard.css - Reusable Member Card Component Styles */
+
+/* CSS Variables for MemberCard */
+:root {
+  --membercard-bg-primary: #1c1c1e;
+  --membercard-bg-hover: #2a2a2c;
+  --membercard-border: #3a3a3c;
+  --membercard-text-primary: #ffffff;
+  --membercard-text-secondary: #c7c7cc;
+  --membercard-text-tertiary: #8e8e93;
+  --membercard-accent-primary: #17d2c2;
+  --membercard-accent-secondary: #12b7ab;
+
+  /* Activity Status Colors */
+  --membercard-status-active: #22c55e;
+  --membercard-status-recent: #f59e0b;
+  --membercard-status-inactive: #8e8e93;
+
+  /* Badge Colors */
+  --membercard-badge-newcomer: #8b5cf6;
+  --membercard-badge-vip: #f59e0b;
+  --membercard-badge-supporter: #ec4899;
+  --membercard-badge-whale: #10b981;
+
+  /* Spacing */
+  --membercard-spacing-xs: 4px;
+  --membercard-spacing-sm: 8px;
+  --membercard-spacing-md: 16px;
+  --membercard-spacing-lg: 24px;
+
+  /* Border Radius */
+  --membercard-radius: 12px;
+  --membercard-radius-sm: 8px;
+  --membercard-radius-xs: 4px;
+}
+
+/* Main Container */
+.MemberCard-container {
+  background: var(--membercard-bg-primary);
+  border: 1px solid var(--membercard-border);
+  border-radius: var(--membercard-radius);
+  padding: var(--membercard-spacing-md);
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.MemberCard-container:hover {
+  background: var(--membercard-bg-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Checkbox */
+.MemberCard-checkbox {
+  position: absolute;
+  top: var(--membercard-spacing-md);
+  right: var(--membercard-spacing-md);
+  z-index: 2;
+}
+
+.MemberCard-checkbox-input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--membercard-accent-primary);
+  cursor: pointer;
+}
+
+/* Header */
+.MemberCard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--membercard-spacing-md);
+  padding-right: 30px; /* Space for checkbox */
+}
+
+.MemberCard-identity {
+  flex: 1;
+}
+
+.MemberCard-username {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--membercard-text-primary);
+  margin: 0 0 var(--membercard-spacing-xs) 0;
+  line-height: 1.2;
+}
+
+.MemberCard-status {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: var(--membercard-radius-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.MemberCard-status-active {
+  background: rgba(34, 197, 94, 0.2);
+  color: var(--membercard-status-active);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.MemberCard-status-recent {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--membercard-status-recent);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.MemberCard-status-inactive {
+  background: rgba(142, 142, 147, 0.2);
+  color: var(--membercard-status-inactive);
+  border: 1px solid rgba(142, 142, 147, 0.3);
+}
+
+.MemberCard-tier {
+  display: flex;
+  align-items: center;
+  gap: var(--membercard-spacing-xs);
+  font-size: 12px;
+  color: var(--membercard-text-secondary);
+  font-weight: 500;
+}
+
+.MemberCard-tier svg {
+  color: var(--membercard-accent-primary);
+}
+
+/* Stats Grid */
+.MemberCard-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--membercard-spacing-md);
+  margin-bottom: var(--membercard-spacing-md);
+  padding: var(--membercard-spacing-md);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--membercard-radius-sm);
+}
+
+.MemberCard-stat {
+  display: flex;
+  align-items: center;
+  gap: var(--membercard-spacing-sm);
+}
+
+.MemberCard-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--membercard-accent-primary);
+  border-radius: var(--membercard-radius-xs);
+  color: white;
+  flex-shrink: 0;
+}
+
+.MemberCard-stat-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.MemberCard-stat-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--membercard-text-primary);
+  line-height: 1.2;
+}
+
+.MemberCard-stat-label {
+  font-size: 11px;
+  color: var(--membercard-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1;
+}
+
+/* Badges */
+.MemberCard-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--membercard-spacing-xs);
+  margin-bottom: var(--membercard-spacing-md);
+}
+
+.MemberCard-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--membercard-spacing-xs);
+  padding: 4px 8px;
+  border-radius: var(--membercard-radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.MemberCard-badge-newcomer {
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--membercard-badge-newcomer);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.MemberCard-badge-vip {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--membercard-badge-vip);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.MemberCard-badge-supporter {
+  background: rgba(236, 72, 153, 0.2);
+  color: var(--membercard-badge-supporter);
+  border: 1px solid rgba(236, 72, 153, 0.3);
+}
+
+.MemberCard-badge-whale {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--membercard-badge-whale);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Actions */
+.MemberCard-actions {
+  display: flex;
+  gap: var(--membercard-spacing-sm);
+}
+
+.MemberCard-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--membercard-spacing-xs);
+  padding: var(--membercard-spacing-sm) var(--membercard-spacing-sm);
+  border: 1px solid var(--membercard-border);
+  border-radius: var(--membercard-radius-sm);
+  background: transparent;
+  color: var(--membercard-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 36px;
+}
+
+.MemberCard-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.MemberCard-action-message:hover {
+  background: rgba(23, 210, 194, 0.1);
+  border-color: var(--membercard-accent-primary);
+  color: var(--membercard-accent-primary);
+}
+
+.MemberCard-action-gift:hover {
+  background: rgba(236, 72, 153, 0.1);
+  border-color: var(--membercard-badge-supporter);
+  color: var(--membercard-badge-supporter);
+}
+
+.MemberCard-action-view:hover {
+  background: rgba(142, 142, 147, 0.1);
+  border-color: var(--membercard-text-secondary);
+  color: var(--membercard-text-primary);
+}
+
+.MemberCard-action-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .MemberCard-container {
+    padding: var(--membercard-spacing-sm);
+  }
+
+  .MemberCard-header {
+    padding-right: 25px;
+  }
+
+  .MemberCard-username {
+    font-size: 14px;
+  }
+
+  .MemberCard-stats {
+    gap: var(--membercard-spacing-sm);
+    padding: var(--membercard-spacing-sm);
+  }
+
+  .MemberCard-stat-value {
+    font-size: 12px;
+  }
+
+  .MemberCard-stat-label {
+    font-size: 10px;
+  }
+
+  .MemberCard-action-btn {
+    padding: var(--membercard-spacing-xs);
+    font-size: 11px;
+    min-height: 32px;
+  }
+
+  .MemberCard-action-btn span {
+    display: none;
+  }
+}
+
+/* Large grid layout adjustments */
+@media (min-width: 1200px) {
+  .MemberCard-stats {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+
+/* Accessibility */
+.MemberCard-container:focus-visible {
+  outline: 2px solid var(--membercard-accent-primary);
+  outline-offset: 2px;
+}
+
+.MemberCard-action-btn:focus-visible {
+  outline: 2px solid var(--membercard-accent-primary);
+  outline-offset: 1px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .MemberCard-container,
+  .MemberCard-action-btn {
+    transition: none;
+  }
+
+  .MemberCard-container:hover,
+  .MemberCard-action-btn:hover {
+    transform: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .MemberCard-container {
+    border-width: 2px;
+  }
+
+  .MemberCard-badge {
+    border-width: 2px;
+  }
+
+  .MemberCard-action-btn {
+    border-width: 2px;
+  }
+}
