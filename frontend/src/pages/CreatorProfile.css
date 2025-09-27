@@ -109,23 +109,26 @@
   display: block;
 }
 
-/* Cover Photo Container - Auto height for full image display */
+/* Cover Photo Container - Using card-image approach */
 .cover-photo-container {
   position: relative;
   width: 100%;
-  min-height: 300px;
-  max-height: 600px;
+  height: 60vh; /* Use viewport height like card-image-container */
   margin: 100px 0 0 0;
-  display: block;
+  background: linear-gradient(135deg, #1c1c1e 0%, #2a2a2c 100%);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
 .cover-photo {
   width: 100%;
-  height: auto;
-  max-height: 600px;
-  object-fit: contain;
-  display: block;
+  height: 100%;
+  object-fit: cover; /* Back to cover for better display */
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
 /* Placeholder cover - Clean gradient without stripes */
