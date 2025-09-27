@@ -318,6 +318,45 @@ const CreatorProfile = () => {
             showMoreMenu={showMoreMenu}
           />
 
+          {/* More Menu */}
+          {showMoreMenu && (
+            <div className='more-menu-overlay' onClick={() => setShowMoreMenu(false)}>
+              <div className='more-menu' onClick={e => e.stopPropagation()}>
+                <button className='more-menu-item' onClick={() => {
+                  navigator.share ? navigator.share({
+                    title: `${creator.displayName}'s Profile`,
+                    url: window.location.href
+                  }) : navigator.clipboard.writeText(window.location.href);
+                  setShowMoreMenu(false);
+                }}>
+                  <Share2 size={18} />
+                  <span>Share Profile</span>
+                </button>
+                <button className='more-menu-item' onClick={() => {
+                  // Add to favorites logic here
+                  setShowMoreMenu(false);
+                }}>
+                  <Heart size={18} />
+                  <span>Add to Favorites</span>
+                </button>
+                <button className='more-menu-item' onClick={() => {
+                  // Report user logic here
+                  setShowMoreMenu(false);
+                }}>
+                  <Flag size={18} />
+                  <span>Report User</span>
+                </button>
+                <button className='more-menu-item' onClick={() => {
+                  // Block user logic here
+                  setShowMoreMenu(false);
+                }}>
+                  <UserX size={18} />
+                  <span>Block User</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Content Tabs */}
           <div className='profile-tabs'>
             <button

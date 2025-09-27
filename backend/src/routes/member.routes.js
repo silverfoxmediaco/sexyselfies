@@ -69,17 +69,6 @@ router.get('/creator/:identifier', async (req, res) => {
       });
     }
 
-    // Debug: Log creator data
-    console.log('🖼️ Creator cover image from DB:', creator.coverImage);
-    console.log('📸 Creator profile image from DB:', creator.profileImage);
-    console.log('👤 Creator demographics:', {
-      gender: creator.gender,
-      orientation: creator.orientation,
-      bodyType: creator.bodyType,
-      ethnicity: creator.ethnicity,
-      age: creator.age,
-      location: creator.location
-    });
 
     // Get creator's content (public previews and locked content)
     const content = await Content.find({
