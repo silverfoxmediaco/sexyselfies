@@ -251,8 +251,6 @@ const CreatorProfileSetup = () => {
       delete profileData.profilePhotoPreview;
       delete profileData.coverImagePreview;
 
-      console.log('🚀 Submitting profile setup with data:', profileData);
-      console.log('🔍 Ethnicity in submission:', profileData.ethnicity);
 
       const response = await api.post('/creator/profile/setup', profileData);
 
@@ -313,18 +311,7 @@ const CreatorProfileSetup = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
-            onPreview={() => {
-              console.log('🔍 Opening preview with formData:', formData);
-              console.log(
-                '📷 Profile photo in formData:',
-                formData.profilePhotoPreview
-              );
-              console.log(
-                '🖼️ Cover image in formData:',
-                formData.coverImagePreview
-              );
-              setShowPreview(true);
-            }}
+            onPreview={() => setShowPreview(true)}
           />
         );
       default:
@@ -665,11 +652,9 @@ const StepTwo = ({ formData, setFormData, errors }) => {
         <select
           className='form-input'
           value={formData.ethnicity}
-          onChange={e => {
-            console.log('🔍 Ethnicity changed to:', e.target.value);
-            setFormData(prev => ({ ...prev, ethnicity: e.target.value }));
-            console.log('🔍 Updated formData will have ethnicity:', e.target.value);
-          }}
+          onChange={e =>
+            setFormData(prev => ({ ...prev, ethnicity: e.target.value }))
+          }
         >
           <option value=''>Prefer not to say</option>
           <option value='caucasian'>Caucasian/White</option>

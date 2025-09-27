@@ -9,24 +9,8 @@ const CreatorProfileInformation = ({
   className = '',
   showTitle = true
 }) => {
-  // Temporary debug logging to see what data we're receiving
-  console.log('🌟 CreatorProfileInformation component RENDERED!');
-  console.log('🔍 CreatorProfileInformation received creatorData:', creatorData);
-  console.log('📊 Individual field values:', {
-    gender: creatorData?.gender,
-    orientation: creatorData?.orientation,
-    bodyType: creatorData?.bodyType,
-    ethnicity: creatorData?.ethnicity,
-    age: creatorData?.age,
-    location: creatorData?.location
-  });
-
   const formatValue = (value) => {
-    console.log('🎯 formatValue called with:', value, 'type:', typeof value);
-    if (!value || value === '') {
-      console.log('🎯 formatValue returning: Not specified (empty value)');
-      return 'Not specified';
-    }
+    if (!value || value === '') return 'Not specified';
     // Format ethnicity values
     if (value === 'caucasian') return 'Caucasian/White';
     if (value === 'black') return 'Black/African';
@@ -37,9 +21,7 @@ const CreatorProfileInformation = ({
     if (value === 'pacific-islander') return 'Pacific Islander';
     if (value === 'mixed') return 'Mixed/Multi-racial';
     // Default capitalization
-    const formatted = value.charAt(0).toUpperCase() + value.slice(1);
-    console.log('🎯 formatValue returning:', formatted);
-    return formatted;
+    return value.charAt(0).toUpperCase() + value.slice(1);
   };
 
   const details = [

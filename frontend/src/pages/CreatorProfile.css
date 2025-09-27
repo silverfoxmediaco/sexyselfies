@@ -143,6 +143,48 @@
   pointer-events: none;
 }
 
+/* Header Actions */
+.header-actions {
+  position: absolute;
+  top: env(safe-area-inset-top, 16px);
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 50;
+}
+
+.header-actions .action-icon-btn:first-child {
+  /* Back button - positioned on the left */
+  margin-right: auto;
+}
+
+.header-actions .action-icon-btn:not(:first-child) {
+  /* Other buttons - grouped on the right */
+  margin-left: 8px;
+}
+
+.action-icon-btn {
+  width: 44px;
+  height: 44px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: var(--creator-profile-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-icon-btn:active {
+  transform: scale(0.95);
+  background: rgba(0, 0, 0, 0.95);
+}
+
 /* Floating Action Buttons - Mobile Only */
 .floating-header-actions {
   position: absolute;
@@ -389,6 +431,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  margin-top: 16px; /* Add spacing to push tabs down from header */
 }
 
 .tab-btn {
@@ -431,6 +474,7 @@
   flex: 1;
   background: var(--creator-profile-bg-primary);
   padding-bottom: 80px;
+  min-height: calc(100vh - 500px); /* Ensure content area has minimum height */
 }
 
 /* Content Filter */
