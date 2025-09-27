@@ -21,6 +21,7 @@ import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import CreatorProfilePreview from './CreatorProfilePreview';
 import CreatorQuickActions from '../components/CreatorQuickActions';
+import CreatorProfileInformation from '../components/CreatorProfileInformation';
 import {
   useIsMobile,
   useIsDesktop,
@@ -449,37 +450,11 @@ const CreatorProfilePage = () => {
 
       {/* Profile Details */}
       <div className='profile-details'>
-        <div className='details-section'>
-          <h3>Profile Information</h3>
-          <div className='details-grid'>
-            <div className='detail-item'>
-              <span className='detail-label'>Gender</span>
-              <span className='detail-value'>
-                {profileData?.gender || 'Not specified'}
-              </span>
-            </div>
-            <div className='detail-item'>
-              <span className='detail-label'>Orientation</span>
-              <span className='detail-value'>
-                {profileData?.orientation || 'Not specified'}
-              </span>
-            </div>
-            <div className='detail-item'>
-              <span className='detail-label'>Body Type</span>
-              <span className='detail-value'>
-                {profileData?.bodyType || 'Not specified'}
-              </span>
-            </div>
-            <div className='detail-item'>
-              <span className='detail-label'>Location</span>
-              <span className='detail-value'>
-                {typeof profileData?.location === 'object'
-                  ? profileData?.location?.country || 'Not specified'
-                  : profileData?.location || 'Not specified'}
-              </span>
-            </div>
-          </div>
-        </div>
+        <CreatorProfileInformation
+          creatorData={profileData}
+          isOwnProfile={profileData?.isOwnProfile}
+          onEditClick={() => navigate('/creator/profile-setup')}
+        />
 
         <div className='details-section'>
           <h3>Content Pricing</h3>

@@ -64,6 +64,7 @@ import './CreatorProfile.css';
 // Import new components
 import ProfileCoverPhoto from '../components/CreatorProfile/ProfileCoverPhoto';
 import ContentGrid from '../components/CreatorProfile/ContentGrid';
+import CreatorProfileInformation from '../components/CreatorProfileInformation';
 
 const CreatorProfile = () => {
   const { username } = useParams();
@@ -391,31 +392,11 @@ const CreatorProfile = () => {
             )}
 
             {activeTab === 'about' && (
-              <div className='about-section'>
-                <div className='about-group'>
-                  <h3>Profile Information</h3>
-                  <div className='about-items'>
-                    <div className='about-item'>
-                      <span className='about-label'>Username</span>
-                      <span className='about-value'>@{creator.username}</span>
-                    </div>
-                    <div className='about-item'>
-                      <span className='about-label'>Display Name</span>
-                      <span className='about-value'>{creator.displayName}</span>
-                    </div>
-                    <div className='about-item'>
-                      <span className='about-label'>Location</span>
-                      <span className='about-value'>{creator.location?.country || 'Not specified'}</span>
-                    </div>
-                    <div className='about-item'>
-                      <span className='about-label'>Member Since</span>
-                      <span className='about-value'>
-                        {creator.createdAt ? new Date(creator.createdAt).toLocaleDateString() : 'Unknown'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <CreatorProfileInformation
+                creatorData={creator}
+                isOwnProfile={false}
+                showTitle={false}
+              />
             )}
 
             {activeTab === 'reviews' && (

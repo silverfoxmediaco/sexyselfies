@@ -52,6 +52,7 @@ const CreatorRegistration = () => {
     username: '',
     dateOfBirth: '',
     country: '',
+    ethnicity: '',
 
     // Step 3: Agreement
     agreeToTerms: false,
@@ -202,6 +203,7 @@ const CreatorRegistration = () => {
         displayName: formData.displayName,
         birthDate: formData.dateOfBirth,
         country: formData.country,
+        ethnicity: formData.ethnicity,
         agreeToTerms: formData.agreeToTerms,
         agreeToContentPolicy: formData.agreeToContentPolicy,
         over18Confirmation: formData.over18Confirmation,
@@ -479,6 +481,27 @@ const CreatorRegistration = () => {
                   {errors.country}
                 </span>
               )}
+            </div>
+
+            <div className='creator-registration-form-group'>
+              <label htmlFor='ethnicity'>Ethnicity (Optional)</label>
+              <select
+                id='ethnicity'
+                name='ethnicity'
+                value={formData.ethnicity}
+                onChange={handleInputChange}
+              >
+                <option value=''>Prefer not to say</option>
+                <option value='caucasian'>Caucasian/White</option>
+                <option value='black'>Black/African</option>
+                <option value='hispanic'>Hispanic/Latino</option>
+                <option value='asian'>Asian</option>
+                <option value='middle-eastern'>Middle Eastern</option>
+                <option value='native-american'>Native American</option>
+                <option value='pacific-islander'>Pacific Islander</option>
+                <option value='mixed'>Mixed/Multi-racial</option>
+                <option value='other'>Other</option>
+              </select>
             </div>
           </div>
         );

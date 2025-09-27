@@ -655,6 +655,29 @@ const StepTwo = ({ formData, setFormData, errors }) => {
           <option value='mom-bod'>Mom Bod</option>
         </select>
       </div>
+
+      {/* Ethnicity */}
+      <div className='form-group'>
+        <label className='form-label'>Ethnicity (Optional)</label>
+        <select
+          className='form-input'
+          value={formData.ethnicity}
+          onChange={e =>
+            setFormData(prev => ({ ...prev, ethnicity: e.target.value }))
+          }
+        >
+          <option value=''>Prefer not to say</option>
+          <option value='caucasian'>Caucasian/White</option>
+          <option value='black'>Black/African</option>
+          <option value='hispanic'>Hispanic/Latino</option>
+          <option value='asian'>Asian</option>
+          <option value='middle-eastern'>Middle Eastern</option>
+          <option value='native-american'>Native American</option>
+          <option value='pacific-islander'>Pacific Islander</option>
+          <option value='mixed'>Mixed/Multi-racial</option>
+          <option value='other'>Other</option>
+        </select>
+      </div>
     </div>
   );
 };
