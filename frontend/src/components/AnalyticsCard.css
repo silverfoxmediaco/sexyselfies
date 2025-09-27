@@ -1,0 +1,317 @@
+/* AnalyticsCard.css - Reusable Analytics Card Component Styles */
+
+/* CSS Variables for AnalyticsCard */
+:root {
+  --analyticscard-bg-primary: #1c1c1e;
+  --analyticscard-bg-hover: #2a2a2c;
+  --analyticscard-border: #3a3a3c;
+  --analyticscard-text-primary: #ffffff;
+  --analyticscard-text-secondary: #c7c7cc;
+  --analyticscard-text-tertiary: #8e8e93;
+
+  /* Type Colors */
+  --analyticscard-default: #6b7280;
+  --analyticscard-active: #10b981;
+  --analyticscard-premium: #8b5cf6;
+  --analyticscard-new: #3b82f6;
+  --analyticscard-money: #f59e0b;
+  --analyticscard-success: #22c55e;
+  --analyticscard-warning: #ef4444;
+
+  /* Spacing */
+  --analyticscard-spacing-xs: 4px;
+  --analyticscard-spacing-sm: 8px;
+  --analyticscard-spacing-md: 16px;
+  --analyticscard-spacing-lg: 24px;
+
+  /* Border Radius */
+  --analyticscard-radius: 12px;
+  --analyticscard-radius-sm: 8px;
+}
+
+/* Main Container */
+.AnalyticsCard {
+  background: var(--analyticscard-bg-primary);
+  border: 1px solid var(--analyticscard-border);
+  border-radius: var(--analyticscard-radius);
+  padding: var(--analyticscard-spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--analyticscard-spacing-md);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.AnalyticsCard:hover {
+  background: var(--analyticscard-bg-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.AnalyticsCard-clickable {
+  cursor: pointer;
+}
+
+.AnalyticsCard-clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Icon Container */
+.AnalyticsCard-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--analyticscard-radius-sm);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.AnalyticsCard:hover .AnalyticsCard-icon {
+  transform: scale(1.1);
+}
+
+/* Icon Type Variations */
+.AnalyticsCard-icon-default {
+  background: rgba(107, 114, 128, 0.15);
+  color: var(--analyticscard-default);
+}
+
+.AnalyticsCard-icon-active {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--analyticscard-active);
+}
+
+.AnalyticsCard-icon-premium {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--analyticscard-premium);
+}
+
+.AnalyticsCard-icon-new {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--analyticscard-new);
+}
+
+.AnalyticsCard-icon-money {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--analyticscard-money);
+}
+
+.AnalyticsCard-icon-success {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--analyticscard-success);
+}
+
+.AnalyticsCard-icon-warning {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--analyticscard-warning);
+}
+
+/* Loading Spinner */
+.AnalyticsCard-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-left-color: currentColor;
+  border-radius: 50%;
+  animation: analyticscard-spin 1s linear infinite;
+}
+
+@keyframes analyticscard-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Content Container */
+.AnalyticsCard-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.AnalyticsCard-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--analyticscard-text-primary);
+  line-height: 1.2;
+  margin-bottom: var(--analyticscard-spacing-xs);
+}
+
+.AnalyticsCard-label {
+  font-size: 14px;
+  color: var(--analyticscard-text-secondary);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Trend Indicator */
+.AnalyticsCard-trend {
+  display: flex;
+  align-items: center;
+  gap: var(--analyticscard-spacing-xs);
+  margin-top: var(--analyticscard-spacing-sm);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.AnalyticsCard-trend-up {
+  color: var(--analyticscard-success);
+}
+
+.AnalyticsCard-trend-down {
+  color: var(--analyticscard-warning);
+}
+
+/* Card Type Variations */
+.AnalyticsCard-default {
+  border-left: 4px solid var(--analyticscard-default);
+}
+
+.AnalyticsCard-active {
+  border-left: 4px solid var(--analyticscard-active);
+}
+
+.AnalyticsCard-premium {
+  border-left: 4px solid var(--analyticscard-premium);
+}
+
+.AnalyticsCard-new {
+  border-left: 4px solid var(--analyticscard-new);
+}
+
+.AnalyticsCard-money {
+  border-left: 4px solid var(--analyticscard-money);
+}
+
+.AnalyticsCard-success {
+  border-left: 4px solid var(--analyticscard-success);
+}
+
+.AnalyticsCard-warning {
+  border-left: 4px solid var(--analyticscard-warning);
+}
+
+/* Hover Effects for Types */
+.AnalyticsCard-default:hover {
+  border-left-color: var(--analyticscard-default);
+  box-shadow: 0 8px 25px rgba(107, 114, 128, 0.15);
+}
+
+.AnalyticsCard-active:hover {
+  border-left-color: var(--analyticscard-active);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+}
+
+.AnalyticsCard-premium:hover {
+  border-left-color: var(--analyticscard-premium);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+}
+
+.AnalyticsCard-new:hover {
+  border-left-color: var(--analyticscard-new);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+}
+
+.AnalyticsCard-money:hover {
+  border-left-color: var(--analyticscard-money);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.15);
+}
+
+.AnalyticsCard-success:hover {
+  border-left-color: var(--analyticscard-success);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.15);
+}
+
+.AnalyticsCard-warning:hover {
+  border-left-color: var(--analyticscard-warning);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .AnalyticsCard {
+    padding: var(--analyticscard-spacing-md);
+    gap: var(--analyticscard-spacing-sm);
+  }
+
+  .AnalyticsCard-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .AnalyticsCard-value {
+    font-size: 20px;
+  }
+
+  .AnalyticsCard-label {
+    font-size: 13px;
+  }
+
+  .AnalyticsCard-trend {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .AnalyticsCard {
+    padding: var(--analyticscard-spacing-sm);
+  }
+
+  .AnalyticsCard-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .AnalyticsCard-value {
+    font-size: 18px;
+  }
+
+  .AnalyticsCard-label {
+    font-size: 12px;
+  }
+}
+
+/* Loading State */
+.AnalyticsCard[data-loading="true"] {
+  pointer-events: none;
+}
+
+.AnalyticsCard[data-loading="true"] .AnalyticsCard-value {
+  color: var(--analyticscard-text-tertiary);
+}
+
+/* Accessibility */
+.AnalyticsCard-clickable:focus-visible {
+  outline: 2px solid var(--analyticscard-new);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .AnalyticsCard,
+  .AnalyticsCard-icon,
+  .AnalyticsCard-spinner {
+    transition: none;
+    animation: none;
+  }
+
+  .AnalyticsCard:hover,
+  .AnalyticsCard-clickable:hover,
+  .AnalyticsCard:hover .AnalyticsCard-icon {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .AnalyticsCard {
+    border-width: 2px;
+  }
+
+  .AnalyticsCard-icon {
+    border: 1px solid currentColor;
+  }
+}

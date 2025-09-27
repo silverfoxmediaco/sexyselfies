@@ -45,6 +45,7 @@ import {
 } from '../utils/mobileDetection';
 import GiftContentModal from '../components/GiftContentModal';
 import MemberCard from '../components/MemberCard';
+import AnalyticsCards from '../components/AnalyticsCards';
 import './BrowseMembers.css';
 
 const BrowseMembers = () => {
@@ -417,57 +418,20 @@ const BrowseMembers = () => {
       {isDesktop && <CreatorMainHeader />}
       <div className='discovery-container'>
         {/* Analytics Cards */}
-        <div className='analytics-cards'>
-          <div className='analytics-card'>
-            <div className='analytics-icon'>
-              <Users size={20} />
-            </div>
-            <div className='analytics-content'>
-              <div className='analytics-value'>{analytics.totalMembers}</div>
-              <div className='analytics-label'>Total Members</div>
-            </div>
-          </div>
-
-          <div className='analytics-card'>
-            <div className='analytics-icon active'>
-              <Activity size={20} />
-            </div>
-            <div className='analytics-content'>
-              <div className='analytics-value'>{analytics.activeToday}</div>
-              <div className='analytics-label'>Active Today</div>
-            </div>
-          </div>
-
-          <div className='analytics-card'>
-            <div className='analytics-icon premium'>
-              <Diamond size={20} />
-            </div>
-            <div className='analytics-content'>
-              <div className='analytics-value'>{analytics.highSpenders}</div>
-              <div className='analytics-label'>High Spenders</div>
-            </div>
-          </div>
-
-          <div className='analytics-card'>
-            <div className='analytics-icon new'>
-              <Sparkles size={20} />
-            </div>
-            <div className='analytics-content'>
-              <div className='analytics-value'>{analytics.newThisWeek}</div>
-              <div className='analytics-label'>New This Week</div>
-            </div>
-          </div>
-
-          <div className='analytics-card'>
-            <div className='analytics-icon money'>
-              <DollarSign size={20} />
-            </div>
-            <div className='analytics-content'>
-              <div className='analytics-value'>${analytics.avgSpending}</div>
-              <div className='analytics-label'>Avg Spending</div>
-            </div>
-          </div>
-        </div>
+        <AnalyticsCards
+          stats={{
+            totalMembers: analytics.totalMembers,
+            activeToday: analytics.activeToday,
+            highSpenders: analytics.highSpenders,
+            newThisWeek: analytics.newThisWeek,
+            avgSpending: analytics.avgSpending
+          }}
+          loading={loading}
+          onCardClick={(cardId, cardData) => {
+            console.log('Analytics card clicked:', cardId, cardData);
+            // Handle card click for drill-down functionality
+          }}
+        />
 
         {/* Search and Actions Bar */}
         <div className='search-section'>

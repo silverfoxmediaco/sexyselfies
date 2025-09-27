@@ -1,0 +1,197 @@
+/* AnalyticsCards.css - Container Styles for Multiple Analytics Cards */
+
+/* Main Container */
+.AnalyticsCards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+/* Responsive Grid Adjustments */
+@media (max-width: 1200px) {
+  .AnalyticsCards-container {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .AnalyticsCards-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .AnalyticsCards-container {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Special Layout Variations */
+.AnalyticsCards-container.two-column {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.AnalyticsCards-container.three-column {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.AnalyticsCards-container.four-column {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.AnalyticsCards-container.five-column {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+/* Responsive overrides for special layouts */
+@media (max-width: 1024px) {
+  .AnalyticsCards-container.five-column {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .AnalyticsCards-container.four-column {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .AnalyticsCards-container.five-column,
+  .AnalyticsCards-container.four-column,
+  .AnalyticsCards-container.three-column {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .AnalyticsCards-container.five-column,
+  .AnalyticsCards-container.four-column,
+  .AnalyticsCards-container.three-column,
+  .AnalyticsCards-container.two-column {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Loading State */
+.AnalyticsCards-container.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Compact Mode */
+.AnalyticsCards-container.compact {
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.AnalyticsCards-container.compact .AnalyticsCard {
+  padding: 1rem;
+}
+
+/* Dense Mode - More cards in less space */
+.AnalyticsCards-container.dense {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .AnalyticsCards-container.dense {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .AnalyticsCards-container.dense {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Animation for container */
+.AnalyticsCards-container {
+  animation: analyticsCards-fadeIn 0.5s ease-out;
+}
+
+@keyframes analyticsCards-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered animation for cards */
+.AnalyticsCards-container .AnalyticsCard {
+  animation: analyticsCard-slideIn 0.3s ease-out forwards;
+  opacity: 0;
+}
+
+.AnalyticsCards-container .AnalyticsCard:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.AnalyticsCards-container .AnalyticsCard:nth-child(2) {
+  animation-delay: 50ms;
+}
+
+.AnalyticsCards-container .AnalyticsCard:nth-child(3) {
+  animation-delay: 100ms;
+}
+
+.AnalyticsCards-container .AnalyticsCard:nth-child(4) {
+  animation-delay: 150ms;
+}
+
+.AnalyticsCards-container .AnalyticsCard:nth-child(5) {
+  animation-delay: 200ms;
+}
+
+.AnalyticsCards-container .AnalyticsCard:nth-child(n+6) {
+  animation-delay: 250ms;
+}
+
+@keyframes analyticsCard-slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .AnalyticsCards-container,
+  .AnalyticsCards-container .AnalyticsCard {
+    animation: none;
+  }
+
+  .AnalyticsCards-container .AnalyticsCard {
+    opacity: 1;
+  }
+}
+
+/* Print styles */
+@media print {
+  .AnalyticsCards-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    page-break-inside: avoid;
+  }
+
+  .AnalyticsCards-container .AnalyticsCard {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
