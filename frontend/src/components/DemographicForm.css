@@ -1,0 +1,314 @@
+/* DemographicForm.css - Reusable Demographic Form Component */
+
+/* CSS Variables for DemographicForm */
+:root {
+  --demographicform-bg-primary: #1c1c1e;
+  --demographicform-bg-hover: #2a2a2c;
+  --demographicform-border: #3a3a3c;
+  --demographicform-border-focus: #17d2c2;
+  --demographicform-text-primary: #ffffff;
+  --demographicform-text-secondary: #c7c7cc;
+  --demographicform-text-tertiary: #8e8e93;
+  --demographicform-accent-primary: #17d2c2;
+  --demographicform-error: #ef4444;
+  --demographicform-required: #ef4444;
+
+  /* Spacing */
+  --demographicform-spacing-xs: 4px;
+  --demographicform-spacing-sm: 8px;
+  --demographicform-spacing-md: 16px;
+  --demographicform-spacing-lg: 24px;
+  --demographicform-spacing-xl: 32px;
+
+  /* Border Radius */
+  --demographicform-radius: 12px;
+  --demographicform-radius-sm: 8px;
+  --demographicform-radius-xs: 4px;
+}
+
+/* Main Container */
+.DemographicForm {
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Header */
+.DemographicForm-header {
+  text-align: center;
+  margin-bottom: var(--demographicform-spacing-xl);
+}
+
+.DemographicForm-header h2 {
+  color: var(--demographicform-text-primary);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 var(--demographicform-spacing-sm) 0;
+  line-height: 1.2;
+}
+
+.DemographicForm-header p {
+  color: var(--demographicform-text-secondary);
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Form Groups */
+.DemographicForm-group {
+  margin-bottom: var(--demographicform-spacing-lg);
+}
+
+.DemographicForm-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Labels */
+.DemographicForm-label {
+  display: block;
+  color: var(--demographicform-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: var(--demographicform-spacing-sm);
+  line-height: 1.4;
+}
+
+.DemographicForm-required {
+  color: var(--demographicform-required);
+  margin-left: var(--demographicform-spacing-xs);
+}
+
+/* Radio Button Groups */
+.DemographicForm-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--demographicform-spacing-sm);
+}
+
+.DemographicForm-radio-label {
+  display: flex;
+  align-items: center;
+  gap: var(--demographicform-spacing-sm);
+  padding: var(--demographicform-spacing-sm) var(--demographicform-spacing-md);
+  background: var(--demographicform-bg-primary);
+  border: 1px solid var(--demographicform-border);
+  border-radius: var(--demographicform-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--demographicform-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 48px;
+}
+
+.DemographicForm-radio-label:hover {
+  background: var(--demographicform-bg-hover);
+  border-color: var(--demographicform-accent-primary);
+}
+
+.DemographicForm-radio-label:has(input:checked) {
+  background: rgba(23, 210, 194, 0.1);
+  border-color: var(--demographicform-accent-primary);
+  color: var(--demographicform-accent-primary);
+}
+
+/* Custom Radio Button */
+.DemographicForm-radio-label input[type="radio"] {
+  display: none;
+}
+
+.DemographicForm-radio-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--demographicform-border);
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.DemographicForm-radio-label:hover .DemographicForm-radio-custom {
+  border-color: var(--demographicform-accent-primary);
+}
+
+.DemographicForm-radio-label:has(input:checked) .DemographicForm-radio-custom {
+  border-color: var(--demographicform-accent-primary);
+  background: var(--demographicform-accent-primary);
+}
+
+.DemographicForm-radio-label:has(input:checked) .DemographicForm-radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+/* Select Dropdown */
+.DemographicForm-select {
+  width: 100%;
+  padding: var(--demographicform-spacing-md);
+  background: var(--demographicform-bg-primary);
+  border: 1px solid var(--demographicform-border);
+  border-radius: var(--demographicform-radius-sm);
+  color: var(--demographicform-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 48px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c7c7cc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right var(--demographicform-spacing-md) center;
+  background-size: 16px;
+  padding-right: 48px;
+}
+
+.DemographicForm-select:hover {
+  background-color: var(--demographicform-bg-hover);
+  border-color: var(--demographicform-accent-primary);
+}
+
+.DemographicForm-select:focus {
+  outline: none;
+  border-color: var(--demographicform-accent-primary);
+  box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.1);
+}
+
+.DemographicForm-select option {
+  background: var(--demographicform-bg-primary);
+  color: var(--demographicform-text-primary);
+  padding: var(--demographicform-spacing-sm);
+}
+
+/* Error Messages */
+.DemographicForm-error {
+  display: block;
+  color: var(--demographicform-error);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: var(--demographicform-spacing-xs);
+  line-height: 1.3;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .DemographicForm-header h2 {
+    font-size: 20px;
+  }
+
+  .DemographicForm-header p {
+    font-size: 14px;
+  }
+
+  .DemographicForm-radio-group {
+    gap: var(--demographicform-spacing-xs);
+  }
+
+  .DemographicForm-radio-label {
+    padding: var(--demographicform-spacing-sm);
+    font-size: 13px;
+    min-height: 44px;
+  }
+
+  .DemographicForm-select {
+    font-size: 13px;
+    min-height: 44px;
+  }
+
+  .DemographicForm-group {
+    margin-bottom: var(--demographicform-spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .DemographicForm-header {
+    margin-bottom: var(--demographicform-spacing-lg);
+  }
+
+  .DemographicForm-header h2 {
+    font-size: 18px;
+  }
+
+  .DemographicForm-header p {
+    font-size: 13px;
+  }
+
+  .DemographicForm-label {
+    font-size: 14px;
+  }
+
+  .DemographicForm-radio-label {
+    font-size: 12px;
+  }
+
+  .DemographicForm-select {
+    font-size: 12px;
+  }
+}
+
+/* Compact Mode */
+.DemographicForm.compact .DemographicForm-header {
+  margin-bottom: var(--demographicform-spacing-md);
+}
+
+.DemographicForm.compact .DemographicForm-group {
+  margin-bottom: var(--demographicform-spacing-md);
+}
+
+.DemographicForm.compact .DemographicForm-radio-label {
+  min-height: 40px;
+  padding: var(--demographicform-spacing-xs) var(--demographicform-spacing-sm);
+}
+
+/* Focus States for Accessibility */
+.DemographicForm-radio-label:focus-within {
+  outline: 2px solid var(--demographicform-accent-primary);
+  outline-offset: 2px;
+}
+
+.DemographicForm-select:focus-visible {
+  outline: 2px solid var(--demographicform-accent-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .DemographicForm-radio-label,
+  .DemographicForm-radio-custom,
+  .DemographicForm-select {
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .DemographicForm-radio-label {
+    border-width: 2px;
+  }
+
+  .DemographicForm-select {
+    border-width: 2px;
+  }
+
+  .DemographicForm-radio-custom {
+    border-width: 3px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .DemographicForm {
+    break-inside: avoid;
+  }
+
+  .DemographicForm-radio-label,
+  .DemographicForm-select {
+    border: 1px solid #000;
+    box-shadow: none;
+  }
+}

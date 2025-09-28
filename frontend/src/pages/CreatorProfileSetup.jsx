@@ -6,6 +6,7 @@ import CreatorProfilePreview from './CreatorProfilePreview';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
+import DemographicForm from '../components/DemographicForm';
 import {
   useIsMobile,
   useIsDesktop,
@@ -549,126 +550,20 @@ const StepOne = ({ formData, setFormData, errors }) => {
 // Step 2: Browse Settings - UPDATED FROM Discovery Settings
 const StepTwo = ({ formData, setFormData, errors }) => {
   return (
-    <div className='step-two'>
-      <div className='step-header'>
-        <h2>Help Members Find You</h2>
-        <p>Set your browse preferences to attract the right audience</p>{' '}
-        {/* CHANGED FROM: discovery preferences */}
-      </div>
-
-      {/* Gender */}
-      <div className='form-group'>
-        <label className='form-label'>
-          I am
-          <span className='required'>*</span>
-        </label>
-        <div className='radio-group'>
-          {['Male', 'Female'].map(option => (
-            <label key={option} className='radio-label'>
-              <input
-                type='radio'
-                name='gender'
-                value={option.toLowerCase()}
-                checked={formData.gender === option.toLowerCase()}
-                onChange={e =>
-                  setFormData(prev => ({ ...prev, gender: e.target.value }))
-                }
-              />
-              <span className='radio-custom'></span>
-              <span>{option}</span>
-            </label>
-          ))}
-        </div>
-        {errors.gender && (
-          <span className='error-message'>{errors.gender}</span>
-        )}
-      </div>
-
-      {/* Orientation */}
-      <div className='form-group'>
-        <label className='form-label'>
-          My orientation
-          <span className='required'>*</span>
-        </label>
-        <div className='radio-group'>
-          {[
-            'Straight',
-            'Gay',
-            'Lesbian',
-            'Bisexual',
-            'Pansexual',
-          ].map(option => (
-            <label key={option} className='radio-label'>
-              <input
-                type='radio'
-                name='orientation'
-                value={option.toLowerCase()}
-                checked={formData.orientation === option.toLowerCase()}
-                onChange={e =>
-                  setFormData(prev => ({
-                    ...prev,
-                    orientation: e.target.value,
-                  }))
-                }
-              />
-              <span className='radio-custom'></span>
-              <span>{option}</span>
-            </label>
-          ))}
-        </div>
-        {errors.orientation && (
-          <span className='error-message'>{errors.orientation}</span>
-        )}
-      </div>
-
-
-      {/* Body type */}
-      <div className='form-group'>
-        <label className='form-label'>Body Type (Optional)</label>
-        <select
-          className='form-input'
-          value={formData.bodyType}
-          onChange={e =>
-            setFormData(prev => ({ ...prev, bodyType: e.target.value }))
-          }
-        >
-          <option value=''>Select...</option>
-          <option value='slim'>Slim</option>
-          <option value='slender'>Slender</option>
-          <option value='athletic'>Athletic</option>
-          <option value='average'>Average</option>
-          <option value='curvy'>Curvy</option>
-          <option value='plus-size'>Plus Size</option>
-          <option value='bbw'>BBW</option>
-          <option value='muscular'>Muscular</option>
-          <option value='dad-bod'>Dad Bod</option>
-          <option value='mom-bod'>Mom Bod</option>
-        </select>
-      </div>
-
-      {/* Ethnicity */}
-      <div className='form-group'>
-        <label className='form-label'>Ethnicity (Optional)</label>
-        <select
-          className='form-input'
-          value={formData.ethnicity}
-          onChange={e =>
-            setFormData(prev => ({ ...prev, ethnicity: e.target.value }))
-          }
-        >
-          <option value=''>Prefer not to say</option>
-          <option value='caucasian'>Caucasian/White</option>
-          <option value='black'>Black/African</option>
-          <option value='hispanic'>Hispanic/Latino</option>
-          <option value='asian'>Asian</option>
-          <option value='middle-eastern'>Middle Eastern</option>
-          <option value='native-american'>Native American</option>
-          <option value='pacific-islander'>Pacific Islander</option>
-          <option value='mixed'>Mixed/Multi-racial</option>
-          <option value='other'>Other</option>
-        </select>
-      </div>
-    </div>
+    <DemographicForm
+      formData={{
+        gender: formData.gender,
+        orientation: formData.orientation,
+        bodyType: formData.bodyType,
+        ethnicity: formData.ethnicity
+      }}
+      onChange={(field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+      }}
+      errors={errors}
+      headerTitle="Help Members Find You"
+      headerSubtitle="Set your browse preferences to attract the right audience"
+    />
   );
 };
 
