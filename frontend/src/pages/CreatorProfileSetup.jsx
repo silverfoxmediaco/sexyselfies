@@ -7,6 +7,7 @@ import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import DemographicForm from '../components/DemographicForm';
+import ContentPricingForm from '../components/ContentPricingForm';
 import {
   useIsMobile,
   useIsDesktop,
@@ -570,202 +571,16 @@ const StepTwo = ({ formData, setFormData, errors }) => {
 // Step 3: Content & Pricing
 const StepThree = ({ formData, setFormData, errors }) => {
   return (
-    <div className='step-three'>
-      <div className='step-header'>
-        <h2>Set Your Default Pricing & Content Types</h2>
-        <p>Save time on future uploads with smart defaults</p>
-      </div>
-
-      {/* Context explanation */}
-      <div className='pricing-context'>
-        <p className='context-intro'>
-          📝 Hi! Although you can set individual pricing on each upload, having
-          defaults will:
-        </p>
-        <ul className='context-benefits'>
-          <li>• Speed up your content publishing process</li>
-          <li>• Help maintain consistent pricing strategy</li>
-          <li>• Show potential fans your typical price ranges</li>
-          <li>• Reduce decision fatigue when uploading multiple items</li>
-        </ul>
-        <p className='context-note'>
-          You can always override these prices for specific content pieces
-          during upload.
-        </p>
-      </div>
-
-      {/* Content types */}
-      <div className='form-group'>
-        <label className='form-label'>
-          CONTENT TYPES YOU'LL SHARE
-          <span className='required'>*</span>
-        </label>
-        <div className='content-types-grid'>
-          <div
-            className={`content-type-card ${formData.contentTypes.photos ? 'active' : ''}`}
-            onClick={() =>
-              setFormData(prev => ({
-                ...prev,
-                contentTypes: {
-                  ...prev.contentTypes,
-                  photos: !prev.contentTypes.photos,
-                },
-              }))
-            }
-          >
-            <Image size={24} />
-            <span>Photos</span>
-            <span className='price-range'>$0.99 - $9.99</span>
-          </div>
-
-          <div
-            className={`content-type-card ${formData.contentTypes.videos ? 'active' : ''}`}
-            onClick={() =>
-              setFormData(prev => ({
-                ...prev,
-                contentTypes: {
-                  ...prev.contentTypes,
-                  videos: !prev.contentTypes.videos,
-                },
-              }))
-            }
-          >
-            <Video size={24} />
-            <span>Videos</span>
-            <span className='price-range'>$2.99 - $19.99</span>
-          </div>
-
-          <div
-            className={`content-type-card ${formData.contentTypes.messages ? 'active' : ''}`}
-            onClick={() =>
-              setFormData(prev => ({
-                ...prev,
-                contentTypes: {
-                  ...prev.contentTypes,
-                  messages: !prev.contentTypes.messages,
-                },
-              }))
-            }
-          >
-            <MessageCircle size={24} />
-            <span>Messages</span>
-            <span className='price-range'>$0.99 - $9.99</span>
-          </div>
-        </div>
-        {errors.contentTypes && (
-          <span className='error-message'>{errors.contentTypes}</span>
-        )}
-      </div>
-
-      {/* Default prices */}
-      {formData.contentTypes.photos && (
-        <div className='form-group'>
-          <label className='form-label'>PHOTO PRICE</label>
-          <p className='field-helper'>
-            💡 This will auto-fill when uploading photos (you can still change
-            it per photo)
-          </p>
-          <div className='pricing-input-wrapper'>
-    <input
-      type='number'
-      className='form-input pricing-input'
-      min='0.99'
-      max='9.99'
-      step='0.01'
-      placeholder='2.99'
-      value={formData.pricing.photos.default}
-      onChange={e =>
-        setFormData(prev => ({
-          ...prev,
-          pricing: {
-            ...prev.pricing,
-            photos: {
-              ...prev.pricing.photos,
-              default: parseFloat(e.target.value),
-            },
-          },
-        }))
-      }
+    <ContentPricingForm
+      formData={{
+        contentTypes: formData.contentTypes,
+        pricing: formData.pricing
+      }}
+      onChange={(field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+      }}
+      errors={errors}
     />
-  </div>
-        </div>
-      )}
-
-      {/* Video pricing */}
-      {formData.contentTypes.videos && (
-        <div className='form-group'>
-          <label className='form-label'>VIDEO PRICE</label>
-          <p className='field-helper'>
-            💡 Your go-to video price - saves time on bulk uploads
-          </p>
-          <div className='pricing-input-wrapper'>
-            <span className='currency-symbol'>$</span>
-            <input
-              type='number'
-              className='form-input pricing-input'
-              min='2.99'
-              max='19.99'
-              step='0.01'
-              value={formData.pricing.videos.default}
-              onChange={e =>
-                setFormData(prev => ({
-                  ...prev,
-                  pricing: {
-                    ...prev.pricing,
-                    videos: {
-                      ...prev.pricing.videos,
-                      default: parseFloat(e.target.value),
-                    },
-                  },
-                }))
-              }
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Message pricing */}
-      {formData.contentTypes.messages && (
-        <div className='form-group'>
-          <label className='form-label'>MESSAGE PRICE</label>
-          <p className='field-helper'>
-            💡 Default for sending exclusive content via DMs
-          </p>
-          <div className='pricing-input-wrapper'>
-            <span className='currency-symbol'>$</span>
-            <input
-              type='number'
-              className='form-input pricing-input'
-              min='0.99'
-              max='9.99'
-              step='0.01'
-              value={formData.pricing.messages.default}
-              onChange={e =>
-                setFormData(prev => ({
-                  ...prev,
-                  pricing: {
-                    ...prev.pricing,
-                    messages: {
-                      ...prev.pricing.messages,
-                      default: parseFloat(e.target.value),
-                    },
-                  },
-                }))
-              }
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Pro tip */}
-      <div className='pricing-pro-tip'>
-        <p>
-          ⚡ <strong>Pro Tip:</strong> Set prices slightly higher than your
-          minimum - you can always discount individual items, but raising prices
-          later feels awkward to fans.
-        </p>
-      </div>
-    </div>
   );
 };
 

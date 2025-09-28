@@ -1,0 +1,461 @@
+/* ContentPricingForm.css - Reusable Content Pricing Form Component */
+
+/* CSS Variables for ContentPricingForm */
+:root {
+  --contentpricingform-bg-primary: #1c1c1e;
+  --contentpricingform-bg-hover: #2a2a2c;
+  --contentpricingform-bg-active: rgba(23, 210, 194, 0.1);
+  --contentpricingform-border: #3a3a3c;
+  --contentpricingform-border-active: #17d2c2;
+  --contentpricingform-text-primary: #ffffff;
+  --contentpricingform-text-secondary: #c7c7cc;
+  --contentpricingform-text-tertiary: #8e8e93;
+  --contentpricingform-accent-primary: #17d2c2;
+  --contentpricingform-error: #ef4444;
+  --contentpricingform-required: #ef4444;
+  --contentpricingform-success: #22c55e;
+  --contentpricingform-warning: #f59e0b;
+
+  /* Spacing */
+  --contentpricingform-spacing-xs: 4px;
+  --contentpricingform-spacing-sm: 8px;
+  --contentpricingform-spacing-md: 16px;
+  --contentpricingform-spacing-lg: 24px;
+  --contentpricingform-spacing-xl: 32px;
+
+  /* Border Radius */
+  --contentpricingform-radius: 12px;
+  --contentpricingform-radius-sm: 8px;
+  --contentpricingform-radius-xs: 4px;
+}
+
+/* Main Container */
+.ContentPricingForm {
+  width: 100%;
+  max-width: 700px;
+}
+
+/* Header */
+.ContentPricingForm-header {
+  text-align: center;
+  margin-bottom: var(--contentpricingform-spacing-xl);
+}
+
+.ContentPricingForm-header h2 {
+  color: var(--contentpricingform-text-primary);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 var(--contentpricingform-spacing-sm) 0;
+  line-height: 1.2;
+}
+
+.ContentPricingForm-header p {
+  color: var(--contentpricingform-text-secondary);
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Context Section */
+.ContentPricingForm-context {
+  background: var(--contentpricingform-bg-primary);
+  border: 1px solid var(--contentpricingform-border);
+  border-radius: var(--contentpricingform-radius);
+  padding: var(--contentpricingform-spacing-lg);
+  margin-bottom: var(--contentpricingform-spacing-xl);
+}
+
+.ContentPricingForm-context-intro {
+  color: var(--contentpricingform-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 var(--contentpricingform-spacing-sm) 0;
+  line-height: 1.4;
+}
+
+.ContentPricingForm-context-benefits {
+  color: var(--contentpricingform-text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 var(--contentpricingform-spacing-sm) 0;
+  padding-left: var(--contentpricingform-spacing-md);
+}
+
+.ContentPricingForm-context-benefits li {
+  margin-bottom: var(--contentpricingform-spacing-xs);
+}
+
+.ContentPricingForm-context-note {
+  color: var(--contentpricingform-text-tertiary);
+  font-size: 12px;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Form Groups */
+.ContentPricingForm-group {
+  margin-bottom: var(--contentpricingform-spacing-xl);
+}
+
+.ContentPricingForm-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Labels */
+.ContentPricingForm-label {
+  display: block;
+  color: var(--contentpricingform-text-primary);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--contentpricingform-spacing-sm);
+  line-height: 1.4;
+}
+
+.ContentPricingForm-required {
+  color: var(--contentpricingform-required);
+  margin-left: var(--contentpricingform-spacing-xs);
+}
+
+/* Content Types Grid */
+.ContentPricingForm-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--contentpricingform-spacing-md);
+  margin-bottom: var(--contentpricingform-spacing-sm);
+}
+
+.ContentPricingForm-type-card {
+  background: var(--contentpricingform-bg-primary);
+  border: 2px solid var(--contentpricingform-border);
+  border-radius: var(--contentpricingform-radius);
+  padding: var(--contentpricingform-spacing-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--contentpricingform-spacing-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  min-height: 120px;
+  position: relative;
+}
+
+.ContentPricingForm-type-card:hover {
+  background: var(--contentpricingform-bg-hover);
+  border-color: var(--contentpricingform-accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.ContentPricingForm-type-card.active {
+  background: var(--contentpricingform-bg-active);
+  border-color: var(--contentpricingform-border-active);
+  color: var(--contentpricingform-accent-primary);
+}
+
+.ContentPricingForm-type-card.active::after {
+  content: '✓';
+  position: absolute;
+  top: var(--contentpricingform-spacing-sm);
+  right: var(--contentpricingform-spacing-sm);
+  width: 20px;
+  height: 20px;
+  background: var(--contentpricingform-accent-primary);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ContentPricingForm-type-card svg {
+  color: var(--contentpricingform-text-secondary);
+  transition: color 0.2s ease;
+}
+
+.ContentPricingForm-type-card.active svg,
+.ContentPricingForm-type-card:hover svg {
+  color: var(--contentpricingform-accent-primary);
+}
+
+.ContentPricingForm-type-card span:first-of-type {
+  color: var(--contentpricingform-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ContentPricingForm-price-range {
+  color: var(--contentpricingform-text-tertiary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ContentPricingForm-type-card.active .ContentPricingForm-price-range {
+  color: var(--contentpricingform-accent-primary);
+}
+
+/* Helper Text */
+.ContentPricingForm-helper {
+  color: var(--contentpricingform-text-secondary);
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 var(--contentpricingform-spacing-sm) 0;
+  font-style: italic;
+}
+
+/* Pricing Input Wrapper */
+.ContentPricingForm-pricing-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 150px;
+}
+
+.ContentPricingForm-currency {
+  position: absolute;
+  left: var(--contentpricingform-spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--contentpricingform-text-secondary);
+  font-size: 16px;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ContentPricingForm-pricing-input {
+  width: 100%;
+  padding: var(--contentpricingform-spacing-md) var(--contentpricingform-spacing-md) var(--contentpricingform-spacing-md) 40px;
+  background: var(--contentpricingform-bg-primary);
+  border: 1px solid var(--contentpricingform-border);
+  border-radius: var(--contentpricingform-radius-sm);
+  color: var(--contentpricingform-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.ContentPricingForm-pricing-input:hover {
+  background: var(--contentpricingform-bg-hover);
+  border-color: var(--contentpricingform-accent-primary);
+}
+
+.ContentPricingForm-pricing-input:focus {
+  outline: none;
+  border-color: var(--contentpricingform-accent-primary);
+  box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.1);
+}
+
+.ContentPricingForm-pricing-input::placeholder {
+  color: var(--contentpricingform-text-tertiary);
+}
+
+/* Pro Tip */
+.ContentPricingForm-pro-tip {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--contentpricingform-radius);
+  padding: var(--contentpricingform-spacing-lg);
+  margin-top: var(--contentpricingform-spacing-xl);
+}
+
+.ContentPricingForm-pro-tip p {
+  color: var(--contentpricingform-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ContentPricingForm-pro-tip strong {
+  color: var(--contentpricingform-warning);
+  font-weight: 700;
+}
+
+/* Error Messages */
+.ContentPricingForm-error {
+  display: block;
+  color: var(--contentpricingform-error);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: var(--contentpricingform-spacing-xs);
+  line-height: 1.3;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .ContentPricingForm-header h2 {
+    font-size: 20px;
+  }
+
+  .ContentPricingForm-header p {
+    font-size: 14px;
+  }
+
+  .ContentPricingForm-types-grid {
+    grid-template-columns: 1fr;
+    gap: var(--contentpricingform-spacing-sm);
+  }
+
+  .ContentPricingForm-type-card {
+    padding: var(--contentpricingform-spacing-md);
+    min-height: 100px;
+  }
+
+  .ContentPricingForm-context {
+    padding: var(--contentpricingform-spacing-md);
+  }
+
+  .ContentPricingForm-pricing-wrapper {
+    width: 120px;
+  }
+
+  .ContentPricingForm-pricing-input {
+    font-size: 14px;
+    min-height: 44px;
+  }
+
+  .ContentPricingForm-currency {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ContentPricingForm-header h2 {
+    font-size: 18px;
+  }
+
+  .ContentPricingForm-header p {
+    font-size: 13px;
+  }
+
+  .ContentPricingForm-type-card {
+    padding: var(--contentpricingform-spacing-sm);
+    min-height: 80px;
+  }
+
+  .ContentPricingForm-type-card span:first-of-type {
+    font-size: 14px;
+  }
+
+  .ContentPricingForm-price-range {
+    font-size: 11px;
+  }
+
+  .ContentPricingForm-context {
+    padding: var(--contentpricingform-spacing-sm);
+  }
+
+  .ContentPricingForm-context-intro,
+  .ContentPricingForm-helper {
+    font-size: 12px;
+  }
+
+  .ContentPricingForm-context-benefits {
+    font-size: 11px;
+  }
+
+  .ContentPricingForm-pro-tip p {
+    font-size: 12px;
+  }
+}
+
+/* Compact Mode */
+.ContentPricingForm.compact .ContentPricingForm-header {
+  margin-bottom: var(--contentpricingform-spacing-md);
+}
+
+.ContentPricingForm.compact .ContentPricingForm-context {
+  display: none;
+}
+
+.ContentPricingForm.compact .ContentPricingForm-group {
+  margin-bottom: var(--contentpricingform-spacing-lg);
+}
+
+.ContentPricingForm.compact .ContentPricingForm-type-card {
+  min-height: 80px;
+  padding: var(--contentpricingform-spacing-sm);
+}
+
+.ContentPricingForm.compact .ContentPricingForm-pro-tip {
+  margin-top: var(--contentpricingform-spacing-md);
+  padding: var(--contentpricingform-spacing-md);
+}
+
+/* Animation for appearing */
+.ContentPricingForm-type-card {
+  animation: contentpricingform-fadeIn 0.5s ease-out;
+}
+
+.ContentPricingForm-type-card:nth-child(1) { animation-delay: 0ms; }
+.ContentPricingForm-type-card:nth-child(2) { animation-delay: 100ms; }
+.ContentPricingForm-type-card:nth-child(3) { animation-delay: 200ms; }
+
+@keyframes contentpricingform-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus States for Accessibility */
+.ContentPricingForm-type-card:focus-visible {
+  outline: 2px solid var(--contentpricingform-accent-primary);
+  outline-offset: 2px;
+}
+
+.ContentPricingForm-pricing-input:focus-visible {
+  outline: 2px solid var(--contentpricingform-accent-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .ContentPricingForm-type-card,
+  .ContentPricingForm-pricing-input {
+    animation: none;
+    transition: none;
+  }
+
+  .ContentPricingForm-type-card:hover {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .ContentPricingForm-type-card {
+    border-width: 3px;
+  }
+
+  .ContentPricingForm-pricing-input {
+    border-width: 2px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .ContentPricingForm {
+    break-inside: avoid;
+  }
+
+  .ContentPricingForm-type-card,
+  .ContentPricingForm-pricing-input {
+    border: 1px solid #000;
+    box-shadow: none;
+  }
+
+  .ContentPricingForm-pro-tip {
+    border: 1px solid #000;
+    background: none;
+  }
+}
