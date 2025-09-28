@@ -1,0 +1,360 @@
+/* MiniCharts.css - Reusable Mini Charts Component */
+
+/* CSS Variables for MiniCharts */
+:root {
+  --minicharts-bg-primary: #1c1c1e;
+  --minicharts-bg-hover: #2a2a2c;
+  --minicharts-border: #3a3a3c;
+  --minicharts-text-primary: #ffffff;
+  --minicharts-text-secondary: #c7c7cc;
+  --minicharts-text-tertiary: #8e8e93;
+
+  /* Chart Colors */
+  --minicharts-revenue: #10b981;
+  --minicharts-views: #3b82f6;
+  --minicharts-conversion: #f59e0b;
+
+  /* Trend Colors */
+  --minicharts-trend-up: #10b981;
+  --minicharts-trend-down: #ef4444;
+  --minicharts-trend-neutral: #6b7280;
+
+  /* Spacing */
+  --minicharts-spacing-xs: 4px;
+  --minicharts-spacing-sm: 8px;
+  --minicharts-spacing-md: 16px;
+  --minicharts-spacing-lg: 24px;
+
+  /* Border Radius */
+  --minicharts-radius: 12px;
+  --minicharts-radius-sm: 8px;
+}
+
+/* Main Container */
+.MiniCharts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--minicharts-spacing-md);
+  width: 100%;
+}
+
+/* Responsive Grid Layout */
+@media (min-width: 768px) {
+  .MiniCharts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .MiniCharts {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Individual Chart Card */
+.MiniCharts-chart {
+  background: var(--minicharts-bg-primary);
+  border: 1px solid var(--minicharts-border);
+  border-radius: var(--minicharts-radius);
+  padding: var(--minicharts-spacing-lg);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.MiniCharts-chart:hover {
+  background: var(--minicharts-bg-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Chart Header */
+.MiniCharts-header {
+  margin-bottom: var(--minicharts-spacing-md);
+}
+
+.MiniCharts-title {
+  color: var(--minicharts-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Chart Container */
+.MiniCharts-chart-container {
+  height: 60px;
+  margin-bottom: var(--minicharts-spacing-md);
+  position: relative;
+}
+
+/* Trend Line Styling */
+.MiniCharts-trend-line {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.MiniCharts-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Revenue Trend */
+.MiniCharts-trend-line.revenue-trend {
+  color: var(--minicharts-revenue);
+}
+
+/* Views Trend */
+.MiniCharts-trend-line.views-trend {
+  color: var(--minicharts-views);
+}
+
+/* Conversion Trend */
+.MiniCharts-trend-line.conversion-trend {
+  color: var(--minicharts-conversion);
+}
+
+/* SVG Line and Area Animations */
+.MiniCharts-line {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: minicharts-drawLine 2s ease-out forwards;
+}
+
+.MiniCharts-area {
+  opacity: 0;
+  animation: minicharts-fadeInArea 2s ease-out 0.5s forwards;
+}
+
+.MiniCharts-dot {
+  opacity: 0;
+  animation: minicharts-fadeInDot 0.5s ease-out forwards;
+}
+
+.MiniCharts-dot:nth-child(4) { animation-delay: 1s; }
+.MiniCharts-dot:nth-child(5) { animation-delay: 1.2s; }
+.MiniCharts-dot:nth-child(6) { animation-delay: 1.4s; }
+
+@keyframes minicharts-drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes minicharts-fadeInArea {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes minicharts-fadeInDot {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Chart Footer */
+.MiniCharts-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--minicharts-spacing-sm);
+}
+
+.MiniCharts-value {
+  color: var(--minicharts-text-primary);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Trend Indicators */
+.MiniCharts-trend {
+  display: flex;
+  align-items: center;
+  gap: var(--minicharts-spacing-xs);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.MiniCharts-trend-indicator {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.MiniCharts-trend.up {
+  color: var(--minicharts-trend-up);
+}
+
+.MiniCharts-trend.down {
+  color: var(--minicharts-trend-down);
+}
+
+.MiniCharts-trend.neutral {
+  color: var(--minicharts-trend-neutral);
+}
+
+.MiniCharts-trend-text {
+  font-size: 10px;
+}
+
+/* Loading Skeleton */
+.MiniCharts-skeleton {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--minicharts-border) 0%,
+    #3a3a3c 50%,
+    var(--minicharts-border) 100%
+  );
+  background-size: 200% 100%;
+  animation: minicharts-skeleton 1.5s ease-in-out infinite;
+  border-radius: var(--minicharts-radius-sm);
+}
+
+@keyframes minicharts-skeleton {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 480px) {
+  .MiniCharts {
+    gap: var(--minicharts-spacing-sm);
+  }
+
+  .MiniCharts-chart {
+    padding: var(--minicharts-spacing-md);
+  }
+
+  .MiniCharts-chart-container {
+    height: 50px;
+    margin-bottom: var(--minicharts-spacing-sm);
+  }
+
+  .MiniCharts-title {
+    font-size: 12px;
+  }
+
+  .MiniCharts-value {
+    font-size: 18px;
+  }
+
+  .MiniCharts-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--minicharts-spacing-xs);
+  }
+
+  .MiniCharts-trend {
+    align-self: flex-end;
+  }
+}
+
+/* Card Enter Animation */
+.MiniCharts-chart {
+  animation: minicharts-fadeInUp 0.6s ease-out;
+}
+
+.MiniCharts-chart:nth-child(1) { animation-delay: 0ms; }
+.MiniCharts-chart:nth-child(2) { animation-delay: 200ms; }
+.MiniCharts-chart:nth-child(3) { animation-delay: 400ms; }
+
+@keyframes minicharts-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover Effects for Interactive Elements */
+.MiniCharts-chart:hover .MiniCharts-line {
+  stroke-width: 3;
+}
+
+.MiniCharts-chart:hover .MiniCharts-dot {
+  r: 3;
+}
+
+/* Focus States for Accessibility */
+.MiniCharts-chart:focus-visible {
+  outline: 2px solid var(--minicharts-revenue);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .MiniCharts-chart {
+    border-width: 2px;
+  }
+
+  .MiniCharts-line {
+    stroke-width: 3;
+  }
+
+  .MiniCharts-dot {
+    r: 3;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .MiniCharts-chart,
+  .MiniCharts-line,
+  .MiniCharts-area,
+  .MiniCharts-dot,
+  .MiniCharts-skeleton {
+    animation: none;
+    transition: none;
+  }
+
+  .MiniCharts-chart:hover {
+    transform: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .MiniCharts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    page-break-inside: avoid;
+  }
+
+  .MiniCharts-chart {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+    background: #f9f9f9 !important;
+  }
+
+  .MiniCharts-chart * {
+    color: #000 !important;
+  }
+
+  .MiniCharts-trend-line {
+    display: none;
+  }
+}
+
+/* Future Chart Library Integration Ready */
+.MiniCharts-chart[data-chart-library] .MiniCharts-trend-line {
+  /* This class can be used when integrating with Chart.js, Recharts, etc. */
+  /* The placeholder SVG will be replaced with the actual chart component */
+}
