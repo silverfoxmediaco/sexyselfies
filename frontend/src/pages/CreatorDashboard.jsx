@@ -25,6 +25,7 @@ import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import DashboardStatsGrid from '../components/DashboardStatsGrid';
 import MiniCharts from '../components/MiniCharts';
+import QuickActions from '../components/QuickActions';
 import {
   useIsMobile,
   useIsDesktop,
@@ -461,66 +462,46 @@ const CreatorDashboard = () => {
     </motion.div>
   );
 
-  // Quick Actions Component
-  const QuickActions = () => (
-    <motion.div
-      className='creator-dashboard-quick-actions'
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6 }}
-    >
-      <h3 className='creator-dashboard-section-title'>Quick Actions</h3>
-      <div className='creator-dashboard-actions-grid'>
-        {[
-          {
-            icon: TrendingUp,
-            label: 'View Analytics',
-            path: '/creator/analytics',
-            color: 'orange',
-          },
-          {
-            icon: DollarSign,
-            label: 'View Earnings',
-            path: '/creator/earnings',
-            color: 'green',
-          },
-          {
-            icon: Upload,
-            label: 'Upload Content',
-            path: '/creator/upload',
-            color: 'teal',
-          },
-          {
-            icon: MessageCircle,
-            label: 'Messages',
-            path: '/creator/messages',
-            color: 'blue',
-            badge: dashboardData.stats.unreadMessages || 0,
-          },
-        ].map((action, index) => (
-          <motion.button
-            key={action.label}
-            className={`quick-action-btn ${action.color}`}
-            onClick={() => navigate(action.path)}
-            whileHover={{ scale: 1.05, y: -5 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className='creator-dashboard-action-icon'>
-              <action.icon size={24} />
-              {action.badge > 0 && (
-                <span className='creator-dashboard-action-badge'>
-                  {action.badge}
-                </span>
-              )}
-            </div>
-            <span className='creator-dashboard-action-label'>
-              {action.label}
-            </span>
-          </motion.button>
-        ))}
-      </div>
-    </motion.div>
-  );
+  // Quick Actions data
+  const quickActionsData = [
+    {
+      id: 'analytics',
+      icon: <TrendingUp size={24} />,
+      label: 'View Analytics',
+      path: '/creator/analytics',
+      color: 'orange',
+      description: 'See your performance metrics'
+    },
+    {
+      id: 'earnings',
+      icon: <DollarSign size={24} />,
+      label: 'View Earnings',
+      path: '/creator/earnings',
+      color: 'green',
+      description: 'Check your revenue and payouts'
+    },
+    {
+      id: 'upload',
+      icon: <Upload size={24} />,
+      label: 'Upload Content',
+      path: '/creator/upload',
+      color: 'teal',
+      description: 'Add new photos and videos'
+    },
+    {
+      id: 'messages',
+      icon: <MessageCircle size={24} />,
+      label: 'Messages',
+      path: '/creator/messages',
+      color: 'blue',
+      description: 'Chat with your fans',
+      badge: dashboardData.stats.unreadMessages || 0
+    }
+  ];
+
+  const handleQuickActionClick = (action) => {
+    navigate(action.path);
+  };
 
   // Show loading state
   if (isLoading) {
@@ -680,7 +661,13 @@ const CreatorDashboard = () => {
       <GiftAnalytics />
 
       {/* Quick Actions */}
-      <QuickActions />
+      <QuickActions
+        actions={quickActionsData}
+        onActionClick={handleQuickActionClick}
+        showHeader={true}
+        title="Quick Actions"
+        loading={isLoading}
+      />
 
       {/* Desktop Footer */}
       {isDesktop && <CreatorMainFooter />}
