@@ -23,6 +23,8 @@ import {
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
+import DashboardStatsGrid from '../components/DashboardStatsGrid';
+import MiniCharts from '../components/MiniCharts';
 import {
   useIsMobile,
   useIsDesktop,
@@ -231,70 +233,34 @@ const CreatorDashboard = () => {
     }).format(amount);
   };
 
-  // Stats Component
-  const StatsGrid = () => (
-    <div className='creator-dashboard-stats-grid'>
-      {[
-        {
-          label: 'Total Views',
-          value: formatNumber(dashboardData.stats.views),
-          change: dashboardData.stats.viewsChange,
-          icon: Eye,
-          color: 'blue',
-        },
-        {
-          label: 'Connections',
-          value: formatNumber(dashboardData.stats.connections),
-          change: dashboardData.stats.connectionsChange,
-          icon: Users,
-          color: 'green',
-        },
-        {
-          label: 'Revenue',
-          value: formatCurrency(dashboardData.stats.revenue),
-          change: dashboardData.stats.revenueChange,
-          icon: DollarSign,
-          color: 'purple',
-        },
-        {
-          label: 'Avg Rating',
-          value: dashboardData.stats.avgRating,
-          change: dashboardData.stats.ratingChange,
-          icon: Star,
-          color: 'yellow',
-        },
-        {
-          label: 'Gifts Sent',
-          value: formatNumber(dashboardData.giftStats.totalSent),
-          change: dashboardData.giftStats.conversionRate,
-          icon: Gift,
-          color: 'teal',
-        },
-      ].map((stat, index) => (
-        <motion.div
-          key={stat.label}
-          className={`creator-dashboard-stat-card creator-dashboard-${stat.color}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-          onClick={() => navigate(`/creator/${creatorId}/analytics`)}
-          style={{ cursor: 'pointer' }}
-        >
-          <div className='creator-dashboard-stat-header'>
-            <stat.icon size={20} />
-            <span className='creator-dashboard-stat-label'>{stat.label}</span>
-          </div>
-          <div className='creator-dashboard-stat-value'>{stat.value}</div>
-          <div
-            className={`creator-dashboard-stat-change ${stat.change >= 0 ? 'creator-dashboard-positive' : 'creator-dashboard-negative'}`}
-          >
-            {stat.change >= 0 ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
-            <span>{Math.abs(stat.change)}%</span>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  );
+  // Prepare stats data for DashboardStatsGrid component
+  const statsForGrid = {
+    totalViews: {
+      value: dashboardData.stats.views,
+      change: Math.abs(dashboardData.stats.viewsChange),
+      trend: dashboardData.stats.viewsChange >= 0 ? 'up' : dashboardData.stats.viewsChange < 0 ? 'down' : 'neutral'
+    },
+    connections: {
+      value: dashboardData.stats.connections,
+      change: Math.abs(dashboardData.stats.connectionsChange),
+      trend: dashboardData.stats.connectionsChange >= 0 ? 'up' : dashboardData.stats.connectionsChange < 0 ? 'down' : 'neutral'
+    },
+    revenue: {
+      value: dashboardData.stats.revenue,
+      change: Math.abs(dashboardData.stats.revenueChange),
+      trend: dashboardData.stats.revenueChange >= 0 ? 'up' : dashboardData.stats.revenueChange < 0 ? 'down' : 'neutral'
+    },
+    avgRating: {
+      value: dashboardData.stats.avgRating,
+      change: Math.abs(dashboardData.stats.ratingChange),
+      trend: dashboardData.stats.ratingChange >= 0 ? 'up' : dashboardData.stats.ratingChange < 0 ? 'down' : 'neutral'
+    },
+    giftsSent: {
+      value: dashboardData.giftStats.totalSent,
+      change: Math.abs(dashboardData.giftStats.conversionRate),
+      trend: dashboardData.giftStats.conversionRate >= 0 ? 'up' : dashboardData.giftStats.conversionRate < 0 ? 'down' : 'neutral'
+    }
+  };
 
   // Recent Activity Component
   const RecentActivity = () => (
@@ -636,7 +602,13 @@ const CreatorDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <StatsGrid />
+      <DashboardStatsGrid
+        stats={statsForGrid}
+        onCardClick={(statType) => {
+          navigate(`/creator/${creatorId}/analytics`);
+        }}
+        loading={isLoading}
+      />
 
       {/* Analytics Preview */}
       <motion.div
@@ -662,44 +634,35 @@ const CreatorDashboard = () => {
             </button>
           </div>
         </div>
-        <div className='mini-charts'>
-          <div
-            className='mini-chart'
-            onClick={() => navigate(`/creator/${creatorId}/earnings`)}
-          >
-            <div className='chart-title'>Revenue Trend</div>
-            <div className='chart-placeholder'>
-              <div className='trend-line revenue-trend'></div>
-            </div>
-            <div className='chart-value'>
-              {formatCurrency(dashboardData.stats.revenue)}
-            </div>
-          </div>
-          <div
-            className='mini-chart'
-            onClick={() => navigate(`/creator/${creatorId}/analytics`)}
-          >
-            <div className='chart-title'>Views This Week</div>
-            <div className='chart-placeholder'>
-              <div className='trend-line views-trend'></div>
-            </div>
-            <div className='chart-value'>
-              {formatNumber(dashboardData.stats.views)}
-            </div>
-          </div>
-          <div
-            className='mini-chart'
-            onClick={() => navigate(`/creator/${creatorId}/analytics`)}
-          >
-            <div className='chart-title'>Conversion Rate</div>
-            <div className='chart-placeholder'>
-              <div className='trend-line conversion-trend'></div>
-            </div>
-            <div className='chart-value'>
-              {(dashboardData.stats.conversionRate || 0).toFixed(1)}%
-            </div>
-          </div>
-        </div>
+        <MiniCharts
+          charts={[
+            {
+              id: 'revenue',
+              title: 'Revenue Trend',
+              value: dashboardData.stats.revenue,
+              format: 'currency',
+              trend: dashboardData.stats.revenueChange >= 0 ? 'up' : dashboardData.stats.revenueChange < 0 ? 'down' : 'neutral',
+              trendClass: 'revenue-trend'
+            },
+            {
+              id: 'views',
+              title: 'Views This Week',
+              value: dashboardData.stats.views,
+              format: 'number',
+              trend: dashboardData.stats.viewsChange >= 0 ? 'up' : dashboardData.stats.viewsChange < 0 ? 'down' : 'neutral',
+              trendClass: 'views-trend'
+            },
+            {
+              id: 'conversion',
+              title: 'Conversion Rate',
+              value: dashboardData.stats.conversionRate || 0,
+              format: 'percentage',
+              trend: 'neutral',
+              trendClass: 'conversion-trend'
+            }
+          ]}
+          loading={isLoading}
+        />
       </motion.div>
 
       {/* Content Grid */}
