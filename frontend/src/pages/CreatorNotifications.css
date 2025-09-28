@@ -6,6 +6,7 @@
   background: #0a0a0a;
   color: #ffffff;
   padding-bottom: 90px; /* Space for bottom navigation */
+  padding-top: 1rem; /* Space for mobile without header */
 }
 
 .CreatorNotifications-container {
@@ -466,6 +467,7 @@
 @media (min-width: 1024px) {
   .CreatorNotifications {
     padding-bottom: 0;
+    padding-top: 0; /* Desktop has header, so no top padding needed */
   }
 
   .CreatorNotifications-container {

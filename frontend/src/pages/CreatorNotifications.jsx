@@ -21,88 +21,37 @@ const CreatorNotifications = () => {
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
 
-  // Mock data for testing until backend is ready
-  const mockNotifications = [
-    {
-      id: '1',
-      type: 'connection',
-      title: 'New Connection',
-      message: 'Sarah connected with you',
-      from: {
-        userId: 'user1',
-        name: 'Sarah',
-        avatar: '/placeholders/creator1.jpg'
-      },
-      read: false,
-      createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-      actionUrl: '/creator/connections'
-    },
-    {
-      id: '2',
-      type: 'tip',
-      title: 'New Tip Received!',
-      message: 'Mike sent you a tip',
-      from: {
-        userId: 'user2',
-        name: 'Mike',
-        avatar: '/placeholders/creator2.jpg'
-      },
-      amount: 5.99,
-      read: false,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-      actionUrl: '/creator/earnings'
-    },
-    {
-      id: '3',
-      type: 'purchase',
-      title: 'Content Purchased!',
-      message: 'Emma purchased "Beach Vibes"',
-      from: {
-        userId: 'user3',
-        name: 'Emma',
-        avatar: '/placeholders/creator3.jpg'
-      },
-      amount: 9.99,
-      read: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-      actionUrl: '/creator/earnings'
-    },
-    {
-      id: '4',
-      type: 'message',
-      title: 'New Message',
-      message: 'Alex: Hey! Love your content...',
-      from: {
-        userId: 'user4',
-        name: 'Alex',
-        avatar: '/placeholders/creator4.jpg'
-      },
-      read: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
-      actionUrl: '/creator/messages'
-    },
-    {
-      id: '5',
-      type: 'system',
-      title: 'Weekly Payout Processed',
-      message: 'Your earnings of $127.50 have been sent to your PayPal',
-      read: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // 1 week ago
-      actionUrl: '/creator/earnings'
-    }
-  ];
-
-  // Initialize with mock data
+  // Load notifications from API
   useEffect(() => {
     const loadNotifications = async () => {
       try {
         setLoading(true);
-        // For now, use mock data
-        setNotifications(mockNotifications);
-        setUnreadCount(mockNotifications.filter(n => !n.read).length);
-        setLoading(false);
+        setError(null);
+
+        // Get notifications with current filter
+        const response = await notificationService.getNotifications({
+          filter,
+          page: 1,
+          limit: 50
+        });
+
+        if (response.data.success) {
+          setNotifications(response.data.data.notifications || []);
+
+          // Get unread count separately
+          const unreadResponse = await notificationService.getUnreadCount();
+          if (unreadResponse.data.success) {
+            setUnreadCount(unreadResponse.data.data.count || 0);
+          }
+        } else {
+          setError('Failed to load notifications');
+        }
       } catch (err) {
+        console.error('Error loading notifications:', err);
         setError('Failed to load notifications');
+        setNotifications([]);
+        setUnreadCount(0);
+      } finally {
         setLoading(false);
       }
     };
@@ -177,7 +126,7 @@ const CreatorNotifications = () => {
   // Mark notification as read
   const markAsRead = async (notificationId) => {
     try {
-      // Update local state immediately
+      // Update local state immediately for better UX
       setNotifications(prev =>
         prev.map(n =>
           n.id === notificationId ? { ...n, read: true } : n
@@ -185,39 +134,58 @@ const CreatorNotifications = () => {
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
 
-      // TODO: Call API when backend is ready
-      // await notificationService.markAsRead(notificationId);
+      // Call API to mark as read
+      await notificationService.markAsRead(notificationId);
     } catch (err) {
       console.error('Error marking notification as read:', err);
+      // Revert local state on error
+      setNotifications(prev =>
+        prev.map(n =>
+          n.id === notificationId ? { ...n, read: false } : n
+        )
+      );
+      setUnreadCount(prev => prev + 1);
     }
   };
 
   // Mark all notifications as read
   const markAllAsRead = async () => {
     try {
+      const previousNotifications = notifications;
+      const previousUnreadCount = unreadCount;
+
+      // Update local state immediately for better UX
       setNotifications(prev =>
         prev.map(n => ({ ...n, read: true }))
       );
       setUnreadCount(0);
 
-      // TODO: Call API when backend is ready
-      // await notificationService.markAllAsRead();
+      // Call API to mark all as read
+      await notificationService.markAllAsRead();
     } catch (err) {
       console.error('Error marking all notifications as read:', err);
+      // Revert local state on error
+      setNotifications(previousNotifications);
+      setUnreadCount(previousUnreadCount);
     }
   };
 
   // Delete notification
   const deleteNotification = async (notificationId) => {
     try {
+      const previousNotifications = notifications;
+
+      // Update local state immediately for better UX
       setNotifications(prev =>
         prev.filter(n => n.id !== notificationId)
       );
 
-      // TODO: Call API when backend is ready
-      // await notificationService.deleteNotification(notificationId);
+      // Call API to delete notification
+      await notificationService.deleteNotification(notificationId);
     } catch (err) {
       console.error('Error deleting notification:', err);
+      // Revert local state on error
+      setNotifications(previousNotifications);
     }
   };
 
@@ -262,7 +230,7 @@ const CreatorNotifications = () => {
   if (loading) {
     return (
       <div className="CreatorNotifications">
-        {!isDesktop && <CreatorMainHeader />}
+        {isDesktop && <CreatorMainHeader />}
         <div className="CreatorNotifications-container">
           <div className="CreatorNotifications-header">
             <h1 className="CreatorNotifications-title">Notifications</h1>
@@ -286,7 +254,7 @@ const CreatorNotifications = () => {
 
   return (
     <div className="CreatorNotifications">
-      {!isDesktop && <CreatorMainHeader />}
+      {isDesktop && <CreatorMainHeader />}
 
       <div className="CreatorNotifications-container">
         {/* Header */}
@@ -336,7 +304,22 @@ const CreatorNotifications = () => {
 
         {/* Notifications List */}
         <div className="CreatorNotifications-content">
-          {filteredNotifications.length === 0 ? (
+          {error ? (
+            <div className="CreatorNotifications-empty">
+              <Bell className="CreatorNotifications-empty-icon" />
+              <h3 className="CreatorNotifications-empty-title">Unable to load notifications</h3>
+              <p className="CreatorNotifications-empty-message">
+                {error}. Please try refreshing the page.
+              </p>
+              <button
+                className="CreatorNotifications-action-btn"
+                onClick={() => window.location.reload()}
+                style={{ marginTop: '1rem' }}
+              >
+                Refresh Page
+              </button>
+            </div>
+          ) : filteredNotifications.length === 0 ? (
             <div className="CreatorNotifications-empty">
               <Bell className="CreatorNotifications-empty-icon" />
               <h3 className="CreatorNotifications-empty-title">
