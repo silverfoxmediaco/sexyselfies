@@ -1,0 +1,391 @@
+/* RecentActivity.css - Reusable Recent Activity Component */
+
+/* CSS Variables for RecentActivity */
+:root {
+  --recentactivity-bg-primary: #1c1c1e;
+  --recentactivity-bg-hover: #2a2a2c;
+  --recentactivity-border: #3a3a3c;
+  --recentactivity-text-primary: #ffffff;
+  --recentactivity-text-secondary: #c7c7cc;
+  --recentactivity-text-tertiary: #8e8e93;
+
+  /* Activity Type Colors */
+  --recentactivity-purchase: #10b981;
+  --recentactivity-tip: #f59e0b;
+  --recentactivity-connection: #ef4444;
+  --recentactivity-message: #3b82f6;
+  --recentactivity-view: #8b5cf6;
+
+  /* Spacing */
+  --recentactivity-spacing-xs: 4px;
+  --recentactivity-spacing-sm: 8px;
+  --recentactivity-spacing-md: 16px;
+  --recentactivity-spacing-lg: 24px;
+
+  /* Border Radius */
+  --recentactivity-radius: 12px;
+  --recentactivity-radius-sm: 8px;
+  --recentactivity-radius-xs: 4px;
+}
+
+/* Main Container */
+.RecentActivity {
+  width: 100%;
+}
+
+/* Header */
+.RecentActivity-header {
+  margin-bottom: var(--recentactivity-spacing-lg);
+}
+
+.RecentActivity-title {
+  color: var(--recentactivity-text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Activity List */
+.RecentActivity-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--recentactivity-spacing-md);
+}
+
+/* Activity Item */
+.RecentActivity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--recentactivity-spacing-md);
+  padding: var(--recentactivity-spacing-md);
+  background: var(--recentactivity-bg-primary);
+  border: 1px solid var(--recentactivity-border);
+  border-radius: var(--recentactivity-radius);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.RecentActivity-item:hover {
+  background: var(--recentactivity-bg-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Activity Icon */
+.RecentActivity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.RecentActivity-icon svg {
+  color: var(--recentactivity-text-primary);
+  transition: color 0.3s ease;
+}
+
+/* Activity Type Specific Styling */
+.RecentActivity-icon-purchase {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.RecentActivity-icon-purchase svg {
+  color: var(--recentactivity-purchase);
+}
+
+.RecentActivity-icon-tip {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.RecentActivity-icon-tip svg {
+  color: var(--recentactivity-tip);
+}
+
+.RecentActivity-icon-connection {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.RecentActivity-icon-connection svg {
+  color: var(--recentactivity-connection);
+}
+
+.RecentActivity-icon-message {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.RecentActivity-icon-message svg {
+  color: var(--recentactivity-message);
+}
+
+.RecentActivity-icon-view {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.RecentActivity-icon-view svg {
+  color: var(--recentactivity-view);
+}
+
+/* Activity Content */
+.RecentActivity-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--recentactivity-spacing-xs);
+}
+
+.RecentActivity-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--recentactivity-spacing-xs);
+  color: var(--recentactivity-text-primary);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.RecentActivity-user {
+  font-weight: 600;
+  color: var(--recentactivity-text-primary);
+}
+
+.RecentActivity-action {
+  color: var(--recentactivity-text-secondary);
+}
+
+.RecentActivity-amount {
+  font-weight: 600;
+  color: var(--recentactivity-purchase);
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 6px;
+  border-radius: var(--recentactivity-radius-xs);
+  font-size: 12px;
+}
+
+.RecentActivity-time {
+  color: var(--recentactivity-text-tertiary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Empty State */
+.RecentActivity-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--recentactivity-spacing-md);
+  padding: var(--recentactivity-spacing-lg) var(--recentactivity-spacing-md);
+  text-align: center;
+  color: var(--recentactivity-text-tertiary);
+}
+
+.RecentActivity-empty svg {
+  opacity: 0.5;
+}
+
+.RecentActivity-empty h4 {
+  color: var(--recentactivity-text-secondary);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.RecentActivity-empty p {
+  color: var(--recentactivity-text-tertiary);
+  font-size: 14px;
+  margin: 0;
+  max-width: 200px;
+}
+
+/* Loading Skeletons */
+.RecentActivity-skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+
+.RecentActivity-skeleton:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.RecentActivity-icon-skeleton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    var(--recentactivity-border) 0%,
+    #3a3a3c 50%,
+    var(--recentactivity-border) 100%
+  );
+  background-size: 200% 100%;
+  animation: recentactivity-skeleton 1.5s ease-in-out infinite;
+}
+
+.RecentActivity-text-skeleton {
+  height: 16px;
+  width: 80%;
+  background: linear-gradient(
+    90deg,
+    var(--recentactivity-border) 0%,
+    #3a3a3c 50%,
+    var(--recentactivity-border) 100%
+  );
+  background-size: 200% 100%;
+  animation: recentactivity-skeleton 1.5s ease-in-out infinite;
+  border-radius: var(--recentactivity-radius-xs);
+  margin-bottom: var(--recentactivity-spacing-xs);
+}
+
+.RecentActivity-time-skeleton {
+  height: 12px;
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    var(--recentactivity-border) 0%,
+    #3a3a3c 50%,
+    var(--recentactivity-border) 100%
+  );
+  background-size: 200% 100%;
+  animation: recentactivity-skeleton 1.5s ease-in-out infinite;
+  border-radius: var(--recentactivity-radius-xs);
+}
+
+@keyframes recentactivity-skeleton {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Hover Effects for Interactive Elements */
+.RecentActivity-item:hover .RecentActivity-icon {
+  transform: scale(1.1);
+}
+
+.RecentActivity-item:hover .RecentActivity-amount {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .RecentActivity-item {
+    padding: var(--recentactivity-spacing-sm);
+    gap: var(--recentactivity-spacing-sm);
+  }
+
+  .RecentActivity-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .RecentActivity-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .RecentActivity-text {
+    font-size: 13px;
+  }
+
+  .RecentActivity-title {
+    font-size: 16px;
+  }
+
+  .RecentActivity-empty h4 {
+    font-size: 14px;
+  }
+
+  .RecentActivity-empty p {
+    font-size: 13px;
+  }
+}
+
+/* Entrance Animation */
+.RecentActivity-item {
+  animation: recentactivity-fadeInUp 0.6s ease-out;
+}
+
+@keyframes recentactivity-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus States for Accessibility */
+.RecentActivity-item:focus-visible {
+  outline: 2px solid var(--recentactivity-message);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .RecentActivity-item {
+    border-width: 2px;
+  }
+
+  .RecentActivity-icon {
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .RecentActivity-item,
+  .RecentActivity-icon,
+  .RecentActivity-icon-skeleton,
+  .RecentActivity-text-skeleton,
+  .RecentActivity-time-skeleton {
+    animation: none;
+    transition: none;
+  }
+
+  .RecentActivity-item:hover {
+    transform: none;
+  }
+
+  .RecentActivity-item:hover .RecentActivity-icon {
+    transform: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .RecentActivity {
+    break-inside: avoid;
+  }
+
+  .RecentActivity-item {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+    background: #f9f9f9 !important;
+  }
+
+  .RecentActivity-item * {
+    color: #000 !important;
+  }
+
+  .RecentActivity-amount {
+    background: #e0e0e0 !important;
+    color: #000 !important;
+  }
+}

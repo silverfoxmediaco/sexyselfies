@@ -791,7 +791,13 @@ class CreatorService {
       const response = await api.get('/creator/messages/analytics', {
         params: { limit, recent: true },
       });
-      return response;
+
+      // Backend returns recentActivity array, map it to data for consistency
+      return {
+        success: true,
+        data: response.recentActivity || response.data || [],
+        error: false,
+      };
     } catch (error) {
       console.warn(
         'Recent activity API unavailable, using empty data for new creator'

@@ -26,6 +26,8 @@ import BottomNavigation from '../components/BottomNavigation';
 import DashboardStatsGrid from '../components/DashboardStatsGrid';
 import MiniCharts from '../components/MiniCharts';
 import QuickActions from '../components/QuickActions';
+import RecentActivity from '../components/RecentActivity';
+import TopContent from '../components/TopContent';
 import {
   useIsMobile,
   useIsDesktop,
@@ -263,132 +265,20 @@ const CreatorDashboard = () => {
     }
   };
 
-  // Recent Activity Component
-  const RecentActivity = () => (
-    <motion.div
-      className='creator-dashboard-recent-activity'
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.4 }}
-    >
-      <h3 className='creator-dashboard-section-title'>Recent Activity</h3>
-      <div className='creator-dashboard-activity-list'>
-        {dashboardData.recentActivity.length === 0 ? (
-          <div className='creator-dashboard-no-activity'>
-            <p>No recent activity</p>
-          </div>
-        ) : (
-          dashboardData.recentActivity.map((activity, index) => (
-            <motion.div
-              key={activity.id || index}
-              className='creator-dashboard-activity-item'
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 + index * 0.05 }}
-            >
-              <div
-                className={`creator-dashboard-activity-icon creator-dashboard-${activity.type}`}
-              >
-                {activity.type === 'purchase' && <ShoppingBag size={16} />}
-                {activity.type === 'tip' && <DollarSign size={16} />}
-                {activity.type === 'connection' && <Heart size={16} />}
-                {activity.type === 'message' && <MessageCircle size={16} />}
-                {activity.type === 'view' && <Eye size={16} />}
-              </div>
-              <div className='creator-dashboard-activity-content'>
-                <p>
-                  <span className='creator-dashboard-activity-user'>
-                    {activity.user || activity.memberName}
-                  </span>{' '}
-                  {activity.action || activity.description}
-                  {activity.amount && (
-                    <span className='creator-dashboard-activity-amount'>
-                      {' '}
-                      ${activity.amount}
-                    </span>
-                  )}
-                </p>
-                <span className='creator-dashboard-activity-time'>
-                  {activity.time || activity.timeAgo}
-                </span>
-              </div>
-            </motion.div>
-          ))
-        )}
-      </div>
-    </motion.div>
-  );
+  // Handle recent activity click (optional)
+  const handleActivityClick = (activity) => {
+    // Could navigate to specific activity or show details
+    console.log('Activity clicked:', activity);
+  };
 
   // Import images at the top of the component
 
-  // Top Content Component with real data
-  const TopContent = () => (
-    <motion.div
-      className='creator-dashboard-top-content'
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.5 }}
-    >
-      <h3 className='creator-dashboard-section-title'>
-        Top Performing Content
-      </h3>
-      <div className='creator-dashboard-content-grid'>
-        {dashboardData.topContent.length === 0 ? (
-          <div className='creator-dashboard-no-content'>
-            <p>No content data available</p>
-          </div>
-        ) : (
-          dashboardData.topContent.slice(0, 4).map((content, index) => (
-            <motion.div
-              key={content.id || index}
-              className='creator-dashboard-content-item'
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className='creator-dashboard-content-preview'>
-                <img
-                  src={content.thumbnailUrl || content.mediaUrl}
-                  alt={content.title || `Content ${index + 1}`}
-                  className='creator-dashboard-content-image'
-                  onError={e => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-                <div
-                  className='creator-dashboard-content-placeholder'
-                  style={{ display: 'none' }}
-                >
-                  {content.contentType === 'video' ? (
-                    <Video size={24} />
-                  ) : (
-                    <Camera size={24} />
-                  )}
-                </div>
-                <div className='creator-dashboard-content-type-badge'>
-                  {content.contentType === 'video' ? (
-                    <Video size={14} />
-                  ) : (
-                    <Camera size={14} />
-                  )}
-                </div>
-                <div className='creator-dashboard-content-stats'>
-                  <span className='creator-dashboard-content-stat'>
-                    <Eye size={12} />
-                    {formatNumber(content.views || content.totalViews || 0)}
-                  </span>
-                  <span className='creator-dashboard-content-stat'>
-                    <DollarSign size={12} />
-                    {formatCurrency(content.earnings || content.revenue || 0)}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          ))
-        )}
-      </div>
-    </motion.div>
-  );
+  // Handle top content click
+  const handleTopContentClick = (content) => {
+    // Could navigate to content details or analytics
+    console.log('Content clicked:', content);
+    navigate(`/creator/content/${content.id || content._id}/analytics`);
+  };
 
   // Gift Analytics Component
   const GiftAnalytics = () => (
@@ -649,11 +539,23 @@ const CreatorDashboard = () => {
       {/* Content Grid */}
       <div className='dashboard-content'>
         <div className='content-left'>
-          <RecentActivity />
+          <RecentActivity
+            activities={dashboardData.recentActivity}
+            loading={isLoading}
+            showHeader={true}
+            title="Recent Activity"
+            onActivityClick={handleActivityClick}
+          />
         </div>
 
         <div className='content-right'>
-          <TopContent />
+          <TopContent
+            content={dashboardData.topContent}
+            loading={isLoading}
+            showHeader={true}
+            title="Top Performing Content"
+            onContentClick={handleTopContentClick}
+          />
         </div>
       </div>
 
