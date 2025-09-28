@@ -7,6 +7,7 @@ import {
   Clock,
   AlertCircle,
   Upload,
+  Check,
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
