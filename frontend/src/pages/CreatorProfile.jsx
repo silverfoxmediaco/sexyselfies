@@ -66,6 +66,13 @@ import ProfileCoverPhoto from '../components/CreatorProfile/ProfileCoverPhoto';
 import ContentGrid from '../components/CreatorProfile/ContentGrid';
 import CreatorProfileInformation from '../components/CreatorProfileInformation';
 
+// Reserved routes that should not be treated as usernames
+const reservedRoutes = [
+  'notifications', 'dashboard', 'settings', 'profile-setup', 'analytics',
+  'earnings', 'upload', 'content', 'messages', 'connections', 'profile',
+  'browse-members', 'members', 'chat', 'profile-preview'
+];
+
 const CreatorProfile = () => {
   const { username } = useParams();
   const navigate = useNavigate();
@@ -147,8 +154,13 @@ const CreatorProfile = () => {
       }
     };
 
-    if (username) {
+    if (username && !reservedRoutes.includes(username)) {
       fetchCreatorProfile();
+    } else if (username && reservedRoutes.includes(username)) {
+      // Reserved route detected - redirect to appropriate page or show error
+      console.log('🚫 Reserved route detected:', username);
+      setLoading(false);
+      setError(`"${username}" is a reserved route. Please check your navigation.`);
     }
   }, [username]);
 

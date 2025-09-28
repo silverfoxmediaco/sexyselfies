@@ -369,6 +369,24 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                   </ProtectedCreatorRoute>
                 }
               />
+
+              {/* Notifications Route */}
+              <Route
+                path='notifications'
+                element={
+                  <ProtectedCreatorRoute>
+                    <ComingSoon title='Notifications' />
+                  </ProtectedCreatorRoute>
+                }
+              />
+              <Route
+                path=':creatorId/notifications'
+                element={
+                  <ProtectedCreatorRoute>
+                    <ComingSoon title='Notifications' />
+                  </ProtectedCreatorRoute>
+                }
+              />
             </Route>
 
             {/* Member Routes */}
