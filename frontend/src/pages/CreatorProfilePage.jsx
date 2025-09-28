@@ -22,6 +22,7 @@ import CreatorMainFooter from '../components/CreatorMainFooter';
 import CreatorProfilePreview from './CreatorProfilePreview';
 import CreatorQuickActions from '../components/CreatorQuickActions';
 import CreatorProfileInformation from '../components/CreatorProfileInformation';
+import StatsGrid from '../components/StatsGrid';
 import {
   useIsMobile,
   useIsDesktop,
@@ -46,7 +47,7 @@ const CreatorProfilePage = () => {
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({
     totalViews: 0,
-    matches: 0,
+    connections: 0,
     earnings: 0,
     rating: 0,
   });
@@ -106,7 +107,7 @@ const CreatorProfilePage = () => {
           );
           setStats({
             totalViews: response.stats.totalViews || 0,
-            matches: response.stats.matches || 0,
+            connections: response.stats.connections || response.stats.totalConnections || response.stats.matches || 0,
             earnings: response.stats.earnings || 0,
             rating: response.stats.rating || 0,
           });
@@ -398,53 +399,15 @@ const CreatorProfilePage = () => {
 
         {/* Stats Grid - Only for own profile */}
         {profileData?.isOwnProfile && (
-          <div className='stats-grid'>
-            <div className='stat-card'>
-              <div className='stat-icon views'>
-                <Eye size={20} />
-              </div>
-              <div className='stat-content'>
-                <span className='stat-value'>
-                  {(stats?.totalViews || 0).toLocaleString()}
-                </span>
-                <span className='stat-label'>Total Views</span>
-              </div>
-            </div>
-
-            <div className='stat-card'>
-              <div className='stat-icon matches'>
-                <Heart size={20} />
-              </div>
-              <div className='stat-content'>
-                <span className='stat-value'>
-                  {(stats?.matches || 0).toLocaleString()}
-                </span>
-                <span className='stat-label'>Matches</span>
-              </div>
-            </div>
-
-            <div className='stat-card'>
-              <div className='stat-icon earnings'>
-                <DollarSign size={20} />
-              </div>
-              <div className='stat-content'>
-                <span className='stat-value'>
-                  ${(stats?.earnings || 0).toLocaleString()}
-                </span>
-                <span className='stat-label'>Total Earnings</span>
-              </div>
-            </div>
-
-            <div className='stat-card'>
-              <div className='stat-icon rating'>
-                <Star size={20} />
-              </div>
-              <div className='stat-content'>
-                <span className='stat-value'>{stats?.rating || 0}</span>
-                <span className='stat-label'>Rating</span>
-              </div>
-            </div>
-          </div>
+          <StatsGrid
+            stats={{
+              totalViews: stats?.totalViews || 0,
+              connections: stats?.connections || 0,
+              earnings: stats?.earnings || 0,
+              rating: stats?.rating || 0,
+            }}
+            loading={loading}
+          />
         )}
       </div>
 
@@ -501,7 +464,7 @@ const CreatorProfilePage = () => {
             <div className='status-message'>
               <AlertCircle size={16} />
               <span>
-                Complete your profile verification to start receiving matches
+                Complete your profile verification to start receiving connections
               </span>
             </div>
           )}
