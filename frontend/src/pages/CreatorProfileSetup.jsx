@@ -9,6 +9,7 @@ import CreatorMainFooter from '../components/CreatorMainFooter';
 import DemographicForm from '../components/DemographicForm';
 import ContentPricingForm from '../components/ContentPricingForm';
 import AutomationSettings from '../components/AutomationSettings';
+import LaunchAgreements from '../components/LaunchAgreements';
 import {
   useIsMobile,
   useIsDesktop,
@@ -609,154 +610,25 @@ const StepFour = ({ formData, setFormData, errors }) => {
 // Step 5: Verification & Launch - WITH PREVIEW BUTTON ADDED
 const StepFive = ({ formData, setFormData, errors, onPreview }) => {
   return (
-    <div className='step-five'>
-      <div className='step-header'>
-        <h2>Ready to Launch! 🚀</h2>
-        <p>Review and agree to our guidelines to start earning</p>
-      </div>
-
-      {/* Terms and agreements */}
-      <div className='agreements-section'>
-        <div className='agreement-card'>
-          <label className='checkbox-label'>
-            <input
-              type='checkbox'
-              checked={formData.agreeToTerms}
-              onChange={e =>
-                setFormData(prev => ({
-                  ...prev,
-                  agreeToTerms: e.target.checked,
-                }))
-              }
-            />
-            <span className='checkbox-custom'></span>
-            <span>
-              I agree to the{' '}
-              <a href='/terms' target='_blank'>
-                Terms of Service
-              </a>{' '}
-              and understand the 80/20 revenue split
-            </span>
-          </label>
-        </div>
-
-        <div className='agreement-card'>
-          <label className='checkbox-label'>
-            <input
-              type='checkbox'
-              checked={formData.agreeToContentPolicy}
-              onChange={e =>
-                setFormData(prev => ({
-                  ...prev,
-                  agreeToContentPolicy: e.target.checked,
-                }))
-              }
-            />
-            <span className='checkbox-custom'></span>
-            <span>
-              I agree to the{' '}
-              <a href='/content-policy' target='_blank'>
-                Content Policy
-              </a>{' '}
-              (no explicit nudity)
-            </span>
-          </label>
-        </div>
-
-        <div className='agreement-card'>
-          <label className='checkbox-label'>
-            <input
-              type='checkbox'
-              checked={formData.confirmAge}
-              onChange={e =>
-                setFormData(prev => ({ ...prev, confirmAge: e.target.checked }))
-              }
-            />
-            <span className='checkbox-custom'></span>
-            <span>I confirm I am 18 years or older</span>
-          </label>
-        </div>
-
-        <div className='agreement-card'>
-          <label className='checkbox-label'>
-            <input
-              type='checkbox'
-              checked={formData.confirmOwnership}
-              onChange={e =>
-                setFormData(prev => ({
-                  ...prev,
-                  confirmOwnership: e.target.checked,
-                }))
-              }
-            />
-            <span className='checkbox-custom'></span>
-            <span>I own all content I will upload</span>
-          </label>
-        </div>
-      </div>
-
-      {/* Profile preview */}
-      <div className='profile-preview-section'>
-        <h3>Your Profile Preview</h3>
-        <div className='preview-card'>
-          <div className='preview-header'>
-            {formData.coverImagePreview && (
-              <img
-                src={formData.coverImagePreview}
-                alt='Cover'
-                className='preview-cover'
-              />
-            )}
-            <div className='preview-profile-section'>
-              {formData.profilePhotoPreview && (
-                <img
-                  src={formData.profilePhotoPreview}
-                  alt='Profile'
-                  className='preview-avatar'
-                />
-              )}
-              <div className='preview-info'>
-                <h4>{formData.displayName || 'Your Name'}</h4>
-                <div className='preview-badges'>
-                  <span className='badge verified'>
-                    <Shield size={14} />
-                    Verified
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='preview-bio'>
-            <p>{formData.bio || 'Your bio will appear here...'}</p>
-          </div>
-          <div className='preview-stats'>
-            <div className='stat'>
-              <Star size={16} />
-              <span>New Creator</span>
-            </div>
-            <div className='stat'>
-              <TrendingUp size={16} />
-              <span>Est. $500-$2500/mo</span>
-            </div>
-          </div>
-        </div>
-
-        {/* PREVIEW BUTTON ADDED HERE */}
-        <button type='button' className='preview-full-btn' onClick={onPreview}>
-          <Eye size={18} />
-          <span>Preview How Members See You</span>
-        </button>
-      </div>
-
-      {errors.terms && <span className='error-message'>{errors.terms}</span>}
-      {errors.contentPolicy && (
-        <span className='error-message'>{errors.contentPolicy}</span>
-      )}
-      {errors.age && <span className='error-message'>{errors.age}</span>}
-      {errors.ownership && (
-        <span className='error-message'>{errors.ownership}</span>
-      )}
-    </div>
+    <LaunchAgreements
+      formData={{
+        agreeToTerms: formData.agreeToTerms,
+        agreeToContentPolicy: formData.agreeToContentPolicy,
+        confirmAge: formData.confirmAge,
+        confirmOwnership: formData.confirmOwnership
+      }}
+      profileData={{
+        displayName: formData.displayName,
+        bio: formData.bio,
+        profileImage: formData.profilePhotoPreview,
+        coverImage: formData.coverImagePreview
+      }}
+      onChange={(field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+      }}
+      onPreview={onPreview}
+      errors={errors}
+    />
   );
 };
 
