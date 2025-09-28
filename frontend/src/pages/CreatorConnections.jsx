@@ -22,6 +22,7 @@ import {
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
+import QuickActions from '../components/QuickActions';
 import {
   useIsMobile,
   useIsDesktop,
@@ -46,6 +47,46 @@ const CreatorConnections = () => {
     avgResponse: 0,
   });
   const [loading, setLoading] = useState(true);
+
+  // Quick Actions data for connections page
+  const quickActionsData = [
+    {
+      id: 'analytics',
+      icon: <TrendingUp size={24} />,
+      label: 'View Analytics',
+      path: '/creator/analytics',
+      color: 'orange',
+      description: 'See your performance metrics'
+    },
+    {
+      id: 'upload',
+      icon: <Camera size={24} />,
+      label: 'Upload Content',
+      path: '/creator/content-upload',
+      color: 'teal',
+      description: 'Add new photos and videos'
+    },
+    {
+      id: 'offers',
+      icon: <Gift size={24} />,
+      label: 'Send Offers',
+      path: '/creator/offers',
+      color: 'purple',
+      description: 'Create special offers for members'
+    },
+    {
+      id: 'profile',
+      icon: <Eye size={24} />,
+      label: 'View Profile',
+      path: '/creator/profile',
+      color: 'blue',
+      description: 'Check your public profile'
+    }
+  ];
+
+  const handleQuickActionClick = (action) => {
+    navigate(action.path);
+  };
 
   const tabs = [
     { id: 'all', label: 'All Connections', icon: Users },
@@ -442,49 +483,13 @@ const CreatorConnections = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className='connections-quick-actions'>
-        <h3>Quick Actions</h3>
-        <div className='connections-actions-grid'>
-          <motion.button
-            className='connections-quick-action-btn'
-            onClick={() => navigate('/creator/analytics')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <TrendingUp size={20} />
-            <span>View Analytics</span>
-          </motion.button>
-
-          <motion.button
-            className='connections-quick-action-btn'
-            onClick={() => navigate('/creator/content-upload')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Camera size={20} />
-            <span>Upload Content</span>
-          </motion.button>
-
-          <motion.button
-            className='connections-quick-action-btn'
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Gift size={20} />
-            <span>Send Offers</span>
-          </motion.button>
-
-          <motion.button
-            className='connections-quick-action-btn'
-            onClick={() => navigate('/creator/profile')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Eye size={20} />
-            <span>View Profile</span>
-          </motion.button>
-        </div>
-      </div>
+      <QuickActions
+        actions={quickActionsData}
+        onActionClick={handleQuickActionClick}
+        showHeader={true}
+        title="Quick Actions"
+        loading={loading}
+      />
 
       {/* Desktop Footer */}
       {isDesktop && <CreatorMainFooter />}
