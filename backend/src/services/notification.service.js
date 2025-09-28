@@ -321,4 +321,278 @@ exports.sendGiftViewedNotificationEmail = async (creatorEmail, creatorUsername, 
   }
 };
 
+// ============================================
+// IN-APP NOTIFICATION SYSTEM
+// ============================================
+
+/**
+ * Create a connection notification
+ * Called when someone accepts a connection
+ */
+exports.createConnectionNotification = async (fromUser, toUserId) => {
+  try {
+    // Get recipient to determine their role
+    const recipient = await User.findById(toUserId);
+    if (!recipient) {
+      throw new Error('Recipient user not found');
+    }
+
+    const notification = await Notification.createNotification({
+      recipientId: toUserId,
+      recipientRole: recipient.role || 'member',
+      type: 'connection',
+      title: 'New Connection',
+      message: `${fromUser.displayName || fromUser.name} connected with you`,
+      from: {
+        userId: fromUser._id,
+        name: fromUser.displayName || fromUser.name,
+        avatar: fromUser.profileImage || fromUser.avatar
+      },
+      actionUrl: recipient.role === 'creator' ? '/creator/connections' : '/member/connections'
+    });
+
+    console.log('Connection notification created:', notification._id);
+    return notification;
+  } catch (error) {
+    console.error('Error creating connection notification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a message notification
+ * Called when new message is received
+ */
+exports.createMessageNotification = async (fromUser, toUserId, messagePreview) => {
+  try {
+    // Get recipient to determine their role
+    const recipient = await User.findById(toUserId);
+    if (!recipient) {
+      throw new Error('Recipient user not found');
+    }
+
+    const notification = await Notification.createNotification({
+      recipientId: toUserId,
+      recipientRole: recipient.role || 'member',
+      type: 'message',
+      title: 'New Message',
+      message: `${fromUser.displayName || fromUser.name}: ${messagePreview}`,
+      from: {
+        userId: fromUser._id,
+        name: fromUser.displayName || fromUser.name,
+        avatar: fromUser.profileImage || fromUser.avatar
+      },
+      actionUrl: recipient.role === 'creator' ? '/creator/messages' : '/member/messages'
+    });
+
+    console.log('Message notification created:', notification._id);
+    return notification;
+  } catch (error) {
+    console.error('Error creating message notification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a tip notification
+ * Called when tip is sent
+ */
+exports.createTipNotification = async (fromUser, creatorId, amount) => {
+  try {
+    // Get creator user to verify role
+    const creator = await User.findById(creatorId);
+    if (!creator) {
+      throw new Error('Creator user not found');
+    }
+
+    const notification = await Notification.createNotification({
+      recipientId: creatorId,
+      recipientRole: 'creator',
+      type: 'tip',
+      title: 'New Tip Received!',
+      message: `${fromUser.displayName || fromUser.name} sent you a tip`,
+      from: {
+        userId: fromUser._id,
+        name: fromUser.displayName || fromUser.name,
+        avatar: fromUser.profileImage || fromUser.avatar
+      },
+      amount: amount,
+      actionUrl: '/creator/earnings'
+    });
+
+    console.log('Tip notification created:', notification._id);
+    return notification;
+  } catch (error) {
+    console.error('Error creating tip notification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a purchase notification
+ * Called when content is purchased
+ */
+exports.createPurchaseNotification = async (buyerUser, creatorId, contentTitle, amount, contentId = null) => {
+  try {
+    // Get creator user to verify role
+    const creator = await User.findById(creatorId);
+    if (!creator) {
+      throw new Error('Creator user not found');
+    }
+
+    const notification = await Notification.createNotification({
+      recipientId: creatorId,
+      recipientRole: 'creator',
+      type: 'purchase',
+      title: 'Content Purchased!',
+      message: `${buyerUser.displayName || buyerUser.name} purchased "${contentTitle}"`,
+      from: {
+        userId: buyerUser._id,
+        name: buyerUser.displayName || buyerUser.name,
+        avatar: buyerUser.profileImage || buyerUser.avatar
+      },
+      amount: amount,
+      relatedContentId: contentId,
+      actionUrl: '/creator/earnings'
+    });
+
+    console.log('Purchase notification created:', notification._id);
+    return notification;
+  } catch (error) {
+    console.error('Error creating purchase notification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a content notification
+ * Called when followed creator posts new content
+ */
+exports.createContentNotification = async (creatorUser, followerId, contentTitle, contentId = null) => {
+  try {
+    // Get follower to determine their role
+    const follower = await User.findById(followerId);
+    if (!follower) {
+      throw new Error('Follower user not found');
+    }
+
+    const notification = await Notification.createNotification({
+      recipientId: followerId,
+      recipientRole: follower.role || 'member',
+      type: 'content',
+      title: 'New Content Available',
+      message: `${creatorUser.displayName || creatorUser.name} posted "${contentTitle}"`,
+      from: {
+        userId: creatorUser._id,
+        name: creatorUser.displayName || creatorUser.name,
+        avatar: creatorUser.profileImage || creatorUser.avatar
+      },
+      relatedContentId: contentId,
+      actionUrl: follower.role === 'creator' ? '/creator/browse-creators' : '/member/browse-creators'
+    });
+
+    console.log('Content notification created:', notification._id);
+    return notification;
+  } catch (error) {
+    console.error('Error creating content notification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a system notification
+ * Called for system-wide announcements or updates
+ */
+exports.createSystemNotification = async (userId, title, message, actionUrl = null) => {
+  try {
+    // Get user to determine their role
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const notification = await Notification.createNotification({
+      recipientId: userId,
+      recipientRole: user.role || 'member',
+      type: 'system',
+      title: title,
+      message: message,
+      actionUrl: actionUrl
+    });
+
+    console.log('System notification created:', notification._id);
+    return notification;
+  } catch (error) {
+    console.error('Error creating system notification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create bulk notifications for multiple users
+ * Useful for system announcements or promotional content
+ */
+exports.createBulkNotifications = async (userIds, notificationData) => {
+  try {
+    const notifications = [];
+
+    for (const userId of userIds) {
+      try {
+        const user = await User.findById(userId);
+        if (user) {
+          const notification = await Notification.createNotification({
+            ...notificationData,
+            recipientId: userId,
+            recipientRole: user.role || 'member'
+          });
+          notifications.push(notification);
+        }
+      } catch (error) {
+        console.error(`Failed to create notification for user ${userId}:`, error);
+        // Continue with other users
+      }
+    }
+
+    console.log(`Bulk notifications created: ${notifications.length}/${userIds.length}`);
+    return notifications;
+  } catch (error) {
+    console.error('Error creating bulk notifications:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get notification statistics for a user
+ * Helper method for analytics
+ */
+exports.getUserNotificationStats = async (userId) => {
+  try {
+    const stats = await Notification.aggregate([
+      { $match: { recipientId: userId } },
+      {
+        $group: {
+          _id: '$type',
+          count: { $sum: 1 },
+          unreadCount: {
+            $sum: { $cond: [{ $eq: ['$read', false] }, 1, 0] }
+          }
+        }
+      }
+    ]);
+
+    const totalUnread = await Notification.countDocuments({
+      recipientId: userId,
+      read: false
+    });
+
+    return {
+      totalUnread,
+      byType: stats
+    };
+  } catch (error) {
+    console.error('Error getting notification stats:', error);
+    throw error;
+  }
+};
+
 module.exports = exports;

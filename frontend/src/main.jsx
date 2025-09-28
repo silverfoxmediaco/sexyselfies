@@ -64,6 +64,7 @@ import CreatorConnections from './pages/CreatorConnections';
 import CreatorManageMembers from './pages/CreatorManageMembers';
 import CreatorSettingsPage from './pages/CreatorSettingsPage';
 import CreatorContentManagement from './pages/CreatorContentManagement';
+import CreatorNotifications from './pages/CreatorNotifications';
 import BrowseMembers from './pages/BrowseMembers';
 
 // Import Member pages
@@ -375,7 +376,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 path='notifications'
                 element={
                   <ProtectedCreatorRoute>
-                    <ComingSoon title='Notifications' />
+                    <CreatorNotifications />
                   </ProtectedCreatorRoute>
                 }
               />
@@ -383,7 +384,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 path=':creatorId/notifications'
                 element={
                   <ProtectedCreatorRoute>
-                    <ComingSoon title='Notifications' />
+                    <CreatorNotifications />
                   </ProtectedCreatorRoute>
                 }
               />
