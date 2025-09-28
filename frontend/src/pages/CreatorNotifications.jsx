@@ -247,7 +247,7 @@ const CreatorNotifications = () => {
             ))}
           </div>
         </div>
-        {!isDesktop && <BottomNavigation />}
+        {!isDesktop && <BottomNavigation userRole={userRole} notificationCount={unreadCount} />}
       </div>
     );
   }
@@ -558,7 +558,7 @@ const CreatorNotifications = () => {
         </div>
       </div>
 
-      {!isDesktop && <BottomNavigation />}
+      {!isDesktop && <BottomNavigation userRole={userRole} notificationCount={unreadCount} />}
       {isDesktop && <CreatorMainFooter />}
     </div>
   );
