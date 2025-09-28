@@ -8,6 +8,7 @@ import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import DemographicForm from '../components/DemographicForm';
 import ContentPricingForm from '../components/ContentPricingForm';
+import AutomationSettings from '../components/AutomationSettings';
 import {
   useIsMobile,
   useIsDesktop,
@@ -587,64 +588,21 @@ const StepThree = ({ formData, setFormData, errors }) => {
 // Step 4: Smart Features
 const StepFour = ({ formData, setFormData, errors }) => {
   return (
-    <div className='step-four'>
-      <div className='step-header'>
-        <h2>Work Smarter with Automation</h2>
-        <p>Set up smart features to save time and earn more</p>
-      </div>
-
-      {/* Welcome message */}
-      <div className='form-group'>
-        <label className='form-label'>
-          <MessageCircle size={18} />
-          Welcome Message (Auto-sent to new connections)
-        </label>
-        <div className='automation-card'>
-          <textarea
-            className='form-input'
-            placeholder='Hi! Thanks for connecting...'
-            value={formData.automation.welcomeMessage.text}
-            onChange={e =>
-              setFormData(prev => ({
-                ...prev,
-                automation: {
-                  ...prev.automation,
-                  welcomeMessage: {
-                    ...prev.automation.welcomeMessage,
-                    text: e.target.value,
-                  },
-                },
-              }))
-            }
-            rows='3'
-          />
-        </div>
-      </div>
-
-
-
-      {/* Success Tips */}
-      <div className='form-group'>
-        <label className='form-label'>
-          <TrendingUp size={18} />
-          Success Tips
-        </label>
-        <div className='success-tips'>
-          <div className='success-tip'>
-            <Clock size={16} />
-            <span>
-              Post content during peak hours (8-10 PM) for better engagement
-            </span>
-          </div>
-          <div className='success-tip'>
-            <DollarSign size={16} />
-            <span>
-              Creators with automation enabled earn 40% more on average
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <AutomationSettings
+      formData={{
+        welcomeMessage: formData.automation.welcomeMessage
+      }}
+      onChange={(field, value) => {
+        setFormData(prev => ({
+          ...prev,
+          automation: {
+            ...prev.automation,
+            [field]: value
+          }
+        }));
+      }}
+      errors={errors}
+    />
   );
 };
 

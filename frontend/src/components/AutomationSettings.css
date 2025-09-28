@@ -1,0 +1,381 @@
+/* AutomationSettings.css - Reusable Automation Settings Component */
+
+/* CSS Variables for AutomationSettings */
+:root {
+  --automationsettings-bg-primary: #1c1c1e;
+  --automationsettings-bg-hover: #2a2a2c;
+  --automationsettings-border: #3a3a3c;
+  --automationsettings-border-focus: #17d2c2;
+  --automationsettings-text-primary: #ffffff;
+  --automationsettings-text-secondary: #c7c7cc;
+  --automationsettings-text-tertiary: #8e8e93;
+  --automationsettings-accent-primary: #17d2c2;
+  --automationsettings-error: #ef4444;
+  --automationsettings-success: #22c55e;
+  --automationsettings-warning: #f59e0b;
+  --automationsettings-info: #38bdf8;
+
+  /* Spacing */
+  --automationsettings-spacing-xs: 4px;
+  --automationsettings-spacing-sm: 8px;
+  --automationsettings-spacing-md: 16px;
+  --automationsettings-spacing-lg: 24px;
+  --automationsettings-spacing-xl: 32px;
+
+  /* Border Radius */
+  --automationsettings-radius: 12px;
+  --automationsettings-radius-sm: 8px;
+  --automationsettings-radius-xs: 4px;
+}
+
+/* Main Container */
+.AutomationSettings {
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Header */
+.AutomationSettings-header {
+  text-align: center;
+  margin-bottom: var(--automationsettings-spacing-xl);
+}
+
+.AutomationSettings-header h2 {
+  color: var(--automationsettings-text-primary);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 var(--automationsettings-spacing-sm) 0;
+  line-height: 1.2;
+}
+
+.AutomationSettings-header p {
+  color: var(--automationsettings-text-secondary);
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Form Groups */
+.AutomationSettings-group {
+  margin-bottom: var(--automationsettings-spacing-xl);
+}
+
+.AutomationSettings-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Labels */
+.AutomationSettings-label {
+  display: flex;
+  align-items: center;
+  gap: var(--automationsettings-spacing-sm);
+  color: var(--automationsettings-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: var(--automationsettings-spacing-md);
+  line-height: 1.4;
+}
+
+.AutomationSettings-label svg {
+  color: var(--automationsettings-accent-primary);
+  flex-shrink: 0;
+}
+
+/* Cards */
+.AutomationSettings-card {
+  background: var(--automationsettings-bg-primary);
+  border: 1px solid var(--automationsettings-border);
+  border-radius: var(--automationsettings-radius);
+  padding: var(--automationsettings-spacing-lg);
+  transition: all 0.2s ease;
+}
+
+.AutomationSettings-card:hover {
+  background: var(--automationsettings-bg-hover);
+  border-color: var(--automationsettings-accent-primary);
+}
+
+.AutomationSettings-card:focus-within {
+  border-color: var(--automationsettings-border-focus);
+  box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.1);
+}
+
+/* Textarea */
+.AutomationSettings-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--automationsettings-text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  padding: 0;
+  margin-bottom: var(--automationsettings-spacing-sm);
+}
+
+.AutomationSettings-textarea::placeholder {
+  color: var(--automationsettings-text-tertiary);
+  font-style: italic;
+}
+
+.AutomationSettings-textarea:focus {
+  outline: none;
+}
+
+/* Character Count */
+.AutomationSettings-char-count {
+  color: var(--automationsettings-text-tertiary);
+  font-size: 12px;
+  text-align: right;
+  margin-top: var(--automationsettings-spacing-xs);
+}
+
+/* Success Tips */
+.AutomationSettings-tips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--automationsettings-spacing-md);
+}
+
+.AutomationSettings-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--automationsettings-spacing-sm);
+  background: var(--automationsettings-bg-primary);
+  border: 1px solid var(--automationsettings-border);
+  border-radius: var(--automationsettings-radius-sm);
+  padding: var(--automationsettings-spacing-md);
+  transition: all 0.2s ease;
+}
+
+.AutomationSettings-tip:hover {
+  background: var(--automationsettings-bg-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.AutomationSettings-tip svg {
+  color: var(--automationsettings-accent-primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.AutomationSettings-tip span {
+  color: var(--automationsettings-text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* Error Messages */
+.AutomationSettings-error {
+  display: block;
+  color: var(--automationsettings-error);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: var(--automationsettings-spacing-xs);
+  line-height: 1.3;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .AutomationSettings-header h2 {
+    font-size: 20px;
+  }
+
+  .AutomationSettings-header p {
+    font-size: 14px;
+  }
+
+  .AutomationSettings-card {
+    padding: var(--automationsettings-spacing-md);
+  }
+
+  .AutomationSettings-tips {
+    gap: var(--automationsettings-spacing-sm);
+  }
+
+  .AutomationSettings-tip {
+    padding: var(--automationsettings-spacing-sm) var(--automationsettings-spacing-md);
+  }
+
+  .AutomationSettings-tip span {
+    font-size: 13px;
+  }
+
+  .AutomationSettings-label {
+    font-size: 14px;
+  }
+
+  .AutomationSettings-textarea {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .AutomationSettings-header h2 {
+    font-size: 18px;
+  }
+
+  .AutomationSettings-header p {
+    font-size: 13px;
+  }
+
+  .AutomationSettings-card {
+    padding: var(--automationsettings-spacing-sm);
+  }
+
+  .AutomationSettings-tip {
+    padding: var(--automationsettings-spacing-sm);
+  }
+
+  .AutomationSettings-tip span {
+    font-size: 12px;
+  }
+
+  .AutomationSettings-label {
+    font-size: 13px;
+  }
+
+  .AutomationSettings-textarea {
+    font-size: 12px;
+    min-height: 60px;
+  }
+
+  .AutomationSettings-char-count {
+    font-size: 11px;
+  }
+}
+
+/* Compact Mode */
+.AutomationSettings.compact .AutomationSettings-header {
+  margin-bottom: var(--automationsettings-spacing-md);
+}
+
+.AutomationSettings.compact .AutomationSettings-group {
+  margin-bottom: var(--automationsettings-spacing-lg);
+}
+
+.AutomationSettings.compact .AutomationSettings-card {
+  padding: var(--automationsettings-spacing-md);
+}
+
+.AutomationSettings.compact .AutomationSettings-tips {
+  gap: var(--automationsettings-spacing-sm);
+}
+
+.AutomationSettings.compact .AutomationSettings-tip {
+  padding: var(--automationsettings-spacing-sm) var(--automationsettings-spacing-md);
+}
+
+/* Animation for tips appearing */
+.AutomationSettings-tip {
+  animation: automationsettings-fadeIn 0.5s ease-out;
+}
+
+.AutomationSettings-tip:nth-child(1) { animation-delay: 0ms; }
+.AutomationSettings-tip:nth-child(2) { animation-delay: 100ms; }
+.AutomationSettings-tip:nth-child(3) { animation-delay: 200ms; }
+.AutomationSettings-tip:nth-child(4) { animation-delay: 300ms; }
+
+@keyframes automationsettings-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus States for Accessibility */
+.AutomationSettings-card:focus-within {
+  outline: 2px solid var(--automationsettings-accent-primary);
+  outline-offset: 2px;
+}
+
+.AutomationSettings-tip:focus-visible {
+  outline: 2px solid var(--automationsettings-accent-primary);
+  outline-offset: 2px;
+}
+
+/* Character Count Color States */
+.AutomationSettings-char-count {
+  transition: color 0.2s ease;
+}
+
+.AutomationSettings-textarea:focus + .AutomationSettings-char-count {
+  color: var(--automationsettings-text-secondary);
+}
+
+/* When approaching character limit */
+.AutomationSettings-char-count[data-warning="true"] {
+  color: var(--automationsettings-warning);
+}
+
+.AutomationSettings-char-count[data-error="true"] {
+  color: var(--automationsettings-error);
+}
+
+/* Future Toggle Switches (structure ready) */
+.AutomationSettings-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--automationsettings-spacing-md);
+  background: var(--automationsettings-bg-primary);
+  border: 1px solid var(--automationsettings-border);
+  border-radius: var(--automationsettings-radius-sm);
+  margin-bottom: var(--automationsettings-spacing-sm);
+}
+
+.AutomationSettings-toggle-label {
+  color: var(--automationsettings-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.AutomationSettings-toggle-description {
+  color: var(--automationsettings-text-tertiary);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .AutomationSettings-card,
+  .AutomationSettings-tip,
+  .AutomationSettings-char-count {
+    animation: none;
+    transition: none;
+  }
+
+  .AutomationSettings-tip:hover {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .AutomationSettings-card,
+  .AutomationSettings-tip {
+    border-width: 2px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .AutomationSettings {
+    break-inside: avoid;
+  }
+
+  .AutomationSettings-card,
+  .AutomationSettings-tip {
+    border: 1px solid #000;
+    box-shadow: none;
+  }
+}
