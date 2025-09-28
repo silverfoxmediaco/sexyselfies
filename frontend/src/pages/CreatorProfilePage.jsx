@@ -1,17 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   User,
   Eye,
-  Camera,
-  MapPin,
-  Heart,
-  Users,
-  DollarSign,
-  Star,
-  Calendar,
-  Check,
   Clock,
   AlertCircle,
   Upload,
@@ -23,6 +15,7 @@ import CreatorProfilePreview from './CreatorProfilePreview';
 import CreatorQuickActions from '../components/CreatorQuickActions';
 import CreatorProfileInformation from '../components/CreatorProfileInformation';
 import StatsGrid from '../components/StatsGrid';
+import CreatorProfileCard from '../components/CreatorProfileCard';
 import {
   useIsMobile,
   useIsDesktop,
@@ -39,7 +32,6 @@ const CreatorProfilePage = () => {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
-  const fileInputRef = useRef(null);
 
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -127,8 +119,7 @@ const CreatorProfilePage = () => {
     }
   };
 
-  const handlePhotoUpload = async event => {
-    const file = event.target.files[0];
+  const handlePhotoUpload = async (file) => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
@@ -147,8 +138,6 @@ const CreatorProfilePage = () => {
       size: file.size,
       sizeInMB: (file.size / (1024 * 1024)).toFixed(2) + 'MB',
     });
-
-    setUploadingPhoto(true);
 
     try {
       const response = await creatorService.updateProfilePhoto(file);
@@ -209,37 +198,9 @@ const CreatorProfilePage = () => {
       }
 
       alert(errorMessage);
-    } finally {
-      setUploadingPhoto(false);
     }
   };
 
-  const handleAvatarClick = () => {
-    if (fileInputRef.current && !uploadingPhoto && profileData?.isOwnProfile) {
-      fileInputRef.current.click();
-    }
-  };
-
-  // Helper function to check if we have a valid image URL
-  const hasValidProfileImage = () => {
-    const img = profileData?.profileImage;
-    return (
-      img &&
-      img !== '' &&
-      img !== null &&
-      img !== undefined &&
-      !img.includes('default') &&
-      (img.startsWith('http') || img.startsWith('https') || img.startsWith('/'))
-    );
-  };
-
-  // Get the display image - either the uploaded one or the default
-  const getDisplayImage = () => {
-    if (hasValidProfileImage()) {
-      return profileData.profileImage;
-    }
-    return defaultProfileImage;
-  };
 
   // Show loading while auth is initializing or profile is loading
   if (authLoading || loading) {
@@ -318,84 +279,14 @@ const CreatorProfilePage = () => {
 
       {/* Profile Overview */}
       <div className='profile-overview'>
-        <div className='profile-card'>
-          <div className='profile-avatar'>
-            <div
-              className={`avatar-container ${profileData?.isOwnProfile ? 'clickable' : ''}`}
-              onClick={handleAvatarClick}
-            >
-              <img
-                src={getDisplayImage()}
-                alt={profileData?.displayName || 'Profile'}
-                onError={e => {
-                  console.error('Image failed to load:', e.target.src);
-                  if (e.target.src !== defaultProfileImage) {
-                    e.target.src = defaultProfileImage;
-                  }
-                }}
-              />
-              {profileData?.isOwnProfile && (
-                <div className='avatar-overlay'>
-                  {uploadingPhoto ? (
-                    <div className='upload-spinner'>
-                      <div className='spinner'></div>
-                    </div>
-                  ) : (
-                    <>
-                      <Camera size={24} />
-                      <span>
-                        {hasValidProfileImage() ? 'Change Photo' : 'Add Photo'}
-                      </span>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-            {profileData?.isOnline && <div className='online-indicator'></div>}
-
-            {/* Hidden file input - only for own profile */}
-            {profileData?.isOwnProfile && (
-              <input
-                ref={fileInputRef}
-                type='file'
-                accept='image/*'
-                onChange={handlePhotoUpload}
-                style={{ display: 'none' }}
-                disabled={uploadingPhoto}
-              />
-            )}
-          </div>
-
-          <div className='profile-info'>
-            <div className='name-section'>
-              <h2>{profileData?.displayName || 'Creator Name'}</h2>
-              {profileData?.isVerified && (
-                <div className='verified-badge'>
-                  <Check size={14} />
-                  <span>Verified</span>
-                </div>
-              )}
-            </div>
-
-            <div className='profile-meta'>
-              <span className='meta-item'>
-                <MapPin size={14} />
-                {typeof profileData?.location === 'object'
-                  ? profileData?.location?.country || 'Location not set'
-                  : profileData?.location || 'Location not set'}
-              </span>
-              <span className='meta-item'>
-                <Calendar size={14} />
-                Age {profileData?.age || 'Not set'}
-              </span>
-            </div>
-
-            <p className='profile-bio'>
-              {profileData?.bio ||
-                'Add a bio to tell members about yourself...'}
-            </p>
-          </div>
-        </div>
+        <CreatorProfileCard
+          profileData={profileData}
+          isOwnProfile={profileData?.isOwnProfile}
+          onImageUpload={handlePhotoUpload}
+          onImageUploadStart={() => setUploadingPhoto(true)}
+          onImageUploadEnd={() => setUploadingPhoto(false)}
+          uploadingPhoto={uploadingPhoto}
+        />
 
         {/* Stats Grid - Only for own profile */}
         {profileData?.isOwnProfile && (
