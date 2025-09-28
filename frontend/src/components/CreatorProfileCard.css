@@ -39,6 +39,7 @@
   gap: var(--creatorprofilecard-spacing-lg);
   transition: all 0.2s ease;
   width: 100%;
+  margin-bottom: 26px;
 }
 
 .CreatorProfileCard:hover {
