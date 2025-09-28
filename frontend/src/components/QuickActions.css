@@ -36,6 +36,7 @@
 /* Main Container */
 .QuickActions {
   width: 100%;
+  margin-bottom: 100px;
 }
 
 /* Header */
