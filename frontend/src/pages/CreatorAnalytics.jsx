@@ -21,7 +21,7 @@ import {
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import CreatorQuickActions from '../components/CreatorQuickActions';
+import BottomQuickActions from '../components/BottomQuickActions';
 import {
   useIsMobile,
   useIsDesktop,
@@ -517,40 +517,52 @@ const CreatorAnalytics = () => {
       </div>
 
       {/* Quick Actions */}
-      <CreatorQuickActions
-        profileData={{
-          isOwnProfile: true
-        }}
-        additionalActions={[
+      <BottomQuickActions
+        title="Analytics Actions"
+        actions={[
           {
-            icon: Download,
+            id: 'export',
+            icon: <Download size={24} />,
             label: 'Export Report',
-            onClick: () => console.log('Export Report'),
-            variant: 'default'
+            description: 'Download analytics data',
+            color: 'blue',
+            path: '/creator/analytics/export'
           },
           {
-            icon: Filter,
+            id: 'filters',
+            icon: <Filter size={24} />,
             label: 'Custom Filters',
-            onClick: () => console.log('Custom Filters'),
-            variant: 'default'
+            description: 'Create custom analytics views',
+            color: 'purple',
+            path: '/creator/analytics/filters'
           },
           {
-            icon: Award,
+            id: 'goals',
+            icon: <Award size={24} />,
             label: 'Set Goals',
-            onClick: () => console.log('Set Goals'),
-            variant: 'default'
+            description: 'Configure performance targets',
+            color: 'orange',
+            path: '/creator/analytics/goals'
           },
           {
-            icon: Zap,
+            id: 'optimize',
+            icon: <Zap size={24} />,
             label: 'Optimize Profile',
-            onClick: () => console.log('Optimize Profile'),
-            variant: 'primary'
+            description: 'Get improvement suggestions',
+            color: 'green',
+            path: '/creator/profile-setup'
           }
         ]}
-        showSettings={false}
-        showShare={false}
-        showPreview={false}
-        showEditProfileImages={false}
+        onActionClick={(action) => {
+          if (action.path) {
+            // Navigate to the action's path
+            console.log('Navigate to:', action.path);
+          } else {
+            console.log('Action clicked:', action.label);
+          }
+        }}
+        showHeader={true}
+        loading={false}
       />
 
       {/* Desktop Footer */}

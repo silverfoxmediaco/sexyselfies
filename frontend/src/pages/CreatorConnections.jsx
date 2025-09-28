@@ -22,7 +22,7 @@ import {
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import QuickActions from '../components/QuickActions';
+import BottomQuickActions from '../components/BottomQuickActions';
 import {
   useIsMobile,
   useIsDesktop,
@@ -483,7 +483,7 @@ const CreatorConnections = () => {
       </div>
 
       {/* Quick Actions */}
-      <QuickActions
+      <BottomQuickActions
         actions={quickActionsData}
         onActionClick={handleQuickActionClick}
         showHeader={true}

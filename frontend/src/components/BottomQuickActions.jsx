@@ -9,9 +9,9 @@ import {
   Settings,
   Gift
 } from 'lucide-react';
-import './QuickActions.css';
+import './BottomQuickActions.css';
 
-const QuickActions = ({
+const BottomQuickActions = ({
   actions = [],
   onActionClick,
   showHeader = true,
@@ -62,18 +62,18 @@ const QuickActions = ({
   };
 
   return (
-    <div className={`QuickActions ${className}`}>
+    <div className={`BottomQuickActions ${className}`}>
       {showHeader && (
-        <div className="QuickActions-header">
-          <h3 className="QuickActions-title">{title}</h3>
+        <div className="BottomQuickActions-header">
+          <h3 className="BottomQuickActions-title">{title}</h3>
         </div>
       )}
 
-      <div className="QuickActions-grid">
+      <div className="BottomQuickActions-grid">
         {defaultActions.map((action, index) => (
           <button
             key={action.id}
-            className={`QuickActions-btn ${action.color} ${loading ? 'loading' : ''}`}
+            className={`BottomQuickActions-btn ${action.color} ${loading ? 'loading' : ''}`}
             onClick={() => handleActionClick(action)}
             disabled={loading}
             title={action.description}
@@ -81,14 +81,14 @@ const QuickActions = ({
               animationDelay: `${index * 100}ms`
             }}
           >
-            <div className="QuickActions-icon">
+            <div className="BottomQuickActions-icon">
               {loading ? (
-                <div className="QuickActions-skeleton-icon" />
+                <div className="BottomQuickActions-skeleton-icon" />
               ) : (
                 <>
                   {action.icon}
                   {action.badge > 0 && (
-                    <span className="QuickActions-badge">
+                    <span className="BottomQuickActions-badge">
                       {action.badge > 99 ? '99+' : action.badge}
                     </span>
                   )}
@@ -96,16 +96,16 @@ const QuickActions = ({
               )}
             </div>
 
-            <div className="QuickActions-content">
-              <span className="QuickActions-label">
+            <div className="BottomQuickActions-content">
+              <span className="BottomQuickActions-label">
                 {loading ? (
-                  <div className="QuickActions-skeleton-text" />
+                  <div className="BottomQuickActions-skeleton-text" />
                 ) : (
                   action.label
                 )}
               </span>
               {action.description && !loading && (
-                <span className="QuickActions-description">
+                <span className="BottomQuickActions-description">
                   {action.description}
                 </span>
               )}
@@ -117,4 +117,4 @@ const QuickActions = ({
   );
 };
 
-export default QuickActions;
+export default BottomQuickActions;

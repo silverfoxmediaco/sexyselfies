@@ -34,17 +34,17 @@
 }
 
 /* Main Container */
-.QuickActions {
+.BottomQuickActions {
   width: 100%;
   margin-bottom: 100px;
 }
 
 /* Header */
-.QuickActions-header {
+.BottomQuickActions-header {
   margin-bottom: var(--quickactions-spacing-lg);
 }
 
-.QuickActions-title {
+.BottomQuickActions-title {
   color: var(--quickactions-text-primary);
   font-size: 20px;
   font-weight: 700;
@@ -53,7 +53,7 @@
 }
 
 /* Actions Grid */
-.QuickActions-grid {
+.BottomQuickActions-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--quickactions-spacing-md);
@@ -62,20 +62,20 @@
 
 /* Responsive Grid Layout */
 @media (min-width: 768px) {
-  .QuickActions-grid {
+  .BottomQuickActions-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
 @media (min-width: 1024px) {
-  .QuickActions-grid {
+  .BottomQuickActions-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: var(--quickactions-spacing-lg);
   }
 }
 
 /* Action Button */
-.QuickActions-btn {
+.BottomQuickActions-btn {
   background: var(--quickactions-bg-primary);
   border: 1px solid var(--quickactions-border);
   border-radius: var(--quickactions-radius);
@@ -94,110 +94,110 @@
   animation: quickactions-fadeInUp 0.6s ease-out;
 }
 
-.QuickActions-btn:hover {
+.BottomQuickActions-btn:hover {
   background: var(--quickactions-bg-hover);
   transform: translateY(-5px) scale(1.02);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-.QuickActions-btn:active {
+.BottomQuickActions-btn:active {
   transform: translateY(-2px) scale(0.98);
 }
 
-.QuickActions-btn:disabled {
+.BottomQuickActions-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
-.QuickActions-btn:disabled:hover {
+.BottomQuickActions-btn:disabled:hover {
   transform: none;
   box-shadow: none;
 }
 
 /* Color Variants */
-.QuickActions-btn.orange {
+.BottomQuickActions-btn.orange {
   border-color: var(--quickactions-orange);
   background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, var(--quickactions-bg-primary) 100%);
 }
 
-.QuickActions-btn.orange:hover {
+.BottomQuickActions-btn.orange:hover {
   border-color: var(--quickactions-orange);
   box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
 }
 
-.QuickActions-btn.green {
+.BottomQuickActions-btn.green {
   border-color: var(--quickactions-green);
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, var(--quickactions-bg-primary) 100%);
 }
 
-.QuickActions-btn.green:hover {
+.BottomQuickActions-btn.green:hover {
   border-color: var(--quickactions-green);
   box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
 }
 
-.QuickActions-btn.teal {
+.BottomQuickActions-btn.teal {
   border-color: var(--quickactions-teal);
   background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, var(--quickactions-bg-primary) 100%);
 }
 
-.QuickActions-btn.teal:hover {
+.BottomQuickActions-btn.teal:hover {
   border-color: var(--quickactions-teal);
   box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3);
 }
 
-.QuickActions-btn.blue {
+.BottomQuickActions-btn.blue {
   border-color: var(--quickactions-blue);
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, var(--quickactions-bg-primary) 100%);
 }
 
-.QuickActions-btn.blue:hover {
+.BottomQuickActions-btn.blue:hover {
   border-color: var(--quickactions-blue);
   box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
 }
 
-.QuickActions-btn.purple {
+.BottomQuickActions-btn.purple {
   border-color: var(--quickactions-purple);
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, var(--quickactions-bg-primary) 100%);
 }
 
-.QuickActions-btn.purple:hover {
+.BottomQuickActions-btn.purple:hover {
   border-color: var(--quickactions-purple);
   box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
 }
 
-.QuickActions-btn.yellow {
+.BottomQuickActions-btn.yellow {
   border-color: var(--quickactions-yellow);
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, var(--quickactions-bg-primary) 100%);
 }
 
-.QuickActions-btn.yellow:hover {
+.BottomQuickActions-btn.yellow:hover {
   border-color: var(--quickactions-yellow);
   box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
 }
 
-.QuickActions-btn.red {
+.BottomQuickActions-btn.red {
   border-color: var(--quickactions-red);
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, var(--quickactions-bg-primary) 100%);
 }
 
-.QuickActions-btn.red:hover {
+.BottomQuickActions-btn.red:hover {
   border-color: var(--quickactions-red);
   box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
 }
 
-.QuickActions-btn.gray {
+.BottomQuickActions-btn.gray {
   border-color: var(--quickactions-gray);
   background: linear-gradient(135deg, rgba(107, 114, 128, 0.1) 0%, var(--quickactions-bg-primary) 100%);
 }
 
-.QuickActions-btn.gray:hover {
+.BottomQuickActions-btn.gray:hover {
   border-color: var(--quickactions-gray);
   box-shadow: 0 10px 30px rgba(107, 114, 128, 0.3);
 }
 
 /* Icon Container */
-.QuickActions-icon {
+.BottomQuickActions-icon {
   position: relative;
   display: flex;
   align-items: center;
@@ -209,50 +209,50 @@
   transition: all 0.3s ease;
 }
 
-.QuickActions-btn:hover .QuickActions-icon {
+.BottomQuickActions-btn:hover .BottomQuickActions-icon {
   background: rgba(255, 255, 255, 0.15);
   transform: scale(1.1);
 }
 
-.QuickActions-icon svg {
+.BottomQuickActions-icon svg {
   color: var(--quickactions-text-primary);
   transition: color 0.3s ease;
 }
 
-.QuickActions-btn.orange .QuickActions-icon svg {
+.BottomQuickActions-btn.orange .BottomQuickActions-icon svg {
   color: var(--quickactions-orange);
 }
 
-.QuickActions-btn.green .QuickActions-icon svg {
+.BottomQuickActions-btn.green .BottomQuickActions-icon svg {
   color: var(--quickactions-green);
 }
 
-.QuickActions-btn.teal .QuickActions-icon svg {
+.BottomQuickActions-btn.teal .BottomQuickActions-icon svg {
   color: var(--quickactions-teal);
 }
 
-.QuickActions-btn.blue .QuickActions-icon svg {
+.BottomQuickActions-btn.blue .BottomQuickActions-icon svg {
   color: var(--quickactions-blue);
 }
 
-.QuickActions-btn.purple .QuickActions-icon svg {
+.BottomQuickActions-btn.purple .BottomQuickActions-icon svg {
   color: var(--quickactions-purple);
 }
 
-.QuickActions-btn.yellow .QuickActions-icon svg {
+.BottomQuickActions-btn.yellow .BottomQuickActions-icon svg {
   color: var(--quickactions-yellow);
 }
 
-.QuickActions-btn.red .QuickActions-icon svg {
+.BottomQuickActions-btn.red .BottomQuickActions-icon svg {
   color: var(--quickactions-red);
 }
 
-.QuickActions-btn.gray .QuickActions-icon svg {
+.BottomQuickActions-btn.gray .BottomQuickActions-icon svg {
   color: var(--quickactions-gray);
 }
 
 /* Badge */
-.QuickActions-badge {
+.BottomQuickActions-badge {
   position: absolute;
   top: -6px;
   right: -6px;
@@ -281,7 +281,7 @@
 }
 
 /* Content */
-.QuickActions-content {
+.BottomQuickActions-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -290,14 +290,14 @@
   flex: 1;
 }
 
-.QuickActions-label {
+.BottomQuickActions-label {
   color: var(--quickactions-text-primary);
   font-size: 14px;
   font-weight: 600;
   line-height: 1.2;
 }
 
-.QuickActions-description {
+.BottomQuickActions-description {
   color: var(--quickactions-text-tertiary);
   font-size: 11px;
   line-height: 1.3;
@@ -306,13 +306,13 @@
   transition: all 0.3s ease;
 }
 
-.QuickActions-btn:hover .QuickActions-description {
+.BottomQuickActions-btn:hover .BottomQuickActions-description {
   opacity: 1;
   transform: translateY(0);
 }
 
 /* Loading Skeletons */
-.QuickActions-skeleton-icon {
+.BottomQuickActions-skeleton-icon {
   width: 24px;
   height: 24px;
   background: linear-gradient(
@@ -326,7 +326,7 @@
   border-radius: var(--quickactions-radius-xs);
 }
 
-.QuickActions-skeleton-text {
+.BottomQuickActions-skeleton-text {
   height: 14px;
   width: 80px;
   background: linear-gradient(
@@ -351,34 +351,34 @@
 
 /* Mobile Responsive */
 @media (max-width: 480px) {
-  .QuickActions-grid {
+  .BottomQuickActions-grid {
     gap: var(--quickactions-spacing-sm);
   }
 
-  .QuickActions-btn {
+  .BottomQuickActions-btn {
     padding: var(--quickactions-spacing-md);
     min-height: 100px;
   }
 
-  .QuickActions-icon {
+  .BottomQuickActions-icon {
     width: 48px;
     height: 48px;
   }
 
-  .QuickActions-icon svg {
+  .BottomQuickActions-icon svg {
     width: 20px;
     height: 20px;
   }
 
-  .QuickActions-label {
+  .BottomQuickActions-label {
     font-size: 12px;
   }
 
-  .QuickActions-description {
+  .BottomQuickActions-description {
     font-size: 10px;
   }
 
-  .QuickActions-badge {
+  .BottomQuickActions-badge {
     font-size: 9px;
     min-width: 16px;
     height: 16px;
@@ -398,56 +398,56 @@
 }
 
 /* Focus States for Accessibility */
-.QuickActions-btn:focus-visible {
+.BottomQuickActions-btn:focus-visible {
   outline: 2px solid var(--quickactions-teal);
   outline-offset: 2px;
 }
 
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
-  .QuickActions-btn {
+  .BottomQuickActions-btn {
     border-width: 2px;
   }
 
-  .QuickActions-icon {
+  .BottomQuickActions-icon {
     border: 1px solid currentColor;
   }
 }
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .QuickActions-btn,
-  .QuickActions-icon,
-  .QuickActions-description,
-  .QuickActions-badge,
-  .QuickActions-skeleton-icon,
-  .QuickActions-skeleton-text {
+  .BottomQuickActions-btn,
+  .BottomQuickActions-icon,
+  .BottomQuickActions-description,
+  .BottomQuickActions-badge,
+  .BottomQuickActions-skeleton-icon,
+  .BottomQuickActions-skeleton-text {
     animation: none;
     transition: none;
   }
 
-  .QuickActions-btn:hover {
+  .BottomQuickActions-btn:hover {
     transform: none;
   }
 
-  .QuickActions-btn:hover .QuickActions-icon {
+  .BottomQuickActions-btn:hover .BottomQuickActions-icon {
     transform: none;
   }
 }
 
 /* Print Styles */
 @media print {
-  .QuickActions {
+  .BottomQuickActions {
     break-inside: avoid;
   }
 
-  .QuickActions-grid {
+  .BottomQuickActions-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
 
-  .QuickActions-btn {
+  .BottomQuickActions-btn {
     break-inside: avoid;
     box-shadow: none;
     border: 1px solid #000;
@@ -455,11 +455,11 @@
     color: #000 !important;
   }
 
-  .QuickActions-btn * {
+  .BottomQuickActions-btn * {
     color: #000 !important;
   }
 
-  .QuickActions-badge {
+  .BottomQuickActions-badge {
     background: #000 !important;
     color: #fff !important;
   }

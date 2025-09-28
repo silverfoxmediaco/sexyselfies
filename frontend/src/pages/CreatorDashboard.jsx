@@ -25,7 +25,7 @@ import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import DashboardStatsGrid from '../components/DashboardStatsGrid';
 import MiniCharts from '../components/MiniCharts';
-import QuickActions from '../components/QuickActions';
+import BottomQuickActions from '../components/BottomQuickActions';
 import RecentActivity from '../components/RecentActivity';
 import TopContent from '../components/TopContent';
 import {
@@ -563,7 +563,7 @@ const CreatorDashboard = () => {
       <GiftAnalytics />
 
       {/* Quick Actions */}
-      <QuickActions
+      <BottomQuickActions
         actions={quickActionsData}
         onActionClick={handleQuickActionClick}
         showHeader={true}
