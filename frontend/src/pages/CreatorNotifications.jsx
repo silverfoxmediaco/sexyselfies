@@ -307,7 +307,7 @@ const CreatorNotifications = () => {
           {error ? (
             <div className="CreatorNotifications-empty">
               <Bell className="CreatorNotifications-empty-icon" />
-              <h3 className="CreatorNotifications-empty-title">Unable to load notifications</h3>
+              <h3 className="CreatorNotifications-empty-title">You have no new notifications.</h3>
               <p className="CreatorNotifications-empty-message">
                 {error}. Please try refreshing the page.
               </p>
