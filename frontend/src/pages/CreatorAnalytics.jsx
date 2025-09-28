@@ -21,6 +21,7 @@ import {
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
+import CreatorQuickActions from '../components/CreatorQuickActions';
 import {
   useIsMobile,
   useIsDesktop,
@@ -516,46 +517,41 @@ const CreatorAnalytics = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className='actions-section'>
-        <h2>Quick Actions</h2>
-        <div className='actions-grid'>
-          <motion.button
-            className='action-btn'
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Download size={18} />
-            <span>Export Report</span>
-          </motion.button>
-
-          <motion.button
-            className='action-btn'
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Filter size={18} />
-            <span>Custom Filters</span>
-          </motion.button>
-
-          <motion.button
-            className='action-btn'
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Award size={18} />
-            <span>Set Goals</span>
-          </motion.button>
-
-          <motion.button
-            className='action-btn primary'
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Zap size={18} />
-            <span>Optimize Profile</span>
-          </motion.button>
-        </div>
-      </div>
+      <CreatorQuickActions
+        profileData={{
+          isOwnProfile: true
+        }}
+        additionalActions={[
+          {
+            icon: Download,
+            label: 'Export Report',
+            onClick: () => console.log('Export Report'),
+            variant: 'default'
+          },
+          {
+            icon: Filter,
+            label: 'Custom Filters',
+            onClick: () => console.log('Custom Filters'),
+            variant: 'default'
+          },
+          {
+            icon: Award,
+            label: 'Set Goals',
+            onClick: () => console.log('Set Goals'),
+            variant: 'default'
+          },
+          {
+            icon: Zap,
+            label: 'Optimize Profile',
+            onClick: () => console.log('Optimize Profile'),
+            variant: 'primary'
+          }
+        ]}
+        showSettings={false}
+        showShare={false}
+        showPreview={false}
+        showEditProfileImages={false}
+      />
 
       {/* Desktop Footer */}
       {isDesktop && <CreatorMainFooter />}
