@@ -307,7 +307,7 @@
 }
 
 /* Removed hover effects for mobile PWA */
-.range-btn.active {
+.creator-dashboard-range-btn.creator-dashboard-active {
   background: var(--primary, #17d2c2);
   color: #000;
 }
