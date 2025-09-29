@@ -36,6 +36,7 @@
   background: var(--creator-profile-bg-primary);
   display: flex;
   flex-direction: column;
+  margin-top: 50px;
 }
 
 /* Loading and Error States */
