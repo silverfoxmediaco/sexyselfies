@@ -25,6 +25,7 @@ import BottomQuickActions from '../components/BottomQuickActions';
 import PerformanceGoals from '../components/PerformanceGoals';
 import AnalyticsOverview from '../components/AnalyticsOverview';
 import RevenueBreakdown from '../components/RevenueBreakdown';
+import TopPerformingContent from '../components/TopPerformingContent';
 import {
   useIsMobile,
   useIsDesktop,
@@ -293,34 +294,21 @@ const CreatorAnalytics = () => {
         className="revenue-section"
       />
 
-      {/* Top Content */}
-      <div className='content-section'>
-        <h2>Top Performing Content</h2>
-        <div className='content-list'>
-          {(analyticsData.topContent || []).map((content, index) => (
-            <div key={content.id} className='content-item'>
-              <div className='content-rank'>#{index + 1}</div>
-              <div className='content-type'>
-                {content.type === 'photo' ? (
-                  <Camera size={16} />
-                ) : (
-                  <Video size={16} />
-                )}
-              </div>
-              <div className='content-info'>
-                <span className='content-title'>{content.title}</span>
-                <div className='content-stats'>
-                  <span>{formatNumber(content.views)} views</span>
-                  <span>{content.engagement}% engagement</span>
-                </div>
-              </div>
-              <div className='content-earnings'>
-                {formatCurrency(content.earnings)}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Top Performing Content */}
+      <TopPerformingContent
+        limit={5}
+        timeRange={selectedPeriod}
+        showMetrics={true}
+        onContentClick={(content) => {
+          console.log('Content clicked:', content);
+          // Handle navigation to content details or open modal
+        }}
+        onTimeRangeChange={(range) => {
+          setSelectedPeriod(range);
+        }}
+        loading={loading}
+        className="content-section"
+      />
 
       {/* Performance Goals */}
       <PerformanceGoals
