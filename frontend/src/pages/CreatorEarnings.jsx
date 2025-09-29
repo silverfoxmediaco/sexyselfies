@@ -27,6 +27,7 @@ import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomQuickActions from '../components/BottomQuickActions';
 import PayoutHistory from '../components/PayoutHistory';
+import TopPerformingContent from '../components/TopPerformingContent';
 import {
   useIsMobile,
   useIsDesktop,
@@ -446,32 +447,13 @@ const CreatorEarnings = () => {
         </div>
 
         <div className='content-right'>
-          <div className='top-earners-section'>
-            <h2>Top Performing Content</h2>
-            <div className='top-earners-list'>
-              {earningsData.topEarners.map((item, index) => (
-                <div key={item.id} className='earner-item'>
-                  <div className='earner-rank'>#{index + 1}</div>
-                  <div className='earner-type'>
-                    {item.type === 'photo' ? (
-                      <Camera size={16} />
-                    ) : item.type === 'video' ? (
-                      <Video size={16} />
-                    ) : (
-                      <MessageCircle size={16} />
-                    )}
-                  </div>
-                  <div className='earner-info'>
-                    <span className='earner-title'>{item.title}</span>
-                    <span className='earner-sales'>{item.sales} sales</span>
-                  </div>
-                  <div className='earner-earnings'>
-                    {formatCurrency(item.earnings)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <TopPerformingContent
+            limit={5}
+            timeRange={selectedPeriod}
+            onContentClick={(content) => console.log('Content clicked:', content)}
+            showMetrics={true}
+            onTimeRangeChange={(range) => setSelectedPeriod(range)}
+          />
         </div>
       </div>
 
