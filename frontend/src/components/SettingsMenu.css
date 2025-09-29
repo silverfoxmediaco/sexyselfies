@@ -51,27 +51,27 @@
 
 /* Priority Colors */
 .SettingsMenu-item.high::before {
-  background: #ef4444; /* Use brand error color */
+  background: #17d2c2; /* Use brand primary color */
 }
 
 .SettingsMenu-item.high:hover::before {
-  background: #ef4444;
+  background: #17d2c2;
 }
 
 .SettingsMenu-item.medium::before {
-  background: #f59e0b; /* Use brand warning color */
+  background: #17d2c2; /* Use brand primary color */
 }
 
 .SettingsMenu-item.medium:hover::before {
-  background: #f59e0b;
+  background: #17d2c2;
 }
 
 .SettingsMenu-item.low::before {
-  background: #8e8e93; /* Use brand muted color */
+  background: #17d2c2; /* Use brand primary color */
 }
 
 .SettingsMenu-item.low:hover::before {
-  background: #8e8e93;
+  background: #17d2c2;
 }
 
 /* Item Header */
@@ -93,18 +93,18 @@
 }
 
 .SettingsMenu-item.high .SettingsMenu-item-icon {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: rgba(23, 210, 194, 0.1);
+  color: #17d2c2;
 }
 
 .SettingsMenu-item.medium .SettingsMenu-item-icon {
-  background: rgba(245, 158, 11, 0.1);
-  color: #f59e0b;
+  background: rgba(23, 210, 194, 0.1);
+  color: #17d2c2;
 }
 
 .SettingsMenu-item.low .SettingsMenu-item-icon {
-  background: rgba(142, 142, 147, 0.1);
-  color: #8e8e93;
+  background: rgba(23, 210, 194, 0.1);
+  color: #17d2c2;
 }
 
 .SettingsMenu-priority-badge {
@@ -113,7 +113,7 @@
   right: -4px;
   width: 20px;
   height: 20px;
-  background: #ef4444; /* Use brand error color */
+  background: #17d2c2; /* Use brand primary color */
   color: white;
   border-radius: 50%;
   display: flex;
