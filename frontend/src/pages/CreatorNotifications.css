@@ -79,11 +79,7 @@
   transition: all 0.2s ease;
 }
 
-.CreatorNotifications-action-btn:hover {
-  background: #1c1c1e;
-  border-color: #17d2c2;
-  color: #17d2c2;
-}
+/* Removed action button hover effects for mobile PWA */
 
 /* Filter Tabs */
 .CreatorNotifications-filters {
@@ -116,11 +112,7 @@
   position: relative;
 }
 
-.CreatorNotifications-filter:hover {
-  background: #1c1c1e;
-  border-color: #17d2c2;
-  color: #17d2c2;
-}
+/* Removed filter hover effects for mobile PWA */
 
 .CreatorNotifications-filter.active {
   background: #17d2c2;
@@ -190,11 +182,7 @@
   position: relative;
 }
 
-.CreatorNotifications-item:hover {
-  background: #222224;
-  border-color: #17d2c2;
-  transform: translateY(-1px);
-}
+/* Removed item hover effects for mobile PWA */
 
 .CreatorNotifications-item.unread {
   border-left: 4px solid #17d2c2;
@@ -273,13 +261,10 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.CreatorNotifications-item:hover .CreatorNotifications-item-actions {
   opacity: 1;
 }
+
+/* Removed item actions hover effects for mobile PWA */
 
 .CreatorNotifications-item-delete {
   background: transparent;
@@ -294,10 +279,7 @@
   justify-content: center;
 }
 
-.CreatorNotifications-item-delete:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-}
+/* Removed delete button hover effects for mobile PWA */
 
 /* Empty State */
 .CreatorNotifications-empty {
