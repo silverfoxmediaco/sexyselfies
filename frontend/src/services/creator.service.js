@@ -449,17 +449,6 @@ class CreatorService {
     }
   }
 
-  /**
-   * Get sales dashboard
-   */
-  async getSalesDashboard() {
-    try {
-      const response = await api.get('/creator/sales/dashboard');
-      return response;
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
 
   // ==========================================
   // MESSAGES & CHAT

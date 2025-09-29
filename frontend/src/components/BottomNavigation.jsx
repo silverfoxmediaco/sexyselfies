@@ -217,11 +217,6 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
           label: 'Earnings',
           path: `/creator/${creatorId}/earnings`,
         },
-        {
-          icon: BarChart3,
-          label: 'Sales Dashboard',
-          path: `/creator/${creatorId}/sales`,
-        },
 
         { section: 'divider' },
 
@@ -289,7 +284,6 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         { section: 'Analytics' },
         { icon: TrendingUp, label: 'Analytics', path: '/creator/analytics' },
         { icon: DollarSign, label: 'Earnings', path: '/creator/earnings' },
-        { icon: BarChart3, label: 'Sales Dashboard', path: '/creator/sales' },
 
         { section: 'divider' },
 
