@@ -26,6 +26,7 @@ import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomQuickActions from '../components/BottomQuickActions';
+import PayoutHistory from '../components/PayoutHistory';
 import {
   useIsMobile,
   useIsDesktop,
@@ -517,78 +518,16 @@ const CreatorEarnings = () => {
       </div>
 
       {/* Payout History */}
-      <div className='payout-section'>
-        <div className='payout-header'>
-          <h2>Payout History</h2>
-          <div className='payout-header-actions'>
-            {!payoutData.hasPendingRequest &&
-              payoutData.availableEarnings >= 50 && (
-                <motion.button
-                  className='request-payout-btn'
-                  onClick={() => setShowPayoutModal(true)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Send size={16} />
-                  Request Payout
-                </motion.button>
-              )}
-            {payoutData.hasPendingRequest && (
-              <div className='pending-payout-notice'>
-                <Clock size={16} />
-                Payout request pending
-              </div>
-            )}
-            <button
-              className='payout-settings-btn'
-              onClick={() => navigate('/creator/settings')}
-            >
-              <CreditCard size={16} />
-              Payout Settings
-            </button>
-          </div>
-        </div>
-
-        {/* Available Earnings Display */}
-        <div className='available-earnings'>
-          <div className='earnings-info'>
-            <span className='earnings-label'>Available for Payout:</span>
-            <span className='earnings-amount'>
-              {formatCurrency(payoutData.availableEarnings)}
-            </span>
-          </div>
-          {payoutData.availableEarnings < 50 && (
-            <div className='minimum-notice'>
-              <AlertCircle size={14} />
-              Minimum payout is $50.00
-            </div>
-          )}
-        </div>
-        <div className='payout-list'>
-          {earningsData.payoutHistory.map(payout => (
-            <div key={payout.id} className={`payout-item ${payout.status}`}>
-              <div className='payout-info'>
-                <span className='payout-amount'>
-                  {formatCurrency(payout.amount)}
-                </span>
-                <span className='payout-method'>{payout.method}</span>
-              </div>
-              <div className='payout-date'>{payout.date}</div>
-              <div className={`payout-status ${payout.status}`}>
-                {payout.status === 'paid' ? (
-                  <>
-                    <CheckCircle size={14} /> Paid
-                  </>
-                ) : (
-                  <>
-                    <Clock size={14} /> Pending
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <PayoutHistory
+        availableAmount={payoutData.availableEarnings}
+        minimumPayout={50}
+        payoutHistory={earningsData.payoutHistory}
+        hasPendingRequest={payoutData.hasPendingRequest}
+        pendingRequest={payoutData.pendingRequest}
+        onPayoutSettings={() => navigate('/creator/settings')}
+        onRequestPayout={() => setShowPayoutModal(true)}
+        loading={loading}
+      />
 
       {/* Quick Actions */}
       <BottomQuickActions
