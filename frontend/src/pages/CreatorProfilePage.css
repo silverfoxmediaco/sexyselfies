@@ -630,8 +630,8 @@
 @media (max-width: 768px) {
   .creator-profile-page {
     padding: 12px;
-    padding-bottom: 80px; /* Account for bottom navigation */
-  }
+    padding-bottom: 80px;
+    margin-top: 50px;
 
   .profile-card {
     flex-direction: column;
