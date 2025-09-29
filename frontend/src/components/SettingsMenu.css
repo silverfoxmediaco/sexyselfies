@@ -1,0 +1,302 @@
+/* SettingsMenu.css - Settings Menu Component */
+
+.SettingsMenu {
+  width: 100%;
+}
+
+.SettingsMenu-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.SettingsMenu-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #1c1c1e;
+  border: 1px solid #2a2a2c;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.SettingsMenu-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: transparent;
+  transition: background 0.2s ease;
+}
+
+.SettingsMenu-item:hover {
+  background: #2a2a2c;
+  border-color: #17d2c2;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.SettingsMenu-item:focus-visible {
+  outline: 2px solid #17d2c2;
+  outline-offset: 2px;
+}
+
+/* Priority Colors */
+.SettingsMenu-item.high::before {
+  background: #ef4444;
+}
+
+.SettingsMenu-item.high:hover::before {
+  background: #dc2626;
+}
+
+.SettingsMenu-item.medium::before {
+  background: #f59e0b;
+}
+
+.SettingsMenu-item.medium:hover::before {
+  background: #d97706;
+}
+
+.SettingsMenu-item.low::before {
+  background: #6b7280;
+}
+
+.SettingsMenu-item.low:hover::before {
+  background: #4b5563;
+}
+
+/* Item Header */
+.SettingsMenu-item-header {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.SettingsMenu-item-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #17d2c2;
+  transition: all 0.2s ease;
+}
+
+.SettingsMenu-item.high .SettingsMenu-item-icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.SettingsMenu-item.medium .SettingsMenu-item-icon {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.SettingsMenu-item.low .SettingsMenu-item-icon {
+  background: rgba(107, 114, 128, 0.1);
+  color: #9ca3af;
+}
+
+.SettingsMenu-priority-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  border: 2px solid #1c1c1e;
+}
+
+/* Item Content */
+.SettingsMenu-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.SettingsMenu-item-content h3 {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  line-height: 1.3;
+}
+
+.SettingsMenu-item-content p {
+  color: #c7c7cc;
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem;
+  line-height: 1.4;
+}
+
+.SettingsMenu-item-count {
+  color: #8e8e93;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(142, 142, 147, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Chevron */
+.SettingsMenu-chevron {
+  color: #6b7280;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.SettingsMenu-item:hover .SettingsMenu-chevron {
+  color: #17d2c2;
+  transform: translateX(4px);
+}
+
+/* Tablet Responsive */
+@media (min-width: 768px) {
+  .SettingsMenu-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .SettingsMenu-item {
+    padding: 1.5rem;
+  }
+
+  .SettingsMenu-item-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .SettingsMenu-item-content h3 {
+    font-size: 1.125rem;
+  }
+
+  .SettingsMenu-item-content p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Desktop Responsive */
+@media (min-width: 1024px) {
+  .SettingsMenu-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .SettingsMenu-item {
+    padding: 2rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .SettingsMenu-item-header {
+    align-self: center;
+  }
+
+  .SettingsMenu-item-icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .SettingsMenu-item-content {
+    text-align: center;
+  }
+
+  .SettingsMenu-item-content h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .SettingsMenu-chevron {
+    align-self: center;
+  }
+
+  .SettingsMenu-item:hover .SettingsMenu-chevron {
+    transform: translateY(-4px);
+  }
+}
+
+/* Extra Large Desktop */
+@media (min-width: 1280px) {
+  .SettingsMenu-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+
+  .SettingsMenu-item {
+    padding: 2.5rem;
+  }
+}
+
+/* Mobile Small Screens */
+@media (max-width: 480px) {
+  .SettingsMenu-item {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .SettingsMenu-item-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .SettingsMenu-item-content h3 {
+    font-size: 0.9rem;
+  }
+
+  .SettingsMenu-item-content p {
+    font-size: 0.8rem;
+  }
+
+  .SettingsMenu-item-count {
+    font-size: 0.7rem;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .SettingsMenu-item {
+    border-width: 2px;
+  }
+
+  .SettingsMenu-item-icon {
+    border: 1px solid currentColor;
+  }
+
+  .SettingsMenu-priority-badge {
+    border-width: 3px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .SettingsMenu-item,
+  .SettingsMenu-item-icon,
+  .SettingsMenu-chevron {
+    transition: none;
+  }
+
+  .SettingsMenu-item:hover {
+    transform: none;
+  }
+
+  .SettingsMenu-item:hover .SettingsMenu-chevron {
+    transform: none;
+  }
+}

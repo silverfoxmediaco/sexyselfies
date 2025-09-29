@@ -24,6 +24,7 @@ import {
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
+import SettingsMenu from '../components/SettingsMenu';
 import {
   useIsMobile,
   useIsDesktop,
@@ -339,34 +340,19 @@ const CreatorSettingsPage = () => {
   // Mobile-first: Main settings menu
   const renderMainMenu = () => (
     <div className='settings-main-menu'>
-      <div className='settings-menu-grid'>
-        {settingSections.map((section, index) => (
-          <motion.button
-            key={section.id}
-            className={`settings-menu-item ${section.priority}`}
-            onClick={() => setActiveSection(section.id)}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <div className='menu-item-header'>
-              <div className='menu-item-icon'>
-                <section.icon size={24} />
-              </div>
-              {section.priority === 'high' && (
-                <div className='priority-badge'>!</div>
-              )}
-            </div>
-            <div className='menu-item-content'>
-              <h3>{section.title}</h3>
-              <p>{section.description}</p>
-              <span className='item-count'>{section.items} settings</span>
-            </div>
-            <ChevronRight size={20} className='menu-chevron' />
-          </motion.button>
-        ))}
-      </div>
+      <SettingsMenu
+        menuItems={settingSections.map(section => ({
+          id: section.id,
+          icon: <section.icon size={24} />,
+          title: section.title,
+          description: section.description,
+          itemCount: section.items,
+          priority: section.priority,
+          showBadge: section.priority === 'high'
+        }))}
+        onItemClick={(sectionId) => setActiveSection(sectionId)}
+        className="settings-menu-grid"
+      />
     </div>
   );
 
