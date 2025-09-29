@@ -30,6 +30,7 @@ import PayoutHistory from '../components/PayoutHistory';
 import TopPerformingContent from '../components/TopPerformingContent';
 import EarningsOverview from '../components/EarningsOverview';
 import RevenueBreakdown from '../components/RevenueBreakdown';
+import RecentTransactions from '../components/RecentTransactions';
 import {
   useIsMobile,
   useIsDesktop,
@@ -292,38 +293,21 @@ const CreatorEarnings = () => {
       {/* Recent Transactions & Top Earners */}
       <div className='content-grid'>
         <div className='content-left'>
-          <div className='transactions-section'>
-            <h2>Recent Transactions</h2>
-            <div className='transactions-list'>
-              {earningsData.recentTransactions.map(transaction => (
-                <div key={transaction.id} className='transaction-item'>
-                  <div className='transaction-icon'>
-                    {transaction.type === 'photo' && <Camera size={16} />}
-                    {transaction.type === 'video' && <Video size={16} />}
-                    {transaction.type === 'message' && (
-                      <MessageCircle size={16} />
-                    )}
-                    {transaction.type === 'tip' && <Gift size={16} />}
-                  </div>
-                  <div className='transaction-info'>
-                    <span className='transaction-user'>{transaction.user}</span>
-                    <span className='transaction-type'>
-                      {transaction.type === 'tip'
-                        ? 'sent a tip'
-                        : `purchased ${transaction.type}`}
-                    </span>
-                    <span className='transaction-date'>{transaction.date}</span>
-                  </div>
-                  <div className='transaction-amount'>
-                    {formatCurrency(transaction.amount)}
-                  </div>
-                  <div className={`transaction-status ${transaction.status}`}>
-                    <CheckCircle size={12} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <RecentTransactions
+            transactions={earningsData.recentTransactions}
+            showTitle={true}
+            limit={10}
+            onTransactionClick={(transaction) => {
+              console.log('Transaction clicked:', transaction);
+              // Handle navigation to transaction details
+            }}
+            onViewAll={() => {
+              console.log('View all transactions clicked');
+              // Handle navigation to full transactions page
+            }}
+            loading={loading}
+            className="transactions-section"
+          />
         </div>
 
         <div className='content-right'>
