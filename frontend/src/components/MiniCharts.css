@@ -62,11 +62,7 @@
   overflow: hidden;
 }
 
-.MiniCharts-chart:hover {
-  background: var(--minicharts-bg-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
+/* Removed hover effect for mobile PWA */
 
 /* Chart Header */
 .MiniCharts-header {
@@ -283,13 +279,7 @@
 }
 
 /* Hover Effects for Interactive Elements */
-.MiniCharts-chart:hover .MiniCharts-line {
-  stroke-width: 3;
-}
-
-.MiniCharts-chart:hover .MiniCharts-dot {
-  r: 3;
-}
+/* Removed chart hover effects for mobile PWA */
 
 /* Focus States for Accessibility */
 .MiniCharts-chart:focus-visible {
@@ -323,9 +313,7 @@
     transition: none;
   }
 
-  .MiniCharts-chart:hover {
-    transform: none;
-  }
+  /* Hover effects already removed for mobile PWA */
 }
 
 /* Print Styles */

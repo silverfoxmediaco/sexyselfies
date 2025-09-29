@@ -49,9 +49,7 @@
   cursor: pointer;
 }
 
-.TopContent-item:hover {
-  transform: translateY(-2px);
-}
+/* Removed hover effect for mobile PWA */
 
 /* Content Preview */
 .TopContent-preview {
@@ -100,9 +98,7 @@
   transition: opacity 0.2s ease;
 }
 
-.TopContent-item:hover .TopContent-overlay {
-  opacity: 1;
-}
+/* Removed overlay hover effect for mobile PWA */
 
 .TopContent-type-badge {
   align-self: flex-end;
@@ -238,9 +234,7 @@
   pointer-events: none;
 }
 
-.TopContent-skeleton:hover {
-  transform: none;
-}
+/* Hover effects already removed for mobile PWA */
 
 .TopContent-preview-skeleton {
   width: 100%;

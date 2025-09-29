@@ -80,14 +80,9 @@
   z-index: 1;
 }
 
-.DashboardStatsGrid-card:hover::before {
-  opacity: 1;
-}
+/* Removed hover effect for mobile PWA */
 
-.DashboardStatsGrid-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
+/* Removed hover effect for mobile PWA */
 
 .DashboardStatsGrid-card[role="button"]:focus-visible {
   outline: 3px solid rgba(255, 255, 255, 0.5);
@@ -137,10 +132,7 @@
   transition: all 0.3s ease;
 }
 
-.DashboardStatsGrid-card:hover .DashboardStatsGrid-icon {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-}
+/* Removed icon hover effect for mobile PWA */
 
 .DashboardStatsGrid-label {
   color: var(--dashboardstatsgrid-text-light);
@@ -341,13 +333,7 @@
     transition: none;
   }
 
-  .DashboardStatsGrid-card:hover {
-    transform: none;
-  }
-
-  .DashboardStatsGrid-card:hover .DashboardStatsGrid-icon {
-    transform: none;
-  }
+  /* Hover effects already removed for mobile PWA */
 }
 
 /* Print Styles */
