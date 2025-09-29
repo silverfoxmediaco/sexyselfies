@@ -30,6 +30,7 @@ import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import ContentManagementStats from '../components/ContentManagementStats';
+import ContentGrid from '../components/ContentGrid';
 import {
   useIsDesktop,
   useIsMobile,
@@ -223,40 +224,6 @@ const CreatorContentManagement = () => {
     setEditForm({ title: '', description: '', price: 0 });
   };
 
-  const toggleItemSelection = id => {
-    setSelectedItems(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
-  };
-
-  const selectAllVisible = () => {
-    const visibleIds = filteredAndSortedContent.map(item => item._id);
-    setSelectedItems(visibleIds);
-  };
-
-  const clearSelection = () => {
-    setSelectedItems([]);
-  };
-
-  const getTypeIcon = type => {
-    return type === 'photo' ? <Image size={16} /> : <Video size={16} />;
-  };
-
-  const getTypeLabel = type => {
-    return type === 'photo' ? 'Photo Set' : 'Video';
-  };
-
-  const formatDate = date => {
-    return new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
-
-  const formatPrice = price => {
-    return price === 0 ? 'Free' : `$${price.toFixed(2)}`;
-  };
 
   const handleShareContent = async item => {
     const shareUrl = `${window.location.origin}/content/${item._id}`;
@@ -454,185 +421,81 @@ const CreatorContentManagement = () => {
           </div>
         </div>
 
-        {/* Selection Controls */}
-        {selectedItems.length > 0 && (
-          <div className='content-mgmt-selection-bar'>
-            <span>{selectedItems.length} selected</span>
-            <div className='content-mgmt-selection-actions'>
-              <button onClick={selectAllVisible}>Select All Visible</button>
-              <button
-                onClick={handleBulkDelete}
-                className='content-mgmt-delete-btn'
-              >
-                <Trash2 size={16} />
-                Delete Selected
-              </button>
-              <button onClick={clearSelection}>Clear Selection</button>
-            </div>
-          </div>
-        )}
 
         {/* Content Grid/List */}
-        <div className={`content-mgmt-content ${viewMode}`}>
-          {filteredAndSortedContent.length === 0 ? (
-            <div className='content-mgmt-empty-state'>
-              <Upload size={48} />
-              <h3>
-                {content.length === 0
-                  ? 'No content uploaded yet'
-                  : 'No content found'}
-              </h3>
-              <p>
-                {content.length === 0
-                  ? 'Start creating content to build your audience and earn money'
-                  : 'Try adjusting your filters or search term'}
-              </p>
-              {content.length === 0 && (
-                <button
-                  className='content-mgmt-upload-first-btn'
-                  onClick={() => navigate(`/creator/${creatorId}/upload`)}
-                >
-                  <Plus size={20} />
-                  Upload Your First Content
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className={`content-mgmt-items-${viewMode}`}>
-              {filteredAndSortedContent.map(item => (
-                <div
-                  key={item._id}
-                  className={`content-mgmt-item ${selectedItems.includes(item._id) ? 'selected' : ''}`}
-                >
-                  <div className='content-mgmt-item-checkbox'>
-                    <input
-                      type='checkbox'
-                      checked={selectedItems.includes(item._id)}
-                      onChange={() => toggleItemSelection(item._id)}
-                    />
-                  </div>
-
-                  <div className='content-mgmt-item-thumbnail'>
-                    {item.thumbnail || (item.media && item.media[0]?.url) ? (
-                      <img
-                        src={item.thumbnail || item.media[0]?.url}
-                        alt={item.title || 'Content thumbnail'}
-                        onError={e => {
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }}
-                      />
-                    ) : null}
-                    <div
-                      className='content-mgmt-item-placeholder'
-                      style={{
-                        display:
-                          item.thumbnail || (item.media && item.media[0]?.url)
-                            ? 'none'
-                            : 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        height: '100%',
-                        backgroundColor: 'var(--surface-700)',
-                        color: 'var(--text-secondary)',
-                      }}
-                    >
-                      {item.type === 'photo' ? (
-                        <Image size={32} />
-                      ) : (
-                        <Video size={32} />
-                      )}
-                      <span style={{ marginTop: '8px', fontSize: '0.75rem' }}>
-                        No Preview
-                      </span>
-                    </div>
-                    <div className='content-mgmt-item-type'>
-                      {getTypeIcon(item.type)}
-                    </div>
-                    {item.type === 'video' && item.duration && (
-                      <div className='content-mgmt-item-duration'>
-                        {item.duration}
-                      </div>
-                    )}
-                    <div className='content-mgmt-item-price-badge'>
-                      {formatPrice(item.price)}
-                    </div>
-                  </div>
-
-                  <div className='content-mgmt-item-info'>
-                    <h3>{item.title}</h3>
-                    <p className='content-mgmt-item-description'>
-                      {item.description && item.description.length > 100
-                        ? `${item.description.substring(0, 100)}...`
-                        : item.description || 'No description'}
-                    </p>
-
-                    <div className='content-mgmt-item-meta'>
-                      <span className='content-mgmt-item-date'>
-                        <Calendar size={12} />
-                        {formatDate(item.createdAt)}
-                      </span>
-                      <span className='content-mgmt-item-type-label'>
-                        {getTypeLabel(item.type)}
-                      </span>
-                    </div>
-
-                    <div className='content-mgmt-item-stats'>
-                      <span className='content-mgmt-stat'>
-                        <Eye size={12} />
-                        {item.views || 0} views
-                      </span>
-                      <span className='content-mgmt-stat'>
-                        <Heart size={12} />
-                        {item.likes || 0} likes
-                      </span>
-                      <span className='content-mgmt-stat'>
-                        <DollarSign size={12} />$
-                        {(item.earnings || 0).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className='content-mgmt-item-actions'>
-                    <button
-                      className='content-mgmt-action-btn'
-                      onClick={() => handleEditContent(item)}
-                      title='Edit'
-                    >
-                      <Edit size={18} />
-                    </button>
-
-                    <button
-                      className='content-mgmt-action-btn'
-                      onClick={() =>
-                        window.open(`/content/${item._id}`, '_blank')
-                      }
-                      title='View'
-                    >
-                      <Eye size={18} />
-                    </button>
-
-                    <button
-                      className='content-mgmt-action-btn'
-                      onClick={() => handleShareContent(item)}
-                      title='Share'
-                    >
-                      <Share2 size={18} />
-                    </button>
-
-                    <button
-                      className='content-mgmt-action-btn content-mgmt-delete-btn'
-                      onClick={() => handleDeleteContent(item._id)}
-                      title='Delete'
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+        <div className='content-mgmt-content'>
+          <ContentGrid
+            content={filteredAndSortedContent.map(item => ({
+              id: item._id,
+              title: item.title,
+              description: item.description,
+              thumbnailUrl: item.thumbnail || (item.media && item.media[0]?.url),
+              type: item.type,
+              price: item.price,
+              createdAt: item.createdAt,
+              duration: item.duration,
+              stats: {
+                views: item.views || 0,
+                likes: item.likes || 0,
+                earnings: item.earnings || 0
+              }
+            }))}
+            viewMode={viewMode}
+            onEdit={(contentId) => {
+              const item = content.find(c => c._id === contentId);
+              if (item) handleEditContent(item);
+            }}
+            onView={(contentId) => {
+              window.open(`/content/${contentId}`, '_blank');
+            }}
+            onShare={(contentIds) => {
+              if (Array.isArray(contentIds)) {
+                // Handle bulk share if needed
+                contentIds.forEach(id => {
+                  const item = content.find(c => c._id === id);
+                  if (item) handleShareContent(item);
+                });
+              } else {
+                const item = content.find(c => c._id === contentIds);
+                if (item) handleShareContent(item);
+              }
+            }}
+            onDelete={(contentIds) => {
+              if (Array.isArray(contentIds)) {
+                handleBulkDelete();
+              } else {
+                handleDeleteContent(contentIds);
+              }
+            }}
+            onSelect={(selectedIds) => {
+              setSelectedItems(selectedIds);
+            }}
+            loading={loading}
+            emptyState={
+              <div className='content-mgmt-empty-state'>
+                <Upload size={48} />
+                <h3>
+                  {content.length === 0
+                    ? 'No content uploaded yet'
+                    : 'No content found'}
+                </h3>
+                <p>
+                  {content.length === 0
+                    ? 'Start creating content to build your audience and earn money'
+                    : 'Try adjusting your filters or search term'}
+                </p>
+                {content.length === 0 && (
+                  <button
+                    className='content-mgmt-upload-first-btn'
+                    onClick={() => navigate(`/creator/${creatorId}/upload`)}
+                  >
+                    <Plus size={20} />
+                    Upload Your First Content
+                  </button>
+                )}
+              </div>
+            }
+          />
         </div>
       </div>
 
