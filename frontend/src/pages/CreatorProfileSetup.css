@@ -1445,6 +1445,7 @@
 @media (max-width: 768px) {
   .profile-setup-container {
     padding: 20px 15px;
+    margin-top: 50px;
   }
 
   /* Step 5 specific mobile padding */
