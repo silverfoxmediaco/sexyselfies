@@ -25,6 +25,7 @@ import {
 import BottomNavigation from '../components/BottomNavigation';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
+import BottomQuickActions from '../components/BottomQuickActions';
 import {
   useIsMobile,
   useIsDesktop,
@@ -590,52 +591,52 @@ const CreatorEarnings = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className='actions-section'>
-        <h2>Quick Actions</h2>
-        <div className='actions-grid'>
-          <motion.button
-            className='action-btn'
-            onClick={() => navigate('/creator/analytics')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <BarChart3 size={18} />
-            <span>View Analytics</span>
-            <ChevronRight size={14} />
-          </motion.button>
-
-          <motion.button
-            className='action-btn'
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Target size={18} />
-            <span>Set Monthly Goal</span>
-            <ChevronRight size={14} />
-          </motion.button>
-
-          <motion.button
-            className='action-btn'
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Download size={18} />
-            <span>Tax Documents</span>
-            <ChevronRight size={14} />
-          </motion.button>
-
-          <motion.button
-            className='action-btn primary'
-            onClick={() => navigate('/creator/upload')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Zap size={18} />
-            <span>Upload Content</span>
-            <ChevronRight size={14} />
-          </motion.button>
-        </div>
-      </div>
+      <BottomQuickActions
+        title="Earnings Actions"
+        actions={[
+          {
+            id: 'analytics',
+            icon: <BarChart3 size={24} />,
+            label: 'View Analytics',
+            description: 'See detailed performance metrics',
+            color: 'blue',
+            path: '/creator/analytics'
+          },
+          {
+            id: 'goal',
+            icon: <Target size={24} />,
+            label: 'Set Monthly Goal',
+            description: 'Update your earnings target',
+            color: 'orange',
+            path: '/creator/earnings/goals'
+          },
+          {
+            id: 'taxes',
+            icon: <Download size={24} />,
+            label: 'Tax Documents',
+            description: 'Download tax forms and reports',
+            color: 'purple',
+            path: '/creator/earnings/tax-documents'
+          },
+          {
+            id: 'upload',
+            icon: <Zap size={24} />,
+            label: 'Upload Content',
+            description: 'Add new content to earn more',
+            color: 'green',
+            path: '/creator/upload'
+          }
+        ]}
+        onActionClick={(action) => {
+          if (action.path) {
+            navigate(action.path);
+          } else {
+            console.log('Action clicked:', action.label);
+          }
+        }}
+        showHeader={true}
+        loading={false}
+      />
 
       {/* Payout Request Modal */}
       {showPayoutModal && (
