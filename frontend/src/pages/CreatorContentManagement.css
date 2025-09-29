@@ -599,6 +599,13 @@
   color: white;
 }
 
+/* Hide Creator Main Header on Mobile */
+@media (max-width: 768px) {
+  .creator-main-header {
+    display: none !important;
+  }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .content-mgmt-analytics {

@@ -29,6 +29,7 @@ import {
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
+import ContentManagementStats from '../components/ContentManagementStats';
 import {
   useIsDesktop,
   useIsMobile,
@@ -361,55 +362,19 @@ const CreatorContentManagement = () => {
         </header>
 
         {/* Analytics Summary */}
-        <div className='content-mgmt-analytics'>
-          <div className='content-mgmt-stat-card'>
-            <div className='content-mgmt-stat-icon'>
-              <Upload size={24} />
-            </div>
-            <div className='content-mgmt-stat-info'>
-              <span className='content-mgmt-stat-value'>
-                {analytics.totalContent}
-              </span>
-              <span className='content-mgmt-stat-label'>Total Content</span>
-            </div>
-          </div>
-
-          <div className='content-mgmt-stat-card'>
-            <div className='content-mgmt-stat-icon'>
-              <Eye size={24} />
-            </div>
-            <div className='content-mgmt-stat-info'>
-              <span className='content-mgmt-stat-value'>
-                {analytics.totalViews.toLocaleString()}
-              </span>
-              <span className='content-mgmt-stat-label'>Total Views</span>
-            </div>
-          </div>
-
-          <div className='content-mgmt-stat-card'>
-            <div className='content-mgmt-stat-icon'>
-              <DollarSign size={24} />
-            </div>
-            <div className='content-mgmt-stat-info'>
-              <span className='content-mgmt-stat-value'>
-                ${analytics.totalEarnings.toFixed(2)}
-              </span>
-              <span className='content-mgmt-stat-label'>Total Earnings</span>
-            </div>
-          </div>
-
-          <div className='content-mgmt-stat-card'>
-            <div className='content-mgmt-stat-icon'>
-              <Users size={24} />
-            </div>
-            <div className='content-mgmt-stat-info'>
-              <span className='content-mgmt-stat-value'>
-                {analytics.totalConnections}
-              </span>
-              <span className='content-mgmt-stat-label'>Connections</span>
-            </div>
-          </div>
-        </div>
+        <ContentManagementStats
+          stats={{
+            totalContent: analytics.totalContent,
+            totalViews: analytics.totalViews,
+            totalEarnings: analytics.totalEarnings,
+            connections: analytics.totalConnections
+          }}
+          onStatClick={(statType) => {
+            console.log('Stat clicked:', statType);
+            // Handle navigation to detailed analytics
+          }}
+          loading={loading}
+        />
 
         {/* Search and Filters */}
         <div className='content-mgmt-controls'>
