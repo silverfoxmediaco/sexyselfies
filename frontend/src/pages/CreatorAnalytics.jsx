@@ -22,6 +22,8 @@ import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import BottomQuickActions from '../components/BottomQuickActions';
+import PerformanceGoals from '../components/PerformanceGoals';
+import AnalyticsOverview from '../components/AnalyticsOverview';
 import {
   useIsMobile,
   useIsDesktop,
@@ -229,93 +231,37 @@ const CreatorAnalytics = () => {
       </div>
 
       {/* Overview Cards */}
-      <div className='overview-section'>
-        <div className='overview-cards'>
-          <motion.div
-            className='overview-card earnings'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <div className='card-header'>
-              <div className='card-icon'>
-                <DollarSign size={20} />
-              </div>
-              <span className='card-title'>Total Earnings</span>
-            </div>
-            <div className='card-value'>
-              {formatCurrency(analyticsData?.overview?.totalEarnings || 0)}
-            </div>
-            <div className='card-change'>
-              {renderChangeIndicator(analyticsData?.overview?.earningsChange || 0)}
-              <span className='change-label'>vs last period</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className='overview-card views'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className='card-header'>
-              <div className='card-icon'>
-                <Eye size={20} />
-              </div>
-              <span className='card-title'>Profile Views</span>
-            </div>
-            <div className='card-value'>
-              {formatNumber(analyticsData?.overview?.totalViews || 0)}
-            </div>
-            <div className='card-change'>
-              {renderChangeIndicator(analyticsData?.overview?.viewsChange || 0)}
-              <span className='change-label'>vs last period</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className='overview-card matches'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className='card-header'>
-              <div className='card-icon'>
-                <Heart size={20} />
-              </div>
-              <span className='card-title'>New Connections</span>
-            </div>
-            <div className='card-value'>
-              {formatNumber(analyticsData?.overview?.totalConnections || 0)}
-            </div>
-            <div className='card-change'>
-              {renderChangeIndicator(analyticsData?.overview?.connectionsChange || 0)}
-              <span className='change-label'>vs last period</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className='overview-card conversion'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <div className='card-header'>
-              <div className='card-icon'>
-                <Target size={20} />
-              </div>
-              <span className='card-title'>Conversion Rate</span>
-            </div>
-            <div className='card-value'>
-              {analyticsData?.overview?.conversionRate || 0}%
-            </div>
-            <div className='card-change'>
-              {renderChangeIndicator(analyticsData?.overview?.conversionChange || 0)}
-              <span className='change-label'>vs last period</span>
-            </div>
-          </motion.div>
-        </div>
-      </div>
+      <AnalyticsOverview
+        stats={{
+          totalEarnings: {
+            value: analyticsData?.overview?.totalEarnings || 0,
+            change: analyticsData?.overview?.earningsChange || 0,
+            trend: analyticsData?.overview?.earningsChange > 0 ? 'up' : analyticsData?.overview?.earningsChange < 0 ? 'down' : 'neutral'
+          },
+          profileViews: {
+            value: analyticsData?.overview?.totalViews || 0,
+            change: analyticsData?.overview?.viewsChange || 0,
+            trend: analyticsData?.overview?.viewsChange > 0 ? 'up' : analyticsData?.overview?.viewsChange < 0 ? 'down' : 'neutral'
+          },
+          newConnections: {
+            value: analyticsData?.overview?.totalConnections || 0,
+            change: analyticsData?.overview?.connectionsChange || 0,
+            trend: analyticsData?.overview?.connectionsChange > 0 ? 'up' : analyticsData?.overview?.connectionsChange < 0 ? 'down' : 'neutral'
+          },
+          conversionRate: {
+            value: analyticsData?.overview?.conversionRate || 0,
+            change: analyticsData?.overview?.conversionChange || 0,
+            trend: analyticsData?.overview?.conversionChange > 0 ? 'up' : analyticsData?.overview?.conversionChange < 0 ? 'down' : 'neutral'
+          }
+        }}
+        onCardClick={(cardType) => {
+          console.log('Analytics card clicked:', cardType);
+          // Handle navigation to detailed analytics
+        }}
+        loading={loading}
+        className="overview-section"
+        showAnimation={true}
+      />
 
       {/* Revenue Breakdown */}
       <div className='revenue-section'>
@@ -406,74 +352,42 @@ const CreatorAnalytics = () => {
         </div>
       </div>
 
-      {/* Goals Progress */}
-      <div className='goals-section'>
-        <h2>Performance Goals</h2>
-        <div className='goals-grid'>
-          <div className='goal-card'>
-            <div className='goal-header'>
-              <DollarSign size={18} />
-              <span>Monthly Earnings</span>
-            </div>
-            <div className='goal-progress'>
-              <div className='progress-bar'>
-                <div
-                  className='progress-fill'
-                  style={{
-                    width: `${analyticsData.goals?.monthlyEarnings?.progress || 0}%`,
-                  }}
-                ></div>
-              </div>
-              <span className='progress-text'>
-                {formatCurrency(analyticsData.goals?.monthlyEarnings?.current || 0)} /{' '}
-                {formatCurrency(analyticsData.goals?.monthlyEarnings?.target || 1000)}
-              </span>
-            </div>
-          </div>
-
-          <div className='goal-card'>
-            <div className='goal-header'>
-              <Eye size={18} />
-              <span>Weekly Views</span>
-            </div>
-            <div className='goal-progress'>
-              <div className='progress-bar'>
-                <div
-                  className='progress-fill'
-                  style={{
-                    width: `${analyticsData.goals?.weeklyViews?.progress || 0}%`,
-                  }}
-                ></div>
-              </div>
-              <span className='progress-text'>
-                {formatNumber(analyticsData.goals?.weeklyViews?.current || 0)} /{' '}
-                {formatNumber(analyticsData.goals?.weeklyViews?.target || 500)}
-              </span>
-            </div>
-          </div>
-
-          <div className='goal-card'>
-            <div className='goal-header'>
-              <Target size={18} />
-              <span>Conversion Rate</span>
-            </div>
-            <div className='goal-progress'>
-              <div className='progress-bar'>
-                <div
-                  className='progress-fill'
-                  style={{
-                    width: `${analyticsData.goals?.conversionRate?.progress || 0}%`,
-                  }}
-                ></div>
-              </div>
-              <span className='progress-text'>
-                {analyticsData.goals?.conversionRate?.current || 0}% /{' '}
-                {analyticsData.goals?.conversionRate?.target || 15}%
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Performance Goals */}
+      <PerformanceGoals
+        goals={[
+          {
+            id: 'monthly-earnings',
+            icon: <DollarSign size={18} />,
+            title: 'Monthly Earnings',
+            current: analyticsData?.goals?.monthlyEarnings?.current || 0,
+            target: analyticsData?.goals?.monthlyEarnings?.target || 1000,
+            unit: 'currency'
+          },
+          {
+            id: 'weekly-views',
+            icon: <Eye size={18} />,
+            title: 'Weekly Views',
+            current: analyticsData?.goals?.weeklyViews?.current || 0,
+            target: analyticsData?.goals?.weeklyViews?.target || 500,
+            unit: 'number'
+          },
+          {
+            id: 'conversion-rate',
+            icon: <Target size={18} />,
+            title: 'Conversion Rate',
+            current: analyticsData?.goals?.conversionRate?.current || 0,
+            target: analyticsData?.goals?.conversionRate?.target || 15,
+            unit: 'percentage'
+          }
+        ]}
+        showTitle={true}
+        onEditGoal={(goal) => {
+          console.log('Edit goal clicked:', goal);
+          // Handle goal editing
+        }}
+        loading={loading}
+        className="goals-section"
+      />
 
       {/* Demographics */}
       <div className='demographics-section'>
