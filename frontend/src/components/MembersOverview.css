@@ -1,0 +1,207 @@
+/* MembersOverview.css - Members Overview Component */
+
+.MembersOverview {
+  margin-bottom: 2rem;
+}
+
+.MembersOverview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.MembersOverview-card {
+  background: #1c1c1e;
+  border: 1px solid #2a2a2c;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.MembersOverview-card:hover {
+  border-color: #17d2c2;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.MembersOverview-card:focus-visible {
+  outline: 2px solid #17d2c2;
+  outline-offset: 2px;
+}
+
+.MembersOverview-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+/* Icon Color Classes */
+.MembersOverview-icon.total {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.MembersOverview-icon.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.MembersOverview-icon.revenue {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.MembersOverview-icon.average {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.MembersOverview-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.MembersOverview-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.MembersOverview-label {
+  font-size: 0.875rem;
+  color: #c7c7cc;
+  font-weight: 500;
+}
+
+/* Loading Skeleton */
+.MembersOverview-skeleton {
+  height: 28px;
+  width: 120px;
+  background: linear-gradient(
+    90deg,
+    #2a2a2c 0%,
+    #3a3a3c 50%,
+    #2a2a2c 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .MembersOverview {
+    margin-bottom: 1.5rem;
+  }
+
+  .MembersOverview-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .MembersOverview-card {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .MembersOverview-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .MembersOverview-value {
+    font-size: 1.5rem;
+  }
+
+  .MembersOverview-label {
+    font-size: 0.8rem;
+  }
+}
+
+/* Tablet Responsive */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .MembersOverview-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Desktop Responsive */
+@media (min-width: 1024px) {
+  .MembersOverview-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+
+  .MembersOverview-card {
+    padding: 2rem;
+  }
+
+  .MembersOverview-value {
+    font-size: 2rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .MembersOverview-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .MembersOverview-card {
+    padding: 1rem;
+  }
+
+  .MembersOverview-value {
+    font-size: 1.25rem;
+  }
+
+  .MembersOverview-label {
+    font-size: 0.75rem;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .MembersOverview-card {
+    border-width: 2px;
+  }
+
+  .MembersOverview-icon {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .MembersOverview-card,
+  .MembersOverview-icon,
+  .MembersOverview-skeleton {
+    animation: none;
+    transition: none;
+  }
+
+  .MembersOverview-card:hover {
+    transform: none;
+  }
+}

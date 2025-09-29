@@ -8,24 +8,16 @@ import {
   Star,
   DollarSign,
   Calendar,
-  MapPin,
-  Eye,
-  MessageCircle,
-  Gift,
-  MoreHorizontal,
   TrendingUp,
-  Clock,
   Award,
   Zap,
-  SortAsc,
-  SortDesc,
   UserPlus,
-  ChevronRight,
-  Activity,
-  Crown,
-  Heart,
 } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
+import BottomQuickActions from '../components/BottomQuickActions';
+import MembersOverview from '../components/MembersOverview';
+import MembersFilters from '../components/MembersFilters';
+import MembersList from '../components/MembersList';
 import { useIsMobile, getUserRole } from '../utils/mobileDetection';
 import api from '../services/api.config';
 import './CreatorManageMembers.css';
@@ -244,37 +236,6 @@ const CreatorManageMembers = () => {
       return sortOrder === 'desc' ? -comparison : comparison;
     });
 
-  const formatCurrency = amount => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-
-  const getTierBadgeClass = tier => {
-    switch (tier) {
-      case 'VIP':
-        return 'tier-vip';
-      case 'Premium':
-        return 'tier-premium';
-      case 'Regular':
-        return 'tier-regular';
-      case 'New':
-        return 'tier-new';
-      default:
-        return 'tier-regular';
-    }
-  };
-
-  const getRatingStars = rating => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        size={12}
-        className={i < rating ? 'star-filled' : 'star-empty'}
-      />
-    ));
-  };
 
   if (loading) {
     return (
@@ -306,73 +267,34 @@ const CreatorManageMembers = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className='members-overview'>
-        <div className='members-stats-grid'>
-          <motion.div
-            className='members-stat-card'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <div className='members-stat-icon total'>
-              <Users size={20} />
-            </div>
-            <div className='members-stat-content'>
-              <span className='members-stat-value'>{stats.totalMembers}</span>
-              <span className='members-stat-label'>Total Members</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className='members-stat-card'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className='members-stat-icon active'>
-              <Activity size={20} />
-            </div>
-            <div className='members-stat-content'>
-              <span className='members-stat-value'>{stats.activeMembers}</span>
-              <span className='members-stat-label'>Active Members</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className='members-stat-card'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className='members-stat-icon revenue'>
-              <DollarSign size={20} />
-            </div>
-            <div className='members-stat-content'>
-              <span className='members-stat-value'>
-                {formatCurrency(stats.totalRevenue)}
-              </span>
-              <span className='members-stat-label'>Total Revenue</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className='members-stat-card'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <div className='members-stat-icon average'>
-              <TrendingUp size={20} />
-            </div>
-            <div className='members-stat-content'>
-              <span className='members-stat-value'>
-                {formatCurrency(stats.avgSpending)}
-              </span>
-              <span className='members-stat-label'>Avg Spending</span>
-            </div>
-          </motion.div>
-        </div>
-      </div>
+      <MembersOverview
+        stats={{
+          totalMembers: stats.totalMembers,
+          activeMembers: stats.activeMembers,
+          totalRevenue: stats.totalRevenue,
+          avgSpending: stats.avgSpending
+        }}
+        onStatClick={(statType) => {
+          console.log('Member stat clicked:', statType);
+          // Handle navigation to detailed member analytics
+          switch (statType) {
+            case 'total':
+              // Navigate to all members view
+              break;
+            case 'active':
+              setFilterBy('active');
+              break;
+            case 'revenue':
+              navigate('/creator/earnings');
+              break;
+            case 'average':
+              navigate('/creator/analytics');
+              break;
+          }
+        }}
+        loading={loading}
+        className="members-overview"
+      />
 
       {/* Controls */}
       <div className='members-controls'>
@@ -386,209 +308,102 @@ const CreatorManageMembers = () => {
           />
         </div>
 
-        <div className='members-filters'>
-          <select
-            value={filterBy}
-            onChange={e => setFilterBy(e.target.value)}
-            className='members-filter-select'
-          >
-            {filterOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value)}
-            className='members-sort-select'
-          >
-            {sortOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                Sort by {option.label}
-              </option>
-            ))}
-          </select>
-
-          <button
-            className='members-sort-order-btn'
-            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-          >
-            {sortOrder === 'asc' ? (
-              <SortAsc size={18} />
-            ) : (
-              <SortDesc size={18} />
-            )}
-          </button>
-        </div>
+        <MembersFilters
+          filterValue={filterBy}
+          sortValue={sortBy}
+          sortOrder={sortOrder}
+          onFilterChange={(value) => setFilterBy(value)}
+          onSortChange={(value) => setSortBy(value)}
+          onSortOrderToggle={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+          filterOptions={filterOptions}
+          sortOptions={sortOptions}
+          className="members-filters"
+        />
       </div>
 
       {/* Members List */}
-      <div className='members-list'>
-        {filteredAndSortedMembers.length === 0 ? (
-          <div className='members-empty'>
-            <Users size={64} />
-            <h3>No members found</h3>
-            <p>Start connecting with members to see them here!</p>
-          </div>
-        ) : (
-          filteredAndSortedMembers.map((member, index) => (
-            <motion.div
-              key={member.id}
-              className='members-item'
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              onClick={() => navigate(`/creator/member/${member.id}`)}
-            >
-              <div className='members-avatar'>
-                {member.avatar ? (
-                  <img src={member.avatar} alt={member.name} />
-                ) : (
-                  <div className='members-avatar-placeholder'>
-                    {member.name.charAt(0)}
-                  </div>
-                )}
-                {member.isOnline && (
-                  <div className='members-online-indicator'></div>
-                )}
-                {member.isPremium && (
-                  <div className='members-premium-badge'>
-                    <Crown size={12} />
-                  </div>
-                )}
-              </div>
-
-              <div className='members-info'>
-                <div className='members-main-info'>
-                  <div className='members-name-section'>
-                    <h3>{member.name}</h3>
-                    <div
-                      className={`members-tier-badge ${getTierBadgeClass(member.tier)}`}
-                    >
-                      {member.tier}
-                    </div>
-                    <div className='members-rating'>
-                      {getRatingStars(member.rating)}
-                    </div>
-                  </div>
-                  <div className='members-meta'>
-                    <span className='members-age'>{member.age}</span>
-                    <span className='members-location'>
-                      <MapPin size={12} />
-                      {member.location}
-                    </span>
-                  </div>
-                </div>
-
-                <div className='members-stats-row'>
-                  <div className='members-spent'>
-                    <DollarSign size={14} />
-                    <span className='amount'>
-                      {formatCurrency(member.totalSpent)}
-                    </span>
-                    <span className='count'>
-                      ({member.purchasesCount} purchases)
-                    </span>
-                  </div>
-                  <div className='members-activity'>
-                    <Clock size={14} />
-                    <span>Last active: {member.lastActive}</span>
-                  </div>
-                </div>
-
-                <div className='members-details-row'>
-                  <div className='members-joined'>
-                    <Calendar size={14} />
-                    <span>Joined {member.joinedDate}</span>
-                  </div>
-                  <div className='members-favorite'>
-                    <Heart size={14} />
-                    <span>Loves: {member.favoriteContent}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className='members-actions'>
-                <button
-                  className='members-action-btn'
-                  onClick={e => {
-                    e.stopPropagation();
-                    navigate(`/creator/chat/${member.id}`);
-                  }}
-                >
-                  <MessageCircle size={18} />
-                </button>
-                <button
-                  className='members-action-btn'
-                  onClick={e => {
-                    e.stopPropagation();
-                    // Handle send offer
-                  }}
-                >
-                  <Gift size={18} />
-                </button>
-                <button
-                  className='members-action-btn'
-                  onClick={e => {
-                    e.stopPropagation();
-                    // Handle more actions
-                  }}
-                >
-                  <MoreHorizontal size={18} />
-                </button>
-                <ChevronRight size={20} className='members-chevron' />
-              </div>
-            </motion.div>
-          ))
-        )}
-      </div>
+      <MembersList
+        members={filteredAndSortedMembers}
+        viewMode="list"
+        onMemberClick={(member) => navigate(`/creator/member/${member.id}`)}
+        onMemberAction={(action, memberId) => {
+          switch (action) {
+            case 'message':
+              navigate(`/creator/chat/${memberId}`);
+              break;
+            case 'gift':
+              console.log('Send gift to member:', memberId);
+              // Handle send offer/gift
+              break;
+            case 'more':
+              console.log('More actions for member:', memberId);
+              // Handle more actions menu
+              break;
+            default:
+              console.log('Unknown action:', action, memberId);
+          }
+        }}
+        loading={loading}
+        emptyStateConfig={{
+          icon: <Users size={64} />,
+          title: 'No members found',
+          description: 'Start connecting with members to see them here!'
+        }}
+        className="members-list"
+      />
 
       {/* Quick Actions */}
-      <div className='members-quick-actions'>
-        <h3>Quick Actions</h3>
-        <div className='members-actions-grid'>
-          <motion.button
-            className='members-quick-action-btn'
-            onClick={() => navigate('/creator/analytics')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <TrendingUp size={20} />
-            <span>View Analytics</span>
-          </motion.button>
-
-          <motion.button
-            className='members-quick-action-btn'
-            onClick={() => navigate('/creator/content-upload')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <UserPlus size={20} />
-            <span>Invite Members</span>
-          </motion.button>
-
-          <motion.button
-            className='members-quick-action-btn'
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Award size={20} />
-            <span>Member Rewards</span>
-          </motion.button>
-
-          <motion.button
-            className='members-quick-action-btn'
-            onClick={() => navigate('/creator/earnings')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Zap size={20} />
-            <span>Boost Earnings</span>
-          </motion.button>
-        </div>
-      </div>
+      <BottomQuickActions
+        title="Member Management Actions"
+        actions={[
+          {
+            id: 'analytics',
+            icon: <TrendingUp size={24} />,
+            label: 'View Analytics',
+            description: 'See detailed member insights',
+            color: 'blue',
+            path: '/creator/analytics'
+          },
+          {
+            id: 'invite',
+            icon: <UserPlus size={24} />,
+            label: 'Invite Members',
+            description: 'Share your profile to attract new members',
+            color: 'green',
+            path: '/creator/profile'
+          },
+          {
+            id: 'rewards',
+            icon: <Award size={24} />,
+            label: 'Member Rewards',
+            description: 'Create special offers and rewards',
+            color: 'purple',
+            action: () => {
+              console.log('Opening member rewards system...');
+              // Handle member rewards functionality
+            }
+          },
+          {
+            id: 'boost',
+            icon: <Zap size={24} />,
+            label: 'Boost Earnings',
+            description: 'Optimize your earning strategies',
+            color: 'orange',
+            path: '/creator/earnings'
+          }
+        ]}
+        onActionClick={(action) => {
+          if (action.path) {
+            navigate(action.path);
+          } else if (action.action) {
+            action.action();
+          } else {
+            console.log('Action clicked:', action.label);
+          }
+        }}
+        showHeader={true}
+        loading={false}
+      />
 
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && <BottomNavigation userRole={userRole} />}

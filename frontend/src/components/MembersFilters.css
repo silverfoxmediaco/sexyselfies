@@ -1,0 +1,185 @@
+/* MembersFilters.css - Members Filters Component */
+
+.MembersFilters {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.MembersFilters-select {
+  background: #1c1c1e;
+  border: 1px solid #2a2a2c;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: #ffffff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c7c7cc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+.MembersFilters-select:hover {
+  border-color: #17d2c2;
+  background-color: #2a2a2c;
+}
+
+.MembersFilters-select:focus {
+  outline: none;
+  border-color: #17d2c2;
+  box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.1);
+}
+
+.MembersFilters-select option {
+  background: #1c1c1e;
+  color: #ffffff;
+  padding: 0.5rem;
+}
+
+.MembersFilters-filter {
+  flex-shrink: 0;
+}
+
+.MembersFilters-sort {
+  flex: 1;
+  min-width: 160px;
+}
+
+.MembersFilters-order-btn {
+  background: #1c1c1e;
+  border: 1px solid #2a2a2c;
+  border-radius: 8px;
+  padding: 0.5rem;
+  color: #c7c7cc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.MembersFilters-order-btn:hover {
+  color: #ffffff;
+  border-color: #17d2c2;
+  background-color: #2a2a2c;
+}
+
+.MembersFilters-order-btn:focus {
+  outline: none;
+  border-color: #17d2c2;
+  box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.1);
+}
+
+.MembersFilters-order-btn:active {
+  transform: scale(0.95);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .MembersFilters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .MembersFilters-select {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .MembersFilters-sort {
+    min-width: unset;
+  }
+
+  .MembersFilters-order-btn {
+    align-self: center;
+    width: 44px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+  .MembersFilters {
+    gap: 0.5rem;
+  }
+
+  .MembersFilters-select {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    padding-right: 3rem;
+  }
+
+  .MembersFilters-order-btn {
+    height: 48px;
+    width: 48px;
+  }
+}
+
+/* Tablet responsive */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .MembersFilters {
+    justify-content: space-between;
+  }
+
+  .MembersFilters-filter {
+    min-width: 120px;
+  }
+
+  .MembersFilters-sort {
+    min-width: 180px;
+  }
+}
+
+/* Desktop responsive */
+@media (min-width: 1024px) {
+  .MembersFilters {
+    gap: 1.5rem;
+  }
+
+  .MembersFilters-select {
+    padding: 0.75rem 1rem;
+    padding-right: 2.5rem;
+  }
+
+  .MembersFilters-filter {
+    min-width: 160px;
+  }
+
+  .MembersFilters-sort {
+    min-width: 200px;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .MembersFilters-select,
+  .MembersFilters-order-btn {
+    border-width: 2px;
+  }
+
+  .MembersFilters-select:focus,
+  .MembersFilters-order-btn:focus {
+    box-shadow: 0 0 0 4px rgba(23, 210, 194, 0.3);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .MembersFilters-select,
+  .MembersFilters-order-btn {
+    transition: none;
+  }
+
+  .MembersFilters-order-btn:active {
+    transform: none;
+  }
+}

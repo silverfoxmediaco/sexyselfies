@@ -501,6 +501,7 @@
 @media (max-width: 768px) {
   .creator-manage-members {
     padding: 12px;
+    margin-top: 50px;
   }
 
   .members-header-content {
