@@ -24,6 +24,7 @@ import BottomNavigation from '../components/BottomNavigation';
 import BottomQuickActions from '../components/BottomQuickActions';
 import PerformanceGoals from '../components/PerformanceGoals';
 import AnalyticsOverview from '../components/AnalyticsOverview';
+import RevenueBreakdown from '../components/RevenueBreakdown';
 import {
   useIsMobile,
   useIsDesktop,
@@ -264,64 +265,33 @@ const CreatorAnalytics = () => {
       />
 
       {/* Revenue Breakdown */}
-      <div className='revenue-section'>
-        <h2>Revenue Breakdown</h2>
-        <div className='revenue-cards'>
-          <div className='revenue-card'>
-            <div className='revenue-header'>
-              <Camera size={18} />
-              <span>Photos</span>
-            </div>
-            <div className='revenue-amount'>
-              {formatCurrency(analyticsData?.revenue?.photos || 0)}
-            </div>
-            <div className='revenue-percentage'>
-              {analyticsData?.overview?.totalEarnings ? Math.round(
-                ((analyticsData?.revenue?.photos || 0) /
-                  analyticsData.overview.totalEarnings) *
-                  100
-              ) : 0}
-              % of total
-            </div>
-          </div>
-
-          <div className='revenue-card'>
-            <div className='revenue-header'>
-              <Video size={18} />
-              <span>Videos</span>
-            </div>
-            <div className='revenue-amount'>
-              {formatCurrency(analyticsData?.revenue?.videos || 0)}
-            </div>
-            <div className='revenue-percentage'>
-              {analyticsData?.overview?.totalEarnings ? Math.round(
-                ((analyticsData?.revenue?.videos || 0) /
-                  analyticsData.overview.totalEarnings) *
-                  100
-              ) : 0}
-              % of total
-            </div>
-          </div>
-
-          <div className='revenue-card'>
-            <div className='revenue-header'>
-              <MessageCircle size={18} />
-              <span>Messages</span>
-            </div>
-            <div className='revenue-amount'>
-              {formatCurrency(analyticsData?.revenue?.messages || 0)}
-            </div>
-            <div className='revenue-percentage'>
-              {analyticsData?.overview?.totalEarnings ? Math.round(
-                ((analyticsData?.revenue?.messages || 0) /
-                  analyticsData.overview.totalEarnings) *
-                  100
-              ) : 0}
-              % of total
-            </div>
-          </div>
-        </div>
-      </div>
+      <RevenueBreakdown
+        breakdown={{
+          photos: {
+            amount: analyticsData?.revenue?.photos || 0,
+            count: analyticsData?.stats?.photoSales || 0
+          },
+          videos: {
+            amount: analyticsData?.revenue?.videos || 0,
+            count: analyticsData?.stats?.videoSales || 0
+          },
+          messages: {
+            amount: analyticsData?.revenue?.messages || 0,
+            count: analyticsData?.stats?.messageSales || 0
+          },
+          tips: {
+            amount: analyticsData?.revenue?.tips || 0,
+            count: analyticsData?.stats?.tipsCount || 0
+          }
+        }}
+        showTitle={true}
+        onCardClick={(type) => {
+          console.log('Revenue type clicked:', type);
+          // Handle navigation to detailed revenue breakdown
+        }}
+        loading={loading}
+        className="revenue-section"
+      />
 
       {/* Top Content */}
       <div className='content-section'>
