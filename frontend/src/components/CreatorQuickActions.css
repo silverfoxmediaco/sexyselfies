@@ -2,6 +2,7 @@
 
 .CreatorQuickActions-container {
   margin: var(--space-md) 0;
+  margin-bottom: 50px !important;
 }
 
 .CreatorQuickActions-grid {
