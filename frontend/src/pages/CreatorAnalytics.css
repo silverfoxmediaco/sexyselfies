@@ -576,6 +576,7 @@
 @media (max-width: 768px) {
   .creator-analytics {
     padding: 12px;
+    margin-top: 50px;
   }
 
   .analytics-header-content {
