@@ -28,6 +28,7 @@ import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomQuickActions from '../components/BottomQuickActions';
 import PayoutHistory from '../components/PayoutHistory';
 import TopPerformingContent from '../components/TopPerformingContent';
+import EarningsOverview from '../components/EarningsOverview';
 import {
   useIsMobile,
   useIsDesktop,
@@ -243,93 +244,37 @@ const CreatorEarnings = () => {
       </div>
 
       {/* Overview Cards */}
-      <div className='overview-section'>
-        <div className='overview-cards'>
-          <motion.div
-            className='overview-card total-earnings'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <div className='card-header'>
-              <div className='card-icon'>
-                <DollarSign size={20} />
-              </div>
-              <span className='card-title'>Total Earnings</span>
-            </div>
-            <div className='card-value'>
-              {formatCurrency(earningsData.overview.totalEarnings)}
-            </div>
-            <div className='card-change'>
-              {renderChangeIndicator(earningsData.overview.earningsChange)}
-              <span className='change-label'>vs last period</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className='overview-card pending-payout'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className='card-header'>
-              <div className='card-icon'>
-                <Clock size={20} />
-              </div>
-              <span className='card-title'>Pending Payout</span>
-            </div>
-            <div className='card-value'>
-              {formatCurrency(earningsData.overview.pendingPayout)}
-            </div>
-            <div className='card-change'>
-              {renderChangeIndicator(earningsData.overview.payoutChange)}
-              <span className='change-label'>vs last period</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className='overview-card month-earnings'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className='card-header'>
-              <div className='card-icon'>
-                <Calendar size={20} />
-              </div>
-              <span className='card-title'>This Month</span>
-            </div>
-            <div className='card-value'>
-              {formatCurrency(earningsData.overview.thisMonthEarnings)}
-            </div>
-            <div className='card-change'>
-              {renderChangeIndicator(earningsData.overview.monthChange)}
-              <span className='change-label'>vs last month</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className='overview-card daily-avg'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <div className='card-header'>
-              <div className='card-icon'>
-                <BarChart3 size={20} />
-              </div>
-              <span className='card-title'>Daily Average</span>
-            </div>
-            <div className='card-value'>
-              {formatCurrency(earningsData.overview.avgDailyEarnings)}
-            </div>
-            <div className='card-change'>
-              {renderChangeIndicator(earningsData.overview.dailyChange)}
-              <span className='change-label'>vs last period</span>
-            </div>
-          </motion.div>
-        </div>
-      </div>
+      <EarningsOverview
+        stats={{
+          totalEarnings: {
+            value: earningsData.overview.totalEarnings,
+            change: earningsData.overview.earningsChange,
+            trend: earningsData.overview.earningsChange > 0 ? 'up' : earningsData.overview.earningsChange < 0 ? 'down' : 'neutral'
+          },
+          pendingPayout: {
+            value: earningsData.overview.pendingPayout,
+            change: earningsData.overview.payoutChange,
+            trend: earningsData.overview.payoutChange > 0 ? 'up' : earningsData.overview.payoutChange < 0 ? 'down' : 'neutral'
+          },
+          monthEarnings: {
+            value: earningsData.overview.thisMonthEarnings,
+            change: earningsData.overview.monthChange,
+            trend: earningsData.overview.monthChange > 0 ? 'up' : earningsData.overview.monthChange < 0 ? 'down' : 'neutral'
+          },
+          dailyAverage: {
+            value: earningsData.overview.avgDailyEarnings,
+            change: earningsData.overview.dailyChange,
+            trend: earningsData.overview.dailyChange > 0 ? 'up' : earningsData.overview.dailyChange < 0 ? 'down' : 'neutral'
+          }
+        }}
+        onCardClick={(cardId) => {
+          console.log('Earnings card clicked:', cardId);
+          // Handle card clicks for navigation or modals
+        }}
+        loading={loading}
+        className="overview-section"
+        showAnimation={true}
+      />
 
       {/* Earnings Breakdown */}
       <div className='breakdown-section'>

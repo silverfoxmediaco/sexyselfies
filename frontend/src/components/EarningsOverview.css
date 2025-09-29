@@ -1,0 +1,277 @@
+/* EarningsOverview.css - Reusable Earnings Overview Component */
+
+.EarningsOverview {
+  margin-bottom: 2rem;
+}
+
+.EarningsOverview-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.EarningsOverview-card {
+  background: #1c1c1e;
+  border: 1px solid #2a2a2c;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.EarningsOverview-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--card-accent, #17d2c2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Header */
+.EarningsOverview-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.EarningsOverview-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.EarningsOverview-title {
+  color: #c7c7cc;
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
+}
+
+/* Value */
+.EarningsOverview-value {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+/* Change Indicator */
+.EarningsOverview-change {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.EarningsOverview-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.EarningsOverview-indicator.positive {
+  color: #10b981;
+}
+
+.EarningsOverview-indicator.negative {
+  color: #ef4444;
+}
+
+.EarningsOverview-indicator.neutral {
+  color: #6b7280;
+}
+
+.EarningsOverview-label {
+  color: #8e8e93;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* Card Color Variations */
+.EarningsOverview-card.total-earnings {
+  --card-accent: #10b981;
+}
+
+.EarningsOverview-card.total-earnings .EarningsOverview-icon {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.EarningsOverview-card.pending-payout {
+  --card-accent: #f59e0b;
+}
+
+.EarningsOverview-card.pending-payout .EarningsOverview-icon {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.EarningsOverview-card.month-earnings {
+  --card-accent: #3b82f6;
+}
+
+.EarningsOverview-card.month-earnings .EarningsOverview-icon {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.EarningsOverview-card.daily-avg {
+  --card-accent: #8b5cf6;
+}
+
+.EarningsOverview-card.daily-avg .EarningsOverview-icon {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+/* Loading Skeletons */
+.EarningsOverview-skeleton {
+  height: 32px;
+  width: 120px;
+  background: linear-gradient(
+    90deg,
+    #2a2a2c 0%,
+    #3a3a3c 50%,
+    #2a2a2c 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.EarningsOverview-skeleton-small {
+  height: 16px;
+  width: 80px;
+  background: linear-gradient(
+    90deg,
+    #2a2a2c 0%,
+    #3a3a3c 50%,
+    #2a2a2c 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .EarningsOverview-cards {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .EarningsOverview-card {
+    padding: 1rem;
+  }
+
+  .EarningsOverview-header {
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .EarningsOverview-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .EarningsOverview-title {
+    font-size: 13px;
+  }
+
+  .EarningsOverview-value {
+    font-size: 24px;
+    margin-bottom: 0.5rem;
+  }
+
+  .EarningsOverview-change {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .EarningsOverview-indicator {
+    font-size: 12px;
+  }
+
+  .EarningsOverview-label {
+    font-size: 11px;
+  }
+}
+
+/* Tablet Responsive */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .EarningsOverview-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop Responsive */
+@media (min-width: 1024px) {
+  .EarningsOverview-cards {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+
+  .EarningsOverview-card {
+    padding: 2rem;
+  }
+
+  .EarningsOverview-value {
+    font-size: 32px;
+  }
+
+  .EarningsOverview-header {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Focus States for Accessibility */
+.EarningsOverview-card:focus-visible {
+  outline: 2px solid #17d2c2;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .EarningsOverview-card {
+    border-width: 2px;
+  }
+
+  .EarningsOverview-icon {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .EarningsOverview-card,
+  .EarningsOverview-icon,
+  .EarningsOverview-skeleton,
+  .EarningsOverview-skeleton-small {
+    animation: none;
+    transition: none;
+  }
+}
