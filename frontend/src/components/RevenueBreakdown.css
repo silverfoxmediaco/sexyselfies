@@ -1,0 +1,252 @@
+/* RevenueBreakdown.css - Revenue Breakdown Component */
+
+.RevenueBreakdown {
+  background: #1c1c1e;
+  border: 1px solid #2a2a2c;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.RevenueBreakdown h2 {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Cards Grid */
+.RevenueBreakdown-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.RevenueBreakdown-card {
+  background: #121212;
+  border: 1px solid #2a2a2c;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.RevenueBreakdown-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #17d2c2, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.RevenueBreakdown-card:focus-visible {
+  outline: 2px solid #17d2c2;
+  outline-offset: 2px;
+}
+
+/* Header */
+.RevenueBreakdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #c7c7cc;
+  margin-bottom: 0.75rem;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Amount */
+.RevenueBreakdown-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #17d2c2;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+/* Stats */
+.RevenueBreakdown-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.RevenueBreakdown-percentage {
+  font-size: 13px;
+  font-weight: 500;
+  color: #8e8e93;
+}
+
+.RevenueBreakdown-count {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+/* Loading Skeletons */
+.RevenueBreakdown-skeleton {
+  height: 28px;
+  width: 100px;
+  background: linear-gradient(
+    90deg,
+    #2a2a2c 0%,
+    #3a3a3c 50%,
+    #2a2a2c 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.RevenueBreakdown-skeleton-small {
+  height: 14px;
+  width: 80px;
+  background: linear-gradient(
+    90deg,
+    #2a2a2c 0%,
+    #3a3a3c 50%,
+    #2a2a2c 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+}
+
+.RevenueBreakdown-skeleton-small:last-child {
+  margin-bottom: 0;
+  width: 60px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .RevenueBreakdown {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .RevenueBreakdown h2 {
+    font-size: 16px;
+    margin-bottom: 1rem;
+  }
+
+  .RevenueBreakdown-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .RevenueBreakdown-card {
+    padding: 0.75rem;
+  }
+
+  .RevenueBreakdown-header {
+    font-size: 13px;
+    margin-bottom: 0.5rem;
+  }
+
+  .RevenueBreakdown-amount {
+    font-size: 20px;
+    margin-bottom: 0.5rem;
+  }
+
+  .RevenueBreakdown-percentage {
+    font-size: 12px;
+  }
+
+  .RevenueBreakdown-count {
+    font-size: 11px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .RevenueBreakdown-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .RevenueBreakdown-card {
+    padding: 1rem;
+  }
+
+  .RevenueBreakdown-amount {
+    font-size: 22px;
+  }
+}
+
+/* Tablet Responsive */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .RevenueBreakdown-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Desktop Responsive */
+@media (min-width: 1024px) {
+  .RevenueBreakdown {
+    padding: 2rem;
+  }
+
+  .RevenueBreakdown h2 {
+    font-size: 20px;
+    margin-bottom: 2rem;
+  }
+
+  .RevenueBreakdown-cards {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+
+  .RevenueBreakdown-card {
+    padding: 1.5rem;
+  }
+
+  .RevenueBreakdown-amount {
+    font-size: 28px;
+    margin-bottom: 1rem;
+  }
+
+  .RevenueBreakdown-header {
+    font-size: 15px;
+    margin-bottom: 1rem;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .RevenueBreakdown-card {
+    border-width: 2px;
+  }
+
+  .RevenueBreakdown-header {
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .RevenueBreakdown-card,
+  .RevenueBreakdown-skeleton,
+  .RevenueBreakdown-skeleton-small {
+    animation: none;
+    transition: none;
+  }
+}

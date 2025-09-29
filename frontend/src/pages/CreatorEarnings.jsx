@@ -29,6 +29,7 @@ import BottomQuickActions from '../components/BottomQuickActions';
 import PayoutHistory from '../components/PayoutHistory';
 import TopPerformingContent from '../components/TopPerformingContent';
 import EarningsOverview from '../components/EarningsOverview';
+import RevenueBreakdown from '../components/RevenueBreakdown';
 import {
   useIsMobile,
   useIsDesktop,
@@ -276,83 +277,17 @@ const CreatorEarnings = () => {
         showAnimation={true}
       />
 
-      {/* Earnings Breakdown */}
-      <div className='breakdown-section'>
-        <h2>Revenue Breakdown</h2>
-        <div className='breakdown-cards'>
-          <div className='breakdown-card'>
-            <div className='breakdown-header'>
-              <Camera size={18} />
-              <span>Photos</span>
-            </div>
-            <div className='breakdown-amount'>
-              {formatCurrency(earningsData.breakdown.photos.amount)}
-            </div>
-            <div className='breakdown-stats'>
-              <span className='percentage'>
-                {earningsData.breakdown.photos.percentage}% of total
-              </span>
-              <span className='count'>
-                {earningsData.breakdown.photos.count} sales
-              </span>
-            </div>
-          </div>
-
-          <div className='breakdown-card'>
-            <div className='breakdown-header'>
-              <Video size={18} />
-              <span>Videos</span>
-            </div>
-            <div className='breakdown-amount'>
-              {formatCurrency(earningsData.breakdown.videos.amount)}
-            </div>
-            <div className='breakdown-stats'>
-              <span className='percentage'>
-                {earningsData.breakdown.videos.percentage}% of total
-              </span>
-              <span className='count'>
-                {earningsData.breakdown.videos.count} sales
-              </span>
-            </div>
-          </div>
-
-          <div className='breakdown-card'>
-            <div className='breakdown-header'>
-              <MessageCircle size={18} />
-              <span>Messages</span>
-            </div>
-            <div className='breakdown-amount'>
-              {formatCurrency(earningsData.breakdown.messages.amount)}
-            </div>
-            <div className='breakdown-stats'>
-              <span className='percentage'>
-                {earningsData.breakdown.messages.percentage}% of total
-              </span>
-              <span className='count'>
-                {earningsData.breakdown.messages.count} sales
-              </span>
-            </div>
-          </div>
-
-          <div className='breakdown-card'>
-            <div className='breakdown-header'>
-              <Gift size={18} />
-              <span>Tips</span>
-            </div>
-            <div className='breakdown-amount'>
-              {formatCurrency(earningsData.breakdown.tips.amount)}
-            </div>
-            <div className='breakdown-stats'>
-              <span className='percentage'>
-                {earningsData.breakdown.tips.percentage}% of total
-              </span>
-              <span className='count'>
-                {earningsData.breakdown.tips.count} tips
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Revenue Breakdown */}
+      <RevenueBreakdown
+        breakdown={earningsData.breakdown}
+        showTitle={true}
+        onCardClick={(type) => {
+          console.log('Revenue breakdown clicked:', type);
+          // Handle navigation to detailed breakdown for content type
+        }}
+        loading={loading}
+        className="breakdown-section"
+      />
 
       {/* Recent Transactions & Top Earners */}
       <div className='content-grid'>
