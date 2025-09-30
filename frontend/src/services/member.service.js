@@ -246,6 +246,57 @@ class MemberService {
   }
 
   // ==========================================
+  // CONNECTIONS
+  // ==========================================
+
+  /**
+   * Get member's connections
+   */
+  async getConnections(params = {}) {
+    try {
+      const response = await api.get('/connections', {
+        params: {
+          status: params.status || 'active',
+          search: params.search,
+          sort: params.sort || 'recent',
+          page: params.page || 1,
+          limit: params.limit || 20,
+        },
+      });
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Delete a connection
+   */
+  async deleteConnection(connectionId) {
+    try {
+      const response = await api.delete(`/connections/${connectionId}`);
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Bulk delete connections
+   */
+  async bulkDeleteConnections(connectionIds) {
+    try {
+      const response = await api.post('/connections/bulk', {
+        action: 'delete',
+        connectionIds
+      });
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  // ==========================================
   // SWIPING & MATCHING
   // ==========================================
 
