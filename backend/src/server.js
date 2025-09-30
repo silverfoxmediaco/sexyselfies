@@ -240,8 +240,8 @@ const defaultLimiter = rateLimit({
 });
 
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 50, // Increased to 50 auth attempts per 15 minutes for production
+  windowMs: 5 * 60 * 1000, // Reduced to 5 minutes for faster reset
+  max: 100, // Temporarily increased to 100 auth attempts per 5 minutes
   message: {
     error: 'Too many authentication attempts, please try again later.',
   },
