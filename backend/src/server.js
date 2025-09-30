@@ -241,7 +241,7 @@ const defaultLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10, // Increased from 5 to 10 for testing
+  max: 50, // Increased to 50 auth attempts per 15 minutes for production
   message: {
     error: 'Too many authentication attempts, please try again later.',
   },
@@ -396,6 +396,7 @@ app.use('/api/v1/auth/register', authLimiter);
 app.use('/api/v1/auth/login', authLimiter);
 app.use('/api/v1/auth/creator/register', authLimiter);
 app.use('/api/v1/auth/creator/login', authLimiter);
+// Note: /api/v1/auth/me uses the default limiter (100 req/15min) which should be sufficient
 app.use('/api/v1/upload/', uploadLimiter);
 
 // Apply database check to critical auth routes
