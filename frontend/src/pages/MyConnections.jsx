@@ -4,7 +4,7 @@ import { Users, MessageCircle, DollarSign, TrendingUp } from 'lucide-react';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import { ConnectionsList } from '../components/Connections';
+import SimpleConnectionsList from '../components/SimpleConnectionsList';
 import connectionsService from '../services/connections.service';
 import {
   useIsMobile,
@@ -191,17 +191,9 @@ const MyConnections = () => {
           )}
         </div>
 
-        {/* Main Content - New ConnectionsList Component */}
+        {/* Main Content - SimpleConnectionsList Component */}
         <div className='connections-content'>
-          <ConnectionsList
-            connections={connections}
-            onDeleteConnection={handleDeleteConnection}
-            onBulkDelete={handleBulkDelete}
-            onRefresh={handleRefresh}
-            loading={loading}
-            error={error}
-            className="my-connections-list"
-          />
+          <SimpleConnectionsList />
         </div>
       </div>
 
