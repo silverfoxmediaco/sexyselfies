@@ -533,3 +533,68 @@
 .swipecard-paid-overlay {
   animation: swipecard-paid-overlay-fade-in 0.3s ease-out;
 }
+
+/* Creator Attribution Overlay (Content Mode) */
+.swipecard-creator-attribution {
+  position: absolute;
+  bottom: var(--swipecard-spacing-md);
+  left: var(--swipecard-spacing-md);
+  right: var(--swipecard-spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--swipecard-spacing-sm);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: var(--swipecard-radius-sm);
+  padding: var(--swipecard-spacing-sm) var(--swipecard-spacing-md);
+  z-index: 5;
+}
+
+.attribution-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--swipecard-accent-primary);
+}
+
+.attribution-info {
+  display: flex;
+  align-items: center;
+  gap: var(--swipecard-spacing-xs);
+  flex: 1;
+  min-width: 0;
+}
+
+.attribution-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--swipecard-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attribution-verified {
+  color: var(--swipecard-accent-primary);
+  flex-shrink: 0;
+}
+
+/* Mobile optimizations for attribution */
+@media (max-width: 768px) {
+  .swipecard-creator-attribution {
+    bottom: var(--swipecard-spacing-sm);
+    left: var(--swipecard-spacing-sm);
+    right: var(--swipecard-spacing-sm);
+    padding: var(--swipecard-spacing-xs) var(--swipecard-spacing-sm);
+  }
+
+  .attribution-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .attribution-name {
+    font-size: 13px;
+  }
+}

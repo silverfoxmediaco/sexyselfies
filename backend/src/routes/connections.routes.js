@@ -4,7 +4,10 @@ const router = express.Router();
 const { protect } = require('../middleware/auth.middleware');
 
 const {
-  // Swipe/Discovery
+  // Content Feed Discovery (NEW)
+  getContentFeed,
+
+  // Swipe/Discovery (LEGACY)
   getSwipeStack,
   swipeAction,
 
@@ -40,7 +43,12 @@ router.use((req, res, next) => {
 router.use(protect); // All connection routes require authentication
 
 // ============================================
-// SWIPING/DISCOVERY ROUTES
+// CONTENT DISCOVERY ROUTES (NEW)
+// ============================================
+router.get('/content-feed', getContentFeed); // Get global content feed for endless swiping
+
+// ============================================
+// SWIPING/DISCOVERY ROUTES (LEGACY)
 // ============================================
 router.get('/stack', getSwipeStack); // Get creators to swipe on
 router.post('/swipe', swipeAction); // Process swipe (like/pass/superlike)

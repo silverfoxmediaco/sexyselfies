@@ -21,14 +21,16 @@ const BrowseCreators = () => {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
-  const [creators, setCreators] = useState([]);
-  const [filteredCreators, setFilteredCreators] = useState([]);
+  const [contentFeed, setContentFeed] = useState([]);
+  const [filteredContent, setFilteredContent] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeHistory, setSwipeHistory] = useState([]);
   const [key, setKey] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingError, setLoadingError] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreContent, setHasMoreContent] = useState(true);
 
   // Filter states
   const [activeFilters, setActiveFilters] = useState({});
@@ -52,15 +54,15 @@ const BrowseCreators = () => {
   useEffect(() => {
     if (isAuthenticated) {
       loadFilters();
-      loadCreators();
+      loadContentFeed();
       loadExistingConnections();
     }
   }, [isAuthenticated]);
 
   // Apply filters when they change
   useEffect(() => {
-    applyFiltersToCreators();
-  }, [creators, activeFilters]);
+    applyFiltersToContent();
+  }, [contentFeed, activeFilters]);
 
   // Check if user is authenticated
   const checkAuthentication = () => {
@@ -106,64 +108,65 @@ const BrowseCreators = () => {
     }
   };
 
-  // Load creators from API
-  const loadCreators = async () => {
-    console.log('🎯 Loading creators...');
-    setIsLoading(true);
+  // Load content feed from API
+  const loadContentFeed = async (page = 1) => {
+    console.log('🎯 Loading content feed...');
+    setIsLoading(page === 1); // Only show loading for first page
     setLoadingError(null);
 
     try {
-      const response = await memberService.getSwipeStack();
+      const response = await memberService.getContentFeed({
+        page,
+        limit: 20
+      });
 
-      if (
-        response &&
-        (response.success || response.data || response.creators)
-      ) {
-        const creatorsData = response.data || response.creators || [];
+      if (response && response.success && response.data) {
+        const contentData = response.data || [];
 
-        console.log('🎯 Raw creator data from API:', creatorsData);
+        console.log('🎯 Raw content data from API:', contentData);
 
-        // Transform creator data to match expected structure
-        const transformedCreators = creatorsData.map(creator => {
-          console.log('🎯 Processing creator:', creator.displayName, 'Photos:', creator.photos?.length || 0);
+        // Transform content data for frontend
+        const transformedContent = contentData.map(content => {
+          console.log('🎯 Processing content:', content.title || 'Untitled', 'Creator:', content.creator?.displayName);
           return {
-          id: creator._id || creator.id,
-          _id: creator._id || creator.id,
-          profileImage:
-            creator.profileImage ||
-            creator.profilePhoto ||
-            '/placeholders/beaufitulbrunette1.png',
-          displayName: creator.displayName || creator.name || 'Unknown',
-          age: creator.age || 25,
-          verified: creator.isVerified || false,
-          isOnline: creator.isOnline || false,
-          gender: creator.gender || 'female',
-          bodyType: creator.bodyType || 'Average',
-          ethnicity: creator.ethnicity || 'Not specified',
-          hairColor: creator.hairColor || 'Brown',
-          height: creator.height || 65,
-          bio: creator.bio || '',
-          lastActive: creator.lastActive || new Date(),
-          createdAt: creator.createdAt || new Date(),
-          // Additional fields for connections
-          hasMessaged: creator.hasMessaged || false,
-          hasPoked: creator.hasPoked || false,
-          isTopCreator: creator.isTopCreator || false,
-          monthlyEarnings: creator.monthlyEarnings || 0,
-          messagePreview: creator.messagePreview || null,
-          // Preserve backend content data with proper pricing
-          photos: creator.photos || [],
-        };
+            id: content._id || content.id,
+            _id: content._id || content.id,
+            url: content.url,
+            price: content.price || 0,
+            isFree: content.isFree,
+            isPaid: content.isPaid,
+            type: content.type,
+            title: content.title || '',
+            description: content.description || '',
+            createdAt: content.createdAt,
+            // Creator info for attribution
+            creator: {
+              id: content.creator.id,
+              _id: content.creator.id,
+              displayName: content.creator.displayName,
+              username: content.creator.username,
+              profileImage: content.creator.profileImage || '/placeholders/beaufitulbrunette1.png',
+              isVerified: content.creator.isVerified || false,
+            }
+          };
         });
 
-        setCreators(transformedCreators);
-        setFilteredCreators(transformedCreators);
-        console.log('✅ Creators loaded and transformed');
+        if (page === 1) {
+          setContentFeed(transformedContent);
+          setFilteredContent(transformedContent);
+        } else {
+          // Append to existing content for pagination
+          setContentFeed(prev => [...prev, ...transformedContent]);
+          setFilteredContent(prev => [...prev, ...transformedContent]);
+        }
+
+        setHasMoreContent(response.pagination?.hasMore || false);
+        console.log('✅ Content feed loaded and transformed');
       } else {
-        throw new Error(response?.message || 'No creators found');
+        throw new Error(response?.message || 'No content found');
       }
     } catch (error) {
-      console.error('❌ Error loading creators:', error);
+      console.error('❌ Error loading content feed:', error);
       console.error('Error details:', {
         message: error.message,
         response: error.response,
@@ -177,11 +180,13 @@ const BrowseCreators = () => {
         navigate('/member/login');
       }
 
-      setLoadingError(error.message || 'Failed to load creators');
+      setLoadingError(error.message || 'Failed to load content feed');
 
-      // No creators found or error loading
-      setCreators([]);
-      setFilteredCreators([]);
+      // No content found or error loading
+      if (page === 1) {
+        setContentFeed([]);
+        setFilteredContent([]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -224,96 +229,77 @@ const BrowseCreators = () => {
     }
   };
 
-  // Apply filters to creators
-  const applyFiltersToCreators = () => {
-    console.log('🔍 Applying filters...');
+  // Apply filters to content
+  const applyFiltersToContent = () => {
+    console.log('🔍 Applying filters to content...');
     console.log('🔍 Active filters:', activeFilters);
 
-    if (!creators || creators.length === 0) {
-      console.log('🔍 No creators to filter');
-      setFilteredCreators([]);
+    if (!contentFeed || contentFeed.length === 0) {
+      console.log('🔍 No content to filter');
+      setFilteredContent([]);
       return;
     }
 
     if (!activeFilters || Object.keys(activeFilters).length === 0) {
-      console.log('🔍 No filters active, showing all creators');
-      setFilteredCreators(creators);
+      console.log('🔍 No filters active, showing all content');
+      setFilteredContent(contentFeed);
       return;
     }
 
     let filteredOutCount = 0;
     const filterReasons = {};
 
-    const filtered = creators.filter(creator => {
+    const filtered = contentFeed.filter(content => {
       let shouldInclude = true;
       const reasons = [];
+      const creator = content.creator;
 
-      // Age range filter (object structure with min/max)
-      if (
-        activeFilters.ageRange &&
-        (activeFilters.ageRange.min || activeFilters.ageRange.max)
-      ) {
-        const { min = 18, max = 99 } = activeFilters.ageRange;
-        if (creator.age < min || creator.age > max) {
+      // Price range filter (new for content)
+      if (activeFilters.priceRange && activeFilters.priceRange.max) {
+        if (content.price > activeFilters.priceRange.max) {
           shouldInclude = false;
-          reasons.push(`age ${creator.age} not in range ${min}-${max}`);
+          reasons.push(`price $${content.price} exceeds max $${activeFilters.priceRange.max}`);
         }
       }
 
-      // Location filter (country string)
-      if (activeFilters.location && activeFilters.location.trim() !== '') {
-        const creatorCountry =
-          creator.location?.country || creator.location?.city || '';
-        if (
-          !creatorCountry
-            .toLowerCase()
-            .includes(activeFilters.location.toLowerCase())
-        ) {
+      // Free content only filter (new for content)
+      if (activeFilters.freeOnly && content.isPaid) {
+        shouldInclude = false;
+        reasons.push('paid content excluded');
+      }
+
+      // Verified creators only filter
+      if (activeFilters.verifiedOnly && !creator.isVerified) {
+        shouldInclude = false;
+        reasons.push('creator not verified');
+      }
+
+      // Content type filter (new for content)
+      if (activeFilters.contentTypes && activeFilters.contentTypes.length > 0) {
+        if (!activeFilters.contentTypes.includes(content.type)) {
           shouldInclude = false;
           reasons.push(
-            `location "${creatorCountry}" doesn't match "${activeFilters.location}"`
+            `contentType "${content.type}" not in [${activeFilters.contentTypes.join(', ')}]`
           );
         }
       }
 
-      // Body types filter (array)
-      if (activeFilters.bodyTypes && activeFilters.bodyTypes.length > 0) {
-        if (!activeFilters.bodyTypes.includes(creator.bodyType)) {
-          shouldInclude = false;
-          reasons.push(
-            `bodyType "${creator.bodyType}" not in [${activeFilters.bodyTypes.join(', ')}]`
-          );
-        }
-      }
-
-      // Online only filter (boolean)
-      if (activeFilters.onlineOnly && !creator.isOnline) {
-        shouldInclude = false;
-        reasons.push('not online');
-      }
-
-      // Verified only filter (boolean)
-      if (activeFilters.verifiedOnly && !creator.verified) {
-        shouldInclude = false;
-        reasons.push('not verified');
-      }
-
-      // New members only filter (boolean)
-      if (activeFilters.newMembersOnly) {
+      // New content filter (last 30 days)
+      if (activeFilters.newContentOnly) {
         const thirtyDaysAgo = new Date(Date.now() - 86400000 * 30);
-        const createdDate = new Date(creator.createdAt);
-        if (createdDate < thirtyDaysAgo) {
+        const contentDate = new Date(content.createdAt);
+        if (contentDate < thirtyDaysAgo) {
           shouldInclude = false;
-          reasons.push('not a new member (older than 30 days)');
+          reasons.push('content older than 30 days');
         }
       }
 
       // Log filtering decisions
       if (!shouldInclude) {
         filteredOutCount++;
-        filterReasons[creator.displayName] = reasons;
+        filterReasons[`${creator.displayName} - ${content.title || 'Untitled'}`] = reasons;
         console.log(
-          `🔍 Filtered out ${creator.displayName}:`,
+          `🔍 Filtered out content from ${creator.displayName}:`,
           reasons.join(', ')
         );
       }
@@ -322,14 +308,14 @@ const BrowseCreators = () => {
     });
 
     console.log(
-      `🔍 Filtered ${creators.length} creators to ${filtered.length}`
+      `🔍 Filtered ${contentFeed.length} content pieces to ${filtered.length}`
     );
-    console.log(`🔍 Filtered out ${filteredOutCount} creators`);
+    console.log(`🔍 Filtered out ${filteredOutCount} content pieces`);
     if (filteredOutCount > 0) {
       console.log('🔍 Filter reasons:', filterReasons);
     }
 
-    setFilteredCreators(filtered);
+    setFilteredContent(filtered);
 
     // Reset current index if it's out of bounds
     if (currentIndex >= filtered.length && filtered.length > 0) {
@@ -338,60 +324,68 @@ const BrowseCreators = () => {
     }
   };
 
-  // Handle swipe from SwipeCard
-  const handleSwipe = async (direction, creatorId) => {
-    console.log(`👆 Swiping ${direction} on creator ${creatorId}`);
-    const creator = filteredCreators[currentIndex];
-    if (!creator) return;
+  // Handle swipe from SwipeCard (Content Mode)
+  const handleSwipe = async (direction, contentId) => {
+    console.log(`👆 Swiping ${direction} on content ${contentId}`);
+    const content = filteredContent[currentIndex];
+    if (!content) return;
 
     try {
-      // Handle Quick Profile View
+      // Handle swipe up - view creator profile
       if (direction === 'up') {
-        handleViewProfile(creator);
+        handleViewCreatorProfile(content.creator);
         return;
       }
 
-      // Make API call to process swipe
-      const swipeAction = direction === 'right' ? 'like' : 'pass';
-      const response = await memberService.swipeAction(
-        creator._id || creator.id,
-        swipeAction
-      );
-      console.log('👆 Swipe response:', response);
+      // For content swiping, we don't need to make API calls
+      // Just handle UI transitions (like/pass on individual content)
+      console.log(`👆 Content ${direction === 'right' ? 'liked' : 'passed'}`);
 
-      // Check for connection in response
-      if (response && response.isConnected) {
-        // Show connection modal
-        setConnectionType('instant_connection');
-        setConnectionData({
-          creatorName: creator.displayName,
-          profileImage: creator.profileImage,
-          creatorId: creator._id,
-        });
-        setShowConnectionModal(true);
-        console.log('💕 Connection established!');
-      }
+      // Could add analytics tracking here:
+      // await memberService.trackContentInteraction(contentId, direction);
+
     } catch (error) {
-      console.error('❌ Error processing swipe:', error);
-      // Continue with UI updates even if API fails
+      console.error('❌ Error processing content swipe:', error);
+      // Continue with UI updates even if tracking fails
     }
 
     // Add to history
-    setSwipeHistory([...swipeHistory, { creator, action: direction }]);
+    setSwipeHistory([...swipeHistory, { content, action: direction }]);
 
-    // Move to next creator after animation completes
+    // Move to next content after animation completes
     setTimeout(() => {
-      if (currentIndex < filteredCreators.length - 1) {
+      if (currentIndex < filteredContent.length - 1) {
         setCurrentIndex(currentIndex + 1);
         setKey(prev => prev + 1);
+      } else if (hasMoreContent) {
+        // Load more content when reaching the end
+        loadContentFeed(currentPage + 1);
+        setCurrentPage(prev => prev + 1);
       }
     }, 300);
   };
 
-  // Handle button clicks
+  // Handle content purchase
+  const handleContentPurchase = async (content) => {
+    console.log('💰 Purchasing content:', content.title, 'for $', content.price);
+
+    try {
+      // TODO: Implement purchase logic via payment service
+      // const response = await memberService.purchaseContent(content._id);
+
+      // For now, just show an alert
+      alert(`Purchase content "${content.title}" for $${content.price}?\n\nPurchase functionality coming soon!`);
+
+    } catch (error) {
+      console.error('❌ Error purchasing content:', error);
+      alert('Purchase failed. Please try again.');
+    }
+  };
+
+  // Handle button clicks (Content Mode)
   const handleButtonSwipe = direction => {
-    if (!filteredCreators[currentIndex]) return;
-    handleSwipe(direction, filteredCreators[currentIndex]._id);
+    if (!filteredContent[currentIndex]) return;
+    handleSwipe(direction, filteredContent[currentIndex]._id);
   };
 
   const handleRewind = () => {
@@ -404,10 +398,10 @@ const BrowseCreators = () => {
     setKey(prev => prev + 1);
   };
 
-  const handleViewProfile = creator => {
+  const handleViewCreatorProfile = creator => {
     // Defensive check for creator and username
     if (!creator) {
-      console.error('No creator provided to handleViewProfile');
+      console.error('No creator provided to handleViewCreatorProfile');
       return;
     }
 
@@ -460,8 +454,8 @@ const BrowseCreators = () => {
         }
       }
 
-      // Reload creators with default filters
-      await loadCreators();
+      // Reload content feed with default filters
+      await loadContentFeed();
     } catch (error) {
       console.error('Error resetting filters:', error);
       // Fallback: just clear local state
@@ -470,33 +464,35 @@ const BrowseCreators = () => {
     }
   };
 
-  const currentCreator = filteredCreators?.[currentIndex];
+  const currentContent = filteredContent?.[currentIndex];
 
-  // Add visual indicators for creators who have already shown interest
-  const getCardIndicators = creator => {
+  // Add visual indicators for content (paid, new, popular, etc.)
+  const getContentIndicators = content => {
     const indicators = [];
 
-    if (creator.hasMessaged || existingMessages?.[creator._id]) {
+    if (content.isPaid) {
       indicators.push({
-        type: 'message',
-        text: 'Messaged You!',
+        type: 'paid',
+        text: `$${content.price}`,
         color: '#17D2C2',
       });
     }
 
-    if (creator.hasPoked || existingConnections?.[creator._id]?.hasPoked) {
+    if (content.isFree) {
       indicators.push({
-        type: 'poke',
-        text: 'Poked You!',
-        color: '#FFD700',
+        type: 'free',
+        text: 'Free',
+        color: '#22C55E',
       });
     }
 
-    if (creator.isTopCreator) {
+    // Check if content is new (last 24 hours)
+    const oneDayAgo = new Date(Date.now() - 86400000);
+    if (new Date(content.createdAt) > oneDayAgo) {
       indicators.push({
-        type: 'top',
-        text: 'Top Creator',
-        color: '#FF006E',
+        type: 'new',
+        text: 'New',
+        color: '#F59E0B',
       });
     }
 
@@ -522,23 +518,23 @@ const BrowseCreators = () => {
       <div className='browse-creators-page'>
         <div className='browse-creators-loading'>
           <Loader size={60} className='loading-spinner' />
-          <h2>Finding creators for you...</h2>
-          <p>This may take a moment</p>
+          <h2>Loading content feed...</h2>
+          <p>Getting the latest posts for you</p>
         </div>
       </div>
     );
   }
 
-  // No creators found (filters too restrictive)
-  if (!currentCreator && filteredCreators.length === 0 && hasActiveFilters) {
+  // No content found (filters too restrictive)
+  if (!currentContent && filteredContent.length === 0 && hasActiveFilters) {
     return (
       <div className='browse-creators-page'>
         {/* Desktop Header */}
         {isDesktop && <MainHeader />}
         <div className='browse-creators-no-results'>
           <Filter size={60} />
-          <h2>No creators meet your preferences</h2>
-          <p>Try adjusting your browse settings to see more profiles</p>
+          <h2>No content matches your filters</h2>
+          <p>Try adjusting your browse settings to see more posts</p>
           <button
             onClick={handleResetFilters}
             className='browse-reset-filters-btn'
@@ -554,8 +550,8 @@ const BrowseCreators = () => {
     );
   }
 
-  // No more creators available
-  if (!currentCreator) {
+  // No more content available
+  if (!currentContent) {
     return (
       <div className='browse-creators-page'>
         {/* Desktop Header */}
@@ -584,13 +580,13 @@ const BrowseCreators = () => {
     <div className='browse-creators-page'>
       {/* Desktop Header */}
       {isDesktop && <MainHeader />}
-      {/* Card Stack using SwipeCard component */}
+      {/* Content Stack using SwipeCard component */}
       <div className='browse-creators-card-stack'>
-        {filteredCreators
+        {filteredContent
           .slice(currentIndex, currentIndex + 3)
-          .map((creator, index) => (
+          .map((content, index) => (
             <div
-              key={`${creator._id}-${key}-${index}`}
+              key={`${content._id}-${key}-${index}`}
               className='browse-creators-card-wrapper'
               style={{
                 position: 'absolute',
@@ -599,10 +595,10 @@ const BrowseCreators = () => {
                 opacity: index < 2 ? 1 : 0,
               }}
             >
-              {/* Show indicators on the card if they have existing interest */}
-              {index === 0 && getCardIndicators(creator).length > 0 && (
+              {/* Show content indicators (price, free, new) */}
+              {index === 0 && getContentIndicators(content).length > 0 && (
                 <div className='card-indicators'>
-                  {getCardIndicators(creator).map((indicator, i) => (
+                  {getContentIndicators(content).map((indicator, i) => (
                     <div
                       key={i}
                       className='indicator-badge'
@@ -615,13 +611,14 @@ const BrowseCreators = () => {
               )}
 
               <SwipeCard
-                creator={creator}
+                content={content}
                 onSwipe={handleSwipe}
-                onViewProfile={handleViewProfile}
+                onViewProfile={handleViewCreatorProfile}
+                onPurchase={handleContentPurchase}
                 isTop={index === 0}
                 dragEnabled={index === 0}
                 showActions={true}
-                minimalView={true}
+                minimalView={false}
               />
             </div>
           ))}
@@ -656,8 +653,8 @@ const BrowseCreators = () => {
 
         <button
           className='browse-creators-action-btn browse-creators-info'
-          onClick={() => handleViewProfile(currentCreator)}
-          aria-label='View Profile'
+          onClick={() => handleViewCreatorProfile(currentContent?.creator)}
+          aria-label='View Creator Profile'
         >
           <Info size={24} />
         </button>

@@ -93,7 +93,21 @@ class MemberService {
   // ==========================================
 
   /**
-   * Get swipe stack of creators to browse
+   * Get global content feed for endless content discovery/swiping
+   */
+  async getContentFeed(params = {}) {
+    try {
+      const response = await api.get('/connections/content-feed', {
+        params,
+      });
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Get swipe stack of creators to browse (LEGACY)
    */
   async getSwipeStack(params = {}) {
     try {

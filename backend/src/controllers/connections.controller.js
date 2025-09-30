@@ -10,7 +10,83 @@ const connectionService = require('../services/connections.service');
 // SWIPE/BROWSE FUNCTIONS
 // ============================================
 
-// @desc    Get swipe stack (creators to swipe on)
+// @desc    Get content feed (all content from all creators for endless swiping)
+// @route   GET /api/connections/content-feed
+// @access  Private
+exports.getContentFeed = async (req, res, next) => {
+  try {
+    console.log('🎯 GetContentFeed called by user:', req.user.id);
+    console.log('🎯 Request query params:', req.query);
+
+    const { page = 1, limit = 20 } = req.query;
+    const skip = (page - 1) * limit;
+
+    // Get Content model
+    const Content = require('../models/Content');
+
+    // Get ALL approved content from ALL creators with creator info
+    const contentFeed = await Content.find({
+      status: 'approved', // Only approved content
+    })
+      .populate('creator', 'displayName username profileImage isVerified')
+      .select('media thumbnail price isFree type title description createdAt')
+      .sort({ createdAt: -1 }) // Start with newest, but we'll randomize
+      .skip(skip)
+      .limit(parseInt(limit))
+      .lean();
+
+    console.log('📚 Found content pieces:', contentFeed.length);
+
+    // Transform content for frontend with creator attribution
+    const transformedContent = contentFeed.map(content => ({
+      id: content._id,
+      _id: content._id,
+      // Content details
+      url: content.isFree
+        ? content.media[0]?.url || content.thumbnail
+        : content.thumbnail, // Use thumbnail for paid content (blur effect)
+      price: content.price || 0,
+      isFree: content.isFree,
+      isPaid: !content.isFree,
+      type: content.type,
+      title: content.title || '',
+      description: content.description || '',
+      createdAt: content.createdAt,
+
+      // Creator attribution
+      creator: {
+        id: content.creator._id,
+        displayName: content.creator.displayName,
+        username: content.creator.username,
+        profileImage: content.creator.profileImage,
+        isVerified: content.creator.isVerified,
+      }
+    }));
+
+    // Randomize the content order for discovery variety
+    const randomizedContent = transformedContent.sort(() => Math.random() - 0.5);
+
+    res.status(200).json({
+      success: true,
+      data: randomizedContent,
+      pagination: {
+        currentPage: parseInt(page),
+        totalItems: randomizedContent.length,
+        hasMore: randomizedContent.length === parseInt(limit), // Has more if we got full page
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error getting content feed:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to load content feed',
+      message: error.message
+    });
+  }
+};
+
+// @desc    Get swipe stack (creators to swipe on) - LEGACY
 // @route   GET /api/connections/stack
 // @access  Private
 exports.getSwipeStack = async (req, res, next) => {

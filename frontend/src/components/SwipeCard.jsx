@@ -9,15 +9,20 @@ import { Shield } from 'lucide-react';
 import './SwipeCard.css';
 
 const SwipeCard = ({
-  creator,
+  content, // Now expects content object instead of creator
+  creator, // Legacy prop for backward compatibility
   onSwipe,
   onViewProfile,
+  onPurchase, // New prop for content purchase
   isTop = false,
   style = {},
   dragEnabled = true,
   showActions = true,
   minimalView = false,
 }) => {
+  // Support both new content-focused and legacy creator-focused modes
+  const isContentMode = !!content;
+  const cardData = isContentMode ? content : creator;
   // Motion values for drag
   const motionValue = useMotionValue(0);
   const rotateValue = useTransform(motionValue, [-200, 200], [-30, 30]);
@@ -39,23 +44,34 @@ const SwipeCard = ({
   const swipeThreshold = 100;
   const swipeVelocityThreshold = 500;
 
-  // Get all photos (profile photo + additional photos with metadata)
-  const profilePhoto = {
-    url: creator.profileImage,
-    isFree: true,
-    isPaid: false,
-    price: 0,
-  };
-  const contentPhotos = (creator.photos || []).map(photo =>
-    typeof photo === 'string'
-      ? { url: photo, isFree: true, isPaid: false, price: 0 }
-      : photo
-  );
-
-  // Mix profile photo with content photos for variety (randomize order)
-  const allPhotosArray = [profilePhoto, ...contentPhotos];
-  // Shuffle the array for random content display
-  const allPhotos = allPhotosArray.length > 0 ? allPhotosArray.sort(() => Math.random() - 0.5) : [profilePhoto];
+  // Handle content vs creator mode
+  let allPhotos;
+  if (isContentMode) {
+    // Content mode: Single content piece
+    allPhotos = [{
+      url: content.url,
+      isFree: content.isFree,
+      isPaid: content.isPaid,
+      price: content.price,
+      type: content.type,
+      title: content.title,
+    }];
+  } else {
+    // Legacy creator mode: Profile + content photos
+    const profilePhoto = {
+      url: creator.profileImage,
+      isFree: true,
+      isPaid: false,
+      price: 0,
+    };
+    const contentPhotos = (creator.photos || []).map(photo =>
+      typeof photo === 'string'
+        ? { url: photo, isFree: true, isPaid: false, price: 0 }
+        : photo
+    );
+    const allPhotosArray = [profilePhoto, ...contentPhotos];
+    allPhotos = allPhotosArray.length > 0 ? allPhotosArray.sort(() => Math.random() - 0.5) : [profilePhoto];
+  }
 
   // Handle drag end
   const handleDragEnd = (event, info) => {
@@ -98,7 +114,8 @@ const SwipeCard = ({
         })
         .then(() => {
           if (onSwipe) {
-            onSwipe(finalDirection, creator._id);
+            const itemId = isContentMode ? content._id : creator._id;
+            onSwipe(finalDirection, itemId);
           }
         });
     } else {
@@ -112,12 +129,26 @@ const SwipeCard = ({
     }
   };
 
-  // Handle quick profile view (swipe up)
+  // Handle quick profile view (swipe up) or content purchase (tap on paid content)
   const handleQuickProfileView = () => {
-    if (onSwipe) {
-      onSwipe('up', creator._id);
+    if (isContentMode) {
+      // In content mode, swipe up goes to creator profile
+      if (onViewProfile && content.creator) {
+        onViewProfile(content.creator);
+      }
+    } else {
+      // Legacy creator mode
+      if (onSwipe) {
+        onSwipe('up', creator._id);
+      }
     }
-    // No exit animation for profile view - let parent handle modal
+  };
+
+  // Handle content purchase
+  const handleContentPurchase = () => {
+    if (isContentMode && allPhotos[currentPhotoIndex]?.isPaid && onPurchase) {
+      onPurchase(content);
+    }
   };
 
   // Handle photo navigation
@@ -191,20 +222,37 @@ const SwipeCard = ({
       >
         {/* Main Photo */}
         <img
-          src={allPhotos[currentPhotoIndex]?.url || creator.profileImage}
-          alt={creator.displayName || ''}
+          src={allPhotos[currentPhotoIndex]?.url || (isContentMode ? content.url : creator.profileImage)}
+          alt={isContentMode ? content.title || content.creator?.displayName : creator.displayName || ''}
           className={`swipecard-photo ${allPhotos[currentPhotoIndex]?.isPaid === true || (allPhotos[currentPhotoIndex]?.isFree === false && allPhotos[currentPhotoIndex]?.price > 0) ? 'swipecard-photo-blurred' : ''}`}
           draggable='false'
         />
 
         {/* Paid Content Overlay */}
         {!minimalView && (allPhotos[currentPhotoIndex]?.isPaid === true || (allPhotos[currentPhotoIndex]?.isFree === false && allPhotos[currentPhotoIndex]?.price > 0)) && (
-          <div className='swipecard-paid-overlay'>
+          <div className='swipecard-paid-overlay' onClick={handleContentPurchase}>
             <div className='swipecard-unlock-icon'>🔒</div>
             <div className='swipecard-price'>
               ${(allPhotos[currentPhotoIndex]?.price || 0).toFixed(2)}
             </div>
             <div className='swipecard-unlock-text'>Tap to unlock</div>
+          </div>
+        )}
+
+        {/* Creator Attribution (Content Mode Only) */}
+        {isContentMode && !minimalView && content.creator && (
+          <div className='swipecard-creator-attribution'>
+            <img
+              src={content.creator.profileImage}
+              alt={content.creator.displayName}
+              className='attribution-avatar'
+            />
+            <div className='attribution-info'>
+              <span className='attribution-name'>{content.creator.displayName}</span>
+              {content.creator.isVerified && (
+                <Shield size={14} className='attribution-verified' />
+              )}
+            </div>
           </div>
         )}
 
