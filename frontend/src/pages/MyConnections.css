@@ -4,6 +4,8 @@
   min-height: 100vh;
   background: #0a0a0a;
   padding-bottom: calc(70px + env(safe-area-inset-bottom, 0));
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 /* Header */
