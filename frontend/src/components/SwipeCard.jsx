@@ -55,7 +55,7 @@ const SwipeCard = ({
   // Mix profile photo with content photos for variety (randomize order)
   const allPhotosArray = [profilePhoto, ...contentPhotos];
   // Shuffle the array for random content display
-  const allPhotos = allPhotosArray.sort(() => Math.random() - 0.5);
+  const allPhotos = allPhotosArray.length > 0 ? allPhotosArray.sort(() => Math.random() - 0.5) : [profilePhoto];
 
   // Handle drag end
   const handleDragEnd = (event, info) => {

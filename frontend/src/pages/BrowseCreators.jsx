@@ -121,8 +121,12 @@ const BrowseCreators = () => {
       ) {
         const creatorsData = response.data || response.creators || [];
 
+        console.log('🎯 Raw creator data from API:', creatorsData);
+
         // Transform creator data to match expected structure
-        const transformedCreators = creatorsData.map(creator => ({
+        const transformedCreators = creatorsData.map(creator => {
+          console.log('🎯 Processing creator:', creator.displayName, 'Photos:', creator.photos?.length || 0);
+          return {
           id: creator._id || creator.id,
           _id: creator._id || creator.id,
           profileImage:
@@ -149,7 +153,8 @@ const BrowseCreators = () => {
           messagePreview: creator.messagePreview || null,
           // Preserve backend content data with proper pricing
           photos: creator.photos || [],
-        }));
+        };
+        });
 
         setCreators(transformedCreators);
         setFilteredCreators(transformedCreators);
@@ -557,8 +562,8 @@ const BrowseCreators = () => {
         {isDesktop && <MainHeader />}
         <div className='browse-creators-no-more-cards'>
           <Star size={60} />
-          <h2>No more profiles</h2>
-          <p>Check back later for new creators</p>
+          <h2>No More Posts or Content</h2>
+          <p>Check back later for new content</p>
           <button
             onClick={() => window.location.reload()}
             className='browse-refresh-btn'
