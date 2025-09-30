@@ -43,13 +43,13 @@ const ConnectionCard = ({
   const handleDeleteClick = useCallback((e) => {
     e.stopPropagation();
     onDelete(connection);
-  }, [connection, onDelete]);
+  }, [connection.id, onDelete]);
 
   // Handle card click (could navigate to chat)
   const handleCardClick = useCallback(() => {
     // Future: Navigate to chat or connection details
     console.log('Card clicked:', connection);
-  }, [connection]);
+  }, [connection.id]);
 
   // Format message time
   const formatMessageTime = useCallback((timeString) => {

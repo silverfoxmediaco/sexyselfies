@@ -40,9 +40,9 @@ const ConnectionsList = ({
     let filtered = connections.filter(connection => {
       const searchText = filterText.toLowerCase();
       return (
-        connection.name.toLowerCase().includes(searchText) ||
-        connection.username.toLowerCase().includes(searchText) ||
-        connection.lastMessage.toLowerCase().includes(searchText)
+        (connection.name || '').toLowerCase().includes(searchText) ||
+        (connection.username || '').toLowerCase().includes(searchText) ||
+        (connection.lastMessage || '').toLowerCase().includes(searchText)
       );
     });
 
@@ -50,11 +50,11 @@ const ConnectionsList = ({
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'name':
-          return a.name.localeCompare(b.name);
+          return (a.name || '').localeCompare(b.name || '');
         case 'recent':
-          return new Date(b.messageTime) - new Date(a.messageTime);
+          return new Date(b.messageTime || 0) - new Date(a.messageTime || 0);
         case 'oldest':
-          return new Date(a.messageTime) - new Date(b.messageTime);
+          return new Date(a.messageTime || 0) - new Date(b.messageTime || 0);
         default:
           return 0;
       }

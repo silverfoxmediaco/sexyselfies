@@ -55,7 +55,12 @@ const MemberConnections = () => {
         );
 
         setConnections(transformedConnections);
-        setStats(response.stats || stats);
+        setStats(response.stats || {
+          totalConnections: 0,
+          activeChats: 0,
+          totalSpent: 0,
+          avgResponse: 0,
+        });
       } else {
         throw new Error('Failed to fetch connections');
       }
