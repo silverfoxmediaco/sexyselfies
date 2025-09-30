@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Trash2, MessageCircle, Clock, User } from 'lucide-react';
 import api from '../services/api.config';
 import './SimpleConnectionsList.css';
 
 const SimpleConnectionsList = () => {
+  const navigate = useNavigate();
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,6 +48,12 @@ const SimpleConnectionsList = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Navigate to creator profile
+  const handleConnectionClick = (connection) => {
+    console.log('🔗 Navigating to creator profile:', connection.username);
+    navigate(`/creator/${connection.username}`);
   };
 
   // Delete connection
@@ -140,7 +148,11 @@ const SimpleConnectionsList = () => {
     <div className="simple-connections-list">
       <div className="simple-connections-connections-list">
         {connections.map((connection) => (
-          <div key={connection.id} className="simple-connections-card">
+          <div
+            key={connection.id}
+            className="simple-connections-card"
+            onClick={() => handleConnectionClick(connection)}
+          >
             {/* Avatar */}
             <div className="simple-connections-avatar">
               {connection.avatar ? (
@@ -180,7 +192,10 @@ const SimpleConnectionsList = () => {
 
                 <button
                   className="simple-connections-delete-btn"
-                  onClick={() => handleDeleteConnection(connection.id, connection.name)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click
+                    handleDeleteConnection(connection.id, connection.name);
+                  }}
                   title={`Delete connection with ${connection.name}`}
                 >
                   <Trash2 size={16} />
