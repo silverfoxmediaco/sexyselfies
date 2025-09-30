@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, MessageCircle, Clock, User } from 'lucide-react';
 import api from '../services/api.config';
+import './SimpleConnectionsList.css';
 
 const SimpleConnectionsList = () => {
   const [connections, setConnections] = useState([]);
@@ -26,8 +27,6 @@ const SimpleConnectionsList = () => {
             avatar: otherUser?.profileImage || null,
             name: otherUser?.displayName || otherUser?.username || 'Unknown User',
             username: otherUser?.username || '',
-            connectionType: getConnectionTypeCode(conn.connectionType || 'standard'),
-            connectionTypeColor: getConnectionTypeColor(conn.connectionType || 'standard'),
             lastMessage: conn.lastMessage?.content || 'No messages yet',
             messageTime: conn.lastMessage?.createdAt || conn.lastInteraction || conn.createdAt,
             isConnected: conn.status === 'connected'
@@ -92,198 +91,29 @@ const SimpleConnectionsList = () => {
     }
   };
 
-  // Get connection type code
-  const getConnectionTypeCode = (connectionType) => {
-    const typeMap = {
-      'standard': 'C',
-      'subscriber': 'S',
-      'member': 'M',
-      'fan': 'F',
-      'premium': 'P',
-      'vip': 'V'
-    };
-    return typeMap[connectionType] || 'C';
-  };
-
-  // Get connection type color
-  const getConnectionTypeColor = (connectionType) => {
-    const colorMap = {
-      'standard': '#10b981',
-      'subscriber': '#8e8e93',
-      'member': '#3b82f6',
-      'fan': '#f59e0b',
-      'premium': '#8b5cf6',
-      'vip': '#ef4444'
-    };
-    return colorMap[connectionType] || '#10b981';
-  };
 
   // Load connections on mount - only once
   useEffect(() => {
     fetchConnections();
   }, []); // Empty dependency array - runs only once on mount
 
-  // Styles
-  const styles = {
-    container: {
-      padding: '16px',
-      maxWidth: '100%'
-    },
-    connectionsList: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '12px'
-    },
-    connectionCard: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '16px',
-      backgroundColor: '#1c1c1e',
-      borderRadius: '12px',
-      border: '1px solid #2a2a2c',
-      gap: '12px'
-    },
-    avatar: {
-      position: 'relative',
-      flexShrink: 0
-    },
-    avatarImage: {
-      width: '48px',
-      height: '48px',
-      borderRadius: '50%',
-      objectFit: 'cover'
-    },
-    avatarFallback: {
-      width: '48px',
-      height: '48px',
-      borderRadius: '50%',
-      backgroundColor: '#2a2a2c',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: '#8e8e93'
-    },
-    badge: {
-      position: 'absolute',
-      bottom: '-2px',
-      right: '-2px',
-      width: '20px',
-      height: '20px',
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: '10px',
-      fontWeight: 'bold',
-      color: 'white',
-      border: '2px solid #1c1c1e'
-    },
-    connectionInfo: {
-      flex: 1,
-      minWidth: 0
-    },
-    header: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      marginBottom: '8px'
-    },
-    names: {
-      minWidth: 0,
-      flex: 1
-    },
-    name: {
-      margin: 0,
-      fontSize: '16px',
-      fontWeight: '600',
-      color: '#ffffff',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap'
-    },
-    username: {
-      fontSize: '14px',
-      color: '#8e8e93',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap'
-    },
-    deleteBtn: {
-      background: 'none',
-      border: 'none',
-      padding: '8px',
-      borderRadius: '8px',
-      color: '#8e8e93',
-      cursor: 'pointer',
-      flexShrink: 0,
-      minWidth: '44px',
-      minHeight: '44px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    message: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      fontSize: '14px',
-      color: '#c7c7cc'
-    },
-    messageTime: {
-      fontSize: '12px',
-      color: '#8e8e93',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '4px',
-      marginLeft: 'auto',
-      flexShrink: 0
-    },
-    loading: {
-      textAlign: 'center',
-      padding: '40px',
-      color: '#8e8e93'
-    },
-    error: {
-      textAlign: 'center',
-      padding: '40px',
-      color: '#ef4444'
-    },
-    empty: {
-      textAlign: 'center',
-      padding: '40px',
-      color: '#8e8e93'
-    },
-    emptyIcon: {
-      marginBottom: '16px',
-      color: '#8e8e93'
-    }
-  };
-
   if (loading) {
     return (
-      <div style={styles.container}>
-        <div style={styles.loading}>Loading connections...</div>
+      <div className="simple-connections-list">
+        <div className="simple-connections-loading">Loading connections...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="simple-connections-list">
+        <div className="simple-connections-error">
           {error}
           <br />
           <button
             onClick={fetchConnections}
-            style={{
-              marginTop: '16px',
-              padding: '8px 16px',
-              background: '#17d2c2',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer'
-            }}
+            className="simple-connections-retry-btn"
           >
             Try Again
           </button>
@@ -294,9 +124,9 @@ const SimpleConnectionsList = () => {
 
   if (connections.length === 0) {
     return (
-      <div style={styles.container}>
-        <div style={styles.empty}>
-          <User size={48} style={styles.emptyIcon} />
+      <div className="simple-connections-list">
+        <div className="simple-connections-empty">
+          <User size={48} className="simple-connections-empty-icon" />
           <br />
           No connections yet
           <br />
@@ -307,68 +137,62 @@ const SimpleConnectionsList = () => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.connectionsList}>
+    <div className="simple-connections-list">
+      <div className="simple-connections-connections-list">
         {connections.map((connection) => (
-          <div key={connection.id} style={styles.connectionCard}>
+          <div key={connection.id} className="simple-connections-card">
             {/* Avatar */}
-            <div style={styles.avatar}>
+            <div className="simple-connections-avatar">
               {connection.avatar ? (
                 <img
                   src={connection.avatar}
                   alt={`${connection.name}'s avatar`}
-                  style={styles.avatarImage}
+                  className="simple-connections-avatar-image"
                   onError={(e) => {
                     e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
+                    e.target.nextSibling.classList.remove('hidden');
                   }}
                 />
               ) : null}
               <div
-                style={{
-                  ...styles.avatarFallback,
-                  display: connection.avatar ? 'none' : 'flex'
-                }}
+                className={`simple-connections-avatar-fallback ${connection.avatar ? 'hidden' : ''}`}
               >
                 <User size={24} />
               </div>
 
-              {/* Connection type badge */}
-              <div style={{
-                ...styles.badge,
-                backgroundColor: connection.connectionTypeColor
-              }}>
-                {connection.connectionType}
-              </div>
+              {/* Connected indicator */}
+              {connection.isConnected && (
+                <div className="simple-connections-connected-indicator">
+                  ✓
+                </div>
+              )}
             </div>
 
             {/* Connection Info */}
-            <div style={styles.connectionInfo}>
-              <div style={styles.header}>
-                <div style={styles.names}>
-                  <h3 style={styles.name}>{connection.name}</h3>
+            <div className="simple-connections-info">
+              <div className="simple-connections-header">
+                <div className="simple-connections-names">
+                  <h3 className="simple-connections-name">{connection.name}</h3>
                   {connection.username && (
-                    <div style={styles.username}>@{connection.username}</div>
+                    <div className="simple-connections-username">@{connection.username}</div>
                   )}
                 </div>
 
                 <button
-                  style={styles.deleteBtn}
+                  className="simple-connections-delete-btn"
                   onClick={() => handleDeleteConnection(connection.id, connection.name)}
                   title={`Delete connection with ${connection.name}`}
-                  onMouseOver={(e) => e.target.style.color = '#ef4444'}
-                  onMouseOut={(e) => e.target.style.color = '#8e8e93'}
                 >
                   <Trash2 size={16} />
                 </button>
               </div>
 
-              <div style={styles.message}>
-                <MessageCircle size={14} style={{ color: '#8e8e93', flexShrink: 0 }} />
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div className="simple-connections-message">
+                <MessageCircle size={14} className="simple-connections-message-icon" />
+                <span className="simple-connections-message-text">
                   {connection.lastMessage}
                 </span>
-                <div style={styles.messageTime}>
+                <div className="simple-connections-message-time">
                   <Clock size={12} />
                   {formatTime(connection.messageTime)}
                 </div>
