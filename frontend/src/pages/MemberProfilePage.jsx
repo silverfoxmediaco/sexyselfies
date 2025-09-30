@@ -72,16 +72,9 @@ const MemberProfilePage = () => {
     try {
       const userData = await api.get('/auth/me');
 
-      // Get actual message count from API
+      // For members, we don't need message stats from creator endpoints
+      // Message counts can be retrieved from member-specific endpoints if needed
       let totalMessages = 0;
-      try {
-        const messageStats = await api.get('/creator/messages/stats');
-        if (messageStats.success && messageStats.stats) {
-          totalMessages = messageStats.stats.totalMessages || 0;
-        }
-      } catch (msgError) {
-        console.log('Could not fetch message count:', msgError);
-      }
 
       // Calculate stats from real data
       const stats = {

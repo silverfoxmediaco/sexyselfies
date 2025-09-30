@@ -95,7 +95,7 @@ const MemberConnections = () => {
       // Could show toast notification here
       alert('Failed to delete connection. Please try again.');
     }
-  }, [fetchConnections]);
+  }, []); // Remove fetchConnections dependency
 
   // Bulk delete connections
   const handleBulkDelete = useCallback(async (connectionIds) => {
@@ -117,17 +117,17 @@ const MemberConnections = () => {
       // Could show toast notification here
       alert('Failed to delete connections. Please try again.');
     }
-  }, [fetchConnections]);
+  }, []); // Remove fetchConnections dependency
 
   // Refresh connections
   const handleRefresh = useCallback(() => {
     fetchConnections();
-  }, [fetchConnections]);
+  }, []); // Remove fetchConnections dependency
 
   // Load connections on mount
   useEffect(() => {
     fetchConnections();
-  }, [fetchConnections]);
+  }, []); // Remove fetchConnections from dependencies to prevent infinite loop
 
   // Format currency for stats display
   const formatCurrency = (amount) => {
