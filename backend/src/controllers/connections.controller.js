@@ -403,9 +403,13 @@ exports.getCreatorConnectionStats = async (req, res, next) => {
     if (userRole === 'member') {
       const member = await Member.findOne({ user: req.user.id });
       query.member = member._id;
+      // Members only see connected relationships (same filter as connections list)
+      query.status = 'connected';
     } else {
       const creator = await Creator.findOne({ user: req.user.id });
       query.creator = creator._id;
+      // Creators see both pending and connected (same filter as connections list)
+      query.status = { $in: ['pending', 'connected'] };
     }
 
     const stats = await CreatorConnection.aggregate([
