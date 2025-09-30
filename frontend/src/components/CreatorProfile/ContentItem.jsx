@@ -43,7 +43,10 @@ const ContentItem = ({ content, onClick, isPurchased = false }) => {
           <img
             src={content.thumbnail || content.image}
             alt={content.title || content.alt || 'Content'}
-            className={content.isBlurred ? 'blurred' : ''}
+            className={
+              (content.isBlurred || content.isPaid === true || (content.isFree === false && content.price > 0)) && !isPurchased
+                ? 'blurred' : ''
+            }
             loading="lazy"
           />
         ) : (
@@ -61,7 +64,7 @@ const ContentItem = ({ content, onClick, isPurchased = false }) => {
         )}
 
         {/* Free Badge */}
-        {!content.isLocked && !content.price && (
+        {!content.isLocked && !content.price && content.isFree !== false && content.isPaid !== true && (
           <div className="ContentItem-free-badge">FREE</div>
         )}
 
@@ -72,8 +75,8 @@ const ContentItem = ({ content, onClick, isPurchased = false }) => {
           </div>
         )}
 
-        {/* Lock Overlay for Paid Content */}
-        {content.isLocked && !isPurchased && (
+        {/* Lock Overlay for Paid Content - Use same logic as SwipeCard */}
+        {(content.isLocked || content.isPaid === true || (content.isFree === false && content.price > 0)) && !isPurchased && (
           <div className="ContentItem-lock-overlay">
             <Lock size={20} />
             <span className="ContentItem-price">
