@@ -1,0 +1,283 @@
+/* ConnectionAvatar.css - Avatar component with badge styles */
+
+.ConnectionAvatar {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: visible;
+  transition: transform 0.2s ease;
+}
+
+.ConnectionAvatar.clickable {
+  cursor: pointer;
+}
+
+.ConnectionAvatar.clickable:hover {
+  transform: scale(1.05);
+}
+
+.ConnectionAvatar.clickable:active {
+  transform: scale(0.98);
+}
+
+.ConnectionAvatar.clickable:focus-visible {
+  outline: 2px solid #17d2c2;
+  outline-offset: 2px;
+}
+
+/* Size variants */
+.ConnectionAvatar--small {
+  width: 40px;
+  height: 40px;
+}
+
+.ConnectionAvatar--medium {
+  width: 56px;
+  height: 56px;
+}
+
+.ConnectionAvatar--large {
+  width: 80px;
+  height: 80px;
+}
+
+/* Image container */
+.ConnectionAvatar-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #2a2a2c;
+}
+
+/* Avatar image */
+.ConnectionAvatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: opacity 0.3s ease;
+}
+
+/* Loading skeleton */
+.ConnectionAvatar-skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(42, 42, 44, 0.4) 0%,
+    rgba(68, 68, 70, 0.6) 50%,
+    rgba(42, 42, 44, 0.4) 100%
+  );
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.ConnectionAvatar-skeleton-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+}
+
+/* Fallback when no image */
+.ConnectionAvatar-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2a2a2c 0%, #3a3a3c 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8e8e93;
+}
+
+/* Connection type badge */
+.ConnectionAvatar-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border: 2px solid #1c1c1e;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ConnectionAvatar-badge-text {
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Badge size adjustments */
+.ConnectionAvatar--small .ConnectionAvatar-badge {
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  font-size: 9px;
+  bottom: -1px;
+  right: -1px;
+  border-width: 1px;
+}
+
+.ConnectionAvatar--large .ConnectionAvatar-badge {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  font-size: 12px;
+  bottom: -3px;
+  right: -3px;
+  border-width: 3px;
+}
+
+/* Online status indicator */
+.ConnectionAvatar-status {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  background: #1c1c1e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0; /* Hidden by default, can be shown with modifier class */
+  transition: opacity 0.2s ease;
+}
+
+.ConnectionAvatar-status-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+/* Show status when online */
+.ConnectionAvatar.online .ConnectionAvatar-status {
+  opacity: 1;
+}
+
+/* Status size adjustments */
+.ConnectionAvatar--small .ConnectionAvatar-status {
+  width: 12px;
+  height: 12px;
+  top: -1px;
+  right: -1px;
+}
+
+.ConnectionAvatar--small .ConnectionAvatar-status-dot {
+  width: 6px;
+  height: 6px;
+}
+
+.ConnectionAvatar--large .ConnectionAvatar-status {
+  width: 18px;
+  height: 18px;
+  top: -3px;
+  right: -3px;
+}
+
+.ConnectionAvatar--large .ConnectionAvatar-status-dot {
+  width: 10px;
+  height: 10px;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .ConnectionAvatar--medium {
+    width: 48px;
+    height: 48px;
+  }
+
+  .ConnectionAvatar--large {
+    width: 64px;
+    height: 64px;
+  }
+
+  .ConnectionAvatar-badge {
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    font-size: 10px;
+  }
+
+  .ConnectionAvatar--large .ConnectionAvatar-badge {
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .ConnectionAvatar,
+  .ConnectionAvatar-image,
+  .ConnectionAvatar-status {
+    transition: none;
+  }
+
+  .ConnectionAvatar.clickable:hover,
+  .ConnectionAvatar.clickable:active {
+    transform: none;
+  }
+
+  .ConnectionAvatar-skeleton-shimmer {
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .ConnectionAvatar-badge {
+    border-width: 3px;
+  }
+
+  .ConnectionAvatar--small .ConnectionAvatar-badge {
+    border-width: 2px;
+  }
+
+  .ConnectionAvatar-fallback {
+    border: 2px solid #8e8e93;
+  }
+}
+
+/* Connection type specific colors (fallbacks) */
+.ConnectionAvatar-badge[style*="#8e8e93"] {
+  background: #8e8e93 !important; /* Subscriber */
+}
+
+.ConnectionAvatar-badge[style*="#3b82f6"] {
+  background: #3b82f6 !important; /* Member */
+}
+
+.ConnectionAvatar-badge[style*="#10b981"] {
+  background: #10b981 !important; /* Connection */
+}
+
+.ConnectionAvatar-badge[style*="#f59e0b"] {
+  background: #f59e0b !important; /* Fan */
+}
+
+.ConnectionAvatar-badge[style*="#8b5cf6"] {
+  background: #8b5cf6 !important; /* Premium */
+}

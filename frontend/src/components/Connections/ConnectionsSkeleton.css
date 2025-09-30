@@ -1,0 +1,348 @@
+/* ConnectionsSkeleton.css - Loading skeleton styles */
+
+.ConnectionsSkeleton {
+  width: 100%;
+}
+
+/* Filter skeleton */
+.ConnectionsSkeleton-filter {
+  background: #1c1c1e;
+  border: 1px solid #2a2a2c;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ConnectionsSkeleton-filter-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.ConnectionsSkeleton-search {
+  flex: 1;
+}
+
+.ConnectionsSkeleton-sort {
+  flex-shrink: 0;
+  width: 140px;
+}
+
+.ConnectionsSkeleton-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Grid layout */
+.ConnectionsSkeleton-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .ConnectionsSkeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ConnectionsSkeleton-grid {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+  }
+}
+
+/* Card skeleton */
+.ConnectionsSkeleton-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #1c1c1e;
+  border: 1px solid #2a2a2c;
+  border-radius: 16px;
+  min-height: 80px;
+}
+
+/* Avatar skeleton */
+.ConnectionsSkeleton-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ConnectionsSkeleton-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #2a2a2c;
+  position: relative;
+  overflow: hidden;
+}
+
+.ConnectionsSkeleton-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: #2a2a2c;
+  border: 2px solid #1c1c1e;
+  overflow: hidden;
+}
+
+/* Content skeleton */
+.ConnectionsSkeleton-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ConnectionsSkeleton-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ConnectionsSkeleton-names {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ConnectionsSkeleton-action {
+  flex-shrink: 0;
+}
+
+.ConnectionsSkeleton-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #2a2a2c;
+  position: relative;
+  overflow: hidden;
+}
+
+.ConnectionsSkeleton-message {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Skeleton bar component */
+.ConnectionsSkeleton-bar {
+  background: #2a2a2c;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  height: 12px;
+}
+
+.ConnectionsSkeleton-bar.short {
+  width: 60px;
+  height: 10px;
+}
+
+.ConnectionsSkeleton-bar.medium {
+  width: 120px;
+  height: 12px;
+}
+
+.ConnectionsSkeleton-bar.long {
+  width: 200px;
+  height: 12px;
+  max-width: 100%;
+}
+
+/* Shimmer animation */
+.ConnectionsSkeleton-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .ConnectionsSkeleton-filter {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .ConnectionsSkeleton-filter-row {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .ConnectionsSkeleton-sort {
+    width: 120px;
+    align-self: center;
+  }
+
+  .ConnectionsSkeleton-grid {
+    gap: 8px;
+  }
+
+  .ConnectionsSkeleton-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .ConnectionsSkeleton-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .ConnectionsSkeleton-badge {
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+  }
+
+  .ConnectionsSkeleton-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .ConnectionsSkeleton-bar.long {
+    width: 160px;
+  }
+
+  .ConnectionsSkeleton-bar.medium {
+    width: 100px;
+  }
+
+  .ConnectionsSkeleton-bar.short {
+    width: 50px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .ConnectionsSkeleton-bar.long {
+    width: 140px;
+  }
+
+  .ConnectionsSkeleton-bar.medium {
+    width: 80px;
+  }
+
+  .ConnectionsSkeleton-actions {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+}
+
+/* Accessibility - respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ConnectionsSkeleton-shimmer {
+    animation: none;
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .ConnectionsSkeleton-card,
+  .ConnectionsSkeleton-filter {
+    border-width: 2px;
+  }
+
+  .ConnectionsSkeleton-bar,
+  .ConnectionsSkeleton-circle,
+  .ConnectionsSkeleton-badge,
+  .ConnectionsSkeleton-button {
+    background: #3a3a3c;
+    border: 1px solid #4a4a4c;
+  }
+}
+
+/* Dark mode adjustments for skeleton */
+@media (prefers-color-scheme: dark) {
+  .ConnectionsSkeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 100%
+    );
+  }
+}
+
+/* Custom skeleton variants */
+.ConnectionsSkeleton-bar.name {
+  width: 120px;
+  height: 16px;
+}
+
+.ConnectionsSkeleton-bar.username {
+  width: 80px;
+  height: 12px;
+}
+
+.ConnectionsSkeleton-bar.message {
+  width: 180px;
+  height: 14px;
+}
+
+.ConnectionsSkeleton-bar.time {
+  width: 60px;
+  height: 10px;
+}
+
+/* Staggered animation for multiple skeletons */
+.ConnectionsSkeleton-card:nth-child(1) .ConnectionsSkeleton-shimmer {
+  animation-delay: 0s;
+}
+
+.ConnectionsSkeleton-card:nth-child(2) .ConnectionsSkeleton-shimmer {
+  animation-delay: 0.1s;
+}
+
+.ConnectionsSkeleton-card:nth-child(3) .ConnectionsSkeleton-shimmer {
+  animation-delay: 0.2s;
+}
+
+.ConnectionsSkeleton-card:nth-child(4) .ConnectionsSkeleton-shimmer {
+  animation-delay: 0.3s;
+}
+
+.ConnectionsSkeleton-card:nth-child(5) .ConnectionsSkeleton-shimmer {
+  animation-delay: 0.4s;
+}
+
+.ConnectionsSkeleton-card:nth-child(6) .ConnectionsSkeleton-shimmer {
+  animation-delay: 0.5s;
+}

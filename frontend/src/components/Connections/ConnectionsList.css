@@ -1,0 +1,222 @@
+/* ConnectionsList.css - Main connections list component styles */
+
+.ConnectionsList {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Header */
+.ConnectionsList-header {
+  margin-bottom: 20px;
+}
+
+/* Grid layout */
+.ConnectionsList-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Desktop layout */
+@media (min-width: 768px) {
+  .ConnectionsList-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ConnectionsList-grid {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+  }
+}
+
+/* Error state */
+.ConnectionsList-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  background: #1c1c1e;
+  border-radius: 16px;
+  border: 1px solid #2a2a2c;
+}
+
+.ConnectionsList-error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.ConnectionsList-error h3 {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.ConnectionsList-error p {
+  color: #c7c7cc;
+  font-size: 16px;
+  margin: 0 0 24px 0;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.ConnectionsList-retry-btn {
+  background: #17d2c2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.ConnectionsList-retry-btn:hover {
+  background: #12b7ab;
+  transform: translateY(-1px);
+}
+
+.ConnectionsList-retry-btn:active {
+  transform: translateY(0);
+}
+
+/* Empty state */
+.ConnectionsList-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  background: #1c1c1e;
+  border-radius: 16px;
+  border: 1px solid #2a2a2c;
+}
+
+.ConnectionsList-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.ConnectionsList-empty h3 {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.ConnectionsList-empty p {
+  color: #c7c7cc;
+  font-size: 16px;
+  margin: 0 0 24px 0;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.ConnectionsList-clear-filter {
+  background: transparent;
+  color: #17d2c2;
+  border: 1px solid #17d2c2;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.ConnectionsList-clear-filter:hover {
+  background: rgba(23, 210, 194, 0.1);
+}
+
+.ConnectionsList-clear-filter:active {
+  transform: scale(0.98);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .ConnectionsList {
+    padding: 0;
+  }
+
+  .ConnectionsList-header {
+    margin-bottom: 16px;
+  }
+
+  .ConnectionsList-grid {
+    gap: 8px;
+  }
+
+  .ConnectionsList-error,
+  .ConnectionsList-empty {
+    padding: 40px 16px;
+    border-radius: 12px;
+  }
+
+  .ConnectionsList-error-icon,
+  .ConnectionsList-empty-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+
+  .ConnectionsList-error h3,
+  .ConnectionsList-empty h3 {
+    font-size: 18px;
+  }
+
+  .ConnectionsList-error p,
+  .ConnectionsList-empty p {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .ConnectionsList-retry-btn,
+  .ConnectionsList-clear-filter {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .ConnectionsList-retry-btn,
+  .ConnectionsList-clear-filter {
+    transition: none;
+  }
+
+  .ConnectionsList-retry-btn:hover,
+  .ConnectionsList-clear-filter:hover {
+    transform: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .ConnectionsList-error,
+  .ConnectionsList-empty {
+    border-width: 2px;
+  }
+
+  .ConnectionsList-retry-btn,
+  .ConnectionsList-clear-filter {
+    border-width: 2px;
+  }
+}
+
+/* Focus styles for accessibility */
+.ConnectionsList-retry-btn:focus-visible,
+.ConnectionsList-clear-filter:focus-visible {
+  outline: 2px solid #17d2c2;
+  outline-offset: 2px;
+}
