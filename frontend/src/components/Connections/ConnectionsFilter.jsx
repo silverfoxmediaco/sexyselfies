@@ -1,6 +1,5 @@
 import React, { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import PropTypes from 'prop-types';
 import {
   Search,
   Filter,
@@ -210,16 +209,5 @@ const ConnectionsFilter = ({
   );
 };
 
-ConnectionsFilter.propTypes = {
-  filterText: PropTypes.string,
-  onFilterChange: PropTypes.func.isRequired,
-  sortBy: PropTypes.oneOf(['recent', 'oldest', 'name']),
-  onSortChange: PropTypes.func.isRequired,
-  selectedCount: PropTypes.number,
-  totalCount: PropTypes.number,
-  allSelected: PropTypes.bool,
-  onSelectAll: PropTypes.func.isRequired,
-  onBulkDelete: PropTypes.func
-};
 
 export default memo(ConnectionsFilter);

@@ -1,6 +1,5 @@
 import React, { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import PropTypes from 'prop-types';
 import { Trash2, MessageCircle, Clock } from 'lucide-react';
 import ConnectionAvatar from './ConnectionAvatar';
 import './ConnectionCard.css';
@@ -175,22 +174,5 @@ const ConnectionCard = ({
   );
 };
 
-ConnectionCard.propTypes = {
-  connection: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    avatar: PropTypes.string,
-    name: PropTypes.string.isRequired,
-    username: PropTypes.string,
-    connectionType: PropTypes.string,
-    connectionTypeColor: PropTypes.string,
-    lastMessage: PropTypes.string,
-    messageTime: PropTypes.string,
-    isConnected: PropTypes.bool
-  }).isRequired,
-  isSelected: PropTypes.bool,
-  onSelect: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  showCheckbox: PropTypes.bool
-};
 
 export default memo(ConnectionCard);

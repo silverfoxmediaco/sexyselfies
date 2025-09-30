@@ -99,11 +99,24 @@ export default defineConfig({
     chunkSizeWarningLimit: 1600,
     // Ensure _redirects file is copied to dist
     copyPublicDir: true,
+    // Optimize for Render's memory limits
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
+          motion: ['framer-motion'],
+          icons: ['lucide-react'],
         },
+        // Ensure consistent chunk names
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
       },
     },
   },

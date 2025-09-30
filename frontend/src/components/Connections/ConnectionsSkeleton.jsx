@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import PropTypes from 'prop-types';
 import './ConnectionsSkeleton.css';
 
 /**
@@ -108,20 +107,7 @@ const SkeletonCircle = ({ size = '56px', className = '' }) => (
 // Export additional skeleton components for reuse
 export { SkeletonBar, SkeletonCircle };
 
-ConnectionsSkeleton.propTypes = {
-  count: PropTypes.number,
-  showFilter: PropTypes.bool
-};
 
-SkeletonBar.propTypes = {
-  width: PropTypes.string,
-  height: PropTypes.string,
-  className: PropTypes.string
-};
 
-SkeletonCircle.propTypes = {
-  size: PropTypes.string,
-  className: PropTypes.string
-};
 
 export default React.memo(ConnectionsSkeleton);

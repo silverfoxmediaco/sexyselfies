@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import PropTypes from 'prop-types';
 import { User } from 'lucide-react';
 import './ConnectionAvatar.css';
 
@@ -136,14 +135,5 @@ const ConnectionAvatar = ({
   );
 };
 
-ConnectionAvatar.propTypes = {
-  avatar: PropTypes.string,
-  name: PropTypes.string,
-  connectionType: PropTypes.string,
-  connectionTypeColor: PropTypes.string,
-  size: PropTypes.oneOf(['small', 'medium', 'large']),
-  showBadge: PropTypes.bool,
-  onClick: PropTypes.func
-};
 
 export default React.memo(ConnectionAvatar);

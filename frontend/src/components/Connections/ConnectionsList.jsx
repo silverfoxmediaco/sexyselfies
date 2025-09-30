@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import PropTypes from 'prop-types';
 import ConnectionCard from './ConnectionCard';
 import ConnectionsFilter from './ConnectionsFilter';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
@@ -247,24 +246,5 @@ const ConnectionsList = ({
   );
 };
 
-ConnectionsList.propTypes = {
-  connections: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    avatar: PropTypes.string,
-    name: PropTypes.string.isRequired,
-    username: PropTypes.string,
-    connectionType: PropTypes.string,
-    connectionTypeColor: PropTypes.string,
-    lastMessage: PropTypes.string,
-    messageTime: PropTypes.string,
-    isConnected: PropTypes.bool
-  })),
-  onDeleteConnection: PropTypes.func.isRequired,
-  onBulkDelete: PropTypes.func.isRequired,
-  onRefresh: PropTypes.func,
-  loading: PropTypes.bool,
-  error: PropTypes.object,
-  className: PropTypes.string
-};
 
 export default React.memo(ConnectionsList);

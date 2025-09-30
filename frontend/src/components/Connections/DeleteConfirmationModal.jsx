@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import PropTypes from 'prop-types';
 import { AlertTriangle, X, Trash2, Users } from 'lucide-react';
 import './DeleteConfirmationModal.css';
 
@@ -181,15 +180,5 @@ const DeleteConfirmationModal = ({
   );
 };
 
-DeleteConfirmationModal.propTypes = {
-  isOpen: PropTypes.bool,
-  onConfirm: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
-  connection: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
-  }),
-  bulkCount: PropTypes.number
-};
 
 export default React.memo(DeleteConfirmationModal);
