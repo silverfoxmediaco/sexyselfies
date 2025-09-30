@@ -24,10 +24,8 @@ exports.getContentFeed = async (req, res, next) => {
     // Get Content model
     const Content = require('../models/Content');
 
-    // Get ALL approved content from ALL creators with creator info
-    const contentFeed = await Content.find({
-      status: 'approved', // Only approved content
-    })
+    // Get ALL content from ALL creators with creator info (no approval process)
+    const contentFeed = await Content.find({})
       .populate('creator', 'displayName username profileImage isVerified')
       .select('media thumbnail price isFree type title description createdAt')
       .sort({ createdAt: -1 }) // Start with newest, but we'll randomize
@@ -81,6 +79,70 @@ exports.getContentFeed = async (req, res, next) => {
     res.status(500).json({
       success: false,
       error: 'Failed to load content feed',
+      message: error.message
+    });
+  }
+};
+
+// @desc    Get content statistics (for debugging)
+// @route   GET /api/connections/content-stats
+// @access  Private
+exports.getContentStats = async (req, res, next) => {
+  try {
+    const Content = require('../models/Content');
+
+    // Get content counts by status
+    const stats = await Content.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Get total count
+    const totalContent = await Content.countDocuments({});
+    const approvedContent = await Content.countDocuments({ status: 'approved' });
+    const pendingContent = await Content.countDocuments({ status: 'pending' });
+    const rejectedContent = await Content.countDocuments({ status: 'rejected' });
+
+    // Get content by type
+    const contentByType = await Content.aggregate([
+      { $match: { status: 'approved' } },
+      {
+        $group: {
+          _id: '$type',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Get recent content (last 7 days)
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const recentContent = await Content.countDocuments({
+      status: 'approved',
+      createdAt: { $gte: sevenDaysAgo }
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        total: totalContent,
+        approved: approvedContent,
+        pending: pendingContent,
+        rejected: rejectedContent,
+        recentlyAdded: recentContent,
+        byStatus: stats,
+        byType: contentByType,
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error getting content stats:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get content statistics',
       message: error.message
     });
   }

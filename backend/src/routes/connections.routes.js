@@ -6,6 +6,7 @@ const { protect } = require('../middleware/auth.middleware');
 const {
   // Content Feed Discovery (NEW)
   getContentFeed,
+  getContentStats,
 
   // Swipe/Discovery (LEGACY)
   getSwipeStack,
@@ -46,6 +47,7 @@ router.use(protect); // All connection routes require authentication
 // CONTENT DISCOVERY ROUTES (NEW)
 // ============================================
 router.get('/content-feed', getContentFeed); // Get global content feed for endless swiping
+router.get('/content-stats', getContentStats); // Get content statistics for debugging
 
 // ============================================
 // SWIPING/DISCOVERY ROUTES (LEGACY)
