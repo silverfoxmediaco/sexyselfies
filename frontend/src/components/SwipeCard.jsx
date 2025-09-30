@@ -271,15 +271,15 @@ const SwipeCard = ({
         {/* Gradient Overlay - NOT in minimal view */}
         {!minimalView && <div className='swipecard-gradient-overlay' />}
 
-        {/* Minimal View Status - ONLY show these in minimal view */}
-        {minimalView && (
+        {/* Minimal View Status - ONLY show these in minimal view and creator mode */}
+        {minimalView && !isContentMode && (
           <div className='swipecard-minimal-status'>
-            {creator.isOnline && (
+            {cardData?.isOnline && (
               <div className='minimal-online-indicator'>
                 <span className='minimal-online-dot'></span>
               </div>
             )}
-            {creator.verified && (
+            {cardData?.verified && (
               <div className='minimal-verified-indicator'>
                 <Shield size={16} className='minimal-verified-icon' />
               </div>
@@ -287,12 +287,12 @@ const SwipeCard = ({
           </div>
         )}
 
-        {/* Full View Content - NOT in minimal view */}
-        {!minimalView && (
+        {/* Full View Content - NOT in minimal view and only for creator mode */}
+        {!minimalView && !isContentMode && (
           <>
             {/* Top Bar */}
             <div className='swipecard-top-bar'>
-              {creator.isOnline && (
+              {cardData?.isOnline && (
                 <div className='swipecard-online-status'>
                   <span className='online-dot-indicator' />
                   <span>Online</span>
@@ -302,7 +302,7 @@ const SwipeCard = ({
 
             {/* Badges */}
             <div className='swipecard-badges'>
-              {creator.verified && (
+              {cardData?.verified && (
                 <span className='swipecard-badge verified-badge'>
                   <Shield size={12} />
                   <span>Verified</span>
@@ -311,9 +311,9 @@ const SwipeCard = ({
             </div>
 
             {/* Last Active (if not online) */}
-            {!creator.isOnline && creator.lastActive && (
+            {!cardData?.isOnline && cardData?.lastActive && (
               <div className='swipecard-last-active'>
-                Active {getTimeAgo(creator.lastActive)}
+                Active {getTimeAgo(cardData.lastActive)}
               </div>
             )}
           </>
