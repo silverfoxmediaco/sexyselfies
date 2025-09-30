@@ -147,12 +147,8 @@ const BrowseCreators = () => {
           isTopCreator: creator.isTopCreator || false,
           monthlyEarnings: creator.monthlyEarnings || 0,
           messagePreview: creator.messagePreview || null,
-          // Ensure photos array has proper metadata to prevent blur
-          photos: (creator.photos || []).map(photo =>
-            typeof photo === 'string'
-              ? { url: photo, isFree: true, isPaid: false, price: 0 }
-              : { ...photo, isFree: true, isPaid: false }
-          ),
+          // Preserve backend content data with proper pricing
+          photos: creator.photos || [],
         }));
 
         setCreators(transformedCreators);

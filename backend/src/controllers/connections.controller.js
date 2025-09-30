@@ -70,14 +70,12 @@ exports.getSwipeStack = async (req, res, next) => {
     // Get content for each creator (mix of free and paid for browse display)
     const creatorsWithContent = await Promise.all(
       creators.map(async creator => {
-        // Get recent content for this creator (limit to 5 for swipe display)
+        // Get ALL content for this creator (no limit for full inventory)
         const creatorContent = await Content.find({
           creator: creator._id,
           status: 'approved', // Only show approved content
         })
           .select('thumbnail media price isFree type title')
-          .sort({ createdAt: -1 })
-          .limit(5)
           .lean();
 
         // Transform content for frontend - free content shows actual images, paid shows thumbnails for blur effect
@@ -92,7 +90,10 @@ exports.getSwipeStack = async (req, res, next) => {
           title: content.title || '',
         }));
 
-        return { ...creator, photos };
+        // Randomize content order for variety
+        const shuffledPhotos = photos.sort(() => Math.random() - 0.5);
+
+        return { ...creator, photos: shuffledPhotos };
       })
     );
 

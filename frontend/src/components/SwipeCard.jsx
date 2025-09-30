@@ -51,7 +51,11 @@ const SwipeCard = ({
       ? { url: photo, isFree: true, isPaid: false, price: 0 }
       : photo
   );
-  const allPhotos = [profilePhoto, ...contentPhotos];
+
+  // Mix profile photo with content photos for variety (randomize order)
+  const allPhotosArray = [profilePhoto, ...contentPhotos];
+  // Shuffle the array for random content display
+  const allPhotos = allPhotosArray.sort(() => Math.random() - 0.5);
 
   // Handle drag end
   const handleDragEnd = (event, info) => {
@@ -189,16 +193,16 @@ const SwipeCard = ({
         <img
           src={allPhotos[currentPhotoIndex]?.url || creator.profileImage}
           alt={creator.displayName || ''}
-          className={`swipecard-photo ${allPhotos[currentPhotoIndex]?.isPaid === true ? 'swipecard-photo-blurred' : ''}`}
+          className={`swipecard-photo ${allPhotos[currentPhotoIndex]?.isPaid === true || (allPhotos[currentPhotoIndex]?.isFree === false && allPhotos[currentPhotoIndex]?.price > 0) ? 'swipecard-photo-blurred' : ''}`}
           draggable='false'
         />
 
         {/* Paid Content Overlay */}
-        {!minimalView && allPhotos[currentPhotoIndex]?.isPaid && (
+        {!minimalView && (allPhotos[currentPhotoIndex]?.isPaid === true || (allPhotos[currentPhotoIndex]?.isFree === false && allPhotos[currentPhotoIndex]?.price > 0)) && (
           <div className='swipecard-paid-overlay'>
             <div className='swipecard-unlock-icon'>🔒</div>
             <div className='swipecard-price'>
-              ${allPhotos[currentPhotoIndex]?.price?.toFixed(2)}
+              ${(allPhotos[currentPhotoIndex]?.price || 0).toFixed(2)}
             </div>
             <div className='swipecard-unlock-text'>Tap to unlock</div>
           </div>
