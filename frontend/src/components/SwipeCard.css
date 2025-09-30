@@ -44,8 +44,8 @@
   position: absolute;
   width: 90vw;
   max-width: 450px;
-  height: 75vh;
-  max-height: 800px;
+  height: 85vh;
+  max-height: 900px;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
