@@ -38,29 +38,32 @@ const MyConnections = () => {
     try {
       console.log('🔄 Fetching connections with params:', params);
 
-      // Get both connections and stats
-      const [connectionsResponse, statsResponse] = await Promise.allSettled([
-        connectionsService.getConnections(params),
-        connectionsService.getConnectionStats().catch(() => ({ stats: stats })) // Fallback on stats error
-      ]);
+      // Get connections only (removed stats call to prevent infinite loop)
+      const connectionsResponse = await connectionsService.getConnections(params);
 
       // Handle connections response
-      if (connectionsResponse.status === 'fulfilled' && connectionsResponse.value.success) {
+      if (connectionsResponse.success) {
         // Transform connections to match component expectations
-        const transformedConnections = connectionsResponse.value.connections.map(conn =>
+        const transformedConnections = connectionsResponse.connections.map(conn =>
           connectionsService.transformConnection(conn)
         );
 
         setConnections(transformedConnections);
+
+        // Update stats based on connections data instead of separate API call
+        const connectionStats = {
+          total: transformedConnections.length,
+          active: transformedConnections.filter(c => c.status === 'active').length,
+          pending: transformedConnections.filter(c => c.status === 'pending').length,
+          expired: transformedConnections.filter(c => c.status === 'expired').length,
+        };
+        setStats(connectionStats);
+
         console.log('✅ Connections loaded:', transformedConnections.length);
       } else {
         console.log('⚠️ Connections response failed, using empty array');
         setConnections([]);
-      }
-
-      // Handle stats response
-      if (statsResponse.status === 'fulfilled') {
-        setStats(statsResponse.value.stats || statsResponse.value.data || stats);
+        setStats({ total: 0, active: 0, pending: 0, expired: 0 });
       }
 
     } catch (err) {
@@ -69,10 +72,11 @@ const MyConnections = () => {
         message: err.message || 'Unable to load your connections. Please try again.'
       });
       setConnections([]);
+      setStats({ total: 0, active: 0, pending: 0, expired: 0 });
     } finally {
       setLoading(false);
     }
-  }, [stats]);
+  }, []);
 
   // Delete individual connection
   const handleDeleteConnection = useCallback(async (connectionId) => {
