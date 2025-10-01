@@ -537,7 +537,7 @@
 /* Creator Attribution Overlay (Content Mode) */
 .swipecard-creator-attribution {
   position: absolute;
-  bottom: var(--swipecard-spacing-md);
+  bottom: 100px; /* Moved higher to avoid bottom navigation */
   left: var(--swipecard-spacing-md);
   right: var(--swipecard-spacing-md);
   display: flex;
@@ -583,7 +583,7 @@
 /* Mobile optimizations for attribution */
 @media (max-width: 768px) {
   .swipecard-creator-attribution {
-    bottom: var(--swipecard-spacing-sm);
+    bottom: 90px; /* Moved higher to avoid bottom navigation on mobile */
     left: var(--swipecard-spacing-sm);
     right: var(--swipecard-spacing-sm);
     padding: var(--swipecard-spacing-xs) var(--swipecard-spacing-sm);
