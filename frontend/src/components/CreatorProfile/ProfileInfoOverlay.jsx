@@ -6,7 +6,9 @@ const ProfileInfoOverlay = ({
   creator,
   isFollowing = false,
   hasMatched = false,
+  isFavorited = false,
   connectLoading = false,
+  likeLoading = false,
   onFollow,
   onLike,
   onMessage
@@ -118,13 +120,19 @@ const ProfileInfoOverlay = ({
         </button>
 
         <button
-          className={`ProfileInfoOverlay-like-btn ${hasMatched ? 'matched' : ''}`}
+          className={`ProfileInfoOverlay-like-btn ${isFavorited ? 'favorited' : ''} ${likeLoading ? 'loading' : ''}`}
           onClick={onLike}
+          disabled={likeLoading}
+          title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
         >
-          <Heart
-            size={16}
-            fill={hasMatched ? 'currentColor' : 'none'}
-          />
+          {likeLoading ? (
+            <Loader2 size={16} className="ProfileInfoOverlay-spinner" />
+          ) : (
+            <Heart
+              size={16}
+              fill={isFavorited ? 'currentColor' : 'none'}
+            />
+          )}
         </button>
 
         <button

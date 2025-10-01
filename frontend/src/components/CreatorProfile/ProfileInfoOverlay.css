@@ -206,6 +206,19 @@
   color: #ef4444;
 }
 
+.ProfileInfoOverlay-like-btn.favorited {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #ef4444;
+  transform: scale(1.1);
+}
+
+.ProfileInfoOverlay-like-btn.loading {
+  opacity: 0.8;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .ProfileInfoOverlay-message-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;

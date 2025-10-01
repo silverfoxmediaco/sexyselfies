@@ -88,6 +88,8 @@ const CreatorProfile = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [hasMatched, setHasMatched] = useState(false);
   const [connectLoading, setConnectLoading] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
 
   // Content states
   const [content, setContent] = useState([]);
@@ -135,6 +137,29 @@ const CreatorProfile = () => {
     }
   };
 
+  // Check if creator is in user's favorites
+  const checkFavoriteStatus = async (creatorId) => {
+    try {
+      console.log('💖 Checking favorite status for creator:', creatorId);
+      const favoritesResponse = await memberService.getFavorites();
+
+      if (favoritesResponse.success && favoritesResponse.favorites) {
+        const isFav = favoritesResponse.favorites.some(fav =>
+          (fav.creator?.id === creatorId || fav.creator?._id === creatorId) ||
+          (fav.id === creatorId || fav._id === creatorId)
+        );
+
+        if (isFav) {
+          console.log('💖 Creator is in favorites');
+          setIsFavorited(true);
+        }
+      }
+    } catch (err) {
+      console.log('⚠️ Could not check favorite status:', err.message);
+      // Don't show error to user - just continue with default state
+    }
+  };
+
   // Fetch creator profile
   useEffect(() => {
     const fetchCreatorProfile = async () => {
@@ -169,6 +194,9 @@ const CreatorProfile = () => {
 
           // Check connection status
           await checkConnectionStatus(creatorData.id || creatorData._id);
+
+          // Check favorite status
+          await checkFavoriteStatus(creatorData.id || creatorData._id);
         } else {
           throw new Error('Creator not found');
         }
@@ -279,13 +307,52 @@ const CreatorProfile = () => {
     }
   };
 
-  // Handle like/match
+  // Handle like/favorite toggle
   const handleLike = async () => {
+    if (likeLoading) return; // Prevent double-clicks
+
+    setLikeLoading(true);
+
     try {
-      setHasMatched(true);
-      // API call to like/match
+      const creatorId = creator.id || creator._id;
+      console.log('💖 Toggling favorite for creator:', creatorId);
+
+      if (isFavorited) {
+        // Remove from favorites
+        const response = await memberService.removeFromFavorites(creatorId);
+
+        if (response.success) {
+          setIsFavorited(false);
+          console.log('💔 Removed from favorites');
+          alert('Removed from favorites');
+        } else {
+          console.error('❌ Failed to remove from favorites:', response.message);
+          alert('Failed to remove from favorites. Please try again.');
+        }
+      } else {
+        // Add to favorites
+        const response = await memberService.addToFavorites(creatorId);
+
+        if (response.success) {
+          setIsFavorited(true);
+          console.log('💖 Added to favorites');
+          alert('Added to favorites! ❤️');
+        } else {
+          console.error('❌ Failed to add to favorites:', response.message);
+          alert('Failed to add to favorites. Please try again.');
+        }
+      }
     } catch (err) {
-      console.error('Failed to like:', err);
+      console.error('❌ Failed to toggle favorite:', err);
+
+      // Show user-friendly error message
+      if (err.response?.status === 401) {
+        alert('Please log in to add favorites.');
+      } else {
+        alert('Failed to update favorites. Please check your internet and try again.');
+      }
+    } finally {
+      setLikeLoading(false);
     }
   };
 
@@ -376,7 +443,9 @@ const CreatorProfile = () => {
             isMobile={isMobile}
             isFollowing={isFollowing}
             hasMatched={hasMatched}
+            isFavorited={isFavorited}
             connectLoading={connectLoading}
+            likeLoading={likeLoading}
             onBack={() => navigate(-1)}
             onFollow={handleFollow}
             onLike={handleLike}
