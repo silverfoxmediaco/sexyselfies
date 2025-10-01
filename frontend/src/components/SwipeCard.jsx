@@ -239,8 +239,8 @@ const SwipeCard = ({
           </div>
         )}
 
-        {/* Creator Attribution (Content Mode Only) */}
-        {isContentMode && !minimalView && content.creator && (
+        {/* Creator Attribution (Content Mode Only) - REMOVED for cleaner UI */}
+        {/* {isContentMode && !minimalView && content.creator && (
           <div className='swipecard-creator-attribution'>
             <img
               src={content.creator.profileImage}
@@ -254,7 +254,7 @@ const SwipeCard = ({
               )}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Photo Indicators - NOT in minimal view */}
         {!minimalView && allPhotos.length > 1 && (
