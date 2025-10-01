@@ -1,4 +1,7 @@
 // backend/src/middleware/rateLimit.middleware.js
+// ENTERPRISE SCALE RATE LIMITING - Designed for millions of daily users
+// Configured for content platform usage patterns similar to OnlyFans scale
+// TODO: Migrate to Redis-based rate limiting for true horizontal scaling
 
 const rateLimit = require('express-rate-limit');
 
@@ -29,10 +32,10 @@ const createRateLimiter = (options = {}) => {
 // PRE-CONFIGURED RATE LIMITERS
 // ==========================================
 
-// General API rate limiter
+// General API rate limiter - ENTERPRISE SCALE for millions of users
 exports.apiLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // Increased from 100 to 500 for better UX
+  max: 10000, // 10k requests per 15min - supports heavy content browsing
   message: 'Too many API requests, please try again later.',
 });
 
@@ -72,31 +75,31 @@ exports.contentCreationLimiter = createRateLimiter({
   message: 'Too many posts created, please slow down.',
 });
 
-// Rate limiter for messages
+// Rate limiter for messages - ENTERPRISE SCALE
 exports.messageLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
-  max: 30, // 30 messages per minute
+  max: 200, // 200 messages per minute - supports active conversations
   message: 'Too many messages sent, please slow down.',
 });
 
-// Rate limiter for payments
+// Rate limiter for payments - Keep conservative for security
 exports.paymentLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
-  max: 10,
+  max: 50, // Increased but still secure for rapid purchases
   message: 'Too many payment attempts, please try again later.',
 });
 
-// Rate limiter for searches
+// Rate limiter for searches - ENTERPRISE SCALE
 exports.searchLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
-  max: 30,
+  max: 300, // 300 searches per minute - supports active discovery
   message: 'Too many searches, please slow down.',
 });
 
-// Rate limiter for swipes (discovery)
+// Rate limiter for swipes (discovery) - ENTERPRISE SCALE
 exports.swipeLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 1000, // 1000 swipes per hour
+  max: 10000, // 10k swipes per hour - supports endless content discovery
   message: 'Too many swipes, please take a break.',
 });
 
@@ -131,36 +134,36 @@ exports.rateLimiter = (options = {}) => {
 // ==========================================
 
 /**
- * Rate limiter based on user verification level (not subscription tier)
- * SexySelfies doesn't use subscriptions - only micro-transactions
+ * Rate limiter based on user verification level - ENTERPRISE SCALE
+ * Designed for millions of daily users with heavy content consumption
  */
 exports.tieredRateLimiter = (req, res, next) => {
-  let maxRequests = 100; // Default for unverified users
+  let maxRequests = 5000; // Default for unverified users - supports heavy browsing
 
   if (req.user) {
-    // Check creator verification level
+    // Check creator verification level - creators need higher limits for content management
     if (req.user.role === 'creator') {
       switch (req.user.verificationLevel) {
         case 'vip':
-          maxRequests = 1000;
+          maxRequests = 50000; // VIP creators - unlimited content management
           break;
         case 'premium':
-          maxRequests = 500;
+          maxRequests = 25000; // Premium creators
           break;
         case 'verified':
-          maxRequests = 200;
+          maxRequests = 15000; // Verified creators
           break;
         default:
-          maxRequests = 100;
+          maxRequests = 8000; // New creators
       }
     }
-    // Members get standard limits
+    // Members get high limits for content consumption (browsing, purchasing)
     else if (req.user.role === 'member') {
-      maxRequests = 150;
+      maxRequests = 12000; // Support endless scrolling and content discovery
     }
-    // Admins get higher limits
+    // Admins get unlimited for platform management
     else if (req.user.role === 'admin') {
-      maxRequests = 2000;
+      maxRequests = 100000; // Platform administration
     }
   }
 
@@ -178,12 +181,13 @@ exports.tieredRateLimiter = (req, res, next) => {
 // ==========================================
 
 /**
- * Strict IP-based rate limiting (ignores user authentication)
+ * IP-based rate limiting - ENTERPRISE SCALE
  * Uses express-rate-limit's default IP handling for IPv4/IPv6 support
+ * Designed for shared networks (universities, offices, public wifi)
  */
 exports.ipRateLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 50,
+  max: 20000, // 20k requests per IP per 15min - supports multiple users per IP
   message: 'Too many requests from this IP address.',
   // No custom keyGenerator - use default IP handling
 });
