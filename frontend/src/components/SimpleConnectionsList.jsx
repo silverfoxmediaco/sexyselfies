@@ -4,10 +4,9 @@ import { Trash2, MessageCircle, Clock, User } from 'lucide-react';
 import api from '../services/api.config';
 import './SimpleConnectionsList.css';
 
-const SimpleConnectionsList = ({ filterType = 'total' }) => {
+const SimpleConnectionsList = () => {
   const navigate = useNavigate();
   const [connections, setConnections] = useState([]);
-  const [filteredConnections, setFilteredConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -102,30 +101,12 @@ const SimpleConnectionsList = ({ filterType = 'total' }) => {
   };
 
 
-  // Filter connections based on filterType
-  const filterConnections = () => {
-    if (filterType === 'total') {
-      setFilteredConnections(connections);
-    } else if (filterType === 'active') {
-      setFilteredConnections(connections.filter(conn => conn.status === 'connected'));
-    } else if (filterType === 'pending') {
-      setFilteredConnections(connections.filter(conn => conn.status === 'pending'));
-    } else if (filterType === 'expired') {
-      setFilteredConnections(connections.filter(conn => conn.status === 'expired'));
-    } else {
-      setFilteredConnections(connections);
-    }
-  };
 
   // Load connections on mount - only once
   useEffect(() => {
     fetchConnections();
   }, []); // Empty dependency array - runs only once on mount
 
-  // Filter connections when filterType or connections change
-  useEffect(() => {
-    filterConnections();
-  }, [filterType, connections]);
 
   if (loading) {
     return (
@@ -152,7 +133,7 @@ const SimpleConnectionsList = ({ filterType = 'total' }) => {
     );
   }
 
-  if (filteredConnections.length === 0 && !loading) {
+  if (connections.length === 0 && !loading) {
     const getEmptyMessage = () => {
       if (connections.length === 0) {
         return {
@@ -185,7 +166,10 @@ const SimpleConnectionsList = ({ filterType = 'total' }) => {
       }
     };
 
-    const emptyMessage = getEmptyMessage();
+    const emptyMessage = {
+      title: 'No connections yet',
+      subtitle: 'Start connecting with creators!'
+    };
 
     return (
       <div className="simple-connections-list">
@@ -203,7 +187,7 @@ const SimpleConnectionsList = ({ filterType = 'total' }) => {
   return (
     <div className="simple-connections-list">
       <div className="simple-connections-connections-list">
-        {filteredConnections.map((connection) => (
+        {connections.map((connection) => (
           <div
             key={connection.id}
             className="simple-connections-card"
