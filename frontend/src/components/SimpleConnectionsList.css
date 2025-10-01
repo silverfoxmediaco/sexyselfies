@@ -1,280 +1,294 @@
-/* SimpleConnectionsList.css */
-.simple-connections-list {
-  --simple-connections-primary: #17d2c2;
-  --simple-connections-primary-hover: #12b7ab;
-  --simple-connections-bg: #0a0b0f;
-  --simple-connections-surface: #1c1c1e;
-  --simple-connections-surface-hover: #242938;
-  --simple-connections-border: #2a2a2c;
-  --simple-connections-text: #ffffff;
-  --simple-connections-text-secondary: #c7c7cc;
-  --simple-connections-text-muted: #8e8e93;
-  --simple-connections-error: #ef4444;
-  --simple-connections-success: #10b981;
+/* SimpleConnectionsList.css - Mobile-First Design */
 
+.SimpleConnectionsList-container {
+  width: 100%;
   padding: 16px;
-  max-width: 100%;
+  background: var(--bg-800, #121212);
+  min-height: 400px;
 }
 
 /* Loading State */
-.simple-connections-loading {
+.SimpleConnectionsList-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
   text-align: center;
-  padding: 40px;
-  color: var(--simple-connections-text-muted);
+  color: var(--text-secondary, #c7c7cc);
+}
+
+.SimpleConnectionsList-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-600, #2a2a2c);
+  border-top: 3px solid var(--primary, #17d2c2);
+  border-radius: 50%;
+  animation: SimpleConnectionsList-spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes SimpleConnectionsList-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Error State */
-.simple-connections-error {
-  text-align: center;
-  padding: 40px;
-  color: var(--simple-connections-error);
-}
-
-.simple-connections-retry-btn {
-  margin-top: 16px;
-  padding: 8px 16px;
-  background: var(--simple-connections-primary);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.simple-connections-retry-btn:hover {
-  background: var(--simple-connections-primary-hover);
-}
-
-/* Empty State */
-.simple-connections-empty {
-  text-align: center;
-  padding: 40px;
-  color: var(--simple-connections-text-muted);
-}
-
-.simple-connections-empty-icon {
-  margin-bottom: 16px;
-  color: var(--simple-connections-text-muted);
-}
-
-.simple-connections-empty small {
-  display: block;
-  margin-top: 8px;
-}
-
-/* Connections List */
-.simple-connections-connections-list {
+.SimpleConnectionsList-error {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--error, #ef4444);
 }
 
-/* Connection Card */
-.simple-connections-card {
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  background-color: var(--simple-connections-surface);
-  border-radius: 12px;
-  border: 1px solid var(--simple-connections-border);
-  gap: 12px;
+.SimpleConnectionsList-retry {
+  margin-top: 16px;
+  padding: 8px 16px;
+  background: var(--primary, #17d2c2);
+  color: var(--bg-900, #0a0a0a);
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.simple-connections-card:hover {
-  background-color: var(--simple-connections-surface-hover);
+.SimpleConnectionsList-retry:hover {
+  background: var(--primary-600, #12b7ab);
+}
+
+.SimpleConnectionsList-retry:active {
+  transform: scale(0.95);
+}
+
+/* Empty State */
+.SimpleConnectionsList-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-secondary, #c7c7cc);
+}
+
+.SimpleConnectionsList-empty-icon {
+  color: var(--muted, #8e8e93);
+  margin-bottom: 16px;
+}
+
+.SimpleConnectionsList-empty h3 {
+  margin: 0 0 8px 0;
+  color: var(--text-primary, #ffffff);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.SimpleConnectionsList-empty p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Connections List */
+.SimpleConnectionsList-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border-600, #2a2a2c);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Connection Item */
+.SimpleConnectionsList-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: var(--surface-700, #1c1c1e);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 80px;
+}
+
+.SimpleConnectionsList-item:hover {
+  background: var(--bg-800, #121212);
+}
+
+.SimpleConnectionsList-item:active {
+  transform: scale(0.98);
+  background: var(--bg-900, #0a0a0a);
 }
 
 /* Avatar Section */
-.simple-connections-avatar {
+.SimpleConnectionsList-avatar {
   position: relative;
+  margin-right: 12px;
   flex-shrink: 0;
 }
 
-.simple-connections-avatar-image {
+.SimpleConnectionsList-avatar-img {
   width: 48px;
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid var(--border-600, #2a2a2c);
 }
 
-.simple-connections-avatar-fallback {
+.SimpleConnectionsList-avatar-placeholder {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: var(--simple-connections-border);
+  background: var(--bg-900, #0a0a0a);
+  border: 2px solid var(--border-600, #2a2a2c);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--simple-connections-text-muted);
+  color: var(--muted, #8e8e93);
 }
 
-.simple-connections-avatar-fallback.hidden {
-  display: none;
-}
-
-/* Connected Indicator */
-.simple-connections-connected-indicator {
+/* Status Indicator */
+.SimpleConnectionsList-status-indicator {
   position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 20px;
-  height: 20px;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background: var(--success, #22c55e);
+  border: 2px solid var(--surface-700, #1c1c1e);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: bold;
-  color: white;
-  background-color: var(--simple-connections-success);
-  border: 2px solid var(--simple-connections-surface);
 }
 
-/* Connection Info */
-.simple-connections-info {
+/* Content Section */
+.SimpleConnectionsList-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   min-width: 0;
 }
 
-.simple-connections-header {
+/* Header Row */
+.SimpleConnectionsList-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 8px;
+  align-items: center;
+  gap: 12px;
 }
 
-.simple-connections-names {
-  min-width: 0;
-  flex: 1;
-}
-
-.simple-connections-name {
+.SimpleConnectionsList-name {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: var(--simple-connections-text);
+  color: var(--text-primary, #ffffff);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  flex: 1;
 }
 
-.simple-connections-username {
-  font-size: 14px;
-  color: var(--simple-connections-text-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Delete Button */
-.simple-connections-delete-btn {
-  background: none;
-  border: none;
-  padding: 8px;
-  border-radius: 8px;
-  color: var(--simple-connections-text-muted);
-  cursor: pointer;
-  flex-shrink: 0;
-  min-width: 44px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s ease;
-}
-
-.simple-connections-delete-btn:hover {
-  color: var(--simple-connections-error);
-}
-
-/* Message Section */
-.simple-connections-message {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: var(--simple-connections-text-secondary);
-}
-
-.simple-connections-message-icon {
-  color: var(--simple-connections-text-muted);
-  flex-shrink: 0;
-}
-
-.simple-connections-message-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.simple-connections-message-time {
+.SimpleConnectionsList-time {
   font-size: 12px;
-  color: var(--simple-connections-text-muted);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: auto;
+  color: var(--muted, #8e8e93);
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-  .simple-connections-list {
+/* Footer Row */
+.SimpleConnectionsList-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.SimpleConnectionsList-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary, #c7c7cc);
+  font-size: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.SimpleConnectionsList-message span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.SimpleConnectionsList-username {
+  font-size: 12px;
+  color: var(--muted, #8e8e93);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 320px) {
+  .SimpleConnectionsList-container {
     padding: 12px;
   }
 
-  .simple-connections-card {
+  .SimpleConnectionsList-item {
     padding: 12px;
-    gap: 10px;
+    min-height: 70px;
   }
 
-  .simple-connections-avatar-image,
-  .simple-connections-avatar-fallback {
+  .SimpleConnectionsList-avatar-img,
+  .SimpleConnectionsList-avatar-placeholder {
     width: 40px;
     height: 40px;
   }
 
-  .simple-connections-badge {
-    width: 16px;
-    height: 16px;
-    font-size: 8px;
-  }
-
-  .simple-connections-name {
+  .SimpleConnectionsList-name {
     font-size: 15px;
   }
 
-  .simple-connections-username {
+  .SimpleConnectionsList-message {
     font-size: 13px;
-  }
-
-  .simple-connections-message {
-    font-size: 13px;
-  }
-
-  .simple-connections-message-time {
-    font-size: 11px;
   }
 }
 
-@media (max-width: 480px) {
-  .simple-connections-header {
-    flex-direction: column;
-    gap: 8px;
-    align-items: stretch;
+@media (min-width: 480px) {
+  .SimpleConnectionsList-container {
+    max-width: 480px;
+    margin: 0 auto;
   }
 
-  .simple-connections-delete-btn {
-    align-self: flex-end;
+  .SimpleConnectionsList-item {
+    padding: 20px;
+  }
+
+  .SimpleConnectionsList-avatar-img,
+  .SimpleConnectionsList-avatar-placeholder {
+    width: 56px;
+    height: 56px;
+  }
+
+  .SimpleConnectionsList-name {
+    font-size: 17px;
   }
 }
 
-/* Desktop header spacing */
-@media (min-width: 1024px) {
-  .simple-connections-list {
-    padding-top: 20px;
+/* Desktop styles */
+@media (min-width: 768px) {
+  .SimpleConnectionsList-container {
+    max-width: 600px;
+  }
+
+  .SimpleConnectionsList-item {
+    padding: 24px;
+  }
+
+  .SimpleConnectionsList-header {
+    gap: 16px;
+  }
+
+  .SimpleConnectionsList-footer {
+    gap: 16px;
   }
 }
