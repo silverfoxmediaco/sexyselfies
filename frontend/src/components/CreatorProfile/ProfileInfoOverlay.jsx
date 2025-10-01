@@ -1,11 +1,12 @@
 import React from 'react';
-import { Camera, Shield, Bell, CheckCircle, Heart, MessageCircle, MapPin, Clock, Calendar } from 'lucide-react';
+import { Camera, Shield, Bell, CheckCircle, Heart, MessageCircle, MapPin, Clock, Calendar, Loader2 } from 'lucide-react';
 import './ProfileInfoOverlay.css';
 
 const ProfileInfoOverlay = ({
   creator,
   isFollowing = false,
   hasMatched = false,
+  connectLoading = false,
   onFollow,
   onLike,
   onMessage
@@ -94,10 +95,16 @@ const ProfileInfoOverlay = ({
       {/* Action Buttons */}
       <div className="ProfileInfoOverlay-actions">
         <button
-          className={`ProfileInfoOverlay-follow-btn ${isFollowing ? 'following' : ''}`}
+          className={`ProfileInfoOverlay-follow-btn ${isFollowing ? 'following' : ''} ${connectLoading ? 'loading' : ''}`}
           onClick={onFollow}
+          disabled={connectLoading}
         >
-          {isFollowing ? (
+          {connectLoading ? (
+            <>
+              <Loader2 size={16} className="ProfileInfoOverlay-spinner" />
+              <span>Connecting...</span>
+            </>
+          ) : isFollowing ? (
             <>
               <CheckCircle size={16} />
               <span>Connected</span>

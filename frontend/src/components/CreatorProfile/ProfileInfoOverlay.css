@@ -166,6 +166,25 @@
   border: 1px solid #2a2a2c;
 }
 
+.ProfileInfoOverlay-follow-btn.loading {
+  opacity: 0.8;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ProfileInfoOverlay-spinner {
+  animation: ProfileInfoOverlay-spin 1s linear infinite;
+}
+
+@keyframes ProfileInfoOverlay-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .ProfileInfoOverlay-like-btn,
 .ProfileInfoOverlay-message-btn {
   width: 40px;

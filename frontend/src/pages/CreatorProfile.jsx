@@ -87,6 +87,7 @@ const CreatorProfile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [hasMatched, setHasMatched] = useState(false);
+  const [connectLoading, setConnectLoading] = useState(false);
 
   // Content states
   const [content, setContent] = useState([]);
@@ -105,6 +106,34 @@ const CreatorProfile = () => {
   // User data
   const [userCredits, setUserCredits] = useState(100);
   const [viewHistory, setViewHistory] = useState([]);
+
+  // Check if user is already connected to this creator
+  const checkConnectionStatus = async (creatorId) => {
+    try {
+      console.log('🔍 Checking connection status for creator:', creatorId);
+      // Check if already connected by looking at connections
+      const connectionsResponse = await memberService.getConnections();
+
+      if (connectionsResponse.success && connectionsResponse.connections) {
+        const existingConnection = connectionsResponse.connections.find(conn =>
+          (conn.otherUser?.id === creatorId || conn.otherUser?._id === creatorId) ||
+          (conn.creator?.id === creatorId || conn.creator?._id === creatorId) ||
+          (conn.member?.id === creatorId || conn.member?._id === creatorId)
+        );
+
+        if (existingConnection) {
+          console.log('✅ Existing connection found:', existingConnection.status);
+          setIsFollowing(true);
+          if (existingConnection.status === 'connected') {
+            setHasMatched(true);
+          }
+        }
+      }
+    } catch (err) {
+      console.log('⚠️ Could not check connection status:', err.message);
+      // Don't show error to user - just continue with default state
+    }
+  };
 
   // Fetch creator profile
   useEffect(() => {
@@ -137,6 +166,9 @@ const CreatorProfile = () => {
           if (response.data.content) {
             setContent(response.data.content);
           }
+
+          // Check connection status
+          await checkConnectionStatus(creatorData.id || creatorData._id);
         } else {
           throw new Error('Creator not found');
         }
@@ -205,21 +237,45 @@ const CreatorProfile = () => {
 
   // Handle follow/unfollow
   const handleFollow = async () => {
+    if (connectLoading) return; // Prevent double-clicks
+
+    setConnectLoading(true);
+
     try {
-      console.log('🔗 Creating connection with creator:', creator.id);
+      console.log('🔗 Creating connection with creator:', creator.id || creator._id);
 
       // Call the swipe/like API to create connection
-      const response = await memberService.swipeAction(creator.id, 'like');
+      const response = await memberService.swipeAction(creator.id || creator._id, 'like');
 
       if (response.success) {
         setIsFollowing(true);
+        setHasMatched(true); // Also set matched state for messaging
         console.log('✅ Connection created successfully');
+
+        // Show success feedback
+        if (response.data?.isMatch) {
+          alert('🎉 It\'s a match! You can now message each other.');
+        } else {
+          alert('✅ Connection request sent! You\'ll be notified if they connect back.');
+        }
       } else {
         console.error('❌ Failed to create connection:', response.message);
+        alert('Failed to send connection request. Please try again.');
       }
     } catch (err) {
       console.error('❌ Failed to follow/create connection:', err);
-      // Don't change the UI state if API call failed
+
+      // Show user-friendly error message
+      if (err.response?.status === 401) {
+        alert('Please log in to connect with creators.');
+      } else if (err.response?.status === 409) {
+        alert('You\'re already connected with this creator!');
+        setIsFollowing(true);
+      } else {
+        alert('Connection failed. Please check your internet and try again.');
+      }
+    } finally {
+      setConnectLoading(false);
     }
   };
 
@@ -320,6 +376,7 @@ const CreatorProfile = () => {
             isMobile={isMobile}
             isFollowing={isFollowing}
             hasMatched={hasMatched}
+            connectLoading={connectLoading}
             onBack={() => navigate(-1)}
             onFollow={handleFollow}
             onLike={handleLike}

@@ -9,6 +9,7 @@ const ProfileCoverPhoto = ({
   isMobile = false,
   isFollowing = false,
   hasMatched = false,
+  connectLoading = false,
   onBack,
   onFollow,
   onLike,
@@ -69,6 +70,7 @@ const ProfileCoverPhoto = ({
         creator={creator}
         isFollowing={isFollowing}
         hasMatched={hasMatched}
+        connectLoading={connectLoading}
         onFollow={onFollow}
         onLike={onLike}
         onMessage={onMessage}
