@@ -3,6 +3,8 @@ import api from '../services/api.config';
 import './ConnectionsStatsFilter.css';
 
 const ConnectionsStatsFilter = ({ onFilterChange, activeFilter = 'total' }) => {
+  console.log('🔄 ConnectionsStatsFilter: Component mounting/rendering...');
+
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -21,12 +23,12 @@ const ConnectionsStatsFilter = ({ onFilterChange, activeFilter = 'total' }) => {
       const response = await api.get('/connections/stats');
       console.log('📊 ConnectionsStatsFilter: Stats response:', response);
 
-      if (response.stats) {
+      if (response.data) {
         setStats({
-          total: response.stats.total || 0,
-          active: response.stats.active || 0,
-          pending: response.stats.pending || 0,
-          expired: response.stats.expired || 0
+          total: response.data.total || 0,
+          active: response.data.active || 0,
+          pending: response.data.pending || 0,
+          expired: response.data.expired || 0
         });
       }
     } catch (err) {
@@ -59,6 +61,8 @@ const ConnectionsStatsFilter = ({ onFilterChange, activeFilter = 'total' }) => {
       </div>
     );
   }
+
+  console.log('🔄 ConnectionsStatsFilter: Rendering with stats:', stats, 'loading:', loading, 'error:', error);
 
   return (
     <div className="ConnectionsStatsFilter-container">

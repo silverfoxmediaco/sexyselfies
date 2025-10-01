@@ -24,6 +24,8 @@ const MemberConnections = () => {
     setActiveFilter(filterType);
   };
 
+  console.log('🔄 MemberConnections: Rendering with isMobile:', isMobile, 'isDesktop:', isDesktop, 'activeFilter:', activeFilter);
+
   return (
     <div className='member-connections'>
       {/* Desktop Header */}
