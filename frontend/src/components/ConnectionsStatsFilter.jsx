@@ -56,7 +56,7 @@ const ConnectionsStatsFilter = ({ onFilterChange, activeFilter = 'total' }) => {
 
   if (loading) {
     return (
-      <div className="ConnectionsStatsFilter-container">
+      <div className="ConnectionsStatsFilter-container" style={{background: '#ff0000', padding: '20px', color: 'white'}}>
         <div className="ConnectionsStatsFilter-loading">Loading stats...</div>
       </div>
     );
@@ -65,7 +65,7 @@ const ConnectionsStatsFilter = ({ onFilterChange, activeFilter = 'total' }) => {
   console.log('🔄 ConnectionsStatsFilter: Rendering with stats:', stats, 'loading:', loading, 'error:', error);
 
   return (
-    <div className="ConnectionsStatsFilter-container">
+    <div className="ConnectionsStatsFilter-container" style={{background: '#00ff00', padding: '20px', minHeight: '100px'}}>
       <div className="ConnectionsStatsFilter-stats">
         {/* Total */}
         <div
