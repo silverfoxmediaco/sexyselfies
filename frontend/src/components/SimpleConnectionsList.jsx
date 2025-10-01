@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, MessageCircle, Clock, User } from 'lucide-react';
 import api from '../services/api.config';
@@ -9,16 +9,15 @@ const SimpleConnectionsList = () => {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const hasFetched = useRef(false);
 
   // Fetch connections from API
   const fetchConnections = async () => {
-    console.log('🔄 SimpleConnectionsList: Starting to fetch connections...');
     setLoading(true);
     setError(null);
 
     try {
       const response = await api.get('/connections');
-      console.log('✅ SimpleConnectionsList: API response received:', response);
 
       if (response.connections) {
         // Transform connections to expected format
@@ -37,13 +36,11 @@ const SimpleConnectionsList = () => {
         });
 
         setConnections(transformedConnections);
-        console.log('✅ SimpleConnectionsList: Set connections:', transformedConnections.length);
       } else {
         setConnections([]);
-        console.log('ℹ️ SimpleConnectionsList: No connections in response');
       }
     } catch (err) {
-      console.error('❌ SimpleConnectionsList: Error fetching connections:', err);
+      console.error('Error fetching connections:', err);
       setError('Unable to load connections. Please try again.');
       setConnections([]);
     } finally {
@@ -104,7 +101,10 @@ const SimpleConnectionsList = () => {
 
   // Load connections on mount - only once
   useEffect(() => {
-    fetchConnections();
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchConnections();
+    }
   }, []); // Empty dependency array - runs only once on mount
 
 
