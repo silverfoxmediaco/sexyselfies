@@ -542,13 +542,13 @@ exports.getCreatorConnectionStats = async (req, res, next) => {
     if (userRole === 'member') {
       const member = await Member.findOne({ user: req.user.id });
       query.member = member._id;
-      // Members only see connected relationships (same filter as connections list)
-      query.status = 'connected';
+      // Members see all their connections for stats (matches connections list)
+      // No status filter - show all connection statuses
     } else {
       const creator = await Creator.findOne({ user: req.user.id });
       query.creator = creator._id;
-      // Creators see both pending and connected (same filter as connections list)
-      query.status = { $in: ['pending', 'connected'] };
+      // Creators see all their connections for stats (matches connections list)
+      // No status filter - show all connection statuses
     }
 
     const stats = await CreatorConnection.aggregate([
@@ -570,7 +570,16 @@ exports.getCreatorConnectionStats = async (req, res, next) => {
     };
 
     stats.forEach(stat => {
-      formattedStats[stat._id] = stat.count;
+      // Map database status to frontend status names
+      if (stat._id === 'connected') {
+        formattedStats.active = stat.count;
+      } else if (stat._id === 'pending') {
+        formattedStats.pending = stat.count;
+      } else if (stat._id === 'expired') {
+        formattedStats.expired = stat.count;
+      } else if (stat._id === 'rejected') {
+        formattedStats.rejected = stat.count;
+      }
       formattedStats.total += stat.count;
     });
 

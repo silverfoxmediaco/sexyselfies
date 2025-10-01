@@ -4,9 +4,10 @@ import { Trash2, MessageCircle, Clock, User } from 'lucide-react';
 import api from '../services/api.config';
 import './SimpleConnectionsList.css';
 
-const SimpleConnectionsList = () => {
+const SimpleConnectionsList = ({ filterType = 'total' }) => {
   const navigate = useNavigate();
   const [connections, setConnections] = useState([]);
+  const [filteredConnections, setFilteredConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -31,6 +32,7 @@ const SimpleConnectionsList = () => {
             username: otherUser?.username || '',
             lastMessage: conn.lastMessage?.content || 'No messages yet',
             messageTime: conn.lastMessage?.createdAt || conn.lastInteraction || conn.createdAt,
+            status: conn.status, // Keep original status for filtering
             isConnected: conn.status === 'connected'
           };
         });
@@ -100,10 +102,30 @@ const SimpleConnectionsList = () => {
   };
 
 
+  // Filter connections based on filterType
+  const filterConnections = () => {
+    if (filterType === 'total') {
+      setFilteredConnections(connections);
+    } else if (filterType === 'active') {
+      setFilteredConnections(connections.filter(conn => conn.status === 'connected'));
+    } else if (filterType === 'pending') {
+      setFilteredConnections(connections.filter(conn => conn.status === 'pending'));
+    } else if (filterType === 'expired') {
+      setFilteredConnections(connections.filter(conn => conn.status === 'expired'));
+    } else {
+      setFilteredConnections(connections);
+    }
+  };
+
   // Load connections on mount - only once
   useEffect(() => {
     fetchConnections();
   }, []); // Empty dependency array - runs only once on mount
+
+  // Filter connections when filterType or connections change
+  useEffect(() => {
+    filterConnections();
+  }, [filterType, connections]);
 
   if (loading) {
     return (
@@ -130,15 +152,49 @@ const SimpleConnectionsList = () => {
     );
   }
 
-  if (connections.length === 0) {
+  if (filteredConnections.length === 0 && !loading) {
+    const getEmptyMessage = () => {
+      if (connections.length === 0) {
+        return {
+          title: 'No connections yet',
+          subtitle: 'Start connecting with creators!'
+        };
+      } else {
+        switch (filterType) {
+          case 'active':
+            return {
+              title: 'No active connections',
+              subtitle: 'Active connections will appear here'
+            };
+          case 'pending':
+            return {
+              title: 'No pending connections',
+              subtitle: 'Pending connections will appear here'
+            };
+          case 'expired':
+            return {
+              title: 'No expired connections',
+              subtitle: 'Expired connections will appear here'
+            };
+          default:
+            return {
+              title: 'No connections',
+              subtitle: 'No connections match this filter'
+            };
+        }
+      }
+    };
+
+    const emptyMessage = getEmptyMessage();
+
     return (
       <div className="simple-connections-list">
         <div className="simple-connections-empty">
           <User size={48} className="simple-connections-empty-icon" />
           <br />
-          No connections yet
+          {emptyMessage.title}
           <br />
-          <small>Start connecting with creators!</small>
+          <small>{emptyMessage.subtitle}</small>
         </div>
       </div>
     );
@@ -147,7 +203,7 @@ const SimpleConnectionsList = () => {
   return (
     <div className="simple-connections-list">
       <div className="simple-connections-connections-list">
-        {connections.map((connection) => (
+        {filteredConnections.map((connection) => (
           <div
             key={connection.id}
             className="simple-connections-card"
@@ -162,7 +218,10 @@ const SimpleConnectionsList = () => {
                   className="simple-connections-avatar-image"
                   onError={(e) => {
                     e.target.style.display = 'none';
-                    e.target.nextSibling.classList.remove('hidden');
+                    const fallback = e.target.nextSibling;
+                    if (fallback) {
+                      fallback.classList.remove('hidden');
+                    }
                   }}
                 />
               ) : null}
