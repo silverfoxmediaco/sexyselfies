@@ -219,6 +219,12 @@
   pointer-events: none;
 }
 
+.ProfileInfoOverlay-message-btn.connected {
+  background: rgba(23, 210, 194, 0.1);
+  border-color: #17d2c2;
+  color: #17d2c2;
+}
+
 .ProfileInfoOverlay-message-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;

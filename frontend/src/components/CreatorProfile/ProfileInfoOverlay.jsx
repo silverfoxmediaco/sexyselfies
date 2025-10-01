@@ -136,9 +136,10 @@ const ProfileInfoOverlay = ({
         </button>
 
         <button
-          className="ProfileInfoOverlay-message-btn"
+          className={`ProfileInfoOverlay-message-btn ${isFollowing ? 'connected' : ''}`}
           onClick={onMessage}
-          disabled={!hasMatched}
+          disabled={!isFollowing}
+          title={isFollowing ? 'Send message' : 'Connect first to message'}
         >
           <MessageCircle size={16} />
         </button>

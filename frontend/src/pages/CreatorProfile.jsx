@@ -358,10 +358,13 @@ const CreatorProfile = () => {
 
   // Handle message
   const handleMessage = () => {
-    if (hasMatched) {
-      navigate(`/member/messages/${username}`);
+    if (isFollowing) {
+      // Navigate to chat with this creator using their username
+      const creatorUsername = creator?.username || username;
+      console.log('💬 Opening chat with creator:', creatorUsername);
+      navigate(`/member/messages/${creatorUsername}`);
     } else {
-      alert('You need to connect with this creator first!');
+      alert('You need to connect with this creator first! Use the Connect button above.');
     }
   };
 
