@@ -5,6 +5,7 @@ import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
 import SimpleConnectionsList from '../components/SimpleConnectionsList';
+import ConnectionsStatsFilter from '../components/ConnectionsStatsFilter';
 import connectionsService from '../services/connections.service';
 import {
   useIsMobile,
@@ -21,6 +22,7 @@ const MyConnections = () => {
 
   // State
   const [connections, setConnections] = useState([]);
+  const [filteredConnections, setFilteredConnections] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -29,6 +31,7 @@ const MyConnections = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeFilter, setActiveFilter] = useState('total');
 
   // Fetch connections from API
   const fetchConnections = useCallback(async (params = {}) => {
@@ -53,7 +56,7 @@ const MyConnections = () => {
         // Update stats based on connections data instead of separate API call
         const connectionStats = {
           total: transformedConnections.length,
-          active: transformedConnections.filter(c => c.status === 'active').length,
+          active: transformedConnections.filter(c => c.status === 'connected').length,
           pending: transformedConnections.filter(c => c.status === 'pending').length,
           expired: transformedConnections.filter(c => c.status === 'expired').length,
         };
@@ -137,6 +140,38 @@ const MyConnections = () => {
     }
   }, [fetchConnections]);
 
+  // Filter connections based on selected filter
+  const filterConnections = useCallback((filterType) => {
+    if (filterType === 'total') {
+      setFilteredConnections(connections);
+    } else {
+      const filtered = connections.filter(conn => {
+        switch (filterType) {
+          case 'active':
+            return conn.status === 'connected';
+          case 'pending':
+            return conn.status === 'pending';
+          case 'expired':
+            return conn.status === 'expired';
+          default:
+            return true;
+        }
+      });
+      setFilteredConnections(filtered);
+    }
+  }, [connections]);
+
+  // Handle filter change
+  const handleFilterChange = useCallback((filterType) => {
+    setActiveFilter(filterType);
+    filterConnections(filterType);
+  }, [filterConnections]);
+
+  // Update filtered connections when connections change
+  useEffect(() => {
+    filterConnections(activeFilter);
+  }, [connections, activeFilter, filterConnections]);
+
   // Refresh connections
   const handleRefresh = useCallback(() => {
     fetchConnections();
@@ -165,39 +200,19 @@ const MyConnections = () => {
           <div className='header-top'>
             <h1>My Connections</h1>
           </div>
-
-          {/* Stats Bar - Only show when not loading and have data */}
-          {!loading && !error && (
-            <div className='connections-stats'>
-              <div className='stat-item'>
-                <span className='stat-value'>{stats.total}</span>
-                <span className='stat-label'>Total</span>
-              </div>
-              <div className='stat-item'>
-                <span className='stat-value' style={{ color: '#22C55E' }}>
-                  {stats.active}
-                </span>
-                <span className='stat-label'>Active</span>
-              </div>
-              <div className='stat-item'>
-                <span className='stat-value' style={{ color: '#F59E0B' }}>
-                  {stats.pending}
-                </span>
-                <span className='stat-label'>Pending</span>
-              </div>
-              <div className='stat-item'>
-                <span className='stat-value' style={{ color: '#EF4444' }}>
-                  {stats.expired}
-                </span>
-                <span className='stat-label'>Expired</span>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Stats Filter Component */}
+        <ConnectionsStatsFilter
+          stats={stats}
+          activeFilter={activeFilter}
+          onFilterChange={handleFilterChange}
+          loading={loading}
+        />
 
         {/* Main Content - SimpleConnectionsList Component */}
         <div className='connections-content'>
-          <SimpleConnectionsList />
+          <SimpleConnectionsList connections={filteredConnections} loading={loading} error={error} />
         </div>
       </div>
 
