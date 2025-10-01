@@ -227,4 +227,162 @@ router.get('/matches', (req, res) => {
   res.redirect(307, `/api/v1/connections${queryString}`);
 });
 
+// ==========================================
+// FAVORITES
+// ==========================================
+
+// Get favorites
+router.get('/favorites', async (req, res) => {
+  try {
+    const memberId = req.user._id;
+    const { page = 1, limit = 20 } = req.query;
+
+    // Import models
+    const MemberFavorite = require('../models/MemberFavorite');
+    const Creator = require('../models/Creator');
+
+    // Find member's favorites
+    const favorites = await MemberFavorite.find({ member: memberId })
+      .populate({
+        path: 'creator',
+        select: 'username displayName bio profileImage age isVerified gender orientation bodyType'
+      })
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    const total = await MemberFavorite.countDocuments({ member: memberId });
+
+    // Transform for response
+    const transformedFavorites = favorites.map(fav => ({
+      id: fav._id,
+      creator: {
+        id: fav.creator._id,
+        username: fav.creator.username,
+        displayName: fav.creator.displayName,
+        bio: fav.creator.bio,
+        profileImage: fav.creator.profileImage,
+        age: fav.creator.age,
+        isVerified: fav.creator.isVerified,
+        gender: fav.creator.gender,
+        orientation: fav.creator.orientation,
+        bodyType: fav.creator.bodyType
+      },
+      createdAt: fav.createdAt
+    }));
+
+    res.status(200).json({
+      success: true,
+      favorites: transformedFavorites,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total
+      }
+    });
+
+  } catch (error) {
+    console.error('Get favorites error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching favorites',
+      error: error.message
+    });
+  }
+});
+
+// Add to favorites
+router.post('/favorites/:creatorId', async (req, res) => {
+  try {
+    const memberId = req.user._id;
+    const { creatorId } = req.params;
+
+    // Import models
+    const MemberFavorite = require('../models/MemberFavorite');
+    const Creator = require('../models/Creator');
+
+    // Check if creator exists
+    const creator = await Creator.findById(creatorId);
+    if (!creator) {
+      return res.status(404).json({
+        success: false,
+        message: 'Creator not found'
+      });
+    }
+
+    // Check if already favorited
+    const existingFavorite = await MemberFavorite.findOne({
+      member: memberId,
+      creator: creatorId
+    });
+
+    if (existingFavorite) {
+      return res.status(409).json({
+        success: false,
+        message: 'Creator already in favorites'
+      });
+    }
+
+    // Create favorite
+    const favorite = await MemberFavorite.create({
+      member: memberId,
+      creator: creatorId
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Added to favorites',
+      favorite: {
+        id: favorite._id,
+        createdAt: favorite.createdAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Add to favorites error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error adding to favorites',
+      error: error.message
+    });
+  }
+});
+
+// Remove from favorites
+router.delete('/favorites/:creatorId', async (req, res) => {
+  try {
+    const memberId = req.user._id;
+    const { creatorId } = req.params;
+
+    // Import model
+    const MemberFavorite = require('../models/MemberFavorite');
+
+    // Find and delete
+    const deletedFavorite = await MemberFavorite.findOneAndDelete({
+      member: memberId,
+      creator: creatorId
+    });
+
+    if (!deletedFavorite) {
+      return res.status(404).json({
+        success: false,
+        message: 'Favorite not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Removed from favorites'
+    });
+
+  } catch (error) {
+    console.error('Remove from favorites error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error removing from favorites',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;
