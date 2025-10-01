@@ -595,4 +595,448 @@ exports.getUserNotificationStats = async (userId) => {
   }
 };
 
+// ============================================
+// PUSH + EMAIL NOTIFICATION SYSTEM
+// ============================================
+
+/**
+ * Send comprehensive notification (push + email + in-app)
+ * This is the main function that should be called for all notifications
+ */
+exports.sendNotification = async (notificationData, options = {}) => {
+  try {
+    const {
+      recipientId,
+      type,
+      title,
+      message,
+      fromUser = null,
+      amount = null,
+      contentId = null,
+      actionUrl = null,
+      sendPush = true,
+      sendEmail = true,
+      sendInApp = true
+    } = notificationData;
+
+    const results = {
+      inApp: null,
+      push: null,
+      email: null
+    };
+
+    // Get recipient user for email and role info
+    const recipient = await User.findById(recipientId);
+    if (!recipient) {
+      throw new Error('Recipient user not found');
+    }
+
+    // 1. Create in-app notification
+    if (sendInApp) {
+      try {
+        results.inApp = await Notification.createNotification({
+          recipientId,
+          recipientRole: recipient.role || 'member',
+          type,
+          title,
+          message,
+          from: fromUser ? {
+            userId: fromUser._id,
+            name: fromUser.displayName || fromUser.name,
+            avatar: fromUser.profileImage || fromUser.avatar
+          } : {},
+          amount,
+          relatedContentId: contentId,
+          actionUrl
+        });
+        console.log('✅ In-app notification created:', results.inApp._id);
+      } catch (error) {
+        console.error('❌ In-app notification failed:', error);
+      }
+    }
+
+    // 2. Send push notification
+    if (sendPush) {
+      try {
+        results.push = await this.sendPushNotification(recipientId, {
+          title,
+          message,
+          data: {
+            type,
+            actionUrl,
+            notificationId: results.inApp?._id?.toString()
+          }
+        });
+      } catch (error) {
+        console.error('❌ Push notification failed:', error);
+      }
+    }
+
+    // 3. Send email notification
+    if (sendEmail && recipient.email) {
+      try {
+        results.email = await this.sendNotificationEmail(recipient, {
+          type,
+          title,
+          message,
+          fromUser,
+          amount,
+          actionUrl
+        });
+      } catch (error) {
+        console.error('❌ Email notification failed:', error);
+      }
+    }
+
+    console.log(`📬 Notification sent to ${recipient.email}:`, {
+      inApp: !!results.inApp,
+      push: !!results.push,
+      email: !!results.email
+    });
+
+    return results;
+  } catch (error) {
+    console.error('Error sending comprehensive notification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Send push notification to user's subscribed devices
+ */
+exports.sendPushNotification = async (userId, payload) => {
+  try {
+    const PushSubscription = require('../models/PushSubscription');
+
+    // Get user's active push subscriptions
+    const subscriptions = await PushSubscription.findActiveByUser(userId);
+
+    if (subscriptions.length === 0) {
+      console.log(`No push subscriptions found for user ${userId}`);
+      return { sent: 0, message: 'No subscriptions' };
+    }
+
+    const results = [];
+
+    for (const subscription of subscriptions) {
+      try {
+        const pushConfig = {
+          endpoint: subscription.endpoint,
+          keys: {
+            p256dh: subscription.keys.p256dh,
+            auth: subscription.keys.auth
+          }
+        };
+
+        await webpush.sendNotification(pushConfig, JSON.stringify(payload));
+        await subscription.updateLastUsed();
+        results.push({ success: true, subscriptionId: subscription._id });
+      } catch (error) {
+        console.error(`Push failed for subscription ${subscription._id}:`, error);
+
+        // Deactivate invalid subscriptions
+        if (error.statusCode === 410) {
+          await subscription.deactivate();
+        }
+
+        results.push({ success: false, error: error.message });
+      }
+    }
+
+    const sentCount = results.filter(r => r.success).length;
+    console.log(`Push notifications sent: ${sentCount}/${subscriptions.length}`);
+
+    return { sent: sentCount, total: subscriptions.length, results };
+  } catch (error) {
+    console.error('Error sending push notifications:', error);
+    throw error;
+  }
+};
+
+/**
+ * Send notification email based on notification type
+ */
+exports.sendNotificationEmail = async (recipient, notificationData) => {
+  if (!emailTransporter) {
+    console.log(`📧 [DEV MODE] Would send ${notificationData.type} email to: ${recipient.email}`);
+    return { success: true, dev: true };
+  }
+
+  const { type, title, message, fromUser, amount, actionUrl } = notificationData;
+
+  const APP_URL = process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5174';
+  const APP_NAME = process.env.APP_NAME || 'SexySelfies';
+
+  let subject = title;
+  let htmlContent = '';
+
+  // Customize email content based on notification type
+  switch (type) {
+    case 'connection':
+      subject = `New Connection: ${fromUser?.name || 'Someone'} connected with you`;
+      htmlContent = generateConnectionEmail(fromUser, recipient, APP_URL, APP_NAME);
+      break;
+
+    case 'message':
+      subject = `New Message from ${fromUser?.name || 'Someone'}`;
+      htmlContent = generateMessageEmail(fromUser, recipient, message, APP_URL, APP_NAME);
+      break;
+
+    case 'tip':
+      subject = `💰 You received a $${amount} tip!`;
+      htmlContent = generateTipEmail(fromUser, recipient, amount, APP_URL, APP_NAME);
+      break;
+
+    case 'purchase':
+      subject = `💳 Content purchased! $${amount} earned`;
+      htmlContent = generatePurchaseEmail(fromUser, recipient, message, amount, APP_URL, APP_NAME);
+      break;
+
+    case 'content':
+      subject = `📸 New content: ${message}`;
+      htmlContent = generateContentEmail(fromUser, recipient, message, APP_URL, APP_NAME);
+      break;
+
+    default:
+      htmlContent = generateGenericEmail(title, message, actionUrl, APP_URL, APP_NAME);
+  }
+
+  const mailOptions = {
+    from: `${APP_NAME} <${EMAIL_USER}>`,
+    to: recipient.email,
+    subject,
+    html: htmlContent
+  };
+
+  try {
+    const result = await emailTransporter.sendMail(mailOptions);
+    console.log(`✅ ${type} notification email sent to:`, recipient.email);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    console.error(`❌ ${type} notification email failed:`, error.message);
+    return { success: false, error: error.message };
+  }
+};
+
+// Email template generators
+function generateConnectionEmail(fromUser, recipient, APP_URL, APP_NAME) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #17D2C2 0%, #12B7AB 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: white; padding: 30px; border: 1px solid #e0e0e0; border-radius: 0 0 10px 10px; }
+        .button { display: inline-block; padding: 15px 40px; background: #17D2C2; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🔗 New Connection!</h1>
+        </div>
+        <div class="content">
+          <p style="font-size: 18px;">Hi ${recipient.username || recipient.name},</p>
+          <p><strong>${fromUser?.name || 'Someone'}</strong> has connected with you!</p>
+          <div style="text-align: center;">
+            <a href="${APP_URL}/member/connections" class="button">View Connections</a>
+          </div>
+          <p>Start chatting and discover what they're sharing!</p>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+function generateMessageEmail(fromUser, recipient, messagePreview, APP_URL, APP_NAME) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #17D2C2 0%, #12B7AB 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: white; padding: 30px; border: 1px solid #e0e0e0; border-radius: 0 0 10px 10px; }
+        .message-preview { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; font-style: italic; }
+        .button { display: inline-block; padding: 15px 40px; background: #17D2C2; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>💬 New Message!</h1>
+        </div>
+        <div class="content">
+          <p style="font-size: 18px;">Hi ${recipient.username || recipient.name},</p>
+          <p><strong>${fromUser?.name || 'Someone'}</strong> sent you a message:</p>
+          <div class="message-preview">"${messagePreview}"</div>
+          <div style="text-align: center;">
+            <a href="${APP_URL}/member/messages" class="button">Reply Now</a>
+          </div>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+function generateTipEmail(fromUser, recipient, amount, APP_URL, APP_NAME) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #17D2C2 0%, #12B7AB 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: white; padding: 30px; border: 1px solid #e0e0e0; border-radius: 0 0 10px 10px; }
+        .tip-amount { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; font-size: 24px; font-weight: bold; color: #17D2C2; }
+        .button { display: inline-block; padding: 15px 40px; background: #17D2C2; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>💰 You got a tip!</h1>
+        </div>
+        <div class="content">
+          <p style="font-size: 18px;">Hi ${recipient.username || recipient.name},</p>
+          <p><strong>${fromUser?.name || 'Someone'}</strong> sent you a tip!</p>
+          <div class="tip-amount">$${amount}</div>
+          <div style="text-align: center;">
+            <a href="${APP_URL}/creator/earnings" class="button">View Earnings</a>
+          </div>
+          <p>Keep creating amazing content! 🚀</p>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+function generatePurchaseEmail(fromUser, recipient, contentTitle, amount, APP_URL, APP_NAME) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #17D2C2 0%, #12B7AB 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: white; padding: 30px; border: 1px solid #e0e0e0; border-radius: 0 0 10px 10px; }
+        .purchase-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .button { display: inline-block; padding: 15px 40px; background: #17D2C2; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>💳 Content Purchased!</h1>
+        </div>
+        <div class="content">
+          <p style="font-size: 18px;">Hi ${recipient.username || recipient.name},</p>
+          <p><strong>${fromUser?.name || 'Someone'}</strong> just purchased your content!</p>
+          <div class="purchase-info">
+            <p><strong>Content:</strong> ${contentTitle}</p>
+            <p><strong>Amount:</strong> $${amount}</p>
+            <p><strong>Your Share:</strong> $${(amount * 0.8).toFixed(2)} (80%)</p>
+          </div>
+          <div style="text-align: center;">
+            <a href="${APP_URL}/creator/earnings" class="button">View Earnings</a>
+          </div>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+function generateContentEmail(fromUser, recipient, contentTitle, APP_URL, APP_NAME) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #17D2C2 0%, #12B7AB 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: white; padding: 30px; border: 1px solid #e0e0e0; border-radius: 0 0 10px 10px; }
+        .button { display: inline-block; padding: 15px 40px; background: #17D2C2; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>📸 New Content!</h1>
+        </div>
+        <div class="content">
+          <p style="font-size: 18px;">Hi ${recipient.username || recipient.name},</p>
+          <p><strong>${fromUser?.name || 'Someone'}</strong> posted new content:</p>
+          <p style="font-weight: bold; font-size: 16px;">"${contentTitle}"</p>
+          <div style="text-align: center;">
+            <a href="${APP_URL}/member/browse-creators" class="button">View Content</a>
+          </div>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+function generateGenericEmail(title, message, actionUrl, APP_URL, APP_NAME) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #17D2C2 0%, #12B7AB 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: white; padding: 30px; border: 1px solid #e0e0e0; border-radius: 0 0 10px 10px; }
+        .button { display: inline-block; padding: 15px 40px; background: #17D2C2; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>${title}</h1>
+        </div>
+        <div class="content">
+          <p style="font-size: 18px;">${message}</p>
+          ${actionUrl ? `<div style="text-align: center;"><a href="${actionUrl}" class="button">View Details</a></div>` : ''}
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 module.exports = exports;

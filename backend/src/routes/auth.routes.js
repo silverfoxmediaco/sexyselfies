@@ -94,4 +94,45 @@ router.get('/push/public-key', (req, res) => {
   }
 });
 
+// Push notification subscription
+router.post('/push/subscribe', protect, async (req, res) => {
+  try {
+    const PushSubscription = require('../models/PushSubscription');
+    const { subscription, deviceInfo = {} } = req.body;
+
+    if (!subscription || !subscription.endpoint || !subscription.keys) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid subscription data',
+      });
+    }
+
+    // Determine user role from the token
+    const userRole = req.user.role || 'member';
+
+    // Create or update the push subscription
+    const pushSubscription = await PushSubscription.createOrUpdate(
+      req.user.id,
+      userRole,
+      subscription,
+      deviceInfo
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Push notification subscription registered successfully',
+      data: {
+        subscriptionId: pushSubscription._id,
+        active: pushSubscription.active,
+      },
+    });
+  } catch (error) {
+    console.error('Error registering push subscription:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to register push subscription',
+    });
+  }
+});
+
 module.exports = router;
