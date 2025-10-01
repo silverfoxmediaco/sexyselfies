@@ -4,7 +4,6 @@ const Creator = require('../models/Creator');
 const CreatorProfile = require('../models/CreatorProfile');
 const Content = require('../models/Content');
 const CreatorAnalytics = require('../models/CreatorAnalytics');
-const { rateLimiter } = require('../middleware/rateLimit.middleware');
 const { cacheMiddleware } = require('../middleware/cache.middleware');
 
 // ==========================================
@@ -427,7 +426,6 @@ router.get(
 // Search creators
 router.get(
   '/search',
-  rateLimiter({ max: 30, windowMs: 60 * 1000 }), // 30 searches per minute
   async (req, res) => {
     try {
       const {
@@ -675,7 +673,6 @@ router.get('/guidelines', cacheMiddleware(86400), (req, res) => {
 // Contact form
 router.post(
   '/contact',
-  rateLimiter({ max: 5, windowMs: 60 * 60 * 1000 }), // 5 submissions per hour
   async (req, res) => {
     try {
       const { name, email, subject, message } = req.body;

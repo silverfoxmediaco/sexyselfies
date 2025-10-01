@@ -9,7 +9,6 @@ const {
   trackUnlock,
   checkBundleUnlock,
 } = require('../middleware/unlock.middleware');
-const { rateLimiter } = require('../middleware/rateLimit.middleware');
 
 const {
   getAllContent,
@@ -160,7 +159,6 @@ router.get('/my/unlocked', authorize('member'), getMyUnlockedContent);
 router.post(
   '/:id/like',
   authorize('member'),
-  rateLimiter({ windowMs: 1000, max: 10 }), // Prevent spam
   likeContent
 );
 
@@ -170,7 +168,6 @@ router.delete('/:id/like', authorize('member'), unlikeContent);
 router.post(
   '/:id/report',
   authorize('member'),
-  rateLimiter({ windowMs: 60000, max: 5 }), // Max 5 reports per minute
   reportContent
 );
 
@@ -182,7 +179,6 @@ router.post(
 router.post(
   '/',
   authorize('creator'),
-  rateLimiter({ windowMs: 60000, max: 20 }), // Max 20 uploads per minute
   createContent
 );
 

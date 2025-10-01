@@ -14,14 +14,12 @@ const verificationRoutes = require('./verification.routes');
 const notificationRoutes = require('./notification.routes');
 
 // Import middleware
-const { apiLimiter } = require('../middleware/rateLimit.middleware');
 const { logRequest } = require('../middleware/logging.middleware');
 const { corsMiddleware } = require('../middleware/cors.middleware');
 
 // Apply global middleware
 router.use(corsMiddleware);
 router.use(logRequest);
-router.use(apiLimiter); // Global rate limiting
 
 // ==========================================
 // API VERSION 1 ROUTES

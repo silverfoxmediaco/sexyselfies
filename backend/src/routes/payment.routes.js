@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth.middleware');
 const { validatePayment } = require('../middleware/validation.middleware');
-const { rateLimiter } = require('../middleware/rateLimit.middleware');
 const paymentController = require('../controllers/payment.controller');
 const webhookController = require('../controllers/webhook.controller');
 
@@ -16,7 +15,6 @@ router.post(
   protect,
   authorize('member'),
   validatePayment,
-  rateLimiter({ max: 30, windowMs: 60 * 1000 }), // 30 payments per minute
   paymentController.createPaymentIntent
 );
 
@@ -52,7 +50,6 @@ router.post(
   protect,
   authorize('member'),
   validatePayment,
-  rateLimiter({ max: 10, windowMs: 60 * 1000 }), // 10 tips per minute
   paymentController.processTip
 );
 
@@ -80,7 +77,6 @@ router.post(
   '/methods',
   protect,
   validatePayment,
-  rateLimiter({ max: 5, windowMs: 60 * 60 * 1000 }), // 5 new methods per hour
   paymentController.addPaymentMethod
 );
 
@@ -108,7 +104,6 @@ router.post(
   protect,
   authorize('creator'),
   validatePayment,
-  rateLimiter({ max: 2, windowMs: 24 * 60 * 60 * 1000 }), // 2 payouts per day
   paymentController.requestPayout
 );
 
@@ -178,7 +173,6 @@ router.get(
 router.post(
   '/transactions/:transactionId/dispute',
   protect,
-  rateLimiter({ max: 3, windowMs: 24 * 60 * 60 * 1000 }), // 3 disputes per day
   paymentController.disputeTransaction
 );
 
@@ -297,7 +291,6 @@ router.post(
   protect,
   authorize('member'),
   validatePayment,
-  rateLimiter({ max: 5, windowMs: 24 * 60 * 60 * 1000 }), // 5 refunds per day
   paymentController.requestRefund
 );
 

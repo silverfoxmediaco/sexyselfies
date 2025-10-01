@@ -29,14 +29,14 @@ const MemberConnections = () => {
       {/* Desktop Header */}
       {isDesktop && <MainHeader />}
 
-      {/* Stats Filter Component - TEMPORARILY DISABLED due to production rate limits */}
-      {/* <ConnectionsStatsFilter
+      {/* Stats Filter Component */}
+      <ConnectionsStatsFilter
         onFilterChange={handleFilterChange}
         activeFilter={activeFilter}
-      /> */}
+      />
 
-      {/* Connections List - back to simple mode until backend deployed */}
-      <SimpleConnectionsList filterType="total" />
+      {/* Filtered Connections List */}
+      <SimpleConnectionsList filterType={activeFilter} />
 
       {/* Desktop Footer */}
       {isDesktop && <MainFooter />}

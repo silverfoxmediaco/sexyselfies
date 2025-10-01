@@ -5,7 +5,6 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const mongoSanitize = require('express-mongo-sanitize');
-const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
 const path = require('path');
 const { createServer } = require('http');
@@ -230,33 +229,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Rate limiting - different limits for different endpoints
-const defaultLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const authLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // Reduced to 5 minutes for faster reset
-  max: 100, // Temporarily increased to 100 auth attempts per 5 minutes
-  message: {
-    error: 'Too many authentication attempts, please try again later.',
-  },
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  skipSuccessfulRequests: true,
-});
-
-const uploadLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { error: 'Too many uploads, please try again later.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 // ==========================================
 // BODY PARSING & DATA SANITIZATION
@@ -390,14 +362,6 @@ app.get(`${API_V1}/health`, async (req, res) => {
   }
 });
 
-// Apply rate limiting BEFORE routes
-app.use('/api/', defaultLimiter);
-app.use('/api/v1/auth/register', authLimiter);
-app.use('/api/v1/auth/login', authLimiter);
-app.use('/api/v1/auth/creator/register', authLimiter);
-app.use('/api/v1/auth/creator/login', authLimiter);
-// Note: /api/v1/auth/me uses the default limiter (100 req/15min) which should be sufficient
-app.use('/api/v1/upload/', uploadLimiter);
 
 // Apply database check to critical auth routes
 console.log('Configuring database checks for auth routes...');
