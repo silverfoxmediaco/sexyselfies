@@ -3,7 +3,6 @@ import api from '../services/api.config';
 import './ConnectionsStatsFilter.css';
 
 const ConnectionsStatsFilter = ({ onFilterChange, activeFilter = 'total' }) => {
-  console.log('🔄 ConnectionsStatsFilter: Component mounting/rendering...');
 
   const [stats, setStats] = useState({
     total: 0,
@@ -21,7 +20,6 @@ const ConnectionsStatsFilter = ({ onFilterChange, activeFilter = 'total' }) => {
 
     try {
       const response = await api.get('/connections/stats');
-      console.log('📊 ConnectionsStatsFilter: Stats response:', response);
 
       if (response.data) {
         setStats({
@@ -56,16 +54,14 @@ const ConnectionsStatsFilter = ({ onFilterChange, activeFilter = 'total' }) => {
 
   if (loading) {
     return (
-      <div className="ConnectionsStatsFilter-container" style={{background: '#ff0000', padding: '20px', color: 'white'}}>
+      <div className="ConnectionsStatsFilter-container">
         <div className="ConnectionsStatsFilter-loading">Loading stats...</div>
       </div>
     );
   }
 
-  console.log('🔄 ConnectionsStatsFilter: Rendering with stats:', stats, 'loading:', loading, 'error:', error);
-
   return (
-    <div className="ConnectionsStatsFilter-container" style={{background: '#00ff00', padding: '20px', minHeight: '100px'}}>
+    <div className="ConnectionsStatsFilter-container">
       <div className="ConnectionsStatsFilter-stats">
         {/* Total */}
         <div
