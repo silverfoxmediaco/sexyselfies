@@ -62,6 +62,7 @@ exports.getContent = async (req, res) => {
       description: item.description || '',
       type: item.type,
       price: item.price || 0,
+      isFree: item.isFree || item.price === 0,
       thumbnail:
         item.customThumbnail?.url ||
         item.thumbnail ||

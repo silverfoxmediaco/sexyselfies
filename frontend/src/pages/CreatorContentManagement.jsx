@@ -432,6 +432,7 @@ const CreatorContentManagement = () => {
               thumbnailUrl: item.thumbnail || (item.media && item.media[0]?.url),
               type: item.type,
               price: item.price,
+              isFree: item.isFree,
               createdAt: item.createdAt,
               duration: item.duration,
               stats: {

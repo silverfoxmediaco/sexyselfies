@@ -63,8 +63,8 @@ const ContentGrid = ({
     });
   };
 
-  const formatPrice = (price) => {
-    return price === 0 ? 'Free' : `$${price.toFixed(2)}`;
+  const formatPrice = (price, isFree = false) => {
+    return isFree || price === 0 ? 'Free' : `$${price.toFixed(2)}`;
   };
 
   const handleItemSelection = (itemId) => {
@@ -195,7 +195,7 @@ const ContentGrid = ({
               )}
 
               <div className="ContentGrid-price-badge">
-                {formatPrice(item.price)}
+                {formatPrice(item.price, item.isFree)}
               </div>
             </div>
 

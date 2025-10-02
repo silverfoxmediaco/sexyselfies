@@ -892,7 +892,7 @@ const CreatorContentUpload = () => {
         formData.append('type', upload.type); // Backend handles all type mapping
         formData.append('tags', JSON.stringify(contentDetails.tags));
         formData.append('price', upload.price);
-        formData.append('isFree', contentDetails.visibility === 'free');
+        formData.append('isFree', upload.price === 0);
         formData.append('isPreview', contentDetails.visibility === 'preview');
         formData.append('allowTips', contentDetails.allowTips);
         if (contentDetails.scheduledDate) {
