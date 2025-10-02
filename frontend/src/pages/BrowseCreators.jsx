@@ -320,7 +320,7 @@ const BrowseCreators = () => {
     // Reset current index if it's out of bounds
     if (currentIndex >= filtered.length && filtered.length > 0) {
       setCurrentIndex(0);
-      setKey(prev => prev + 1);
+      // Remove key increment to prevent component remounting
     }
   };
 
@@ -356,7 +356,7 @@ const BrowseCreators = () => {
     setTimeout(() => {
       if (currentIndex < filteredContent.length - 1) {
         setCurrentIndex(currentIndex + 1);
-        setKey(prev => prev + 1);
+        // Remove key increment to prevent component remounting
       } else if (hasMoreContent) {
         // Load more content when reaching the end
         loadContentFeed(currentPage + 1);
@@ -395,7 +395,7 @@ const BrowseCreators = () => {
     newHistory.pop();
     setSwipeHistory(newHistory);
     setCurrentIndex(Math.max(0, currentIndex - 1));
-    setKey(prev => prev + 1);
+    // Remove key increment to prevent component remounting
   };
 
   const handleViewCreatorProfile = creator => {
@@ -466,7 +466,7 @@ const BrowseCreators = () => {
 
   const currentContent = filteredContent?.[currentIndex];
 
-  // Add visual indicators for content (paid, new, popular, etc.)
+  // Add visual indicators for content (paid only)
   const getContentIndicators = content => {
     const indicators = [];
 
@@ -475,24 +475,6 @@ const BrowseCreators = () => {
         type: 'paid',
         text: `$${content.price}`,
         color: '#17D2C2',
-      });
-    }
-
-    if (content.isFree) {
-      indicators.push({
-        type: 'free',
-        text: 'Free',
-        color: '#22C55E',
-      });
-    }
-
-    // Check if content is new (last 24 hours)
-    const oneDayAgo = new Date(Date.now() - 86400000);
-    if (new Date(content.createdAt) > oneDayAgo) {
-      indicators.push({
-        type: 'new',
-        text: 'New',
-        color: '#F59E0B',
       });
     }
 
@@ -586,7 +568,7 @@ const BrowseCreators = () => {
           .slice(currentIndex, currentIndex + 3)
           .map((content, index) => (
             <div
-              key={`${content._id}-${key}-${index}`}
+              key={`${content._id}-${currentIndex + index}`}
               className='browse-creators-card-wrapper'
               style={{
                 position: 'absolute',
