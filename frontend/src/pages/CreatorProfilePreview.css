@@ -227,8 +227,10 @@
 .card-info-overlay {
   position: relative;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-  padding: 20px;
-  padding-bottom: 120px; /* Add space for the button */
+  padding-top: 20px;
+  padding-right: 20px;
+  padding-bottom: 130px; /* Add space for the button */
+  padding-left: 20px;
   color: white;
   margin-top: auto; /* Push to bottom naturally */
   z-index: 2; /* Above the image */
