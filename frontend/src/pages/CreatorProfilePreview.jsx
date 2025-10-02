@@ -30,8 +30,7 @@ import {
   Grid3x3,
   User,
 } from 'lucide-react';
-import BottomNavigation from '../components/BottomNavigation';
-import { useIsMobile, getUserRole } from '../utils/mobileDetection';
+import { useIsMobile } from '../utils/mobileDetection';
 import './CreatorProfilePreview.css';
 
 // Helper function to format numbers (e.g., 2300 -> 2.3k)
@@ -46,7 +45,6 @@ const formatNumber = (num) => {
 
 const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
   const isMobile = useIsMobile();
-  const userRole = getUserRole();
   const [viewMode, setViewMode] = useState('swipe'); // 'swipe' or 'profile'
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
@@ -119,13 +117,13 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
   // Swipe Card View Component
   const SwipeCardView = () => (
     <motion.div
-      className='swipe-card'
+      className="CreatorProfilePreview-swipe-card"
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: 'spring', damping: 20 }}
     >
       {/* Card Images */}
-      <div className='card-image-container'>
+      <div className="CreatorProfilePreview-card-image-container">
         {(() => {
           const profileImage = profileData?.profileImage || profileData?.profilePhotoPreview;
           const isValidImage = profileImage &&
@@ -137,7 +135,7 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
             <img
               src={profileImage}
               alt={profileData?.displayName || 'Profile'}
-              className='card-main-image'
+              className="CreatorProfilePreview-card-main-image"
               onError={(e) => {
                 console.warn('Failed to load profile image:', profileImage);
                 e.target.style.display = 'none';
@@ -145,7 +143,7 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
               }}
             />
           ) : (
-            <div className='card-image-placeholder'>
+            <div className="CreatorProfilePreview-card-image-placeholder">
               <Camera size={48} />
               <span>Your photo here</span>
             </div>
@@ -154,40 +152,40 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
 
 
         {/* Verified badge */}
-        <div className='verified-badge'>
+        <div className="CreatorProfilePreview-verified-badge">
           <Check size={12} />
           <span>Verified</span>
         </div>
 
         {/* Live indicator */}
-        <div className='live-indicator'>
-          <span className='live-dot'></span>
+        <div className="CreatorProfilePreview-live-indicator">
+          <span className="CreatorProfilePreview-live-dot"></span>
           <span>Online</span>
         </div>
       </div>
 
       {/* Card Info Overlay */}
-      <div className='card-info-overlay'>
-        <div className='card-header'>
+      <div className="CreatorProfilePreview-card-info-overlay">
+        <div className="CreatorProfilePreview-card-header">
           <h2>{profileData?.displayName || 'Your Name'}, 24</h2>
         </div>
 
-        <div className='card-bio'>
+        <div className="CreatorProfilePreview-card-bio">
           <p>{profileData?.bio || 'Your bio will appear here...'}</p>
         </div>
 
-        <div className='card-tags'></div>
+        <div className="CreatorProfilePreview-card-tags"></div>
 
-        <div className='card-stats'>
-          <div className='stat'>
+        <div className="CreatorProfilePreview-card-stats">
+          <div className="CreatorProfilePreview-stat">
             <Heart size={14} />
             <span>{formatNumber(profileData?.stats?.totalLikes || 0)} likes</span>
           </div>
-          <div className='stat'>
+          <div className="CreatorProfilePreview-stat">
             <Camera size={14} />
             <span>{profileData?.stats?.totalContent || 0} content</span>
           </div>
-          <div className='stat'>
+          <div className="CreatorProfilePreview-stat">
             <Video size={14} />
             <span>${formatNumber(profileData?.stats?.totalEarnings || 0)} earned</span>
           </div>
@@ -196,10 +194,11 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
 
       {/* View Full Profile Button */}
       <motion.button
-        className='view-profile-btn'
+        className="CreatorProfilePreview-view-profile-btn"
         onClick={() => setViewMode('profile')}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
+        aria-label="View full profile details"
       >
         <Eye size={16} />
         <span>View Full Profile</span>
@@ -210,15 +209,15 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
   // Full Profile View Component - Updated to match CreatorProfile.jsx structure
   const FullProfileView = () => (
     <motion.div
-      className='creator-profile-page'
+      className="CreatorProfilePreview-full-profile"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <div className='profile-container'>
+      <section className="CreatorProfilePreview-profile-container">
         {/* Profile Header */}
-        <div className='profile-header'>
+        <header className="CreatorProfilePreview-profile-header">
           {/* Cover Photo */}
-          <div className='cover-photo-container'>
+          <div className="CreatorProfilePreview-cover-photo-container">
             {(profileData?.coverImage &&
               typeof profileData.coverImage === 'string' &&
               profileData.coverImage !== 'default-cover.jpg' &&
@@ -235,32 +234,32 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
                   profileData?.coverImagePreview ||
                   profileData?.coverPhoto
                 }
-                alt='Cover'
-                className='cover-photo'
+                alt="Cover"
+                className="CreatorProfilePreview-cover-photo"
               />
             ) : (
-              <div className='cover-photo placeholder-cover'></div>
+              <div className="CreatorProfilePreview-cover-photo CreatorProfilePreview-placeholder-cover"></div>
             )}
-            <div className='cover-overlay'></div>
+            <div className="CreatorProfilePreview-cover-overlay"></div>
 
             {/* Action Buttons */}
-            <div className='header-actions'>
-              <button className='action-icon-btn'>
+            <div className="CreatorProfilePreview-header-actions">
+              <button className="CreatorProfilePreview-action-icon-btn" aria-label="Go back">
                 <ArrowLeft size={20} />
               </button>
-              <button className='action-icon-btn'>
+              <button className="CreatorProfilePreview-action-icon-btn" aria-label="Share profile">
                 <Share2 size={20} />
               </button>
-              <button className='action-icon-btn'>
+              <button className="CreatorProfilePreview-action-icon-btn" aria-label="More options">
                 <MoreHorizontal size={20} />
               </button>
             </div>
           </div>
 
           {/* Profile Info */}
-          <div className='profile-info'>
-            <div className='profile-avatar-section'>
-              <div className='profile-avatar'>
+          <div className="CreatorProfilePreview-profile-info">
+            <div className="CreatorProfilePreview-profile-avatar-section">
+              <div className="CreatorProfilePreview-profile-avatar">
                 {(() => {
                   const profileImage = profileData?.profileImage || profileData?.profilePhotoPreview;
                   const isValidImage = profileImage &&
@@ -279,82 +278,82 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
                       }}
                     />
                   ) : (
-                    <div className='avatar-placeholder'>
+                    <div className="CreatorProfilePreview-avatar-placeholder">
                       <Camera size={32} />
                     </div>
                   );
                 })()}
-                <span className='online-indicator'></span>
+                <span className="CreatorProfilePreview-online-indicator"></span>
               </div>
 
-              <div className='profile-actions'>
-                <button className='follow-btn'>
+              <div className="CreatorProfilePreview-profile-actions">
+                <button className="CreatorProfilePreview-follow-btn" aria-label="Follow creator">
                   <Bell size={18} />
                   <span>Follow</span>
                 </button>
-                <button className='like-btn'>
+                <button className="CreatorProfilePreview-like-btn" aria-label="Like profile">
                   <Heart size={18} />
                 </button>
-                <button className='message-btn'>
+                <button className="CreatorProfilePreview-message-btn" aria-label="Send message">
                   <MessageCircle size={18} />
                 </button>
               </div>
             </div>
 
-            <div className='profile-details'>
-              <div className='profile-name-section'>
-                <h1 className='profile-name'>
+            <div className="CreatorProfilePreview-profile-details">
+              <div className="CreatorProfilePreview-profile-name-section">
+                <h1 className="CreatorProfilePreview-profile-name">
                   {profileData?.displayName || 'Creator Name'}
-                  <Shield className='verified-icon' size={20} />
+                  <Shield className="CreatorProfilePreview-verified-icon" size={20} />
                 </h1>
-                <span className='profile-username'>
+                <span className="CreatorProfilePreview-profile-username">
                   @{profileData?.username || 'username'}
                 </span>
               </div>
 
-              <div className='profile-meta'>
-                <span className='meta-item'>
+              <div className="CreatorProfilePreview-profile-meta">
+                <span className="CreatorProfilePreview-meta-item">
                   <Clock size={14} />
                   Online now
                 </span>
-                <span className='meta-item'>
+                <span className="CreatorProfilePreview-meta-item">
                   <Calendar size={14} />
                   Joined Dec 2024
                 </span>
               </div>
 
-              <p className='profile-bio'>
+              <p className="CreatorProfilePreview-profile-bio">
                 {profileData?.bio || 'Bio will appear here'}
               </p>
 
-              <div className='profile-tags'>
+              <div className="CreatorProfilePreview-profile-tags">
                 {profileData?.contentTypes?.photos && (
-                  <span className='profile-tag'>#photos</span>
+                  <span className="CreatorProfilePreview-profile-tag">#photos</span>
                 )}
                 {profileData?.contentTypes?.videos && (
-                  <span className='profile-tag'>#videos</span>
+                  <span className="CreatorProfilePreview-profile-tag">#videos</span>
                 )}
                 {profileData?.orientation && (
-                  <span className='profile-tag'>
+                  <span className="CreatorProfilePreview-profile-tag">
                     #{profileData.orientation.toLowerCase()}
                   </span>
                 )}
-                <span className='profile-tag'>#exclusive</span>
+                <span className="CreatorProfilePreview-profile-tag">#exclusive</span>
               </div>
             </div>
           </div>
 
           {/* Rating - Social proof for quality assessment */}
-          <div className='profile-stats'>
-            <div className='stat-item'>
-              <span className='stat-value'>
+          <div className="CreatorProfilePreview-profile-stats">
+            <div className="CreatorProfilePreview-stat-item">
+              <span className="CreatorProfilePreview-stat-value">
                 <Star size={14} />
                 {profileData?.stats?.rating || 0}
               </span>
-              <span className='stat-label'>Rating</span>
+              <span className="CreatorProfilePreview-stat-label">Rating</span>
             </div>
           </div>
-        </div>
+        </header>
 
         {/* Content Tabs - TODO: Implement functionality or remove */}
         {/*
@@ -375,44 +374,47 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
         */}
 
         {/* Tab Content */}
-        <div className='tab-content'>
+        <section className="CreatorProfilePreview-tab-content">
           {/* Content Filter */}
-          <div className='content-filter'>
-            <button className='filter-option active'>All ({sampleContent.length})</button>
-            <button className='filter-option'>Photos ({sampleContent.filter(c => c.type === 'photo').length})</button>
-            <button className='filter-option'>Videos ({sampleContent.filter(c => c.type === 'video').length})</button>
-            <button className='filter-option'>Locked ({sampleContent.filter(c => c.locked).length})</button>
+          <div className="CreatorProfilePreview-content-filter">
+            <button className="CreatorProfilePreview-filter-option active" aria-pressed="true">All ({sampleContent.length})</button>
+            <button className="CreatorProfilePreview-filter-option" aria-pressed="false">Photos ({sampleContent.filter(c => c.type === 'photo').length})</button>
+            <button className="CreatorProfilePreview-filter-option" aria-pressed="false">Videos ({sampleContent.filter(c => c.type === 'video').length})</button>
+            <button className="CreatorProfilePreview-filter-option" aria-pressed="false">Locked ({sampleContent.filter(c => c.locked).length})</button>
           </div>
 
           {/* Content Grid */}
-          <div className='content-grid'>
+          <div className="CreatorProfilePreview-content-grid">
             {sampleContent.map(content => (
               <motion.div
                 key={content.id}
-                className={`content-item ${content.blur ? 'locked' : ''}`}
+                className={`CreatorProfilePreview-content-item ${content.blur ? 'locked' : ''}`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   setSelectedContent(content);
                   setShowUnlockModal(true);
                 }}
+                role="button"
+                tabIndex={0}
+                aria-label={`View ${content.type} content`}
               >
-                <div className='content-preview'>
+                <div className="CreatorProfilePreview-content-preview">
                   {content.type === 'video' && (
-                    <div className='video-indicator'>
+                    <div className="CreatorProfilePreview-video-indicator">
                       <Video size={16} />
                       <span>2:34</span>
                     </div>
                   )}
 
                   {content.blur && (
-                    <div className='lock-overlay'>
+                    <div className="CreatorProfilePreview-lock-overlay">
                       <Unlock size={20} />
-                      <span className='price'>${content.price}</span>
+                      <span className="CreatorProfilePreview-price">${content.price}</span>
                     </div>
                   )}
 
-                  <div className='content-placeholder'>
+                  <div className="CreatorProfilePreview-content-placeholder">
                     {content.type === 'photo' ? (
                       <Camera size={24} />
                     ) : (
@@ -420,7 +422,7 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
                     )}
                   </div>
 
-                  <div className='content-stats'>
+                  <div className="CreatorProfilePreview-content-stats">
                     <Heart size={12} />
                     <span>234</span>
                   </div>
@@ -428,8 +430,8 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
               </motion.div>
             ))}
           </div>
-        </div>
-      </div>
+        </section>
+      </section>
     </motion.div>
   );
 
@@ -438,49 +440,54 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
     <AnimatePresence>
       {showUnlockModal && (
         <motion.div
-          className='unlock-modal-overlay'
+          className="CreatorProfilePreview-unlock-modal-overlay"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => setShowUnlockModal(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="unlock-modal-title"
         >
           <motion.div
-            className='unlock-modal'
+            className="CreatorProfilePreview-unlock-modal"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             onClick={e => e.stopPropagation()}
           >
             <button
-              className='modal-close'
+              className="CreatorProfilePreview-modal-close"
               onClick={() => setShowUnlockModal(false)}
+              aria-label="Close unlock modal"
             >
               <X size={20} />
             </button>
 
-            <div className='unlock-content'>
-              <div className='unlock-icon'>
+            <div className="CreatorProfilePreview-unlock-content">
+              <div className="CreatorProfilePreview-unlock-icon">
                 <Unlock size={48} />
               </div>
 
-              <h3>Unlock Exclusive Content</h3>
+              <h3 id="unlock-modal-title">Unlock Exclusive Content</h3>
               <p>Get instant access to this {selectedContent?.type}</p>
 
-              <div className='unlock-price'>
-                <span className='currency'>$</span>
-                <span className='amount'>{selectedContent?.price}</span>
+              <div className="CreatorProfilePreview-unlock-price">
+                <span className="CreatorProfilePreview-currency">$</span>
+                <span className="CreatorProfilePreview-amount">{selectedContent?.price}</span>
               </div>
 
               <motion.button
-                className='unlock-btn'
+                className="CreatorProfilePreview-unlock-btn"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                aria-label="Purchase and unlock content"
               >
                 <Unlock size={18} />
                 <span>Unlock Now</span>
               </motion.button>
 
-              <p className='unlock-note'>
+              <p className="CreatorProfilePreview-unlock-note">
                 One-time payment • Instant access • Support creator
               </p>
             </div>
@@ -493,59 +500,59 @@ const CreatorProfilePreview = ({ profileData, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className='profile-preview-container'>
-      {/* Header */}
-      <div className='preview-header'>
+    <div className="CreatorProfilePreview-overlay" role="dialog" aria-modal="true" aria-labelledby="preview-title">
+      {/* Modal Header */}
+      <header className="CreatorProfilePreview-header">
         <button
-          className='back-btn'
+          className="CreatorProfilePreview-back-btn"
           onClick={viewMode === 'swipe' ? onClose : () => setViewMode('swipe')}
+          aria-label={viewMode === 'swipe' ? 'Close preview' : 'Back to card view'}
         >
           <ChevronLeft size={20} />
-          <span>{viewMode === 'swipe' ? 'Back to Setup' : 'Back to Card'}</span>
+          <span>{viewMode === 'swipe' ? 'Close Preview' : 'Back to Card'}</span>
         </button>
 
-        <div className='preview-title'>
+        <div className="CreatorProfilePreview-title" id="preview-title">
           <Eye size={20} />
           <span>Profile Preview</span>
         </div>
 
-        <div className='view-toggle'>
+        <div className="CreatorProfilePreview-view-toggle">
           <button
-            className={`toggle-btn ${viewMode === 'swipe' ? 'active' : ''}`}
+            className={`CreatorProfilePreview-toggle-btn ${viewMode === 'swipe' ? 'active' : ''}`}
             onClick={() => setViewMode('swipe')}
+            aria-pressed={viewMode === 'swipe'}
           >
             Card View
           </button>
           <button
-            className={`toggle-btn ${viewMode === 'profile' ? 'active' : ''}`}
+            className={`CreatorProfilePreview-toggle-btn ${viewMode === 'profile' ? 'active' : ''}`}
             onClick={() => setViewMode('profile')}
+            aria-pressed={viewMode === 'profile'}
           >
             Full Profile
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* Preview Content */}
-      <div className='preview-content'>
-        <AnimatePresence mode='wait'>
+      {/* Main Content */}
+      <main className="CreatorProfilePreview-content">
+        <AnimatePresence mode="wait">
           {viewMode === 'swipe' ? (
-            <SwipeCardView key='swipe' />
+            <SwipeCardView key="swipe" />
           ) : (
-            <FullProfileView key='profile' />
+            <FullProfileView key="profile" />
           )}
         </AnimatePresence>
-      </div>
+      </main>
 
-      {/* Preview Note */}
-      <div className='preview-note'>
+      {/* Footer Note */}
+      <footer className="CreatorProfilePreview-note">
         <span>💡 This is how members will see your profile</span>
-      </div>
+      </footer>
 
       {/* Unlock Modal */}
       <UnlockModal />
-
-      {/* Bottom Navigation - Mobile Only */}
-      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };
