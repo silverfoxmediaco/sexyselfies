@@ -36,6 +36,10 @@
   max-width: var(--content-width-narrow);
 }
 
+.success-container h1 {
+  margin-bottom: 10px;
+}
+
 @media (min-width: 1024px) {
   .success-container {
     max-width: var(--content-width-medium);
@@ -294,6 +298,7 @@
   text-align: center;
   padding-top: 20px;
   border-top: 1px solid #2a2a2c;
+  margin-bottom: 20px !important;
 }
 
 .submit-error {
