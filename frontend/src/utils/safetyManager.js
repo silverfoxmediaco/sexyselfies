@@ -5,7 +5,6 @@
 
 import contentService from '../services/content.service';
 import memberService from '../services/member.service';
-import { showSnackbar } from '../components/UI/Snackbar';
 
 /**
  * Safety action types
@@ -731,12 +730,8 @@ class SafetyManager {
       return;
     }
 
-    // Use the app's snackbar if available, otherwise console log
-    if (typeof showSnackbar === 'function') {
-      showSnackbar(title, type, message);
-    } else {
-      console.log(`[${type.toUpperCase()}] ${title}: ${message}`);
-    }
+    // Log the notification (components can use their own snackbar systems)
+    console.log(`[${type.toUpperCase()}] ${title}: ${message}`);
   }
 }
 
