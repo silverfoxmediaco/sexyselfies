@@ -19,6 +19,7 @@
   align-items: center;
   /* Safe area support for iPhone notch/Dynamic Island */
   padding-top: env(safe-area-inset-top);
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 16px));
 }
 
 /* Mobile: Full Screen Layout */
