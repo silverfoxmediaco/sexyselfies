@@ -65,6 +65,7 @@ import './CreatorProfile.css';
 import ProfileCoverPhoto from '../components/CreatorProfile/ProfileCoverPhoto';
 import ContentGrid from '../components/CreatorProfile/ContentGrid';
 import CreatorProfileInformation from '../components/CreatorProfileInformation';
+import CreditPurchaseModal from '../components/Wallet/CreditPurchaseModal';
 
 // Reserved routes that should not be treated as usernames
 const reservedRoutes = [
@@ -108,6 +109,10 @@ const CreatorProfile = () => {
   // User data
   const [userCredits, setUserCredits] = useState(100);
   const [viewHistory, setViewHistory] = useState([]);
+
+  // Credit purchase modal state
+  const [showCreditPurchaseModal, setShowCreditPurchaseModal] = useState(false);
+  const [pendingPurchase, setPendingPurchase] = useState(null);
 
   // Check if user is already connected to this creator
   const checkConnectionStatus = async (creatorId) => {
@@ -260,6 +265,73 @@ const CreatorProfile = () => {
       // );
     } catch (err) {
       alert('Purchase failed. Please try again.');
+    }
+  };
+
+  // Handle content click - determine if purchase is needed or show content
+  const handleContentPurchase = async (contentItem, index) => {
+    // Check if content is locked/paid and not yet purchased
+    const isContentLocked = (contentItem.isLocked || contentItem.isPaid === true ||
+      (contentItem.isFree === false && contentItem.price > 0)) &&
+      !purchasedContent.includes(contentItem.id);
+
+    if (isContentLocked) {
+      // Content requires purchase - attempt to buy it
+      try {
+        const response = await memberService.purchaseContent(contentItem._id, 'credits');
+        if (response.success) {
+          // Purchase successful - add to purchased content and show
+          setPurchasedContent(prev => [...prev, contentItem.id]);
+          setSelectedContent(contentItem);
+          setImageGalleryIndex(index);
+          setShowImageGallery(true);
+        }
+      } catch (error) {
+        console.error('Purchase error:', error);
+        if (error.message && error.message.includes('Insufficient funds')) {
+          // Show credit purchase modal for insufficient credits
+          setPendingPurchase({
+            ...contentItem,
+            title: contentItem.title || contentItem.description || 'Content',
+            price: contentItem.price || 3
+          });
+          setShowCreditPurchaseModal(true);
+        } else {
+          alert('Purchase failed. Please try again.');
+        }
+      }
+    } else {
+      // Content is free or already purchased - show it directly
+      setSelectedContent(contentItem);
+      setImageGalleryIndex(index);
+      setShowImageGallery(true);
+    }
+  };
+
+  // Handle successful credit purchase - retry original content purchase
+  const handleCreditPurchaseSuccess = async (response) => {
+    if (pendingPurchase) {
+      try {
+        // Wait a moment for credits to be processed
+        setTimeout(async () => {
+          const purchaseResponse = await memberService.purchaseContent(pendingPurchase._id, 'credits');
+          if (purchaseResponse.success) {
+            // Purchase successful - add to purchased content and show
+            setPurchasedContent(prev => [...prev, pendingPurchase.id]);
+            setSelectedContent(pendingPurchase);
+            setImageGalleryIndex(0);
+            setShowImageGallery(true);
+          }
+          // Clear pending purchase and close modal
+          setPendingPurchase(null);
+          setShowCreditPurchaseModal(false);
+        }, 1000);
+      } catch (error) {
+        console.error('Retry purchase error:', error);
+        alert('Purchase failed after credit top-up. Please try again.');
+        setPendingPurchase(null);
+        setShowCreditPurchaseModal(false);
+      }
     }
   };
 
@@ -561,11 +633,7 @@ const CreatorProfile = () => {
                 {/* NEW CONTENT GRID COMPONENT */}
                 <ContentGrid
                   content={getFilteredContent()}
-                  onContentClick={(contentItem, index) => {
-                    setSelectedContent(contentItem);
-                    setImageGalleryIndex(index);
-                    setShowImageGallery(true);
-                  }}
+                  onContentClick={handleContentPurchase}
                   purchasedContent={purchasedContent}
                 />
               </>
@@ -701,6 +769,17 @@ const CreatorProfile = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Credit Purchase Modal */}
+          {showCreditPurchaseModal && (
+            <CreditPurchaseModal
+              isOpen={showCreditPurchaseModal}
+              onClose={() => setShowCreditPurchaseModal(false)}
+              onSuccess={handleCreditPurchaseSuccess}
+              pendingPurchase={pendingPurchase}
+              currentCredits={userCredits}
+            />
+          )}
 
         </div>
       </div>

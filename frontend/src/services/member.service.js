@@ -460,7 +460,7 @@ class MemberService {
    */
   async purchaseContent(contentId, paymentMethod = 'credits') {
     try {
-      const response = await api.post(`/member/purchase/${contentId}`, {
+      const response = await api.post(`/members/purchase/${contentId}`, {
         payment_method: paymentMethod,
       });
       return response;

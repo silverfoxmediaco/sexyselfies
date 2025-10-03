@@ -244,10 +244,9 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
             <span className="MemberWallet-dollar-amount">$5.00</span>
           </button>
           <button
-            className="MemberWallet-quick-add-btn popular"
+            className="MemberWallet-quick-add-btn"
             onClick={() => handleQuickPurchase(10)}
           >
-            <div className="MemberWallet-popular-badge">Popular</div>
             <Zap size={16} />
             <span className="MemberWallet-credit-amount">10</span>
             <span className="MemberWallet-dollar-amount">$10.00</span>
@@ -261,10 +260,9 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
             <span className="MemberWallet-dollar-amount">$25.00</span>
           </button>
           <button
-            className="MemberWallet-quick-add-btn best-value"
+            className="MemberWallet-quick-add-btn"
             onClick={() => handleQuickPurchase(50)}
           >
-            <div className="MemberWallet-value-badge">Best Value</div>
             <Zap size={16} />
             <span className="MemberWallet-credit-amount">50</span>
             <span className="MemberWallet-dollar-amount">$50.00</span>

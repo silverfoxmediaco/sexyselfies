@@ -235,34 +235,6 @@
   box-shadow: 0 4px 20px rgba(23, 210, 194, 0.1);
 }
 
-.MemberWallet-quick-add-btn.popular {
-  border-color: var(--primary);
-  background: linear-gradient(135deg, var(--surface-700) 0%, rgba(23, 210, 194, 0.1) 100%);
-}
-
-.MemberWallet-quick-add-btn.best-value {
-  border-color: var(--success);
-  background: linear-gradient(135deg, var(--surface-700) 0%, rgba(34, 197, 94, 0.1) 100%);
-}
-
-.MemberWallet-popular-badge,
-.MemberWallet-value-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: var(--primary);
-  color: white;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.MemberWallet-value-badge {
-  background: var(--success);
-}
 
 .MemberWallet-quick-add-btn svg {
   color: var(--primary);
