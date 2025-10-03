@@ -37,6 +37,8 @@
   display: flex;
   flex-direction: column;
   margin-top: 50px;
+  /* Safe area support for iPhone notch/Dynamic Island */
+  padding-top: env(safe-area-inset-top);
 }
 
 /* Loading and Error States */

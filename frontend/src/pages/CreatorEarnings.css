@@ -18,6 +18,8 @@
   width: 100%;
   min-height: 100vh;
   background: var(--earnings-bg);
+  /* Safe area support for iPhone notch/Dynamic Island */
+  padding-top: env(safe-area-inset-top);
   color: var(--earnings-text);
   padding: 16px;
 }
