@@ -1,0 +1,577 @@
+/* ReportModal Component Styles */
+/* Mobile-first responsive design */
+
+:root {
+  /* Report modal colors */
+  --ReportModal-overlay: rgba(0, 0, 0, 0.8);
+  --ReportModal-bg: #1c1c1e;
+  --ReportModal-surface: #2a2a2c;
+  --ReportModal-border: #3a3a3c;
+  --ReportModal-text: #ffffff;
+  --ReportModal-text-secondary: #c7c7cc;
+  --ReportModal-text-muted: #8e8e93;
+
+  /* Severity colors */
+  --ReportModal-critical: #ef4444;
+  --ReportModal-critical-bg: rgba(239, 68, 68, 0.1);
+  --ReportModal-high: #f97316;
+  --ReportModal-high-bg: rgba(249, 115, 22, 0.1);
+  --ReportModal-medium: #eab308;
+  --ReportModal-medium-bg: rgba(234, 179, 8, 0.1);
+  --ReportModal-low: #8e8e93;
+  --ReportModal-low-bg: rgba(142, 142, 147, 0.1);
+
+  /* Action colors */
+  --ReportModal-primary: #17d2c2;
+  --ReportModal-primary-hover: #12b7ab;
+  --ReportModal-secondary: #3a3a3c;
+  --ReportModal-secondary-hover: #4a4a4c;
+  --ReportModal-success: #22c55e;
+  --ReportModal-error: #ef4444;
+  --ReportModal-error-bg: rgba(239, 68, 68, 0.1);
+}
+
+/* Modal overlay */
+.ReportModal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--ReportModal-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: ReportModal-fadeIn 0.2s ease;
+}
+
+@keyframes ReportModal-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal container */
+.ReportModal-container {
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  background: var(--ReportModal-bg);
+  border-radius: 16px;
+  border: 1px solid var(--ReportModal-border);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  animation: ReportModal-slideUp 0.3s ease;
+  overflow: hidden;
+}
+
+@keyframes ReportModal-slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal content */
+.ReportModal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 90vh;
+}
+
+/* Header */
+.ReportModal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--ReportModal-border);
+  flex-shrink: 0;
+}
+
+.ReportModal-header-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ReportModal-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: var(--ReportModal-error-bg);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ReportModal-error);
+}
+
+.ReportModal-title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.ReportModal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ReportModal-text);
+  margin: 0 0 4px;
+  line-height: 1.4;
+}
+
+.ReportModal-subtitle {
+  font-size: 0.875rem;
+  color: var(--ReportModal-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ReportModal-close-button {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: var(--ReportModal-secondary);
+  border: none;
+  border-radius: 6px;
+  color: var(--ReportModal-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.ReportModal-close-button:hover {
+  background: var(--ReportModal-secondary-hover);
+  color: var(--ReportModal-text);
+}
+
+/* Form */
+.ReportModal-form {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Sections */
+.ReportModal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ReportModal-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ReportModal-text);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Categories */
+.ReportModal-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ReportModal-category {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--ReportModal-surface);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.ReportModal-category:hover {
+  border-color: var(--ReportModal-border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.ReportModal-category.selected {
+  border-color: var(--ReportModal-primary);
+  background: rgba(23, 210, 194, 0.1);
+}
+
+/* Severity styling */
+.ReportModal-category.critical .ReportModal-category-icon {
+  color: var(--ReportModal-critical);
+}
+
+.ReportModal-category.high .ReportModal-category-icon {
+  color: var(--ReportModal-high);
+}
+
+.ReportModal-category.medium .ReportModal-category-icon {
+  color: var(--ReportModal-medium);
+}
+
+.ReportModal-category.low .ReportModal-category-icon {
+  color: var(--ReportModal-low);
+}
+
+.ReportModal-category-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.ReportModal-category-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ReportModal-category-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ReportModal-text);
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.ReportModal-category-description {
+  font-size: 0.8rem;
+  color: var(--ReportModal-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ReportModal-category-radio {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ReportModal-category-radio input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ReportModal-primary);
+  cursor: pointer;
+}
+
+/* Textarea */
+.ReportModal-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px 16px;
+  background: var(--ReportModal-surface);
+  border: 1px solid var(--ReportModal-border);
+  border-radius: 8px;
+  color: var(--ReportModal-text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.ReportModal-textarea:focus {
+  outline: none;
+  border-color: var(--ReportModal-primary);
+}
+
+.ReportModal-textarea::placeholder {
+  color: var(--ReportModal-text-muted);
+}
+
+.ReportModal-character-count {
+  font-size: 0.75rem;
+  color: var(--ReportModal-text-muted);
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* Error message */
+.ReportModal-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--ReportModal-error-bg);
+  border: 1px solid var(--ReportModal-error);
+  border-radius: 8px;
+  color: var(--ReportModal-error);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Actions */
+.ReportModal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.ReportModal-button {
+  flex: 1;
+  min-height: 44px;
+  padding: 12px 20px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  outline: none;
+}
+
+.ReportModal-button:focus {
+  outline: 2px solid var(--ReportModal-primary);
+  outline-offset: 2px;
+}
+
+.ReportModal-button--primary {
+  background: var(--ReportModal-primary);
+  color: #000000;
+  border-color: var(--ReportModal-primary);
+}
+
+.ReportModal-button--primary:hover:not(:disabled) {
+  background: var(--ReportModal-primary-hover);
+  border-color: var(--ReportModal-primary-hover);
+  transform: translateY(-1px);
+}
+
+.ReportModal-button--secondary {
+  background: var(--ReportModal-secondary);
+  color: var(--ReportModal-text);
+  border-color: var(--ReportModal-secondary);
+}
+
+.ReportModal-button--secondary:hover:not(:disabled) {
+  background: var(--ReportModal-secondary-hover);
+  border-color: var(--ReportModal-secondary-hover);
+}
+
+.ReportModal-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Loading spinner */
+.ReportModal-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: ReportModal-spin 1s linear infinite;
+}
+
+@keyframes ReportModal-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Success state */
+.ReportModal-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  gap: 16px;
+}
+
+.ReportModal-success-icon {
+  color: var(--ReportModal-success);
+  margin-bottom: 8px;
+}
+
+.ReportModal-success h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ReportModal-text);
+  margin: 0;
+}
+
+.ReportModal-success p {
+  font-size: 0.875rem;
+  color: var(--ReportModal-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 300px;
+}
+
+/* Disclaimer */
+.ReportModal-disclaimer {
+  padding: 16px;
+  background: var(--ReportModal-surface);
+  border-radius: 8px;
+  border: 1px solid var(--ReportModal-border);
+  margin-top: 8px;
+}
+
+.ReportModal-disclaimer p {
+  font-size: 0.75rem;
+  color: var(--ReportModal-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ReportModal-disclaimer strong {
+  color: var(--ReportModal-text-secondary);
+}
+
+/* Mobile optimizations */
+@media (max-width: 767px) {
+  .ReportModal-overlay {
+    padding: 8px;
+    align-items: flex-end;
+  }
+
+  .ReportModal-container {
+    max-height: 95vh;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .ReportModal-header {
+    padding: 16px 16px 12px;
+  }
+
+  .ReportModal-form {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .ReportModal-category {
+    padding: 12px;
+  }
+
+  .ReportModal-category-label {
+    font-size: 0.9rem;
+  }
+
+  .ReportModal-category-description {
+    font-size: 0.75rem;
+  }
+
+  .ReportModal-actions {
+    flex-direction: column;
+  }
+
+  .ReportModal-button {
+    min-height: 48px;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .ReportModal-container {
+    max-width: 520px;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .ReportModal-container {
+    max-width: 540px;
+  }
+
+  .ReportModal-overlay {
+    align-items: center;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .ReportModal-category {
+    border-width: 2px;
+  }
+
+  .ReportModal-button {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .ReportModal-overlay,
+  .ReportModal-container,
+  .ReportModal-button,
+  .ReportModal-category {
+    animation: none;
+    transition: none;
+  }
+
+  .ReportModal-button:hover {
+    transform: none;
+  }
+
+  .ReportModal-spinner {
+    animation: none;
+  }
+}
+
+/* Focus visible for better accessibility */
+.ReportModal-close-button:focus-visible,
+.ReportModal-button:focus-visible,
+.ReportModal-category:focus-visible {
+  outline: 2px solid var(--ReportModal-primary);
+  outline-offset: 2px;
+}
+
+/* RTL language support */
+[dir="rtl"] .ReportModal-header-content {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .ReportModal-category {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .ReportModal-error {
+  flex-direction: row-reverse;
+}
+
+/* Custom scrollbar for modal content */
+.ReportModal-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ReportModal-form::-webkit-scrollbar-track {
+  background: var(--ReportModal-surface);
+}
+
+.ReportModal-form::-webkit-scrollbar-thumb {
+  background: var(--ReportModal-border);
+  border-radius: 3px;
+}
+
+.ReportModal-form::-webkit-scrollbar-thumb:hover {
+  background: var(--ReportModal-text-muted);
+}

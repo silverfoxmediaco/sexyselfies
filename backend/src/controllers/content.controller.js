@@ -4,9 +4,10 @@ const Transaction = require('../models/Transaction');
 const Creator = require('../models/Creator');
 const Member = require('../models/Member');
 const MemberAnalytics = require('../models/MemberAnalytics');
+const Report = require('../models/Report');
 const { processPayment } = require('../services/payment.service');
 const { trackEvent } = require('../services/analytics.service');
-const { sendNotification } = require('../services/notification.service');
+const { sendNotification, sendNotificationEmail } = require('../services/notification.service');
 
 /**
  * Get all content (preview mode - blurred/watermarked)
@@ -668,14 +669,68 @@ const reportContent = async (req, res) => {
     const { reason, description } = req.body;
     const reporterId = req.user.id;
 
+    // Get content details for the report
+    const content = await Content.findById(id).populate('creatorId', 'username displayName email');
+    if (!content) {
+      return res.status(404).json({
+        success: false,
+        message: 'Content not found',
+      });
+    }
+
+    // Get reporter details
+    const reporter = await Member.findById(reporterId).select('username email');
+
     // Create report in database
-    await Report.create({
+    const report = await Report.create({
       contentId: id,
       reporterId,
       reason,
       description,
       status: 'pending',
     });
+
+    // Send email notification to admin@sexyselfies.com
+    try {
+      await sendNotificationEmail(
+        { email: 'admin@sexyselfies.com', username: 'Admin' },
+        {
+          type: 'content_report',
+          title: '🚨 Content Report Submitted',
+          message: `A user has reported content on the platform.
+
+REPORT DETAILS:
+- Report ID: ${report._id}
+- Reason: ${reason}
+- Description: ${description || 'No additional details provided'}
+
+CONTENT DETAILS:
+- Content ID: ${content._id}
+- Title: ${content.title || 'Untitled'}
+- Creator: ${content.creatorId?.displayName || content.creatorId?.username || 'Unknown'}
+- Content Type: ${content.mediaType || 'Unknown'}
+- Price: $${content.price || '0.00'}
+
+REPORTER DETAILS:
+- Reporter ID: ${reporterId}
+- Username: ${reporter?.username || 'Unknown'}
+
+Please review this report as soon as possible at: ${process.env.ADMIN_URL || 'https://admin.sexyselfies.com'}/reports/${report._id}`,
+          data: {
+            reportId: report._id,
+            contentId: id,
+            reason,
+            description,
+            reporterUsername: reporter?.username,
+            creatorUsername: content.creatorId?.username,
+            contentTitle: content.title
+          }
+        }
+      );
+    } catch (emailError) {
+      console.error('Failed to send admin notification email:', emailError);
+      // Don't fail the request if email fails
+    }
 
     res.json({
       success: true,

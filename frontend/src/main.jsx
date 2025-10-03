@@ -100,6 +100,9 @@ import ContentView from './pages/ContentView';
 import TOS from './pages/TOS';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
+// Import Cookie Consent
+import CookieConsent from './components/CookieConsent';
+
 console.log('Mounting React App to root element...');
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -628,6 +631,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path='/terms' element={<TOS />} />
             <Route path='/privacy' element={<PrivacyPolicy />} />
           </Routes>
+
+          {/* Cookie Consent Banner - Global */}
+          <CookieConsent />
         </AppLayout>
       </BrowserRouter>
     </AuthProvider>

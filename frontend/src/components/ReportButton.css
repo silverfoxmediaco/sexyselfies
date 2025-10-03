@@ -1,0 +1,253 @@
+/* ReportButton Component Styles */
+/* Mobile-first responsive design */
+
+:root {
+  /* Report button colors */
+  --ReportButton-text: #8e8e93;
+  --ReportButton-text-hover: #ef4444;
+  --ReportButton-bg: transparent;
+  --ReportButton-bg-hover: rgba(239, 68, 68, 0.1);
+  --ReportButton-border: #3a3a3c;
+  --ReportButton-border-hover: #ef4444;
+
+  /* Danger variant */
+  --ReportButton-danger-text: #ef4444;
+  --ReportButton-danger-bg: rgba(239, 68, 68, 0.1);
+  --ReportButton-danger-border: #ef4444;
+
+  /* Ghost variant */
+  --ReportButton-ghost-text: #8e8e93;
+  --ReportButton-ghost-bg: transparent;
+  --ReportButton-ghost-border: transparent;
+}
+
+/* Base button styles */
+.ReportButton-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--ReportButton-border);
+  border-radius: 8px;
+  background: var(--ReportButton-bg);
+  color: var(--ReportButton-text);
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  outline: none;
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.ReportButton-button:hover {
+  color: var(--ReportButton-text-hover);
+  background: var(--ReportButton-bg-hover);
+  border-color: var(--ReportButton-border-hover);
+  transform: translateY(-1px);
+}
+
+.ReportButton-button:focus {
+  outline: 2px solid var(--ReportButton-border-hover);
+  outline-offset: 2px;
+}
+
+.ReportButton-button:active {
+  transform: translateY(0);
+}
+
+/* Size variants */
+.ReportButton-button--small {
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  min-height: 32px;
+  gap: 4px;
+}
+
+.ReportButton-button--medium {
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  min-height: 36px;
+  gap: 6px;
+}
+
+.ReportButton-button--large {
+  padding: 12px 16px;
+  font-size: 1rem;
+  min-height: 44px;
+  gap: 8px;
+}
+
+/* Style variants */
+.ReportButton-button--default {
+  /* Uses base styles */
+}
+
+.ReportButton-button--danger {
+  color: var(--ReportButton-danger-text);
+  background: var(--ReportButton-danger-bg);
+  border-color: var(--ReportButton-danger-border);
+}
+
+.ReportButton-button--danger:hover {
+  color: #ffffff;
+  background: var(--ReportButton-danger-text);
+  border-color: var(--ReportButton-danger-text);
+}
+
+.ReportButton-button--ghost {
+  color: var(--ReportButton-ghost-text);
+  background: var(--ReportButton-ghost-bg);
+  border-color: var(--ReportButton-ghost-border);
+  padding: 4px 8px;
+}
+
+.ReportButton-button--ghost:hover {
+  color: var(--ReportButton-text-hover);
+  background: var(--ReportButton-bg-hover);
+  border-color: var(--ReportButton-border-hover);
+}
+
+/* Text content */
+.ReportButton-text {
+  font-weight: inherit;
+  line-height: 1;
+}
+
+/* Icon-only button (when showText is false) */
+.ReportButton-button:not(:has(.ReportButton-text)) {
+  width: auto;
+  aspect-ratio: 1;
+  padding: 8px;
+}
+
+.ReportButton-button--small:not(:has(.ReportButton-text)) {
+  padding: 6px;
+}
+
+.ReportButton-button--large:not(:has(.ReportButton-text)) {
+  padding: 12px;
+}
+
+/* Disabled state */
+.ReportButton-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.ReportButton-button:disabled:hover {
+  color: var(--ReportButton-text);
+  background: var(--ReportButton-bg);
+  border-color: var(--ReportButton-border);
+}
+
+/* Loading state */
+.ReportButton-button--loading {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.ReportButton-button--loading:hover {
+  transform: none;
+}
+
+/* Mobile optimizations */
+@media (max-width: 767px) {
+  .ReportButton-button {
+    min-height: 44px; /* WCAG touch target */
+    padding: 10px 14px;
+    font-size: 0.875rem;
+  }
+
+  .ReportButton-button--small {
+    min-height: 40px;
+    padding: 8px 12px;
+  }
+
+  .ReportButton-button--large {
+    min-height: 48px;
+    padding: 14px 18px;
+    font-size: 1rem;
+  }
+
+  /* Icon-only mobile adjustments */
+  .ReportButton-button:not(:has(.ReportButton-text)) {
+    min-width: 44px;
+    padding: 10px;
+  }
+
+  .ReportButton-button--small:not(:has(.ReportButton-text)) {
+    min-width: 40px;
+    padding: 8px;
+  }
+
+  .ReportButton-button--large:not(:has(.ReportButton-text)) {
+    min-width: 48px;
+    padding: 14px;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .ReportButton-button {
+    font-size: 0.875rem;
+  }
+
+  .ReportButton-button--large {
+    font-size: 1rem;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .ReportButton-button {
+    font-size: 0.875rem;
+  }
+
+  .ReportButton-button--large {
+    font-size: 1rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .ReportButton-button {
+    border-width: 2px;
+  }
+
+  .ReportButton-button--ghost {
+    border: 1px solid var(--ReportButton-border);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .ReportButton-button {
+    transition: none;
+  }
+
+  .ReportButton-button:hover {
+    transform: none;
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  /* Colors are already optimized for dark mode */
+}
+
+/* Focus visible for better accessibility */
+.ReportButton-button:focus-visible {
+  outline: 2px solid var(--ReportButton-border-hover);
+  outline-offset: 2px;
+}
+
+/* RTL language support */
+[dir="rtl"] .ReportButton-button {
+  /* Text direction handled by flex layout */
+}
