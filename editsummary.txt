@@ -4004,3 +4004,24 @@ REASONING:
 STATUS: ✅ Complete - TOS page now clean reference document
 
 
+
+
+=== AUTHCONTEXT IMPORT FIX - October 3, 2025 ===
+
+PROBLEM:
+- Build failed with error: 'AuthContext' is not exported by 'src/contexts/AuthContext.jsx'
+- AppLayout.jsx was importing AuthContext as named export: import { AuthContext }
+- But AuthContext.jsx exports it as default export: export default AuthContext
+
+SOLUTION:
+- Fixed import to use default import: import AuthContext from '../contexts/AuthContext'
+- Fixed destructuring to match AuthContext properties: { user, role: userRole }
+- AuthContext exports 'role' property, not 'userRole'
+
+CHANGES:
+- /frontend/src/components/AppLayout.jsx line 3: Changed to default import
+- /frontend/src/components/AppLayout.jsx line 7: Fixed property destructuring
+
+STATUS: ✅ Fixed - Build should now work correctly
+
+

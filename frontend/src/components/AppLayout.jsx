@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
+import AuthContext from '../contexts/AuthContext';
 import BottomNavigation from './BottomNavigation';
 
 const AppLayout = ({ children }) => {
-  const { user, userRole } = useContext(AuthContext);
+  const { user, role: userRole } = useContext(AuthContext);
   const location = useLocation();
   const [shouldShowNavigation, setShouldShowNavigation] = useState(true);
 
