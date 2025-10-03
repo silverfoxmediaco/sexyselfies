@@ -1,0 +1,493 @@
+/* MemberWallet.css */
+
+.MemberWallet {
+  padding: var(--space-md);
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--bg-900);
+  min-height: 100vh;
+}
+
+/* Loading Skeleton */
+.MemberWallet-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.MemberWallet-balance-skeleton {
+  height: 180px;
+  background: var(--surface-700);
+  border-radius: 16px;
+  background: linear-gradient(90deg, var(--surface-700) 25%, var(--border-600) 50%, var(--surface-700) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+.MemberWallet-grid-skeleton {
+  height: 120px;
+  background: var(--surface-700);
+  border-radius: 16px;
+  background: linear-gradient(90deg, var(--surface-700) 25%, var(--border-600) 50%, var(--surface-700) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+.MemberWallet-transactions-skeleton {
+  height: 200px;
+  background: var(--surface-700);
+  border-radius: 16px;
+  background: linear-gradient(90deg, var(--surface-700) 25%, var(--border-600) 50%, var(--surface-700) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Balance Card */
+.MemberWallet-balance-card {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+  border-radius: 20px;
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(23, 210, 194, 0.2);
+}
+
+.MemberWallet-balance-card.low-balance {
+  background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.2);
+}
+
+.MemberWallet-balance-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.MemberWallet-balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.MemberWallet-balance-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.MemberWallet-wallet-icon {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.MemberWallet-balance-title h2 {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.MemberWallet-refresh-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.MemberWallet-refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.MemberWallet-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.MemberWallet-refresh-btn .spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.MemberWallet-balance-amount {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.MemberWallet-credits-value {
+  font-size: 42px;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+.MemberWallet-credits-label {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.MemberWallet-low-balance-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: rgba(255, 255, 255, 0.15);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 12px;
+  margin-bottom: var(--space-md);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.MemberWallet-add-credits-btn {
+  background: white;
+  color: var(--primary);
+  border: none;
+  border-radius: 12px;
+  padding: var(--space-md) var(--space-xl);
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  min-height: var(--touch-target-optimal);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.MemberWallet-add-credits-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.MemberWallet-add-credits-btn:active {
+  transform: translateY(0);
+}
+
+/* Quick Add Section */
+.MemberWallet-quick-add-section {
+  margin-bottom: var(--space-xl);
+}
+
+.MemberWallet-quick-add-section h3 {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.MemberWallet-quick-add-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.MemberWallet-quick-add-btn {
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 16px;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 120px;
+}
+
+.MemberWallet-quick-add-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-300);
+  box-shadow: 0 4px 20px rgba(23, 210, 194, 0.1);
+}
+
+.MemberWallet-quick-add-btn.popular {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, var(--surface-700) 0%, rgba(23, 210, 194, 0.1) 100%);
+}
+
+.MemberWallet-quick-add-btn.best-value {
+  border-color: var(--success);
+  background: linear-gradient(135deg, var(--surface-700) 0%, rgba(34, 197, 94, 0.1) 100%);
+}
+
+.MemberWallet-popular-badge,
+.MemberWallet-value-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--primary);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.MemberWallet-value-badge {
+  background: var(--success);
+}
+
+.MemberWallet-quick-add-btn svg {
+  color: var(--primary);
+}
+
+.MemberWallet-credit-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.MemberWallet-dollar-amount {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.MemberWallet-bonus {
+  font-size: 12px;
+  color: var(--success);
+  font-weight: 500;
+}
+
+/* Recent Activity */
+.MemberWallet-recent-activity {
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 16px;
+  padding: var(--space-lg);
+}
+
+.MemberWallet-activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.MemberWallet-activity-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.MemberWallet-activity-title h3 {
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.MemberWallet-activity-title svg {
+  color: var(--text-secondary);
+}
+
+.MemberWallet-view-all-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  padding: var(--space-sm);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.MemberWallet-view-all-btn:hover {
+  background: rgba(23, 210, 194, 0.1);
+}
+
+.MemberWallet-transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.MemberWallet-transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md);
+  background: var(--bg-800);
+  border: 1px solid var(--border-600);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.MemberWallet-transaction-item:hover {
+  border-color: var(--primary-300);
+  transform: translateY(-1px);
+}
+
+.MemberWallet-transaction-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.MemberWallet-transaction-icon {
+  color: var(--text-secondary);
+}
+
+.MemberWallet-transaction-icon.positive {
+  color: var(--success);
+}
+
+.MemberWallet-transaction-icon.negative {
+  color: var(--text-secondary);
+}
+
+.MemberWallet-transaction-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.MemberWallet-transaction-description {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.MemberWallet-transaction-time {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.MemberWallet-transaction-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.MemberWallet-transaction-amount {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.MemberWallet-transaction-amount.positive {
+  color: var(--success);
+}
+
+.MemberWallet-transaction-amount.negative {
+  color: var(--text-secondary);
+}
+
+.MemberWallet-credits-unit {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.MemberWallet-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+}
+
+.MemberWallet-empty-state svg {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.MemberWallet-empty-state p {
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.MemberWallet-empty-state span {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .MemberWallet {
+    padding: var(--space-sm);
+  }
+
+  .MemberWallet-balance-card {
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+  }
+
+  .MemberWallet-credits-value {
+    font-size: 36px;
+  }
+
+  .MemberWallet-quick-add-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .MemberWallet-quick-add-btn {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: var(--space-md);
+    min-height: var(--touch-target-optimal);
+  }
+
+  .MemberWallet-transaction-item {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .MemberWallet-transaction-left {
+    gap: var(--space-sm);
+  }
+}
+
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
+  .MemberWallet-balance-card {
+    box-shadow: 0 8px 32px rgba(23, 210, 194, 0.15);
+  }
+
+  .MemberWallet-quick-add-btn:hover {
+    box-shadow: 0 4px 20px rgba(23, 210, 194, 0.08);
+  }
+}

@@ -1837,3 +1837,214 @@
     gap: 4px;
   }
 }
+
+/* Earnings Quick Display Widget */
+.creator-dashboard-earnings-widget {
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 16px;
+  padding: var(--space-lg);
+  margin: var(--space-lg) var(--space-md);
+  transition: all 0.2s ease;
+}
+
+.creator-dashboard-earnings-widget:hover {
+  border-color: var(--primary-300);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(23, 210, 194, 0.1);
+}
+
+.earnings-widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.earnings-widget-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.earnings-widget-title svg {
+  color: var(--primary);
+}
+
+.earnings-widget-title h3 {
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.earnings-widget-view-all {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  padding: var(--space-sm);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.earnings-widget-view-all:hover {
+  background: rgba(23, 210, 194, 0.1);
+  transform: translateX(2px);
+}
+
+.earnings-widget-content {
+  width: 100%;
+}
+
+.earnings-widget-loading {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.earnings-stat-skeleton {
+  height: 80px;
+  background: var(--border-600);
+  border-radius: 12px;
+  background: linear-gradient(90deg, var(--border-600) 25%, var(--surface-700) 50%, var(--border-600) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.earnings-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.earnings-stat-card {
+  background: var(--bg-800);
+  border: 1px solid var(--border-600);
+  border-radius: 12px;
+  padding: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  transition: all 0.2s ease;
+}
+
+.earnings-stat-card:hover {
+  border-color: var(--primary-300);
+  transform: translateY(-1px);
+}
+
+.earnings-stat-card.primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+  border-color: var(--primary);
+  color: white;
+}
+
+.earnings-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(23, 210, 194, 0.1);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.earnings-stat-card.primary .earnings-stat-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.earnings-stat-icon svg {
+  color: var(--primary);
+}
+
+.earnings-stat-card.primary .earnings-stat-icon svg {
+  color: white;
+}
+
+.earnings-stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.earnings-stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.earnings-stat-card.primary .earnings-stat-label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.earnings-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.earnings-stat-card.primary .earnings-stat-value {
+  color: white;
+}
+
+/* Mobile Responsive for Earnings Widget */
+@media (max-width: 768px) {
+  .creator-dashboard-earnings-widget {
+    margin: var(--space-md) var(--space-sm);
+    padding: var(--space-md);
+  }
+
+  .earnings-stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .earnings-stat-card {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .earnings-widget-title h3 {
+    font-size: 16px;
+  }
+
+  .earnings-stat-value {
+    font-size: 14px;
+  }
+
+  .earnings-stat-label {
+    font-size: 11px;
+  }
+}
+
+/* Tablet Responsive for Earnings Widget */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .earnings-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .earnings-stat-card:last-child {
+    grid-column: 1 / -1;
+    max-width: 50%;
+    margin: 0 auto;
+  }
+}

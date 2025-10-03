@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import creatorService from '../services/creator.service';
+import paymentService from '../services/payment.service';
 import { getGiftAnalytics } from '../services/gift.service';
 import './CreatorDashboard.css';
 import {
@@ -19,6 +20,9 @@ import {
   Star,
   ShoppingBag,
   Gift,
+  Wallet,
+  CreditCard,
+  ChevronRight,
 } from 'lucide-react';
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
@@ -64,10 +68,17 @@ const CreatorDashboard = () => {
     },
   });
   const [creatorName, setCreatorName] = useState('Creator');
+  const [earningsData, setEarningsData] = useState({
+    pendingPayout: 0,
+    todayEarnings: 0,
+    availableBalance: 0,
+    loading: true
+  });
 
   // Load dashboard data on mount and time range change
   useEffect(() => {
     loadDashboardData();
+    loadEarningsData();
   }, [timeRange]);
 
   // Set up auto-refresh every 5 minutes for real-time data
@@ -211,6 +222,41 @@ const CreatorDashboard = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadEarningsData = async () => {
+    try {
+      setEarningsData(prev => ({ ...prev, loading: true }));
+
+      // Fetch earnings summary data
+      const earningsResponse = await paymentService.getCreatorEarnings('today');
+
+      if (earningsResponse.data?.earnings) {
+        const earnings = earningsResponse.data.earnings;
+
+        setEarningsData({
+          pendingPayout: earnings.payouts?.pending?.netAmount || 0,
+          todayEarnings: earnings.realTimeMetrics?.todayEarnings?.amount || 0,
+          availableBalance: earnings.payouts?.pending?.amount || 0,
+          loading: false
+        });
+      } else {
+        setEarningsData({
+          pendingPayout: 0,
+          todayEarnings: 0,
+          availableBalance: 0,
+          loading: false
+        });
+      }
+    } catch (error) {
+      console.error('Error loading earnings data:', error);
+      setEarningsData({
+        pendingPayout: 0,
+        todayEarnings: 0,
+        availableBalance: 0,
+        loading: false
+      });
     }
   };
 
@@ -471,6 +517,76 @@ const CreatorDashboard = () => {
           </button>
         ))}
       </div>
+
+      {/* Earnings Quick Display Widget */}
+      <motion.div
+        className='creator-dashboard-earnings-widget'
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <div className='earnings-widget-header'>
+          <div className='earnings-widget-title'>
+            <Wallet size={20} />
+            <h3>Earnings Overview</h3>
+          </div>
+          <button
+            className='earnings-widget-view-all'
+            onClick={() => navigate(`/creator/${creatorId}/earnings`)}
+          >
+            View All
+            <ChevronRight size={16} />
+          </button>
+        </div>
+
+        <div className='earnings-widget-content'>
+          {earningsData.loading ? (
+            <div className='earnings-widget-loading'>
+              <div className='earnings-stat-skeleton' />
+              <div className='earnings-stat-skeleton' />
+              <div className='earnings-stat-skeleton' />
+            </div>
+          ) : (
+            <div className='earnings-stats-grid'>
+              <div className='earnings-stat-card primary'>
+                <div className='earnings-stat-icon'>
+                  <DollarSign size={18} />
+                </div>
+                <div className='earnings-stat-content'>
+                  <span className='earnings-stat-label'>Today's Earnings</span>
+                  <span className='earnings-stat-value'>
+                    {formatCurrency(earningsData.todayEarnings)}
+                  </span>
+                </div>
+              </div>
+
+              <div className='earnings-stat-card'>
+                <div className='earnings-stat-icon'>
+                  <CreditCard size={18} />
+                </div>
+                <div className='earnings-stat-content'>
+                  <span className='earnings-stat-label'>Pending Payout</span>
+                  <span className='earnings-stat-value'>
+                    {formatCurrency(earningsData.pendingPayout)}
+                  </span>
+                </div>
+              </div>
+
+              <div className='earnings-stat-card'>
+                <div className='earnings-stat-icon'>
+                  <TrendingUp size={18} />
+                </div>
+                <div className='earnings-stat-content'>
+                  <span className='earnings-stat-label'>Available</span>
+                  <span className='earnings-stat-value'>
+                    {formatCurrency(earningsData.availableBalance)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
 
       {/* Stats Grid */}
       <DashboardStatsGrid

@@ -4,6 +4,7 @@ import { Heart, X, Star, RotateCcw, Info, Filter, Loader } from 'lucide-react';
 import axios from 'axios';
 import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
+import CreditPurchaseModal from '../components/Wallet/CreditPurchaseModal';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -13,6 +14,7 @@ import {
   getUserRole,
 } from '../utils/mobileDetection';
 import memberService from '../services/member.service.js';
+import paymentService from '../services/payment.service.js';
 import api from '../services/api.config.js';
 import './BrowseCreators.css';
 
@@ -28,6 +30,8 @@ const BrowseCreators = () => {
   const [key, setKey] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingError, setLoadingError] = useState(null);
+  const [showCreditPurchaseModal, setShowCreditPurchaseModal] = useState(false);
+  const [pendingPurchase, setPendingPurchase] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreContent, setHasMoreContent] = useState(true);
@@ -367,19 +371,59 @@ const BrowseCreators = () => {
 
   // Handle content purchase
   const handleContentPurchase = async (content) => {
-    console.log('💰 Purchasing content:', content.title, 'for $', content.price);
+    console.log('💰 Purchasing content:', content.title, 'for', content.price, 'credits');
 
     try {
-      // TODO: Implement purchase logic via payment service
-      // const response = await memberService.purchaseContent(content._id);
+      // Attempt to purchase content with credits
+      const response = await memberService.purchaseContent(content._id, 'credits');
 
-      // For now, just show an alert
-      alert(`Purchase content "${content.title}" for $${content.price}?\n\nPurchase functionality coming soon!`);
+      if (response.success) {
+        console.log('✅ Content purchased successfully!');
+        // Refresh content to show unlocked state
+        loadContentFeed();
+      }
 
     } catch (error) {
       console.error('❌ Error purchasing content:', error);
-      alert('Purchase failed. Please try again.');
+
+      // Check if this is an insufficient funds error
+      if (error.message && error.message.includes('Insufficient funds')) {
+        console.log('💳 Insufficient credits, showing purchase modal');
+        setPendingPurchase(content);
+        setShowCreditPurchaseModal(true);
+      } else {
+        alert('Purchase failed. Please try again.');
+      }
     }
+  };
+
+  // Handle successful credit purchase - retry content purchase
+  const handleCreditPurchaseSuccess = async () => {
+    setShowCreditPurchaseModal(false);
+
+    if (pendingPurchase) {
+      console.log('🔄 Retrying content purchase after credit top-up');
+      // Wait a moment for payment to process
+      setTimeout(async () => {
+        try {
+          const response = await memberService.purchaseContent(pendingPurchase._id, 'credits');
+          if (response.success) {
+            console.log('✅ Content purchased successfully after credit top-up!');
+            loadContentFeed();
+          }
+        } catch (error) {
+          console.error('❌ Error purchasing content after credit top-up:', error);
+          alert('Purchase failed after adding credits. Please try again.');
+        }
+        setPendingPurchase(null);
+      }, 1000);
+    }
+  };
+
+  // Handle credit purchase modal close
+  const handleCreditPurchaseClose = () => {
+    setShowCreditPurchaseModal(false);
+    setPendingPurchase(null);
   };
 
   // Handle button clicks (Content Mode)
@@ -650,6 +694,16 @@ const BrowseCreators = () => {
           connectionType={connectionType}
           connectionData={connectionData}
           userRole='member'
+        />
+      )}
+
+      {/* Credit Purchase Modal - shown when insufficient credits for content purchase */}
+      {showCreditPurchaseModal && (
+        <CreditPurchaseModal
+          isOpen={showCreditPurchaseModal}
+          onClose={handleCreditPurchaseClose}
+          onSuccess={handleCreditPurchaseSuccess}
+          pendingPurchase={pendingPurchase}
         />
       )}
 

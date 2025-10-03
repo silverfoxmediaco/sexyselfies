@@ -1,0 +1,457 @@
+/* CreditPurchaseModal.css */
+
+.CreditPurchaseModal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-md);
+}
+
+.CreditPurchaseModal {
+  background: var(--bg-800);
+  border: 1px solid var(--border-600);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Header */
+.CreditPurchaseModal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border-600);
+  background: var(--surface-700);
+}
+
+.CreditPurchaseModal-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.CreditPurchaseModal-title svg {
+  color: var(--primary);
+}
+
+.CreditPurchaseModal-title h2 {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.CreditPurchaseModal-context {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: var(--space-xs) 0 0 32px; /* Align with title text */
+  font-weight: 400;
+}
+
+.CreditPurchaseModal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-sm);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.CreditPurchaseModal-close-btn:hover {
+  background: var(--border-600);
+  color: var(--text-primary);
+}
+
+.CreditPurchaseModal-close-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Content */
+.CreditPurchaseModal-content {
+  padding: var(--space-xl);
+  overflow-y: auto;
+  max-height: calc(90vh - 140px);
+}
+
+.CreditPurchaseModal-current-balance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface-700);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: 12px;
+  margin-bottom: var(--space-xl);
+}
+
+.CreditPurchaseModal-balance-label {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.CreditPurchaseModal-balance-value {
+  color: var(--primary);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Loading */
+.CreditPurchaseModal-loading {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.CreditPurchaseModal-package-skeleton {
+  height: 160px;
+  background: var(--surface-700);
+  border-radius: 16px;
+  background: linear-gradient(90deg, var(--surface-700) 25%, var(--border-600) 50%, var(--surface-700) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Packages Grid */
+.CreditPurchaseModal-packages {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.CreditPurchaseModal-package {
+  background: var(--surface-700);
+  border: 2px solid var(--border-600);
+  border-radius: 16px;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 180px;
+}
+
+.CreditPurchaseModal-package:hover {
+  border-color: var(--primary-300);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(23, 210, 194, 0.1);
+}
+
+.CreditPurchaseModal-package.selected {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, var(--surface-700) 0%, rgba(23, 210, 194, 0.1) 100%);
+  box-shadow: 0 4px 20px rgba(23, 210, 194, 0.15);
+}
+
+.CreditPurchaseModal-package.popular {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, var(--surface-700) 0%, rgba(23, 210, 194, 0.08) 100%);
+}
+
+.CreditPurchaseModal-package-badge {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.CreditPurchaseModal-package-badge.popular {
+  background: var(--primary);
+  color: white;
+}
+
+.CreditPurchaseModal-package-badge.best-value {
+  background: var(--success);
+  color: white;
+}
+
+.CreditPurchaseModal-package-badge.bonus {
+  background: var(--warning);
+  color: white;
+}
+
+.CreditPurchaseModal-package-icon-container {
+  margin-top: var(--space-md);
+}
+
+.CreditPurchaseModal-package-icon {
+  color: var(--primary);
+}
+
+.CreditPurchaseModal-package-icon.popular {
+  color: var(--warning);
+}
+
+.CreditPurchaseModal-package-icon.bonus {
+  color: var(--success);
+}
+
+.CreditPurchaseModal-package-credits {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.CreditPurchaseModal-package-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.CreditPurchaseModal-package-unit {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.CreditPurchaseModal-package-price {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.CreditPurchaseModal-package-bonus {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--success);
+  font-weight: 500;
+}
+
+.CreditPurchaseModal-package-savings {
+  background: var(--success);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.CreditPurchaseModal-package-per-credit {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.CreditPurchaseModal-package-selected {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--primary);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Security */
+.CreditPurchaseModal-security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: var(--space-lg);
+}
+
+.CreditPurchaseModal-security svg {
+  color: var(--success);
+}
+
+/* Purchase Button */
+.CreditPurchaseModal-purchase-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: var(--space-md) var(--space-lg);
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: var(--touch-target-optimal);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.CreditPurchaseModal-purchase-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(23, 210, 194, 0.3);
+}
+
+.CreditPurchaseModal-purchase-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.CreditPurchaseModal-purchase-price {
+  margin-left: auto;
+  font-weight: 700;
+}
+
+/* Processing State */
+.CreditPurchaseModal-processing {
+  padding: var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  text-align: center;
+}
+
+.CreditPurchaseModal-processing-icon {
+  color: var(--primary);
+}
+
+.CreditPurchaseModal-processing h3 {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.CreditPurchaseModal-processing p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+.CreditPurchaseModal-processing-dots {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.CreditPurchaseModal-processing-dots .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+/* Footer */
+.CreditPurchaseModal-footer {
+  padding: var(--space-lg) var(--space-xl);
+  border-top: 1px solid var(--border-600);
+  background: var(--surface-700);
+}
+
+.CreditPurchaseModal-footer-info p {
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: center;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .CreditPurchaseModal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .CreditPurchaseModal {
+    width: 100%;
+    max-width: none;
+    border-radius: 20px 20px 0 0;
+    max-height: 95vh;
+  }
+
+  .CreditPurchaseModal-content {
+    padding: var(--space-lg);
+  }
+
+  .CreditPurchaseModal-packages {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .CreditPurchaseModal-package {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+    min-height: var(--touch-target-optimal);
+  }
+
+  .CreditPurchaseModal-package-icon-container {
+    margin-top: 0;
+  }
+
+  .CreditPurchaseModal-package-credits {
+    flex-direction: row;
+    gap: var(--space-xs);
+  }
+
+  .CreditPurchaseModal-package-amount {
+    font-size: 18px;
+  }
+
+  .CreditPurchaseModal-package-badge {
+    top: 4px;
+    right: 4px;
+    left: auto;
+    transform: none;
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .CreditPurchaseModal-processing {
+    padding: var(--space-xl);
+  }
+}
+
+/* Animation for package selection */
+@keyframes package-select {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.CreditPurchaseModal-package.selected {
+  animation: package-select 0.3s ease-out;
+}

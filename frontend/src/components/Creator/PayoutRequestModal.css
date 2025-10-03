@@ -1,0 +1,687 @@
+/* PayoutRequestModal.css */
+
+.PayoutRequestModal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-md);
+}
+
+.PayoutRequestModal {
+  background: var(--bg-800);
+  border: 1px solid var(--border-600);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Header */
+.PayoutRequestModal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border-600);
+  background: var(--surface-700);
+}
+
+.PayoutRequestModal-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.PayoutRequestModal-title svg {
+  color: var(--primary);
+}
+
+.PayoutRequestModal-title h2 {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.PayoutRequestModal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-sm);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.PayoutRequestModal-close-btn:hover {
+  background: var(--border-600);
+  color: var(--text-primary);
+}
+
+.PayoutRequestModal-close-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Content */
+.PayoutRequestModal-content {
+  padding: var(--space-xl);
+  overflow-y: auto;
+  max-height: calc(90vh - 140px);
+}
+
+/* Balance Card */
+.PayoutRequestModal-balance-card {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+  border-radius: 16px;
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.PayoutRequestModal-balance-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.PayoutRequestModal-balance-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.PayoutRequestModal-balance-amount {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+}
+
+.PayoutRequestModal-balance-note {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Form */
+.PayoutRequestModal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.PayoutRequestModal-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.PayoutRequestModal-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.PayoutRequestModal-label svg {
+  color: var(--primary);
+}
+
+.PayoutRequestModal-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.PayoutRequestModal-input-prefix {
+  position: absolute;
+  left: var(--space-md);
+  color: var(--text-secondary);
+  font-weight: 600;
+  z-index: 1;
+}
+
+.PayoutRequestModal-input {
+  width: 100%;
+  padding: var(--space-md);
+  padding-left: var(--space-xl);
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.PayoutRequestModal-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--bg-800);
+}
+
+.PayoutRequestModal-input.error {
+  border-color: var(--error);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.PayoutRequestModal-max-btn {
+  position: absolute;
+  right: var(--space-sm);
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.PayoutRequestModal-max-btn:hover {
+  background: var(--primary-600);
+  transform: scale(1.05);
+}
+
+.PayoutRequestModal-textarea {
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.2s ease;
+}
+
+.PayoutRequestModal-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--bg-800);
+}
+
+.PayoutRequestModal-textarea.error {
+  border-color: var(--error);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.PayoutRequestModal-error {
+  color: var(--error);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.PayoutRequestModal-input-hint {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.PayoutRequestModal-char-count {
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-align: right;
+  margin-top: -var(--space-xs);
+}
+
+/* Fee Breakdown */
+.PayoutRequestModal-fee-breakdown {
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 12px;
+  padding: var(--space-md);
+}
+
+.PayoutRequestModal-fee-breakdown h4 {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.PayoutRequestModal-fee-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) 0;
+  font-size: 14px;
+}
+
+.PayoutRequestModal-fee-row:not(:last-child) {
+  border-bottom: 1px solid var(--border-600);
+}
+
+.PayoutRequestModal-fee-row span:first-child {
+  color: var(--text-secondary);
+}
+
+.PayoutRequestModal-fee-row span:last-child {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.PayoutRequestModal-fee-row.total {
+  border-top: 1px solid var(--border-600);
+  padding-top: var(--space-sm);
+  margin-top: var(--space-sm);
+  font-weight: 600;
+}
+
+.PayoutRequestModal-fee-row.total span {
+  color: var(--primary);
+  font-size: 16px;
+}
+
+/* Continue Button */
+.PayoutRequestModal-continue-btn {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: var(--space-md) var(--space-lg);
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: var(--space-md);
+}
+
+.PayoutRequestModal-continue-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(23, 210, 194, 0.3);
+}
+
+.PayoutRequestModal-continue-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Confirm Section */
+.PayoutRequestModal-confirm-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.PayoutRequestModal-confirm-header {
+  text-align: center;
+}
+
+.PayoutRequestModal-confirm-icon {
+  color: var(--success);
+  margin-bottom: var(--space-md);
+}
+
+.PayoutRequestModal-confirm-header h3 {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.PayoutRequestModal-confirm-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+.PayoutRequestModal-confirm-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.PayoutRequestModal-confirm-card {
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 12px;
+  padding: var(--space-lg);
+}
+
+.PayoutRequestModal-confirm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) 0;
+}
+
+.PayoutRequestModal-confirm-row:not(:last-child) {
+  border-bottom: 1px solid var(--border-600);
+}
+
+.PayoutRequestModal-confirm-row.highlight {
+  background: rgba(23, 210, 194, 0.05);
+  border-radius: 8px;
+  padding: var(--space-md);
+  margin-top: var(--space-sm);
+  border: 1px solid var(--primary);
+}
+
+.PayoutRequestModal-confirm-label {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.PayoutRequestModal-confirm-value {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.PayoutRequestModal-confirm-value.primary {
+  color: var(--primary);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.PayoutRequestModal-confirm-message {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-600);
+}
+
+.PayoutRequestModal-confirm-message p {
+  color: var(--text-primary);
+  font-size: 14px;
+  margin: var(--space-xs) 0 0 0;
+  line-height: 1.4;
+}
+
+.PayoutRequestModal-confirm-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.PayoutRequestModal-info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.PayoutRequestModal-info-item svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.PayoutRequestModal-submit-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--error);
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid var(--error);
+  border-radius: 8px;
+  padding: var(--space-sm) var(--space-md);
+  font-size: 14px;
+}
+
+.PayoutRequestModal-confirm-actions {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.PayoutRequestModal-back-btn {
+  flex: 1;
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  color: var(--text-secondary);
+  border-radius: 12px;
+  padding: var(--space-md) var(--space-lg);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.PayoutRequestModal-back-btn:hover:not(:disabled) {
+  border-color: var(--primary-300);
+  color: var(--primary);
+}
+
+.PayoutRequestModal-submit-btn {
+  flex: 2;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: var(--space-md) var(--space-lg);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.PayoutRequestModal-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(23, 210, 194, 0.3);
+}
+
+.PayoutRequestModal-submit-btn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.PayoutRequestModal-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Success Section */
+.PayoutRequestModal-success-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  text-align: center;
+  padding: var(--space-lg) 0;
+}
+
+.PayoutRequestModal-success-icon {
+  color: var(--success);
+}
+
+.PayoutRequestModal-success-section h3 {
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.PayoutRequestModal-success-section p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.PayoutRequestModal-success-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.PayoutRequestModal-success-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.PayoutRequestModal-success-email {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.PayoutRequestModal-success-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 300px;
+}
+
+.PayoutRequestModal-timeline-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.PayoutRequestModal-timeline-item.active {
+  color: var(--primary);
+}
+
+.PayoutRequestModal-timeline-dot {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--border-600);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.PayoutRequestModal-timeline-item.active .PayoutRequestModal-timeline-dot {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.PayoutRequestModal-success-info {
+  background: var(--surface-700);
+  border: 1px solid var(--border-600);
+  border-radius: 12px;
+  padding: var(--space-md);
+  width: 100%;
+}
+
+.PayoutRequestModal-success-info p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.PayoutRequestModal-done-btn {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: var(--space-md) var(--space-2xl);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.PayoutRequestModal-done-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(23, 210, 194, 0.3);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .PayoutRequestModal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .PayoutRequestModal {
+    width: 100%;
+    max-width: none;
+    border-radius: 20px 20px 0 0;
+    max-height: 95vh;
+  }
+
+  .PayoutRequestModal-content {
+    padding: var(--space-lg);
+  }
+
+  .PayoutRequestModal-balance-amount {
+    font-size: 28px;
+  }
+
+  .PayoutRequestModal-confirm-actions {
+    flex-direction: column;
+  }
+
+  .PayoutRequestModal-back-btn,
+  .PayoutRequestModal-submit-btn {
+    flex: none;
+  }
+
+  .PayoutRequestModal-success-section {
+    padding: var(--space-md) 0;
+  }
+
+  .PayoutRequestModal-success-section h3 {
+    font-size: 20px;
+  }
+
+  .PayoutRequestModal-success-amount {
+    font-size: 24px;
+  }
+}
+
+/* Animation for success checkmark */
+@keyframes checkmark-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
