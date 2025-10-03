@@ -454,6 +454,150 @@ body {
   color: var(--mpp-text-tertiary);
 }
 
+/* Credit Widget */
+.mpp-credit-widget {
+  width: 100%;
+  padding: var(--mpp-space-md);
+  margin-bottom: var(--mpp-space-md);
+  box-sizing: border-box;
+}
+
+.mpp-credit-card {
+  width: 100%;
+  background: linear-gradient(135deg, #17d2c2 0%, #12b7ab 100%);
+  border-radius: var(--mpp-radius-xl);
+  padding: var(--mpp-space-lg);
+  box-shadow: 0 8px 32px rgba(23, 210, 194, 0.2);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.mpp-credit-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.mpp-credit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--mpp-space-lg);
+}
+
+.mpp-credit-title {
+  display: flex;
+  align-items: center;
+  gap: var(--mpp-space-sm);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.mpp-credit-icon {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.mpp-credit-refresh {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mpp-credit-refresh:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.mpp-credit-refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mpp-loading-spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.mpp-credit-balance {
+  display: flex;
+  align-items: baseline;
+  gap: var(--mpp-space-sm);
+  margin-bottom: var(--mpp-space-lg);
+}
+
+.mpp-credit-amount {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+.mpp-credit-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.mpp-credit-actions {
+  display: flex;
+  gap: var(--mpp-space-sm);
+  width: 100%;
+}
+
+.mpp-add-credits-btn,
+.mpp-view-wallet-btn {
+  flex: 1;
+  background: white;
+  color: #17d2c2;
+  border: none;
+  border-radius: var(--mpp-radius-lg);
+  padding: var(--mpp-space-sm) var(--mpp-space-md);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mpp-space-xs);
+  min-height: var(--mpp-touch-target-min);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mpp-add-credits-btn:hover,
+.mpp-view-wallet-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.mpp-add-credits-btn:active,
+.mpp-view-wallet-btn:active {
+  transform: translateY(0);
+}
+
 /* Tab Navigation */
 .mpp-tab-navigation {
   width: 100%;

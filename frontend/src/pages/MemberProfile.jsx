@@ -18,12 +18,8 @@ import {
   Eye,
   ChevronRight,
   Zap,
-  Wallet,
-  CreditCard,
-  Plus,
 } from 'lucide-react';
 import api from '../services/api.config';
-import paymentService from '../services/payment.service';
 import './MemberProfile.css';
 
 const MemberProfile = ({ memberId, onBack }) => {
@@ -43,16 +39,9 @@ const MemberProfile = ({ memberId, onBack }) => {
   const [hasLiked, setHasLiked] = useState(false);
   const [hasSentMessage, setHasSentMessage] = useState(false);
 
-  // Credit balance data
-  const [creditData, setCreditData] = useState({
-    balance: 0,
-    lastPurchase: null,
-    loading: true
-  });
 
   useEffect(() => {
     fetchMemberProfile();
-    loadCreditData();
   }, [memberId]);
 
   const fetchMemberProfile = async () => {
@@ -185,43 +174,6 @@ const MemberProfile = ({ memberId, onBack }) => {
     }
   };
 
-  const loadCreditData = async () => {
-    try {
-      setCreditData(prev => ({ ...prev, loading: true }));
-
-      // Fetch credit balance for current user
-      const balanceResponse = await paymentService.getCreditBalance();
-
-      if (balanceResponse.data?.balance !== undefined) {
-        // Get last credit purchase from transaction history
-        const historyResponse = await paymentService.getCreditHistory({
-          limit: 1,
-          type: 'credits'
-        });
-
-        const lastPurchase = historyResponse.data?.transactions?.[0];
-
-        setCreditData({
-          balance: balanceResponse.data.balance,
-          lastPurchase: lastPurchase?.createdAt || null,
-          loading: false
-        });
-      } else {
-        setCreditData({
-          balance: 0,
-          lastPurchase: null,
-          loading: false
-        });
-      }
-    } catch (error) {
-      console.error('Error loading credit data:', error);
-      setCreditData({
-        balance: 0,
-        lastPurchase: null,
-        loading: false
-      });
-    }
-  };
 
   const getSpendingTier = amount => {
     const spend = parseFloat(amount);
@@ -451,71 +403,6 @@ const MemberProfile = ({ memberId, onBack }) => {
             </div>
           </div>
 
-          {/* Credit Balance Widget */}
-          <div className='member-profile-card member-profile-credit-balance-card'>
-            <div className='member-profile-card-header'>
-              <h3>
-                <Wallet size={18} />
-                Credit Balance
-              </h3>
-              <button
-                className='credit-balance-view-wallet'
-                onClick={() => {
-                  // Navigate to member billing/wallet page
-                  window.location.href = '/member/billing';
-                }}
-              >
-                View Wallet
-                <ChevronRight size={16} />
-              </button>
-            </div>
-
-            {creditData.loading ? (
-              <div className='credit-balance-loading'>
-                <div className='credit-balance-skeleton' />
-              </div>
-            ) : (
-              <div className='credit-balance-content'>
-                <div className='credit-balance-main'>
-                  <div className='credit-balance-icon'>
-                    <CreditCard size={24} />
-                  </div>
-                  <div className='credit-balance-info'>
-                    <span className='credit-balance-amount'>
-                      {creditData.balance.toLocaleString()} credits
-                    </span>
-                    <span className='credit-balance-label'>Available Balance</span>
-                  </div>
-                  <button
-                    className='credit-balance-add-btn'
-                    onClick={() => {
-                      // Open credit purchase modal or navigate to purchase page
-                      window.location.href = '/member/billing';
-                    }}
-                  >
-                    <Plus size={16} />
-                    Add Credits
-                  </button>
-                </div>
-
-                {creditData.lastPurchase && (
-                  <div className='credit-balance-last-purchase'>
-                    <Clock size={14} />
-                    <span>
-                      Last purchase: {new Date(creditData.lastPurchase).toLocaleDateString()}
-                    </span>
-                  </div>
-                )}
-
-                {creditData.balance < 100 && (
-                  <div className='credit-balance-low-warning'>
-                    <Star size={14} />
-                    <span>Running low! Add credits to keep enjoying content</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
 
           {/* Activity & Preferences Card */}
           <div className='member-profile-card member-profile-activity-card'>

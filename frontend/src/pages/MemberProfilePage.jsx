@@ -27,9 +27,13 @@ import {
   X,
   Save,
   Sliders,
+  Wallet,
+  Plus,
+  Zap,
 } from 'lucide-react';
 import authService from '../services/auth.service';
 import memberService from '../services/member.service';
+import paymentService from '../services/payment.service';
 import api from '../services/api.config';
 import BottomNavigation from '../components/BottomNavigation';
 import MainHeader from '../components/MainHeader';
@@ -63,9 +67,43 @@ const MemberProfilePage = () => {
   const [connections, setConnections] = useState([]);
   const [favoritesLoading, setFavoritesLoading] = useState(false);
 
+  // Credit balance state
+  const [creditData, setCreditData] = useState({
+    balance: 0,
+    lastPurchaseDate: null,
+    loading: true
+  });
+
   useEffect(() => {
     fetchMemberData();
+    loadCreditData();
   }, []);
+
+  const loadCreditData = async () => {
+    try {
+      const response = await paymentService.getCreditBalance();
+      if (response.success && response.data) {
+        setCreditData({
+          balance: response.data.balance || 0,
+          lastPurchaseDate: response.data.lastPurchaseDate,
+          loading: false
+        });
+      } else {
+        setCreditData({
+          balance: 0,
+          lastPurchaseDate: null,
+          loading: false
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load credit data:', error);
+      setCreditData({
+        balance: 0,
+        lastPurchaseDate: null,
+        loading: false
+      });
+    }
+  };
 
   const fetchMemberData = async () => {
     setLoading(true);
@@ -342,6 +380,53 @@ const MemberProfilePage = () => {
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Credit Widget */}
+          <div className='mpp-credit-widget'>
+            <div className='mpp-credit-card'>
+              <div className='mpp-credit-header'>
+                <div className='mpp-credit-title'>
+                  <Wallet size={20} className='mpp-credit-icon' />
+                  <span>Credit Balance</span>
+                </div>
+                <button
+                  className='mpp-credit-refresh'
+                  onClick={loadCreditData}
+                  disabled={creditData.loading}
+                >
+                  {creditData.loading ? (
+                    <div className='mpp-loading-spinner-small'></div>
+                  ) : (
+                    <Plus size={16} />
+                  )}
+                </button>
+              </div>
+
+              <div className='mpp-credit-balance'>
+                <span className='mpp-credit-amount'>
+                  {creditData.loading ? '--' : creditData.balance.toLocaleString()}
+                </span>
+                <span className='mpp-credit-label'>credits</span>
+              </div>
+
+              <div className='mpp-credit-actions'>
+                <button
+                  className='mpp-add-credits-btn'
+                  onClick={() => navigate('/member/billing')}
+                >
+                  <Plus size={16} />
+                  Add Credits
+                </button>
+                <button
+                  className='mpp-view-wallet-btn'
+                  onClick={() => navigate('/member/billing')}
+                >
+                  <Zap size={16} />
+                  View Wallet
+                </button>
+              </div>
             </div>
           </div>
 
