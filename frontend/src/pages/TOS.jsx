@@ -2,9 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   ArrowLeft,
   Clock,
-  CheckCircle2,
-  AlertTriangle,
-  FileText,
   Printer,
   Menu,
   X
@@ -217,50 +214,16 @@ You waive any right to bring claims as a class action.`
   ]
 };
 
-const TOS = ({ onAccept, onDecline }) => {
+const TOS = () => {
   // State management
-  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
-  const [isOver18, setIsOver18] = useState(false);
-  const [acceptsTerms, setAcceptsTerms] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
   const [activeSection, setActiveSection] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
 
   // Refs
   const contentRef = useRef(null);
   const sectionsRef = useRef({});
 
-  // Check if user previously accepted terms
-  useEffect(() => {
-    const checkPreviousAcceptance = () => {
-      try {
-        const storedAcceptance = localStorage.getItem('sexyselfies_tos_acceptance');
-        if (storedAcceptance) {
-          const acceptance = JSON.parse(storedAcceptance);
-          const thirtyDaysAgo = new Date();
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-          // Check if acceptance is recent and for current version
-          if (
-            new Date(acceptance.timestamp) > thirtyDaysAgo &&
-            acceptance.version === termsContent.version
-          ) {
-            // User has recently accepted current version
-            if (onAccept) {
-              onAccept(acceptance);
-            }
-            return;
-          }
-        }
-      } catch (error) {
-        console.warn('Error checking previous TOS acceptance:', error);
-      }
-      setIsLoading(false);
-    };
-
-    checkPreviousAcceptance();
-  }, [onAccept]);
 
   // Scroll tracking
   useEffect(() => {
@@ -273,11 +236,6 @@ const TOS = ({ onAccept, onDecline }) => {
       const progress = Math.min((scrollTop / scrollHeight) * 100, 100);
 
       setScrollProgress(progress);
-
-      // Check if scrolled to bottom (within 50px)
-      if (scrollHeight - scrollTop <= 50) {
-        setHasScrolledToBottom(true);
-      }
 
       // Update active section
       const sections = Object.values(sectionsRef.current);
@@ -310,45 +268,11 @@ const TOS = ({ onAccept, onDecline }) => {
     setShowTableOfContents(false);
   };
 
-  const handleAccept = () => {
-    if (!canAccept()) return;
-
-    const acceptance = {
-      timestamp: new Date().toISOString(),
-      version: termsContent.version,
-      userAgent: navigator.userAgent,
-      hasScrolledToBottom,
-      isOver18,
-      acceptsTerms
-    };
-
-    try {
-      localStorage.setItem('sexyselfies_tos_acceptance', JSON.stringify(acceptance));
-    } catch (error) {
-      console.warn('Could not store TOS acceptance:', error);
-    }
-
-    if (onAccept) {
-      onAccept(acceptance);
-    }
-  };
-
-  const handleDecline = () => {
-    if (onDecline) {
-      onDecline();
-    } else {
-      // Default behavior - redirect to exit page or close window
-      window.location.href = '/exit';
-    }
-  };
 
   const handlePrint = () => {
     window.print();
   };
 
-  const canAccept = () => {
-    return hasScrolledToBottom && isOver18 && acceptsTerms;
-  };
 
   const formatContent = (content) => {
     // Convert markdown-like formatting to HTML
@@ -360,14 +284,6 @@ const TOS = ({ onAccept, onDecline }) => {
       .replace(/\n/g, '<br/>');
   };
 
-  if (isLoading) {
-    return (
-      <div className="tos-loading">
-        <div className="tos-loading-spinner"></div>
-        <p>Loading Terms of Service...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="tos-container">
@@ -485,79 +401,6 @@ const TOS = ({ onAccept, onDecline }) => {
           </div>
         </div>
 
-        {/* Verification and Actions */}
-        <div className="tos-verification">
-          <div className="tos-verification-content">
-            {/* Scroll Status */}
-            <div className={`tos-scroll-status ${hasScrolledToBottom ? 'completed' : ''}`}>
-              <CheckCircle2 size={20} />
-              <span>
-                {hasScrolledToBottom
-                  ? 'You have read the complete terms'
-                  : `Please scroll through all terms (${Math.round(scrollProgress)}% complete)`
-                }
-              </span>
-            </div>
-
-            {/* Age Verification */}
-            <div className="tos-checkbox-group">
-              <label className="tos-checkbox">
-                <input
-                  type="checkbox"
-                  checked={isOver18}
-                  onChange={(e) => setIsOver18(e.target.checked)}
-                  disabled={!hasScrolledToBottom}
-                />
-                <span className="tos-checkbox-mark"></span>
-                <div className="tos-checkbox-content">
-                  <AlertTriangle size={16} className="tos-age-warning" />
-                  <span>I am 18 years of age or older and legally able to enter into this agreement</span>
-                </div>
-              </label>
-
-              {/* Terms Acceptance */}
-              <label className="tos-checkbox">
-                <input
-                  type="checkbox"
-                  checked={acceptsTerms}
-                  onChange={(e) => setAcceptsTerms(e.target.checked)}
-                  disabled={!hasScrolledToBottom || !isOver18}
-                />
-                <span className="tos-checkbox-mark"></span>
-                <div className="tos-checkbox-content">
-                  <FileText size={16} />
-                  <span>I have read, understood, and agree to be bound by these Terms of Service</span>
-                </div>
-              </label>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="tos-actions">
-              <button
-                className="tos-button-decline"
-                onClick={handleDecline}
-              >
-                Decline
-              </button>
-
-              <button
-                className={`tos-button-accept ${canAccept() ? 'enabled' : 'disabled'}`}
-                onClick={handleAccept}
-                disabled={!canAccept()}
-              >
-                Accept and Continue
-              </button>
-            </div>
-
-            {/* Help Text */}
-            <div className="tos-help-text">
-              <p>
-                By clicking "Accept and Continue", you agree to be legally bound by these terms.
-                You can print or save this document for your records.
-              </p>
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   );
