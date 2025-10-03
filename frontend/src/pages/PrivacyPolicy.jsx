@@ -5,10 +5,7 @@ import {
   ChevronDown,
   ChevronRight,
   Copy,
-  Printer,
   Clock,
-  Menu,
-  X,
   CheckCircle,
   Eye,
   Shield,
@@ -21,7 +18,7 @@ const privacyPolicyContent = {
   version: "1.0.0",
   effectiveDate: "January 1, 2025",
   lastUpdated: "January 1, 2025",
-  estimatedReadingTime: "12 minutes",
+  estimatedReadingTime: "12 minute read",
   sections: [
     {
       id: "introduction",
@@ -359,7 +356,7 @@ For GDPR inquiries (EU residents):
       id: "complaints",
       title: "18. Complaints",
       content: `If you're unsatisfied with our privacy practices:
-1. Contact us at privacy@sexyselfies.com
+1. Contact us at support@sexyselfies.com
 2. File a complaint with your local data protection authority
 3. For US residents: File with the FTC at ftc.gov`
     }
@@ -516,9 +513,6 @@ const PrivacyPolicy = () => {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
 
   const formatContent = (content) => {
     if (!content) return '';
@@ -583,23 +577,6 @@ const PrivacyPolicy = () => {
             </div>
           </div>
 
-          <div className="privacy-header-actions">
-            <button
-              className="privacy-print-button"
-              onClick={handlePrint}
-              aria-label="Print privacy policy"
-            >
-              <Printer size={18} />
-            </button>
-
-            <button
-              className="privacy-menu-button"
-              onClick={() => setShowSidebar(!showSidebar)}
-              aria-label="Table of contents"
-            >
-              {showSidebar ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          </div>
         </div>
 
         {/* Search Bar */}

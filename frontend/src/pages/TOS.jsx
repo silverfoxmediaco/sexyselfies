@@ -203,8 +203,8 @@ You waive any right to bring claims as a class action.`
       id: "contact",
       title: "18. Contact Information",
       content: `For questions about these Terms, contact us at:
-- Email: legal@sexyselfies.com
-- Address: [Physical Address Required]`
+- Email: support@sexyselfies.com
+- Address: 555 Main St, Suite 300, Dallas, TX 75201`
     },
     {
       id: "entire-agreement",
