@@ -96,6 +96,9 @@ import OnboardingFlow from './pages/OnboardingFlow';
 // Import Content View
 import ContentView from './pages/ContentView';
 
+// Import Legal pages
+import TOS from './pages/TOS';
+
 console.log('Mounting React App to root element...');
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -619,6 +622,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 element={<Navigate to='/admin/dashboard' replace />}
               />
             </Route>
+
+            {/* Legal Pages - Public routes */}
+            <Route path='/terms' element={<TOS />} />
+            <Route path='/privacy' element={<ComingSoon title="Privacy Policy" />} />
           </Routes>
         </AppLayout>
       </BrowserRouter>
