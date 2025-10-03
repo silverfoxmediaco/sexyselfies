@@ -74,7 +74,7 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
       // Find matching package or create custom amount
       const packages = await paymentService.getCreditPackages();
       const matchingPackage = packages.data?.packages?.find(
-        pkg => (pkg.base_credits + (pkg.bonus_credits || 0)) === creditAmount
+        pkg => pkg.credits === creditAmount
       );
 
       if (matchingPackage) {
@@ -237,40 +237,37 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
         <div className="MemberWallet-quick-add-grid">
           <button
             className="MemberWallet-quick-add-btn"
-            onClick={() => handleQuickPurchase(500)}
+            onClick={() => handleQuickPurchase(5)}
           >
             <Zap size={16} />
-            <span className="MemberWallet-credit-amount">500</span>
+            <span className="MemberWallet-credit-amount">5</span>
             <span className="MemberWallet-dollar-amount">$5.00</span>
           </button>
           <button
             className="MemberWallet-quick-add-btn popular"
-            onClick={() => handleQuickPurchase(1200)}
+            onClick={() => handleQuickPurchase(10)}
           >
             <div className="MemberWallet-popular-badge">Popular</div>
             <Zap size={16} />
-            <span className="MemberWallet-credit-amount">1,200</span>
+            <span className="MemberWallet-credit-amount">10</span>
             <span className="MemberWallet-dollar-amount">$10.00</span>
-            <span className="MemberWallet-bonus">+200 bonus</span>
           </button>
           <button
             className="MemberWallet-quick-add-btn"
-            onClick={() => handleQuickPurchase(2750)}
+            onClick={() => handleQuickPurchase(25)}
           >
             <Zap size={16} />
-            <span className="MemberWallet-credit-amount">2,750</span>
+            <span className="MemberWallet-credit-amount">25</span>
             <span className="MemberWallet-dollar-amount">$25.00</span>
-            <span className="MemberWallet-bonus">+250 bonus</span>
           </button>
           <button
             className="MemberWallet-quick-add-btn best-value"
-            onClick={() => handleQuickPurchase(5500)}
+            onClick={() => handleQuickPurchase(50)}
           >
             <div className="MemberWallet-value-badge">Best Value</div>
             <Zap size={16} />
-            <span className="MemberWallet-credit-amount">5,500</span>
+            <span className="MemberWallet-credit-amount">50</span>
             <span className="MemberWallet-dollar-amount">$50.00</span>
-            <span className="MemberWallet-bonus">+500 bonus</span>
           </button>
         </div>
       </motion.div>

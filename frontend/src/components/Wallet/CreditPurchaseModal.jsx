@@ -89,22 +89,17 @@ const CreditPurchaseModal = ({
   };
 
   const calculateSavings = (pkg) => {
-    const baseValue = pkg.base_credits * 0.01; // $0.01 per credit base price
-    const actualPricePerCredit = pkg.price / (pkg.base_credits + (pkg.bonus_credits || 0));
-    const savings = ((baseValue - actualPricePerCredit) / baseValue) * 100;
-    return Math.round(savings);
+    // No savings calculation needed - $1 = 1 credit
+    return 0;
   };
 
   const getPackageIcon = (pkg) => {
     if (pkg.popular) return <Star className="CreditPurchaseModal-package-icon popular" />;
-    if (pkg.bonus_credits > 0) return <Gift className="CreditPurchaseModal-package-icon bonus" />;
     return <Zap className="CreditPurchaseModal-package-icon" />;
   };
 
   const getBadge = (pkg) => {
     if (pkg.popular) return { text: 'Most Popular', class: 'popular' };
-    if (calculateSavings(pkg) >= 30) return { text: 'Best Value', class: 'best-value' };
-    if (pkg.bonus_credits > 0) return { text: `+${pkg.bonus_credits} Bonus`, class: 'bonus' };
     return null;
   };
 
@@ -169,7 +164,7 @@ const CreditPurchaseModal = ({
                   </div>
                 ) : (
                   packages.map((pkg) => {
-                    const totalCredits = pkg.base_credits + (pkg.bonus_credits || 0);
+                    const totalCredits = pkg.credits;
                     const badge = getBadge(pkg);
                     const savings = calculateSavings(pkg);
                     const isSelected = selectedPackage?.id === pkg.id;
@@ -203,12 +198,6 @@ const CreditPurchaseModal = ({
                           {formatCurrency(pkg.price)}
                         </div>
 
-                        {pkg.bonus_credits > 0 && (
-                          <div className="CreditPurchaseModal-package-bonus">
-                            <Gift size={14} />
-                            +{pkg.bonus_credits} bonus credits
-                          </div>
-                        )}
 
                         {savings > 0 && (
                           <div className="CreditPurchaseModal-package-savings">
@@ -248,7 +237,7 @@ const CreditPurchaseModal = ({
                 onClick={handlePurchase}
               >
                 <Lock size={18} />
-                Purchase {selectedPackage?.base_credits + (selectedPackage?.bonus_credits || 0)} Credits
+                Purchase {selectedPackage?.credits} Credits
                 {selectedPackage && (
                   <span className="CreditPurchaseModal-purchase-price">
                     {formatCurrency(selectedPackage.price)}
