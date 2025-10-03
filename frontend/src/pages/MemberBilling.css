@@ -1,0 +1,73 @@
+/* Member Billing Page */
+.MemberBilling-page {
+  min-height: 100vh;
+  background: var(--bg-900);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile Header */
+.MemberBilling-mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--surface-700);
+  border-bottom: 1px solid var(--border-600);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.MemberBilling-mobile-header h1 {
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.MemberBilling-back-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  padding: var(--space-xs);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+}
+
+.MemberBilling-back-btn:hover {
+  background: var(--border-600);
+}
+
+.MemberBilling-back-btn:active {
+  transform: scale(0.98);
+}
+
+/* Main Content */
+.MemberBilling-content {
+  flex: 1;
+  padding: var(--space-lg);
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Desktop Responsive */
+@media (min-width: 1024px) {
+  .MemberBilling-content {
+    padding: var(--space-2xl) var(--space-lg);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 767px) {
+  .MemberBilling-content {
+    padding: var(--space-md);
+  }
+}

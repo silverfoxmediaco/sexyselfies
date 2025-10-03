@@ -82,6 +82,7 @@ import SearchCreators from './pages/SearchCreators';
 import TrendingCreators from './pages/TrendingCreators';
 import Favorites from './pages/Favorites';
 import PurchasedContent from './pages/PurchasedContent';
+import MemberBilling from './pages/MemberBilling';
 
 // Import Member Components
 import Library from './components/Library';
@@ -535,7 +536,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 path='billing'
                 element={
                   <ProtectedMemberRoute>
-                    <ComingSoon title='Billing' />
+                    <MemberBilling />
                   </ProtectedMemberRoute>
                 }
               />
