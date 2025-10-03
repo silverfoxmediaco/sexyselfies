@@ -252,6 +252,15 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
           label: 'Creator Help',
           path: `/creator/${creatorId}/help`,
         },
+
+        { section: 'divider' },
+
+        { section: 'Legal' },
+        { icon: FileText, label: 'Terms of Service', path: '/terms' },
+        { icon: FileText, label: 'Privacy Policy', path: '/privacy' },
+
+        { section: 'divider' },
+
         { icon: LogOut, label: 'Logout', action: 'logout' },
       ];
     } else if (userRole === 'creator') {
@@ -303,6 +312,15 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         { section: 'Account' },
         { icon: Settings, label: 'Settings', path: '/creator/settings' },
         { icon: HelpCircle, label: 'Creator Help', path: '/creator/help' },
+
+        { section: 'divider' },
+
+        { section: 'Legal' },
+        { icon: FileText, label: 'Terms of Service', path: '/terms' },
+        { icon: FileText, label: 'Privacy Policy', path: '/privacy' },
+
+        { section: 'divider' },
+
         { icon: LogOut, label: 'Logout', action: 'logout' },
       ];
     } else if (userRole === 'member') {
@@ -330,6 +348,15 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         { icon: DollarSign, label: 'Billing', path: '/member/billing' },
         { icon: Settings, label: 'Settings', path: '/member/settings' },
         { icon: HelpCircle, label: 'Help', path: '/member/help' },
+
+        { section: 'divider' },
+
+        { section: 'Legal' },
+        { icon: FileText, label: 'Terms of Service', path: '/terms' },
+        { icon: FileText, label: 'Privacy Policy', path: '/privacy' },
+
+        { section: 'divider' },
+
         { icon: LogOut, label: 'Logout', action: 'logout' },
       ];
     } else if (userRole === 'admin') {
@@ -344,6 +371,15 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         { section: 'System' },
         { icon: Settings, label: 'Settings', path: '/admin/settings' },
         { icon: HelpCircle, label: 'Admin Help', path: '/admin/help' },
+
+        { section: 'divider' },
+
+        { section: 'Legal' },
+        { icon: FileText, label: 'Terms of Service', path: '/terms' },
+        { icon: FileText, label: 'Privacy Policy', path: '/privacy' },
+
+        { section: 'divider' },
+
         { icon: LogOut, label: 'Logout', action: 'logout' },
       ];
     } else {
