@@ -98,10 +98,19 @@ exports.updatePreferences = async (req, res, next) => {
 // @access  Private (Member only)
 exports.purchaseContent = async (req, res, next) => {
   try {
+    console.log('💰 Purchase attempt:', {
+      contentId: req.params.contentId,
+      userId: req.user?.id,
+      body: req.body
+    });
+
     const member = await Member.findOne({ user: req.user.id });
+    console.log('👤 Member found:', member ? `${member._id} (${member.credits} credits)` : 'NOT FOUND');
+
     const content = await Content.findById(req.params.contentId).populate(
       'creator'
     );
+    console.log('🎯 Content found:', content ? `${content.title || content._id} ($${content.price})` : 'NOT FOUND');
 
     if (!content) {
       return res.status(404).json({

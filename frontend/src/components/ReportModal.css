@@ -43,10 +43,13 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  z-index: 9999;
+  z-index: 10000; /* Higher than action buttons (z-index: 1000) */
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   animation: ReportModal-fadeIn 0.2s ease;
+  /* iPhone safe area support */
+  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
 @keyframes ReportModal-fadeIn {
@@ -452,10 +455,13 @@
   .ReportModal-overlay {
     padding: 8px;
     align-items: flex-end;
+    /* Enhanced safe area support for mobile */
+    padding-top: calc(8px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   }
 
   .ReportModal-container {
-    max-height: 95vh;
+    max-height: calc(95vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     border-radius: 16px 16px 0 0;
   }
 
