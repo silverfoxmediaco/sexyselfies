@@ -509,7 +509,7 @@ body {
 .mpp-credit-refresh {
   background: rgba(255, 255, 255, 0.2);
   border: none;
-  border-radius: 50%;
+  border-radius: var(--mpp-radius-full);
   width: 36px;
   height: 36px;
   display: flex;
@@ -518,6 +518,11 @@ body {
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.mpp-credit-refresh svg {
+  width: 20px;
+  height: 20px;
 }
 
 .mpp-credit-refresh:hover {
