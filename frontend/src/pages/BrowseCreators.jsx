@@ -33,6 +33,7 @@ const BrowseCreators = () => {
   const [showCreditPurchaseModal, setShowCreditPurchaseModal] = useState(false);
   const [pendingPurchase, setPendingPurchase] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreContent, setHasMoreContent] = useState(true);
 
@@ -426,6 +427,11 @@ const BrowseCreators = () => {
     setPendingPurchase(null);
   };
 
+  // Handle modal state changes from SwipeCard
+  const handleModalStateChange = (modalOpen) => {
+    setIsModalOpen(modalOpen);
+  };
+
   // Handle button clicks (Content Mode)
   const handleButtonSwipe = direction => {
     if (!filteredContent[currentIndex]) return;
@@ -641,6 +647,7 @@ const BrowseCreators = () => {
                 onSwipe={handleSwipe}
                 onViewProfile={handleViewCreatorProfile}
                 onPurchase={handleContentPurchase}
+                onModalStateChange={handleModalStateChange}
                 isTop={index === 0}
                 dragEnabled={index === 0}
                 showActions={true}
@@ -650,8 +657,9 @@ const BrowseCreators = () => {
           ))}
       </div>
 
-      {/* Action Buttons */}
-      <div className='browse-creators-action-buttons'>
+      {/* Action Buttons - Hide when modal is open */}
+      {!isModalOpen && !showCreditPurchaseModal && (
+        <div className='browse-creators-action-buttons'>
         <button
           className='browse-creators-action-btn browse-creators-rewind'
           onClick={handleRewind}
@@ -684,7 +692,8 @@ const BrowseCreators = () => {
         >
           <Info size={24} />
         </button>
-      </div>
+        </div>
+      )}
 
       {/* Connection Modal */}
       {showConnectionModal && (

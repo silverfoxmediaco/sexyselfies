@@ -65,7 +65,7 @@
 .ReportModal-container {
   width: 100%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: 75vh; /* Reduced from 90vh to ensure fits in viewport */
   background: var(--ReportModal-bg);
   border-radius: 16px;
   border: 1px solid var(--ReportModal-border);
@@ -461,7 +461,7 @@
   }
 
   .ReportModal-container {
-    max-height: calc(95vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    max-height: calc(70vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 120px); /* Space for nav */
     border-radius: 16px 16px 0 0;
   }
 

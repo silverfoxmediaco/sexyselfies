@@ -17,6 +17,7 @@ const SwipeCard = ({
   onSwipe,
   onViewProfile,
   onPurchase, // New prop for content purchase
+  onModalStateChange, // New prop to notify parent of modal state
   isTop = false,
   style = {},
   dragEnabled = true,
@@ -247,6 +248,13 @@ const SwipeCard = ({
       setShowSafetyMenu(false);
     }
   };
+
+  // Notify parent component when modal state changes
+  React.useEffect(() => {
+    if (onModalStateChange) {
+      onModalStateChange(showReportModal || showBlockModal);
+    }
+  }, [showReportModal, showBlockModal, onModalStateChange]);
 
   return (
     <motion.div
