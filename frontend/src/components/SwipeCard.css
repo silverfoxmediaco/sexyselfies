@@ -71,7 +71,7 @@
   background: var(--swipecard-bg-tertiary);
   box-shadow: var(--swipecard-shadow);
   transition: box-shadow 0.3s ease;
-  margin-top: 50px;
+  margin-top: 30px;
 }
 
 .swipecard-top .swipecard-photo-container {
