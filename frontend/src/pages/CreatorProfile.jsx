@@ -288,7 +288,7 @@ const CreatorProfile = () => {
         }
       } catch (error) {
         console.error('Purchase error:', error);
-        if (error.message && error.message.includes('Insufficient funds')) {
+        if (error.message && error.message.includes('Insufficient credits')) {
           // Show credit purchase modal for insufficient credits
           setPendingPurchase({
             ...contentItem,
