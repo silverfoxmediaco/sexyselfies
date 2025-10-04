@@ -387,7 +387,7 @@ const BrowseCreators = () => {
       console.error('❌ Error purchasing content:', error);
 
       // Check if this is an insufficient funds error
-      if (error.message && error.message.includes('Insufficient funds')) {
+      if (error.message && error.message.includes('Insufficient credits')) {
         console.log('💳 Insufficient credits, showing purchase modal');
         setPendingPurchase(content);
         setShowCreditPurchaseModal(true);
