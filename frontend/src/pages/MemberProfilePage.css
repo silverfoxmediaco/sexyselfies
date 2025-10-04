@@ -166,9 +166,14 @@ body {
   transition: all 0.2s ease;
 }
 
-.mpp-settings-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+.mpp-settings-btn:active {
+  background: rgba(255, 255, 255, 0.15);
   color: var(--mpp-accent);
+}
+
+.mpp-settings-btn:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 /* Profile Info Section */
@@ -254,9 +259,13 @@ body {
   margin-right: var(--mpp-space-sm);
 }
 
-.mpp-edit-profile-btn:hover {
-  background: rgba(23, 210, 194, 0.2);
-  transform: translateY(-1px);
+.mpp-edit-profile-btn:active {
+  background: rgba(23, 210, 194, 0.3);
+}
+
+.mpp-edit-profile-btn:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 .mpp-view-library-btn {
@@ -282,9 +291,13 @@ body {
   margin-top: var(--mpp-space-sm);
 }
 
-.mpp-view-library-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(23, 210, 194, 0.3);
+.mpp-view-library-btn:active {
+  opacity: 0.9;
+}
+
+.mpp-view-library-btn:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
 }
 
 /* Edit Form */
@@ -400,9 +413,13 @@ body {
   overflow: hidden;
 }
 
-.mpp-stat-card:hover {
-  background: rgba(28, 28, 30, 0.7);
-  transform: translateY(-2px);
+.mpp-stat-card:active {
+  background: rgba(28, 28, 30, 0.8);
+}
+
+.mpp-stat-card:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 .mpp-stat-icon {
@@ -509,7 +526,7 @@ body {
 .mpp-credit-refresh {
   background: rgba(255, 255, 255, 0.2);
   border: none;
-  border-radius: var(--mpp-radius-full);
+  border-radius: 50% !important;
   width: 36px;
   height: 36px;
   display: flex;
@@ -521,13 +538,17 @@ body {
 }
 
 .mpp-credit-refresh svg {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
 }
 
-.mpp-credit-refresh:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
+.mpp-credit-refresh:active {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.mpp-credit-refresh:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
 }
 
 .mpp-credit-refresh:disabled {
@@ -594,10 +615,15 @@ body {
   transition: all 0.2s ease;
 }
 
-.mpp-add-credits-btn:hover,
-.mpp-view-wallet-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+.mpp-add-credits-btn:active,
+.mpp-view-wallet-btn:active {
+  opacity: 0.9;
+}
+
+.mpp-add-credits-btn:focus,
+.mpp-view-wallet-btn:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 .mpp-add-credits-btn:active,
@@ -646,8 +672,13 @@ body {
   white-space: nowrap;
 }
 
-.mpp-tab-btn:hover {
-  color: var(--mpp-text-secondary);
+.mpp-tab-btn:active {
+  color: var(--mpp-text-primary);
+}
+
+.mpp-tab-btn:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 .mpp-tab-btn.mpp-active {
@@ -779,9 +810,14 @@ body {
   font-size: 14px;
 }
 
-.mpp-security-item:hover {
-  background: rgba(255, 255, 255, 0.08);
+.mpp-security-item:active {
+  background: rgba(255, 255, 255, 0.12);
   color: var(--mpp-text-primary);
+}
+
+.mpp-security-item:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 /* Purchases List */
@@ -859,8 +895,13 @@ body {
   transition: all 0.2s ease;
 }
 
-.mpp-download-btn:hover {
-  background: rgba(23, 210, 194, 0.2);
+.mpp-download-btn:active {
+  background: rgba(23, 210, 194, 0.3);
+}
+
+.mpp-download-btn:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 /* Favorites List */
@@ -920,9 +961,13 @@ body {
   transition: all 0.2s ease;
 }
 
-.mpp-view-creator-btn:hover {
-  background: rgba(23, 210, 194, 0.2);
-  transform: translateY(-1px);
+.mpp-view-creator-btn:active {
+  background: rgba(23, 210, 194, 0.3);
+}
+
+.mpp-view-creator-btn:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 .mpp-saved-content {
@@ -1073,8 +1118,13 @@ body {
   transition: all 0.2s ease;
 }
 
-.mpp-edit-payment-btn:hover {
+.mpp-edit-payment-btn:active {
   color: var(--mpp-accent);
+}
+
+.mpp-edit-payment-btn:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 .mpp-add-payment-btn {
@@ -1091,10 +1141,15 @@ body {
   text-align: center;
 }
 
-.mpp-add-payment-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+.mpp-add-payment-btn:active {
+  background: rgba(255, 255, 255, 0.12);
   border-color: var(--mpp-accent);
   color: var(--mpp-accent);
+}
+
+.mpp-add-payment-btn:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 /* Danger Zone */
@@ -1121,8 +1176,13 @@ body {
   color: var(--mpp-text-primary);
 }
 
-.mpp-logout-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
+.mpp-logout-btn:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mpp-logout-btn:focus {
+  outline: 2px solid var(--mpp-accent);
+  outline-offset: 2px;
 }
 
 .mpp-delete-account-btn {
@@ -1143,8 +1203,13 @@ body {
   color: var(--mpp-error);
 }
 
-.mpp-delete-account-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
+.mpp-delete-account-btn:active {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.mpp-delete-account-btn:focus {
+  outline: 2px solid var(--mpp-error);
+  outline-offset: 2px;
 }
 
 /* ========================================
@@ -1258,14 +1323,13 @@ body {
     min-width: 120px;
   }
 
-  /* Hover Effects */
-  .mpp-stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  /* Touch Effects for Desktop */
+  .mpp-stat-card:active {
+    transform: translateY(-2px);
   }
 
-  .mpp-security-item:hover {
-    transform: translateX(4px);
+  .mpp-security-item:active {
+    transform: translateX(2px);
   }
 }
 
@@ -1302,10 +1366,14 @@ body {
   transition: all 0.2s ease;
 }
 
-.mpp-connection-item:hover {
-  transform: translateY(-2px);
+.mpp-connection-item:active {
+  transform: translateY(-1px);
   border-color: var(--primary);
-  box-shadow: 0 4px 12px rgba(23, 210, 194, 0.1);
+}
+
+.mpp-connection-item:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .mpp-connection-avatar {
@@ -1346,9 +1414,13 @@ body {
   transition: all 0.2s ease;
 }
 
-.mpp-connection-btn:hover {
+.mpp-connection-btn:active {
   background: var(--primary-600);
-  transform: scale(1.05);
+}
+
+.mpp-connection-btn:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
 }
 
 .mpp-connection-more {
@@ -1369,10 +1441,15 @@ body {
   transition: all 0.2s ease;
 }
 
-.mpp-view-all-btn:hover {
+.mpp-view-all-btn:active {
   color: var(--primary);
   border-color: var(--primary);
   background: var(--bg-800);
+}
+
+.mpp-view-all-btn:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 /* Mobile adjustments */
