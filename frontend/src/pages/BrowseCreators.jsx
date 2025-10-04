@@ -5,6 +5,7 @@ import axios from 'axios';
 import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
 import CreditPurchaseModal from '../components/Wallet/CreditPurchaseModal';
+import ReportModal from '../components/ReportModal';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -16,6 +17,7 @@ import {
 import memberService from '../services/member.service.js';
 import paymentService from '../services/payment.service.js';
 import api from '../services/api.config.js';
+import safetyManager from '../utils/safetyManager';
 import './BrowseCreators.css';
 
 const BrowseCreators = () => {
@@ -49,6 +51,10 @@ const BrowseCreators = () => {
   // Track connections and messages
   const [existingConnections, setExistingConnections] = useState({});
   const [existingMessages, setExistingMessages] = useState({});
+
+  // Report Modal States
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportContext, setReportContext] = useState(null);
 
   // Check authentication on mount
   useEffect(() => {
@@ -467,6 +473,35 @@ const BrowseCreators = () => {
     navigate(`/creator/${identifier}`);
   };
 
+  // Handle report content from SwipeCard
+  const handleReportContent = (reportData) => {
+    setReportContext(reportData);
+    setShowReportModal(true);
+  };
+
+  // Handle report success
+  const handleReportSuccess = async (reportData) => {
+    try {
+      // Hide content from this specific user
+      const contentId = reportContext?.contentId;
+      const creatorId = reportContext?.reportedUserId;
+
+      if (contentId && reportContext?.contentType === 'content') {
+        safetyManager.hideContent(contentId, 'reported_content');
+      }
+
+      // If we have creator info, hide all their future content for this user
+      if (creatorId) {
+        safetyManager.addReportedCreator(creatorId);
+      }
+
+      setShowReportModal(false);
+      setReportContext(null);
+    } catch (error) {
+      console.error('Error handling report success:', error);
+    }
+  };
+
   const handleResetFilters = async () => {
     try {
       // Define default filters (same as BrowseFilters.jsx)
@@ -647,7 +682,7 @@ const BrowseCreators = () => {
                 onSwipe={handleSwipe}
                 onViewProfile={handleViewCreatorProfile}
                 onPurchase={handleContentPurchase}
-                onModalStateChange={handleModalStateChange}
+                onReportContent={handleReportContent}
                 isTop={index === 0}
                 dragEnabled={index === 0}
                 showActions={true}
@@ -713,6 +748,21 @@ const BrowseCreators = () => {
           onClose={handleCreditPurchaseClose}
           onSuccess={handleCreditPurchaseSuccess}
           pendingPurchase={pendingPurchase}
+        />
+      )}
+
+      {/* Report Modal - rendered at root level to avoid z-index conflicts */}
+      {showReportModal && reportContext && (
+        <ReportModal
+          contentId={reportContext.contentId}
+          contentType={reportContext.contentType}
+          reportedUserId={reportContext.reportedUserId}
+          isOpen={showReportModal}
+          onClose={() => {
+            setShowReportModal(false);
+            setReportContext(null);
+          }}
+          onSuccess={handleReportSuccess}
         />
       )}
 

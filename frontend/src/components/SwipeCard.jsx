@@ -6,8 +6,6 @@ import {
   useAnimation,
 } from 'framer-motion';
 import { Shield, MoreHorizontal, Flag, UserX, EyeOff } from 'lucide-react';
-import ReportModal from './ReportModal';
-import BlockUserModal from './BlockUserModal';
 import safetyManager from '../utils/safetyManager';
 import './SwipeCard.css';
 
@@ -17,7 +15,7 @@ const SwipeCard = ({
   onSwipe,
   onViewProfile,
   onPurchase, // New prop for content purchase
-  onModalStateChange, // New prop to notify parent of modal state
+  onReportContent, // New prop for report events
   isTop = false,
   style = {},
   dragEnabled = true,
@@ -45,8 +43,6 @@ const SwipeCard = ({
 
   // Safety menu state
   const [showSafetyMenu, setShowSafetyMenu] = useState(false);
-  const [showReportModal, setShowReportModal] = useState(false);
-  const [showBlockModal, setShowBlockModal] = useState(false);
 
   // Refs
   const cardRef = useRef(null);
@@ -218,29 +214,19 @@ const SwipeCard = ({
     e.preventDefault();
     e.stopPropagation();
     setShowSafetyMenu(false);
-    setShowReportModal(true);
-  };
 
-  const handleReportSuccess = async (reportData) => {
-    try {
-      // Hide content from this specific user
-      const contentId = isContentMode ? content._id : null;
-      const creatorId = isContentMode ? content.creator?._id : creator?._id;
-
-      if (contentId) {
-        safetyManager.hideContent(contentId, 'reported_content');
-      }
-
-      // If we have creator info, hide all their future content for this user
-      if (creatorId) {
-        safetyManager.addReportedCreator(creatorId);
-      }
-
-      setShowReportModal(false);
-    } catch (error) {
-      console.error('Error handling report success:', error);
+    // Emit report event to parent with content data
+    if (onReportContent) {
+      onReportContent({
+        contentId: isContentMode ? content._id : creator?._id,
+        contentType: isContentMode ? 'content' : 'creator',
+        reportedUserId: isContentMode ? content.creator?._id : creator?._id,
+        content: isContentMode ? content : null,
+        creator: !isContentMode ? creator : null
+      });
     }
   };
+
 
   // Close safety menu when clicking outside
   const handleOutsideClick = (e) => {
@@ -249,12 +235,6 @@ const SwipeCard = ({
     }
   };
 
-  // Notify parent component when modal state changes
-  React.useEffect(() => {
-    if (onModalStateChange) {
-      onModalStateChange(showReportModal || showBlockModal);
-    }
-  }, [showReportModal, showBlockModal, onModalStateChange]);
 
   return (
     <motion.div
@@ -405,17 +385,6 @@ const SwipeCard = ({
         )}
       </div>
 
-      {/* Report Modal */}
-      {showReportModal && (
-        <ReportModal
-          contentId={isContentMode ? content._id : creator?._id}
-          contentType={isContentMode ? 'content' : 'creator'}
-          reportedUserId={isContentMode ? content.creator?._id : creator?._id}
-          isOpen={showReportModal}
-          onClose={() => setShowReportModal(false)}
-          onSuccess={handleReportSuccess}
-        />
-      )}
     </motion.div>
   );
 };
