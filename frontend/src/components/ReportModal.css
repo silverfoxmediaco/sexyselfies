@@ -478,8 +478,9 @@
   }
 
   .ReportModal-container {
-    max-height: 85vh; /* Leave space at top */
-    border-radius: 16px 16px 0 0; /* Only round top corners */
+    max-height: 80vh;
+    border-radius: 16px 16px 0 0;
+    margin-bottom: 100px;
   }
 
   .ReportModal-header {
