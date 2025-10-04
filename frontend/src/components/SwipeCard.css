@@ -608,7 +608,7 @@
   position: absolute;
   top: var(--swipecard-spacing-md);
   right: var(--swipecard-spacing-md);
-  z-index: 10;
+  z-index: 9999;
 }
 
 /* Safety Menu Button - Dark Transparent Circle with 3 Dots */
