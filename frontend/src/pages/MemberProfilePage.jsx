@@ -399,7 +399,7 @@ const MemberProfilePage = () => {
                   {creditData.loading ? (
                     <div className='mpp-loading-spinner-small'></div>
                   ) : (
-                    <Plus size={16} />
+                    <Plus size={30} />
                   )}
                 </button>
               </div>
