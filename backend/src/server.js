@@ -33,6 +33,9 @@ const memberPrivacyRoutes = require('./routes/memberPrivacy.routes');
 const sessionRoutes = require('./routes/session.routes');
 const giftRoutes = require('./routes/gift.routes');
 
+// ADD THIS: Import message routes
+const messageRoutes = require('./routes/message.routes');
+
 // Import middleware
 const errorMiddleware = require('./middleware/error.middleware');
 const { requestLogger } = require('./middleware/logging.middleware');
@@ -409,6 +412,10 @@ app.use(`${API_V1}/content`, contentRoutes);
 app.use(`${API_V1}/connections`, connectionRoutes);
 console.log('Connections routes mounted at:', `${API_V1}/connections`);
 
+// ADD THIS: Mount message routes
+app.use(`${API_V1}/messages`, messageRoutes);
+console.log('Message routes mounted at:', `${API_V1}/messages`);
+
 // Debug route registration
 console.log(
   '🔧 Registered API routes:',
@@ -438,7 +445,7 @@ console.log('All API routes mounted successfully');
 if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
   app.post(`${API_V1}/dev/seed-data`, async (req, res) => {
     try {
-      console.log(' Seeding endpoint called...');
+      console.log('🌱 Seeding endpoint called...');
       const { seedCreators } = require('./scripts/seedCreators');
       const result = await seedCreators();
 
@@ -665,10 +672,11 @@ server.listen(PORT, () => {
   console.log(`   server.maxConnections: ${server.maxConnections}`);
   console.log('   Optimized for Render Starter instance');
   console.log('========================================');
-  console.log(' Available endpoints:');
+  console.log('📍 Available endpoints:');
   console.log('  Auth: /api/v1/auth');
   console.log('  Creator: /api/v1/creator');
   console.log('  Members: /api/v1/members');
+  console.log('  Messages: /api/v1/messages');
   console.log('  Creator Sales: /api/v1/creator/sales');
   console.log('  Member Profiles: /api/v1/creator/members');
   console.log('  Privacy: /api/v1/member/privacy');
