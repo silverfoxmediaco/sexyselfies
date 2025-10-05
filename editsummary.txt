@@ -626,3 +626,43 @@
 ✅ Creator avatar and data will load correctly
 ✅ All messaging endpoints will work properly
 ✅ No more 404 errors from doubled paths
+
+## Deleted AppLayout Component (Session 5 - Cleanup):
+
+### Files Deleted:
+57. **Removed AppLayout entirely** - Problematic global layout wrapper
+    - Deleted `/components/AppLayout.jsx` (3,764 bytes)
+    - Deleted `/components/AppLayout.css` (78 bytes - was already disabled)
+    - Deleted `/main 2.jsx` (14,447 bytes - backup file)
+    - Deleted `/main-simple-working.jsx` (1,004 bytes - debug file)
+
+### Why AppLayout Was Deleted:
+58. **Caused more problems than it solved**
+    - Used inline styles that couldn't be overridden
+    - Forced 80px bottom padding globally (broke page layouts)
+    - Created flex container that restricted child components
+    - Duplicated what pages already do (BottomNavigation)
+    - Made debugging CSS issues harder
+    - Pages like Chat.jsx already handle their own navigation
+
+### What Was Removed from main.jsx:
+59. **Cleaned up main.jsx**
+    - Removed `import AppLayout from './components/AppLayout'` (line 30)
+    - Removed `<AppLayout>` wrapper tag (line 111)
+    - Removed `</AppLayout>` closing tag (line 635)
+    - App now renders directly without layout wrapper
+
+### Impact:
+60. **Each page now controls its own layout**
+    - Pages can add BottomNavigation when needed (like Chat.jsx does)
+    - No global padding conflicts
+    - No inline style overrides
+    - Cleaner, more predictable styling
+    - Easier to debug CSS issues
+
+### Resolution:
+✅ AppLayout completely removed
+✅ Backup/debug main files deleted
+✅ main.jsx cleaned up and simplified
+✅ Pages handle their own navigation independently
+✅ No more global layout conflicts

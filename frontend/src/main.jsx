@@ -27,8 +27,6 @@ function RedirectHandler() {
   return null;
 }
 
-// Import Layout
-import AppLayout from './components/AppLayout';
 
 // Import Route Protection
 import {
@@ -111,9 +109,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <BrowserRouter
         future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
       >
-        <AppLayout>
-          <RedirectHandler />
-          <Routes>
+        <RedirectHandler />
+        <Routes>
             {/* Default Route - Onboarding Flow */}
             <Route path='/' element={<OnboardingFlow />} />
 
@@ -635,7 +632,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
           {/* Cookie Consent Banner - Global */}
           <CookieConsent />
-        </AppLayout>
       </BrowserRouter>
     </AuthProvider>
   </React.StrictMode>
