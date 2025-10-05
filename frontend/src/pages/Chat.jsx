@@ -61,8 +61,8 @@ const Chat = () => {
 
       // If urlParam is a username (not numeric), create or get conversation
       if (isNaN(urlParam)) {
-        // Get creator by username first
-        const creatorResponse = await api.get(`/v1/creators/username/${urlParam}`);
+        // Get creator by username first (public endpoint accepts username or ID)
+        const creatorResponse = await api.get(`/v1/creator/${urlParam}`);
         const creatorData = creatorResponse.data;
 
         // Set creator info

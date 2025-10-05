@@ -562,3 +562,29 @@
 ✅ Chat header simplified (avatar, name, status only)
 ✅ No confusing tier indicators
 ✅ Header layout improved
+
+## Fixed Creator Avatar Not Loading (Session 5 - Continued):
+
+### Issue Identified:
+51. **Creator avatar showing default placeholder** - "Unknown Creator" with default-avatar.png
+    - Chat header not loading actual creator profile picture
+    - API call to get creator by username failing
+
+### Root Cause:
+52. **Wrong API endpoint used**
+    - Frontend calling: `/v1/creators/username/${username}` (doesn't exist)
+    - Correct endpoint: `/v1/creator/${identifier}` (public.routes.js)
+    - Public endpoint already handles both username AND ID lookup
+
+### Fix Applied:
+53. **Updated Chat.jsx initializeConversation()** - Line 65
+    - Changed: `/v1/creators/username/${urlParam}`
+    - To: `/v1/creator/${urlParam}`
+    - Uses existing public endpoint that accepts username or ObjectId
+    - Endpoint filters for verified, non-paused creators only
+
+### Resolution:
+✅ Creator avatar will now load correctly
+✅ Using correct public API endpoint
+✅ Creator name, profile image, and status will display
+✅ Works with both username and ID in URL
