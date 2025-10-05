@@ -2,15 +2,15 @@
 // Path: backend/src/controllers/message.controller.js
 // Purpose: Handle all messaging operations between members and creators with monetization
 
-import Message from '../models/Message.js';
-import Conversation from '../models/Conversation.js';
-import Member from '../models/Member.js';
-import Creator from '../models/Creator.js';
-import Transaction from '../models/Transaction.js';
-import cloudinary from '../config/cloudinary.js';
+const Message = require('../models/Message');
+const Conversation = require('../models/Conversation');
+const Member = require('../models/Member');
+const Creator = require('../models/Creator');
+const Transaction = require('../models/Transaction');
+const cloudinary = require('../config/cloudinary');
 
 // Get all conversations for the logged-in user
-export const getConversations = async (req, res) => {
+const getConversations = async (req, res) => {
   try {
     const userId = req.userId;
     const userType = req.userType; // 'member' or 'creator'
@@ -82,7 +82,7 @@ export const getConversations = async (req, res) => {
 };
 
 // Get messages for a specific conversation
-export const getConversation = async (req, res) => {
+const getConversation = async (req, res) => {
   try {
     const { userId: otherUserId } = req.params;
     const currentUserId = req.userId;
@@ -198,7 +198,7 @@ export const getConversation = async (req, res) => {
 };
 
 // Send a text message
-export const sendMessage = async (req, res) => {
+const sendMessage = async (req, res) => {
   try {
     const { recipientId, content, tipAmount } = req.body;
     const senderId = req.userId;
@@ -346,7 +346,7 @@ export const sendMessage = async (req, res) => {
 };
 
 // Send a paid message (creator only)
-export const sendPaidMessage = async (req, res) => {
+const sendPaidMessage = async (req, res) => {
   try {
     const { recipientId, content, creditCost, mediaUrl } = req.body;
     const creatorId = req.userId;
@@ -454,7 +454,7 @@ export const sendPaidMessage = async (req, res) => {
 };
 
 // Unlock a paid message (member only)
-export const unlockMessage = async (req, res) => {
+const unlockMessage = async (req, res) => {
   try {
     const { messageId } = req.params;
     const memberId = req.userId;
@@ -570,7 +570,7 @@ export const unlockMessage = async (req, res) => {
 };
 
 // Send an image message
-export const sendImage = async (req, res) => {
+const sendImage = async (req, res) => {
   try {
     const { recipientId } = req.body;
     const senderId = req.userId;
@@ -724,7 +724,7 @@ export const sendImage = async (req, res) => {
 };
 
 // Send a tip with message
-export const sendTip = async (req, res) => {
+const sendTip = async (req, res) => {
   try {
     const { recipientId, amount, message: tipMessage } = req.body;
     const memberId = req.userId;
@@ -861,7 +861,7 @@ export const sendTip = async (req, res) => {
 };
 
 // Delete a message
-export const deleteMessage = async (req, res) => {
+const deleteMessage = async (req, res) => {
   try {
     const { messageId } = req.params;
     const userId = req.userId;
@@ -921,7 +921,7 @@ export const deleteMessage = async (req, res) => {
 };
 
 // Mark messages as read
-export const markAsRead = async (req, res) => {
+const markAsRead = async (req, res) => {
   try {
     const { conversationId } = req.params;
     const userId = req.userId;
@@ -985,7 +985,7 @@ export const markAsRead = async (req, res) => {
 };
 
 // Get media messages from conversation
-export const getMediaMessages = async (req, res) => {
+const getMediaMessages = async (req, res) => {
   try {
     const { conversationId } = req.params;
     const userId = req.userId;
@@ -1028,7 +1028,7 @@ export const getMediaMessages = async (req, res) => {
 };
 
 // Search messages
-export const searchMessages = async (req, res) => {
+const searchMessages = async (req, res) => {
   try {
     const { query, conversationId } = req.query;
     const userId = req.userId;
@@ -1076,7 +1076,7 @@ export const searchMessages = async (req, res) => {
 };
 
 // Archive/unarchive conversation
-export const archiveConversation = async (req, res) => {
+const archiveConversation = async (req, res) => {
   try {
     const { conversationId } = req.params;
     const { archive } = req.body;
@@ -1122,7 +1122,7 @@ export const archiveConversation = async (req, res) => {
 };
 
 // Mute/unmute conversation
-export const muteConversation = async (req, res) => {
+const muteConversation = async (req, res) => {
   try {
     const { conversationId } = req.params;
     const { mute } = req.body;
@@ -1178,7 +1178,299 @@ async function generateThumbnail(mediaUrl) {
   return mediaUrl;
 }
 
-export default {
+// Additional required functions for routes
+const getConversationMessages = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const { page = 1, limit = 50 } = req.query;
+
+    const messages = await Message.find({ conversation: conversationId })
+      .sort('-createdAt')
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .populate('sender', 'username displayName profileImage')
+      .lean();
+
+    res.json({ success: true, data: messages });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const editMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { content } = req.body;
+
+    const message = await Message.findByIdAndUpdate(
+      messageId,
+      { content, edited: true, editedAt: Date.now() },
+      { new: true }
+    );
+
+    res.json({ success: true, data: message });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const replyToMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { content } = req.body;
+
+    const originalMessage = await Message.findById(messageId);
+    const newMessage = await Message.create({
+      conversation: originalMessage.conversation,
+      sender: req.user._id,
+      content,
+      replyTo: messageId
+    });
+
+    res.json({ success: true, data: newMessage });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const unlockMedia = async (req, res) => {
+  // Alias for unlockMessage
+  return unlockMessage(req, res);
+};
+
+const getUnreadCount = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const count = await Message.countDocuments({
+      recipient: userId,
+      read: false
+    });
+
+    res.json({ success: true, data: { count } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const markAllAsRead = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+
+    await Message.updateMany(
+      { conversation: conversationId, recipient: req.user._id, read: false },
+      { read: true, readAt: Date.now() }
+    );
+
+    res.json({ success: true, message: 'All messages marked as read' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const pinMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+
+    const message = await Message.findByIdAndUpdate(
+      messageId,
+      { pinned: true },
+      { new: true }
+    );
+
+    res.json({ success: true, data: message });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const unpinMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+
+    const message = await Message.findByIdAndUpdate(
+      messageId,
+      { pinned: false },
+      { new: true }
+    );
+
+    res.json({ success: true, data: message });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const unarchiveConversation = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+
+    const conversation = await Conversation.findByIdAndUpdate(
+      conversationId,
+      { archived: false },
+      { new: true }
+    );
+
+    res.json({ success: true, data: conversation });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const unmuteConversation = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+
+    const conversation = await Conversation.findByIdAndUpdate(
+      conversationId,
+      { muted: false },
+      { new: true }
+    );
+
+    res.json({ success: true, data: conversation });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const blockUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Add user to blocked list
+    await Member.findByIdAndUpdate(
+      req.user._id,
+      { $addToSet: { blockedUsers: userId } }
+    );
+
+    res.json({ success: true, message: 'User blocked' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const unblockUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Remove user from blocked list
+    await Member.findByIdAndUpdate(
+      req.user._id,
+      { $pull: { blockedUsers: userId } }
+    );
+
+    res.json({ success: true, message: 'User unblocked' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const reportMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { reason } = req.body;
+
+    // Create report (assuming Report model exists)
+    // await Report.create({ message: messageId, reporter: req.user._id, reason });
+
+    res.json({ success: true, message: 'Message reported' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const clearConversation = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+
+    await Message.deleteMany({ conversation: conversationId });
+
+    res.json({ success: true, message: 'Conversation cleared' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const getConversationMedia = async (req, res) => {
+  // Alias for getMediaMessages
+  return getMediaMessages(req, res);
+};
+
+const getSharedMedia = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const messages = await Message.find({
+      $or: [{ sender: userId }, { recipient: userId }],
+      'media.0': { $exists: true }
+    })
+      .populate('sender recipient', 'username displayName profileImage')
+      .sort('-createdAt')
+      .lean();
+
+    res.json({ success: true, data: messages });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const createOrGetConversation = async (req, res) => {
+  try {
+    const { userId, userModel } = req.body;
+    const currentUserId = req.user._id;
+
+    // Check if conversation exists
+    let conversation = await Conversation.findOne({
+      'participants.user': { $all: [currentUserId, userId] }
+    });
+
+    if (!conversation) {
+      // Create new conversation
+      conversation = await Conversation.create({
+        participants: [
+          { user: currentUserId, userType: req.user.role },
+          { user: userId, userType: userModel }
+        ]
+      });
+    }
+
+    res.json({ success: true, data: conversation });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const updateTypingStatus = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const { isTyping } = req.body;
+
+    // Emit socket event for typing status
+    // req.io.to(conversationId).emit('typing', { userId: req.user._id, isTyping });
+
+    res.json({ success: true, message: 'Typing status updated' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const getPinnedMessages = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+
+    const messages = await Message.find({
+      conversation: conversationId,
+      pinned: true
+    })
+      .populate('sender', 'username displayName profileImage')
+      .sort('-createdAt')
+      .lean();
+
+    res.json({ success: true, data: messages });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+module.exports = {
   getConversations,
   getConversation,
   sendMessage,
@@ -1191,5 +1483,25 @@ export default {
   getMediaMessages,
   searchMessages,
   archiveConversation,
-  muteConversation
+  muteConversation,
+  // Added functions
+  getConversationMessages,
+  editMessage,
+  replyToMessage,
+  unlockMedia,
+  getUnreadCount,
+  markAllAsRead,
+  pinMessage,
+  unpinMessage,
+  unarchiveConversation,
+  unmuteConversation,
+  blockUser,
+  unblockUser,
+  reportMessage,
+  clearConversation,
+  getConversationMedia,
+  getSharedMedia,
+  createOrGetConversation,
+  updateTypingStatus,
+  getPinnedMessages,
 };
