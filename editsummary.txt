@@ -450,3 +450,30 @@
 ✅ No undefined route handlers
 ✅ Module system consistent across entire backend
 ✅ Backend server should now start successfully without route callback errors
+
+## WebSocket Connection Fix (Session 5 - Continued):
+
+### Error Identified:
+37. **WebSocket connection failed** - Console error on deployed frontend
+    - Error: `WebSocket connection to 'wss://sexyselfies-frontend.onrender.com/socket.io/...' failed`
+    - Socket trying to connect to frontend URL instead of backend URL
+    - Multiple connection retry attempts failing
+
+### Root Cause:
+38. **Incorrect WebSocket URL in production .env**
+    - `VITE_SOCKET_URL=wss://sexyselfies-frontend.onrender.com` (WRONG - this is the frontend)
+    - Actual backend URL: `https://sexyselfies-api.onrender.com`
+    - Also `VITE_API_URL=/api/v1` was relative path, needed full backend URL
+
+### Fix Applied:
+39. **Updated frontend/.env with correct backend URLs**
+    - Changed `VITE_API_URL=/api/v1` → `VITE_API_URL=https://sexyselfies-api.onrender.com/api/v1`
+    - Changed `VITE_SOCKET_URL=wss://sexyselfies-frontend.onrender.com` → `VITE_SOCKET_URL=wss://sexyselfies-api.onrender.com`
+    - WebSocket now correctly points to backend server
+    - API calls now use full backend URL
+
+### Resolution:
+✅ WebSocket URL corrected to point to backend (sexyselfies-api.onrender.com)
+✅ API URL updated to use full backend URL
+✅ Frontend will now connect to correct backend WebSocket server
+✅ Real-time messaging should work after redeployment
