@@ -62,7 +62,7 @@ const Chat = () => {
       // If urlParam is a username (not numeric), create or get conversation
       if (isNaN(urlParam)) {
         // Get creator by username first (public endpoint accepts username or ID)
-        const creatorResponse = await api.get(`/v1/creator/${urlParam}`);
+        const creatorResponse = await api.get(`/creator/${urlParam}`);
         const creatorData = creatorResponse.data;
 
         // Set creator info
@@ -77,7 +77,7 @@ const Chat = () => {
         });
 
         // Create or get conversation
-        const convResponse = await api.post('/v1/messages/conversations/init', {
+        const convResponse = await api.post('/messages/conversations/init', {
           userId: creatorData._id,
           userModel: 'Creator'
         });
@@ -205,7 +205,7 @@ const Chat = () => {
 
   const fetchCreatorInfo = async () => {
     try {
-      const data = await api.get(`/v1/messages/conversations/${conversationId}`);
+      const data = await api.get(`/messages/conversations/${conversationId}`);
 
       // Extract creator info from conversation
       const otherUser = data.data.participants?.find(p => p.userType === 'Creator')?.user;
@@ -238,7 +238,7 @@ const Chat = () => {
   const fetchMessages = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get(`/v1/messages/conversations/${conversationId}/messages`);
+      const data = await api.get(`/messages/conversations/${conversationId}/messages`);
       setMessages(
         data.data.map(msg => ({
           id: msg._id,
@@ -266,7 +266,7 @@ const Chat = () => {
 
   const markMessagesAsRead = async () => {
     try {
-      await api.patch(`/v1/messages/conversations/${conversationId}/read-all`);
+      await api.patch(`/messages/conversations/${conversationId}/read-all`);
     } catch (error) {
       console.error('Error marking messages as read:', error);
     }
@@ -466,7 +466,7 @@ const Chat = () => {
     console.log(`Unlocking content for $${message.price}`);
 
     try {
-      await api.post(`/v1/messages/${message.id}/unlock`, {
+      await api.post(`/messages/${message.id}/unlock`, {
         amount: message.price,
       });
       // Update the message to show it's unlocked
@@ -484,7 +484,7 @@ const Chat = () => {
 
   const handleDelete = async message => {
     try {
-      await api.delete(`/v1/messages/${message.id}`);
+      await api.delete(`/messages/${message.id}`);
 
       // Remove from local state
       setMessages(prev => prev.filter(msg => msg.id !== message.id));

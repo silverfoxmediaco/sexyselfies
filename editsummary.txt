@@ -588,3 +588,41 @@
 ✅ Using correct public API endpoint
 ✅ Creator name, profile image, and status will display
 ✅ Works with both username and ID in URL
+
+## Fixed Doubled /v1 in API Calls (Session 5 - Final Fix):
+
+### Critical Issue Identified:
+54. **All API calls had doubled /v1 prefix** - 404 errors on ALL endpoints
+    - Error URL: `https://sexyselfies-api.onrender.com/api/v1/v1/creator/...`
+    - Should be: `https://sexyselfies-api.onrender.com/api/v1/creator/...`
+    - `/v1` was appearing TWICE in every request
+
+### Root Cause Analysis:
+55. **api.config.js baseURL already includes /api/v1**
+    - `VITE_API_URL` environment variable: `https://sexyselfies-api.onrender.com/api/v1`
+    - api.config.js sets this as baseURL
+    - Chat.jsx was calling `api.get('/v1/creator/...')`
+    - Final URL: baseURL + path = `/api/v1` + `/v1/creator` = `/api/v1/v1/creator` ❌
+
+### Comprehensive Fix Applied:
+56. **Removed /v1 prefix from ALL Chat.jsx API calls**
+    - Line 65: `/v1/creator/${urlParam}` → `/creator/${urlParam}` ✅
+    - Line 80: `/v1/messages/conversations/init` → `/messages/conversations/init` ✅
+    - Line 208: `/v1/messages/conversations/${id}` → `/messages/conversations/${id}` ✅
+    - Line 241: `/v1/messages/conversations/${id}/messages` → `/messages/conversations/${id}/messages` ✅
+    - Line 269: `/v1/messages/conversations/${id}/read-all` → `/messages/conversations/${id}/read-all` ✅
+    - Line 469: `/v1/messages/${id}/unlock` → `/messages/${id}/unlock` ✅
+    - Line 487: `/v1/messages/${id}` → `/messages/${id}` ✅
+
+### Why This Happened:
+- api.config.js automatically adds `/api/v1` to baseURL
+- All API calls should use paths WITHOUT `/v1` prefix
+- The baseURL handles the versioning automatically
+- Example: `api.get('/creator/username')` → `https://api.com/api/v1/creator/username`
+
+### Final Resolution:
+✅ All API calls now use correct paths without /v1 prefix
+✅ baseURL in api.config.js handles /api/v1 automatically
+✅ Creator avatar and data will load correctly
+✅ All messaging endpoints will work properly
+✅ No more 404 errors from doubled paths
