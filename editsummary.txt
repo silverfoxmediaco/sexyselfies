@@ -308,3 +308,53 @@
 - **All reported rate limiter errors appear to be from outdated code or resolved issues**
 - **User's error reports do not match current codebase state**
 - **Backend is production-ready without any rate limiter issues**
+
+## Render Deploy Error Fix (Session 5):
+
+### Error Identified:
+23. **Vite Build Failure** - Build failed during Render deployment
+    - Error: `Could not resolve "./api" from "src/services/message.service.js"`
+    - Build process failed at plugin vite-plugin-pwa:build step
+    - Rollup unable to resolve import statement
+
+### Root Cause:
+24. `/frontend/src/services/message.service.js` - Incorrect import path
+    - Line 1 had `import api from './api';`
+    - Actual file is named `api.config.js` not `api.js`
+    - Build process could not resolve the module
+
+### Fix Applied:
+25. **Updated Import Statement** - Fixed module resolution
+    - Changed `import api from './api';` to `import api from './api.config';`
+    - Verified no other services have the same incorrect import pattern
+    - File now correctly references existing `api.config.js` module
+
+### Resolution Status:
+✅ Import path corrected in message.service.js
+✅ No other service files have incorrect api imports
+✅ Build should now complete successfully on Render
+✅ message.service.js now aligns with all other service files (auth, content, creator, member, etc.)
+
+### Backend Error Identified:
+26. **Backend Module Not Found** - Backend server crash during Render startup
+    - Error: `Cannot find module '../controllers/messageController'`
+    - Error location: `/backend/src/routes/message.routes.js:33`
+    - Server failed to start with MODULE_NOT_FOUND error
+
+### Root Cause:
+27. `/backend/src/routes/message.routes.js` - Incorrect controller filename
+    - Line 33 had `require('../controllers/messageController')`
+    - Actual file is named `message.controller.js` (dot notation, not camelCase)
+    - Backend naming convention uses dots (e.g., `creator.message.controller.js`)
+
+### Fix Applied:
+28. **Updated Controller Import** - Fixed module resolution
+    - Changed `require('../controllers/messageController')` to `require('../controllers/message.controller')`
+    - Verified no other files reference incorrect `messageController` naming
+    - Import now matches actual file: `message.controller.js`
+
+### Final Resolution:
+✅ Controller import path corrected in message.routes.js
+✅ No other route files have incorrect messageController references
+✅ Backend follows consistent dot notation naming (message.controller, not messageController)
+✅ Backend server should now start successfully on Render

@@ -30,7 +30,7 @@ const {
   createOrGetConversation,
   updateTypingStatus,
   getPinnedMessages,
-} = require('../controllers/messageController');
+} = require('../controllers/message.controller');
 
 const { authenticate, checkRole } = require('../middleware/auth');
 const { validateMessage, validateTip } = require('../middleware/validation');
