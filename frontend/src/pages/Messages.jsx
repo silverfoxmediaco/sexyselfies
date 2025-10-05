@@ -290,7 +290,7 @@ const Messages = () => {
         </button>
         <div className="chat-user-info">
           <img 
-            src={selectedConversation?.otherUser?.avatar || '/default-avatar.png'} 
+            src={selectedConversation?.otherUser?.avatar || '/placeholders/beautifulbrunette2.png'} 
             alt={selectedConversation?.otherUser?.username}
           />
           <div>
@@ -450,7 +450,7 @@ const Messages = () => {
                   >
                     <div className='conversation-avatar'>
                       <img 
-                        src={conversation.otherUser?.avatar || '/default-avatar.png'} 
+                        src={conversation.otherUser?.avatar || '/placeholders/beautifulbrunette2.png'} 
                         alt={conversation.otherUser?.username} 
                       />
                       {conversation.otherUser?.isOnline && (

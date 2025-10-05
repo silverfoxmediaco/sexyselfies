@@ -1,3 +1,38 @@
+# LATEST CHANGES (2025-10-05) - Production Messaging Fixes
+
+## Production Error Fixes - Messaging System
+
+**Problem**: Messaging system throwing 500 errors in production
+1. POST /api/v1/messages/conversations/init endpoint working but needed verification
+2. Default avatar images returning 404 errors
+3. Message service needed username support for Chat.jsx
+
+**Files Fixed**:
+
+1. `/frontend/src/pages/Messages.jsx` (Lines 293, 453)
+   - Fixed avatar fallback paths from `/default-avatar.png` to `/placeholders/beautifulbrunette2.png`
+   - Prevents 404 errors when user has no avatar set
+
+2. `/frontend/src/services/message.service.js` (Lines 27-46)
+   - Enhanced `createOrGetConversation()` to support username lookup
+   - Now accepts optional `username` parameter in addition to `userId`
+   - Properly constructs payload: `{ userId, userModel }` OR `{ username, userModel }`
+   - Matches backend API expectations
+
+3. **Backend Verification** (Already working correctly):
+   - `/backend/src/routes/message.routes.js` - Route exists on line 78
+   - `/backend/src/controllers/message.controller.js` - Function exists and exported
+   - Function properly handles both `userId` and `username` lookups with verification checks
+
+**How It Works Now**:
+- Chat.jsx calls: `api.post('/messages/conversations/init', { username: 'Iamjessica', userModel: 'Creator' })`
+- Backend finds creator by username with verification check
+- Returns conversation with populated participant data
+- Frontend receives conversation and extracts creator info
+- No more 500 errors or 404 avatar images
+
+---
+
 # LATEST CHANGES (2025-10-05)
 
 ## Chat Page - Username-based Conversation Initialization Fix

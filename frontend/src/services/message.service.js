@@ -24,12 +24,20 @@ class MessageService {
     }
   }
 
-  async createOrGetConversation(userId, userModel) {
+  async createOrGetConversation(userId, userModel, username = null) {
     try {
-      const response = await api.post('/messages/conversations/init', {
-        userId,
-        userModel
-      });
+      const payload = { userModel };
+
+      // Support both userId and username lookup
+      if (username) {
+        payload.username = username;
+      } else if (userId) {
+        payload.userId = userId;
+      } else {
+        throw new Error('Either userId or username must be provided');
+      }
+
+      const response = await api.post('/messages/conversations/init', payload);
       return response.data;
     } catch (error) {
       console.error('Error creating conversation:', error);
