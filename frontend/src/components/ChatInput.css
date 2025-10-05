@@ -2,10 +2,10 @@
 
 .chat-input-container {
   position: fixed;
-  bottom: 0;
+  bottom: 60px; /* Height of bottom navigation */
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 900; /* Below bottom navigation (1000) */
   background: rgba(18, 18, 18, 0.98);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
@@ -220,6 +220,10 @@
 
 /* Tablet Support */
 @media (min-width: 768px) {
+  .chat-input-container {
+    bottom: 70px; /* Tablet bottom nav height (70px) */
+  }
+
   .chat-input-area {
     padding: 14px 20px;
   }
