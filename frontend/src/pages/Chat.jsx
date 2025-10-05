@@ -78,7 +78,7 @@ const Chat = () => {
             id: creatorData._id,
             name: creatorData.displayName || creatorData.username,
             username: `@${creatorData.username}`,
-            avatar: creatorData.profileImage || '/placeholders/default-avatar.png',
+            avatar: creatorData.profileImage || '/placeholders/beautifulbrunette2.png',
             isOnline: creatorData.isOnline || false,
             lastSeen: creatorData.lastActive || new Date(),
           });
@@ -94,7 +94,7 @@ const Chat = () => {
         id: 'unknown',
         name: 'Unknown Creator',
         username: '@unknown',
-        avatar: '/placeholders/default-avatar.png',
+        avatar: '/placeholders/beautifulbrunette2.png',
         isOnline: false,
         lastSeen: new Date(),
       });
@@ -226,7 +226,7 @@ const Chat = () => {
         id: 'unknown',
         name: 'Unknown Creator',
         username: '@unknown',
-        avatar: '/placeholders/default-avatar.png',
+        avatar: '/placeholders/beautifulbrunette2.png',
         isOnline: false,
         lastSeen: new Date(),
         connectionType: 'basic',
