@@ -32,9 +32,8 @@ const {
   getPinnedMessages,
 } = require('../controllers/message.controller');
 
-const { authenticate, checkRole } = require('../middleware/auth');
-const { validateMessage, validateTip } = require('../middleware/validation');
-const { checkSubscription } = require('../middleware/subscription');
+const { protect, authorize } = require('../middleware/auth.middleware');
+const { validateMessage, validateTip } = require('../middleware/validation.middleware');
 
 // Configure multer for media uploads with mobile-optimized settings
 const storage = multer.memoryStorage();
@@ -68,7 +67,7 @@ const upload = multer({
 });
 
 // Apply authentication to all routes
-router.use(authenticate);
+router.use(protect);
 
 // Conversation Management Routes
 
@@ -107,14 +106,12 @@ router.delete('/conversations/:conversationId/clear', clearConversation);
 // Get messages for a conversation with pagination
 router.get(
   '/conversations/:conversationId/messages',
-  checkSubscription('messaging'),
   getConversationMessages
 );
 
 // Send a text or media message
 router.post(
   '/conversations/:conversationId/messages',
-  checkSubscription('messaging'),
   upload.array('media', 10),
   validateMessage,
   sendMessage
@@ -129,7 +126,6 @@ router.delete('/messages/:messageId', deleteMessage);
 // Reply to a message
 router.post(
   '/messages/:messageId/reply',
-  checkSubscription('messaging'),
   upload.array('media', 10),
   validateMessage,
   replyToMessage
@@ -155,7 +151,6 @@ router.post('/messages/:messageId/report', reportMessage);
 // Send a tip with a message
 router.post(
   '/conversations/:conversationId/tip',
-  checkSubscription('tipping'),
   validateTip,
   sendTip
 );
@@ -163,7 +158,6 @@ router.post(
 // Unlock paid media content
 router.post(
   '/messages/:messageId/unlock',
-  checkSubscription('premium_content'),
   unlockMedia
 );
 
