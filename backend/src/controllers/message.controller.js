@@ -1414,26 +1414,83 @@ const getSharedMedia = async (req, res) => {
 
 const createOrGetConversation = async (req, res) => {
   try {
-    const { userId, userModel } = req.body;
+    const { userId, username, userModel } = req.body;
     const currentUserId = req.user._id;
+    let targetUserId = userId;
+
+    // If username provided instead of userId, look up the creator
+    if (username && !userId) {
+      // CRITICAL: Only allow messaging to VERIFIED and NOT PAUSED creators
+      const creator = await Creator.findOne({
+        username,
+        isVerified: true,        // Must be verified (age + identity confirmed)
+        isPaused: { $ne: true }  // Must not be paused
+      }).select('_id username isVerified');
+
+      if (!creator) {
+        return res.status(404).json({
+          success: false,
+          message: 'Creator not found or not available for messaging. Creators must be verified to receive messages.'
+        });
+      }
+
+      // Double-check verification status for safety
+      if (!creator.isVerified) {
+        return res.status(403).json({
+          success: false,
+          message: 'This creator is not verified and cannot receive messages'
+        });
+      }
+
+      targetUserId = creator._id;
+    }
+
+    if (!targetUserId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Either userId or username is required'
+      });
+    }
+
+    // If userId was provided directly, verify the creator
+    if (userId && userModel === 'Creator') {
+      const creator = await Creator.findOne({
+        _id: userId,
+        isVerified: true,
+        isPaused: { $ne: true }
+      }).select('_id isVerified');
+
+      if (!creator || !creator.isVerified) {
+        return res.status(403).json({
+          success: false,
+          message: 'This creator is not verified and cannot receive messages'
+        });
+      }
+    }
 
     // Check if conversation exists
     let conversation = await Conversation.findOne({
-      'participants.user': { $all: [currentUserId, userId] }
-    });
+      'participants.user': { $all: [currentUserId, targetUserId] }
+    })
+    .populate('participants.user', 'username displayName profileImage isOnline lastActive');
 
     if (!conversation) {
       // Create new conversation
       conversation = await Conversation.create({
         participants: [
           { user: currentUserId, userType: req.user.role },
-          { user: userId, userType: userModel }
+          { user: targetUserId, userType: userModel }
         ]
       });
+
+      // Populate after creation
+      conversation = await Conversation.findById(conversation._id)
+        .populate('participants.user', 'username displayName profileImage isOnline lastActive');
     }
 
     res.json({ success: true, data: conversation });
   } catch (error) {
+    console.error('Create or get conversation error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 };

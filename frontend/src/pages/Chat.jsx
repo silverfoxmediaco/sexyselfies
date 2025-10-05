@@ -59,30 +59,30 @@ const Chat = () => {
     try {
       setIsLoading(true);
 
-      // If urlParam is a username (not numeric), create or get conversation
+      // If urlParam is a username (not numeric), create or get conversation by username
       if (isNaN(urlParam)) {
-        // Get creator by username first (public endpoint accepts username or ID)
-        const creatorResponse = await api.get(`/creator/${urlParam}`);
-        const creatorData = creatorResponse.data;
-
-        // Set creator info
-        setCreator({
-          id: creatorData._id,
-          name: creatorData.displayName || creatorData.username,
-          username: `@${creatorData.username}`,
-          avatar: creatorData.profileImage || '/placeholders/default-avatar.png',
-          isOnline: creatorData.isOnline || false,
-          lastSeen: creatorData.lastActive || new Date(),
-          connectionType: 'basic',
-        });
-
-        // Create or get conversation
+        // Create or get conversation using username (backend will find creator)
         const convResponse = await api.post('/messages/conversations/init', {
-          userId: creatorData._id,
+          username: urlParam, // Send username instead of userId
           userModel: 'Creator'
         });
 
-        setConversationId(convResponse.data._id);
+        const conversationData = convResponse.data;
+        setConversationId(conversationData._id);
+
+        // Extract creator info from conversation participants
+        const creatorParticipant = conversationData.participants?.find(p => p.userType === 'Creator');
+        if (creatorParticipant?.user) {
+          const creatorData = creatorParticipant.user;
+          setCreator({
+            id: creatorData._id,
+            name: creatorData.displayName || creatorData.username,
+            username: `@${creatorData.username}`,
+            avatar: creatorData.profileImage || '/placeholders/default-avatar.png',
+            isOnline: creatorData.isOnline || false,
+            lastSeen: creatorData.lastActive || new Date(),
+          });
+        }
       } else {
         // urlParam is already a conversationId
         setConversationId(urlParam);
@@ -97,7 +97,6 @@ const Chat = () => {
         avatar: '/placeholders/default-avatar.png',
         isOnline: false,
         lastSeen: new Date(),
-        connectionType: 'basic',
       });
       setIsLoading(false);
     }

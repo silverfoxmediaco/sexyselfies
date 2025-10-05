@@ -203,6 +203,13 @@ exports.approveVerification = async (req, res) => {
     creator.isVerified = true;
     creator.verificationStatus = 'approved';
     creator.verificationApprovedAt = new Date();
+    creator.idVerificationSubmitted = true; // Mark as submitted
+
+    // CRITICAL FIX: Also update nested verification.status field
+    if (creator.verification) {
+      creator.verification.status = 'approved';
+    }
+
     await creator.save();
 
     // CRITICAL FIX: Also update User model verification status
@@ -263,6 +270,13 @@ exports.rejectVerification = async (req, res) => {
     creator.verificationStatus = 'rejected';
     creator.verificationRejectedAt = new Date();
     creator.verificationRejectionReason = reason;
+
+    // CRITICAL FIX: Also update nested verification.status field
+    if (creator.verification) {
+      creator.verification.status = 'rejected';
+      creator.verification.rejectionReason = reason;
+    }
+
     await creator.save();
 
     // CRITICAL FIX: Also update User model verification status
