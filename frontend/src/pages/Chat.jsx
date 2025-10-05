@@ -14,8 +14,8 @@ import api from '../services/api.config';
 import './Chat.css';
 
 const Chat = () => {
-  // Get connectionId from URL (e.g., /member/chat/123)
-  const connectionId = window.location.pathname.split('/').pop();
+  // Get username or conversationId from URL (e.g., /member/messages/username or /member/messages/123)
+  const urlParam = window.location.pathname.split('/').pop();
   const navigate = path => (window.location.href = path);
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
@@ -24,6 +24,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [creator, setCreator] = useState(null);
+  const [conversationId, setConversationId] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState([]);
@@ -38,15 +39,69 @@ const Chat = () => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
     setCurrentUserId(userInfo.id || 'member-1');
 
-    fetchCreatorInfo();
-    fetchMessages();
-    markMessagesAsRead();
-    initializeRealTimeChat();
+    initializeConversation();
+  }, [urlParam]);
 
-    return () => {
-      cleanupRealTimeChat();
-    };
-  }, [connectionId]);
+  useEffect(() => {
+    if (conversationId) {
+      fetchMessages();
+      markMessagesAsRead();
+      initializeRealTimeChat();
+
+      return () => {
+        cleanupRealTimeChat();
+      };
+    }
+  }, [conversationId]);
+
+  // Initialize conversation - get or create
+  const initializeConversation = async () => {
+    try {
+      setIsLoading(true);
+
+      // If urlParam is a username (not numeric), create or get conversation
+      if (isNaN(urlParam)) {
+        // Get creator by username first
+        const creatorResponse = await api.get(`/v1/creators/username/${urlParam}`);
+        const creatorData = creatorResponse.data;
+
+        // Set creator info
+        setCreator({
+          id: creatorData._id,
+          name: creatorData.displayName || creatorData.username,
+          username: `@${creatorData.username}`,
+          avatar: creatorData.profileImage || '/placeholders/default-avatar.png',
+          isOnline: creatorData.isOnline || false,
+          lastSeen: creatorData.lastActive || new Date(),
+          connectionType: 'basic',
+        });
+
+        // Create or get conversation
+        const convResponse = await api.post('/v1/messages/conversations/init', {
+          userId: creatorData._id,
+          userModel: 'Creator'
+        });
+
+        setConversationId(convResponse.data._id);
+      } else {
+        // urlParam is already a conversationId
+        setConversationId(urlParam);
+        fetchCreatorInfo();
+      }
+    } catch (error) {
+      console.error('Error initializing conversation:', error);
+      setCreator({
+        id: 'unknown',
+        name: 'Unknown Creator',
+        username: '@unknown',
+        avatar: '/placeholders/default-avatar.png',
+        isOnline: false,
+        lastSeen: new Date(),
+        connectionType: 'basic',
+      });
+      setIsLoading(false);
+    }
+  };
 
   // Initialize real-time chat
   const initializeRealTimeChat = () => {
@@ -58,14 +113,14 @@ const Chat = () => {
       }
 
       // Join chat room
-      socketService.socket?.emit('join_chat', { connectionId });
+      socketService.socket?.emit('join_chat', { conversationId });
 
       // Set up real-time event handlers
       setupRealTimeHandlers();
 
       console.log(
         '💬 Real-time chat initialized for connection:',
-        connectionId
+        conversationId
       );
     } catch (error) {
       console.error('Failed to initialize real-time chat:', error);
@@ -80,7 +135,7 @@ const Chat = () => {
 
     // Listen for new messages
     socketService.socket.on('new_message', messageData => {
-      if (messageData.connectionId === connectionId) {
+      if (messageData.conversationId === conversationId) {
         handleNewRealtimeMessage(messageData);
       }
     });
@@ -96,14 +151,14 @@ const Chat = () => {
 
     // Listen for message status updates
     socketService.socket.on('messages_read', data => {
-      if (data.connectionId === connectionId) {
+      if (data.conversationId === conversationId) {
         updateMessageStatuses('read');
       }
     });
 
     // Listen for message deletions
     socketService.socket.on('message_deleted', data => {
-      if (data.connectionId === connectionId) {
+      if (data.conversationId === conversationId) {
         removeMessageFromList(data.messageId);
       }
     });
@@ -122,7 +177,7 @@ const Chat = () => {
   // Cleanup real-time chat
   const cleanupRealTimeChat = () => {
     if (socketService.socket) {
-      socketService.socket.emit('leave_chat', { connectionId });
+      socketService.socket.emit('leave_chat', { conversationId });
 
       // Remove event listeners
       socketService.socket.off('new_message');
@@ -150,20 +205,22 @@ const Chat = () => {
 
   const fetchCreatorInfo = async () => {
     try {
-      const data = await api.get(`/v1/connections/${connectionId}`);
+      const data = await api.get(`/v1/messages/conversations/${conversationId}`);
 
-      // Extract creator info from connection
-      setCreator({
-        id: data.data.creator._id,
-        name: data.data.creator.displayName,
-        username: `@${data.data.creator.username}`,
-        avatar:
-          data.data.creator.profileImage ||
-          '/placeholders/beautifulbrunette2.png',
-        isOnline: data.data.creator.isOnline,
-        lastSeen: data.data.creator.lastActive,
-        connectionType: data.data.connectionType,
-      });
+      // Extract creator info from conversation
+      const otherUser = data.data.participants?.find(p => p.userType === 'Creator')?.user;
+
+      if (otherUser) {
+        setCreator({
+          id: otherUser._id,
+          name: otherUser.displayName || otherUser.username,
+          username: `@${otherUser.username}`,
+          avatar: otherUser.profileImage || '/placeholders/beautifulbrunette2.png',
+          isOnline: otherUser.isOnline || false,
+          lastSeen: otherUser.lastActive || new Date(),
+          connectionType: 'basic',
+        });
+      }
     } catch (error) {
       console.error('Error fetching creator info:', error);
       setCreator({
@@ -181,7 +238,7 @@ const Chat = () => {
   const fetchMessages = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get(`/v1/connections/${connectionId}/messages`);
+      const data = await api.get(`/v1/messages/conversations/${conversationId}/messages`);
       setMessages(
         data.data.map(msg => ({
           id: msg._id,
@@ -209,7 +266,7 @@ const Chat = () => {
 
   const markMessagesAsRead = async () => {
     try {
-      await api.put(`/v1/connections/${connectionId}/messages/read`);
+      await api.patch(`/v1/messages/conversations/${conversationId}/read-all`);
     } catch (error) {
       console.error('Error marking messages as read:', error);
     }
@@ -284,7 +341,7 @@ const Chat = () => {
 
         // Send via Socket.io
         socketService.socket.emit('send_message', {
-          connectionId,
+          conversationId,
           content: { text, media: null },
           replyTo,
           clientId,
@@ -328,7 +385,7 @@ const Chat = () => {
     };
 
     const data = await api.post(
-      `/v1/connections/${connectionId}/messages`,
+      `/v1/messages/conversations/${conversationId}/messages`,
       messageToSend
     );
 
@@ -361,7 +418,7 @@ const Chat = () => {
     // Create FormData for file upload
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('connectionId', connectionId);
+    formData.append('conversationId', conversationId);
 
     try {
       // First upload the file using uploadApi from api.config
@@ -382,7 +439,7 @@ const Chat = () => {
       };
 
       const data = await api.post(
-        `/v1/connections/${connectionId}/messages`,
+        `/v1/messages/conversations/${conversationId}/messages`,
         messageToSend
       );
 
@@ -409,7 +466,7 @@ const Chat = () => {
     console.log(`Unlocking content for $${message.price}`);
 
     try {
-      await api.post(`/v1/connections/messages/${message.id}/unlock`, {
+      await api.post(`/v1/messages/${message.id}/unlock`, {
         amount: message.price,
       });
       // Update the message to show it's unlocked
@@ -427,7 +484,7 @@ const Chat = () => {
 
   const handleDelete = async message => {
     try {
-      await api.delete(`/v1/connections/messages/${message.id}`);
+      await api.delete(`/v1/messages/${message.id}`);
 
       // Remove from local state
       setMessages(prev => prev.filter(msg => msg.id !== message.id));
@@ -462,7 +519,7 @@ const Chat = () => {
   const handleStartTyping = () => {
     // Send typing indicator to server via Socket.io
     if (socketService.isConnected()) {
-      socketService.socket.emit('typing_start', { connectionId });
+      socketService.socket.emit('typing_start', { conversationId });
     }
 
     // Clear existing timeout
@@ -474,7 +531,7 @@ const Chat = () => {
   const handleStopTyping = () => {
     // Send stop typing to server via Socket.io
     if (socketService.isConnected()) {
-      socketService.socket.emit('typing_stop', { connectionId });
+      socketService.socket.emit('typing_stop', { conversationId });
     }
   };
 
@@ -500,18 +557,6 @@ const Chat = () => {
     }
   };
 
-  const getConnectionTypeColor = type => {
-    switch (type) {
-      case 'premium':
-        return '#FFD700';
-      case 'verified':
-        return '#17D2C2';
-      case 'basic':
-        return '#8E8E93';
-      default:
-        return '#8E8E93';
-    }
-  };
 
   return (
     <div className='chat-container'>
@@ -546,14 +591,6 @@ const Chat = () => {
                   : `Last seen ${formatTime(new Date(creator?.lastSeen))}`}
             </span>
           </div>
-          <span
-            className='connection-type-badge'
-            style={{
-              backgroundColor: getConnectionTypeColor(creator?.connectionType),
-            }}
-          >
-            {creator?.connectionType?.[0].toUpperCase()}
-          </span>
         </div>
 
         <button
