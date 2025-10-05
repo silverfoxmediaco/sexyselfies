@@ -67,7 +67,8 @@ const Chat = () => {
           userModel: 'Creator'
         });
 
-        const conversationData = convResponse.data;
+        // Backend returns { success: true, data: conversation }
+        const conversationData = convResponse.data.data;
         setConversationId(conversationData._id);
 
         // Extract creator info from conversation participants
