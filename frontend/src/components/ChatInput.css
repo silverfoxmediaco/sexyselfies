@@ -1,7 +1,11 @@
 /* ChatInput.css - Mobile-first responsive chat input styling */
 
 .chat-input-container {
-  position: relative;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   background: rgba(18, 18, 18, 0.98);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
