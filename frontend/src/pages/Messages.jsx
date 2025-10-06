@@ -39,26 +39,25 @@ const Messages = () => {
     setIsLoading(true);
     try {
       const response = await messageService.getConversations();
-      
-      if (response.success) {
-        let convos = response.conversations || [];
-        
-        // Apply filter
-        if (activeFilter === 'unread') {
-          convos = convos.filter(c => c.unreadCount > 0);
-        } else if (activeFilter === 'online') {
-          convos = convos.filter(c => c.otherUser?.isOnline);
-        }
-        
-        // Sort by last message time
-        convos.sort((a, b) => {
-          if (a.isPinned && !b.isPinned) return -1;
-          if (!a.isPinned && b.isPinned) return 1;
-          return new Date(b.lastMessageAt) - new Date(a.lastMessageAt);
-        });
-        
-        setConversations(convos);
+
+      // Handle both direct array response and { success, conversations } response
+      let convos = Array.isArray(response) ? response : (response.conversations || []);
+
+      // Apply filter
+      if (activeFilter === 'unread') {
+        convos = convos.filter(c => c.unreadCount > 0);
+      } else if (activeFilter === 'online') {
+        convos = convos.filter(c => c.otherUser?.isOnline);
       }
+
+      // Sort by last message time
+      convos.sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return new Date(b.lastMessageAt) - new Date(a.lastMessageAt);
+      });
+
+      setConversations(convos);
     } catch (error) {
       console.error('Error fetching conversations:', error);
       setConversations([]);
@@ -70,24 +69,25 @@ const Messages = () => {
   // Fetch messages for selected conversation
   const fetchMessages = useCallback(async (convId) => {
     if (!convId) return;
-    
+
     setMessagesLoading(true);
     try {
-      const response = await messageService.getMessages(convId);
-      
-      if (response.success) {
-        setMessages(response.messages || []);
-        // Mark all as read
-        await messageService.markAllAsRead(convId);
-        // Update unread count in conversations list
-        setConversations(prev => 
-          prev.map(conv => 
-            conv.conversationId === convId 
-              ? { ...conv, unreadCount: 0 }
-              : conv
-          )
-        );
-      }
+      const messagesData = await messageService.getMessages(convId);
+
+      // Service returns messages array directly (already extracted from response.data.data)
+      setMessages(Array.isArray(messagesData) ? messagesData : []);
+
+      // Mark all as read
+      await messageService.markAllAsRead(convId);
+
+      // Update unread count in conversations list
+      setConversations(prev =>
+        prev.map(conv =>
+          conv.conversationId === convId || conv.id === convId
+            ? { ...conv, unreadCount: 0 }
+            : conv
+        )
+      );
     } catch (error) {
       console.error('Error fetching messages:', error);
     } finally {
@@ -105,31 +105,34 @@ const Messages = () => {
   // Send message
   const handleSendMessage = async () => {
     if (!messageText.trim() || !selectedConversation || sending) return;
-    
+
     setSending(true);
     try {
-      const response = await messageService.sendMessage(
-        selectedConversation.conversationId,
+      const convId = selectedConversation.conversationId || selectedConversation.id;
+      const sentMessage = await messageService.sendMessage(
+        convId,
         messageText.trim()
       );
-      
-      if (response.success) {
-        setMessages(prev => [...prev, response.message]);
+
+      // Service returns message directly (already extracted from response.data.data)
+      if (sentMessage) {
+        setMessages(prev => [...prev, sentMessage]);
         setMessageText('');
-        
+
         // Update conversation preview
         setConversations(prev => {
-          const updated = prev.map(conv => 
-            conv.conversationId === selectedConversation.conversationId
+          const updated = prev.map(conv => {
+            const thisConvId = conv.conversationId || conv.id;
+            return thisConvId === convId
               ? {
                   ...conv,
-                  lastMessage: response.message,
+                  lastMessage: sentMessage,
                   lastMessageAt: new Date()
                 }
-              : conv
-          );
+              : conv;
+          });
           // Move to top
-          return updated.sort((a, b) => 
+          return updated.sort((a, b) =>
             new Date(b.lastMessageAt) - new Date(a.lastMessageAt)
           );
         });
@@ -145,17 +148,19 @@ const Messages = () => {
   const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files);
     if (!files.length || !selectedConversation) return;
-    
+
     setSending(true);
     try {
-      const response = await messageService.sendMessage(
-        selectedConversation.conversationId,
+      const convId = selectedConversation.conversationId || selectedConversation.id;
+      const sentMessage = await messageService.sendMessage(
+        convId,
         '',
         files
       );
-      
-      if (response.success) {
-        setMessages(prev => [...prev, response.message]);
+
+      // Service returns message directly
+      if (sentMessage) {
+        setMessages(prev => [...prev, sentMessage]);
       }
     } catch (error) {
       console.error('Error sending media:', error);
