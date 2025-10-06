@@ -301,12 +301,41 @@ class SocketService {
     return this.leaveRoom(`chat_${chatId}`);
   }
 
+  /**
+   * Join conversation room
+   */
+  joinConversation(conversationId) {
+    if (!this.socket?.connected) {
+      console.error('[Socket] Not connected');
+      return false;
+    }
+
+    console.log('[Socket] Joining conversation:', conversationId);
+    this.socket.emit('join_chat', { conversationId });
+    this.rooms.add(`conversation_${conversationId}`);
+    return true;
+  }
+
+  /**
+   * Leave conversation room
+   */
+  leaveConversation(conversationId) {
+    if (!this.socket?.connected) {
+      return false;
+    }
+
+    console.log('[Socket] Leaving conversation:', conversationId);
+    this.socket.emit('leave_chat', { conversationId });
+    this.rooms.delete(`conversation_${conversationId}`);
+    return true;
+  }
+
   // ==========================================
   // MESSAGING
   // ==========================================
 
   /**
-   * Send message
+   * Send message (legacy - for backward compatibility)
    */
   sendMessage(recipientId, message) {
     const messageData = {
@@ -327,6 +356,28 @@ class SocketService {
 
     this.socket.emit('send_message', messageData);
     return messageData.client_id;
+  }
+
+  /**
+   * Send message in conversation
+   */
+  sendConversationMessage(conversationId, content, replyTo = null) {
+    const clientId = this.generateClientId();
+    const messageData = {
+      conversationId,
+      content,
+      replyTo,
+      clientId,
+    };
+
+    if (!this.connected) {
+      // Queue message if not connected
+      this.messageQueue.push(messageData);
+      return clientId;
+    }
+
+    this.socket.emit('send_message', messageData);
+    return clientId;
   }
 
   /**
@@ -367,6 +418,43 @@ class SocketService {
   }
 
   /**
+   * Send typing indicator for conversation
+   */
+  sendConversationTyping(conversationId) {
+    if (!this.socket?.connected) return;
+
+    // Clear existing timer
+    if (this.typingTimers.has(conversationId)) {
+      clearTimeout(this.typingTimers.get(conversationId));
+    }
+
+    // Send typing event
+    this.socket.emit('typing_start', { conversationId });
+
+    // Auto-stop typing after 3 seconds
+    const timer = setTimeout(() => {
+      this.sendConversationStoppedTyping(conversationId);
+    }, 3000);
+
+    this.typingTimers.set(conversationId, timer);
+  }
+
+  /**
+   * Send stopped typing indicator for conversation
+   */
+  sendConversationStoppedTyping(conversationId) {
+    if (!this.socket?.connected) return;
+
+    // Clear timer
+    if (this.typingTimers.has(conversationId)) {
+      clearTimeout(this.typingTimers.get(conversationId));
+      this.typingTimers.delete(conversationId);
+    }
+
+    this.socket.emit('typing_stop', { conversationId });
+  }
+
+  /**
    * Mark message as read
    */
   markMessageRead(messageId, senderId) {
@@ -379,12 +467,30 @@ class SocketService {
   }
 
   /**
+   * Mark conversation messages as read
+   */
+  markConversationMessagesRead(conversationId) {
+    if (!this.socket?.connected) return;
+
+    this.socket.emit('mark_messages_read', { conversationId });
+  }
+
+  /**
    * Delete message
    */
   deleteMessage(messageId) {
     if (!this.socket?.connected) return;
 
     this.socket.emit('delete_message', { message_id: messageId });
+  }
+
+  /**
+   * Delete message in conversation
+   */
+  deleteConversationMessage(messageId, conversationId) {
+    if (!this.socket?.connected) return;
+
+    this.socket.emit('delete_message', { messageId, conversationId });
   }
 
   // ==========================================

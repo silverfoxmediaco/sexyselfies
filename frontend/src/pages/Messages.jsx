@@ -100,6 +100,11 @@ const Messages = () => {
     setSelectedConversation(conversation);
     setShowChatView(true);
     await fetchMessages(conversation.conversationId);
+
+    // Join Socket.io room for real-time updates
+    if (socketService.isConnected()) {
+      socketService.joinConversation(conversation.conversationId);
+    }
   }, [fetchMessages]);
 
   // Send message
@@ -181,7 +186,7 @@ const Messages = () => {
       // Listen for new messages
       socketService.on('new_message', (data) => {
         if (selectedConversation?.conversationId === data.conversationId) {
-          setMessages(prev => [...prev, data.message]);
+          setMessages(prev => [...prev, data]);
         }
         // Update conversation list
         fetchConversations();
@@ -190,6 +195,22 @@ const Messages = () => {
       // Listen for typing indicators
       socketService.on('user_typing', (data) => {
         // Handle typing indicator
+        console.log('User typing:', data);
+      });
+
+      // Listen for chat joined confirmation
+      socketService.on('chat_joined', (data) => {
+        console.log('Joined chat:', data.conversationId);
+      });
+
+      // Listen for message sent confirmation
+      socketService.on('message_sent', (data) => {
+        console.log('Message sent:', data);
+      });
+
+      // Listen for messages read
+      socketService.on('messages_read', (data) => {
+        console.log('Messages read:', data);
       });
     };
 
@@ -199,8 +220,11 @@ const Messages = () => {
     return () => {
       socketService.off('new_message');
       socketService.off('user_typing');
+      socketService.off('chat_joined');
+      socketService.off('message_sent');
+      socketService.off('messages_read');
     };
-  }, [fetchConversations]);
+  }, [fetchConversations, selectedConversation]);
 
   // Auto-scroll to bottom
   useEffect(() => {
