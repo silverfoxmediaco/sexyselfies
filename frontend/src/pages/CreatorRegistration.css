@@ -168,6 +168,7 @@
 /* Form Styles */
 .creator-registration-form {
   padding: 32px 24px;
+  margin-bottom: 20px; /* Space for install banner */
 }
 
 .creator-registration-step h2 {
