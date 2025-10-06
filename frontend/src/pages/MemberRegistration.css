@@ -776,7 +776,7 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--memberreg-space-md);
-  margin-bottom: 80px; /* Increased spacing to clear bottom navigation */
+  margin-bottom: 120px;
 }
 
 .memberreg-form-actions > * {
