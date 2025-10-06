@@ -8,6 +8,8 @@ const Member = require('../models/Member');
 const Creator = require('../models/Creator');
 const Transaction = require('../models/Transaction');
 const cloudinary = require('../config/cloudinary');
+const emailService = require('../services/email.service');
+const User = require('../models/User');
 
 // Get all conversations for the logged-in user
 const getConversations = async (req, res) => {
@@ -217,6 +219,39 @@ const sendMessageToConversation = async (req, res) => {
 
     // Populate sender info for response
     await message.populate('sender', 'username displayName profileImage');
+
+    // Send email notification to recipient (async, don't await)
+    try {
+      const recipientUser = await User.findById(recipientId);
+      const senderUser = await User.findById(senderId);
+
+      if (recipientUser && recipientUser.email && senderUser) {
+        // Get sender's display name
+        const senderProfile = senderParticipant.userModel === 'Creator'
+          ? await Creator.findOne({ user: senderId })
+          : await Member.findOne({ user: senderId });
+
+        const senderDisplayName = senderProfile?.displayName || senderUser.username || 'Someone';
+        const recipientDisplayName = recipientUser.username || 'User';
+
+        // Determine message link based on recipient role
+        const messageLink = `${process.env.CLIENT_URL}/${recipientParticipant.role}/messages/${conversationId}`;
+
+        // Send email (don't await - fire and forget)
+        emailService.sendNewMessageEmail({
+          recipientEmail: recipientUser.email,
+          recipientName: recipientDisplayName,
+          senderName: senderDisplayName,
+          messagePreview: content.substring(0, 100) + (content.length > 100 ? '...' : ''),
+          messageLink
+        }).catch(err => {
+          console.error('Email send error (non-blocking):', err.message);
+        });
+      }
+    } catch (emailError) {
+      // Log but don't fail the request if email fails
+      console.error('Error preparing email notification:', emailError.message);
+    }
 
     res.status(201).json({
       success: true,

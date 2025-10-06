@@ -6,6 +6,8 @@ const Conversation = require('../models/Conversation');
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
 const { protect } = require('../middleware/auth.middleware');
+const emailService = require('../services/email.service');
+const User = require('../models/User');
 
 /**
  * Initialize messaging socket handlers
@@ -193,6 +195,31 @@ exports.initializeMessagingSockets = io => {
         conversation.metadata.totalMessages += 1;
         conversation.unreadCount[recipientParticipant.role] += 1;
         await conversation.save();
+
+        // Send email notification (fire and forget)
+        try {
+          const recipientUser = await User.findById(recipientParticipant.user);
+          const senderUser = await User.findById(socket.user._id);
+
+          if (recipientUser && recipientUser.email && senderUser) {
+            const senderProfile = senderParticipant.userModel === 'Creator'
+              ? await Creator.findOne({ user: socket.user._id })
+              : await Member.findOne({ user: socket.user._id });
+
+            const senderDisplayName = senderProfile?.displayName || senderUser.username || 'Someone';
+            const messageLink = `${process.env.CLIENT_URL}/${recipientParticipant.role}/messages/${conversationId}`;
+
+            emailService.sendNewMessageEmail({
+              recipientEmail: recipientUser.email,
+              recipientName: recipientUser.username || 'User',
+              senderName: senderDisplayName,
+              messagePreview: (typeof content === 'string' ? content : content.text).substring(0, 100),
+              messageLink
+            }).catch(err => console.error('Socket email error:', err.message));
+          }
+        } catch (emailError) {
+          console.error('Socket email prep error:', emailError.message);
+        }
 
         // Format message for frontend
         const messageData = {
