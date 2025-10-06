@@ -1,4 +1,99 @@
-# LATEST CHANGES (2025-10-06) - Fix 400 Bad Request When Sending Messages
+# LATEST CHANGES (2025-10-06) - Fix 500 Error: Message Schema Mismatch
+
+## Problem: 500 error "Message validation failed: connection: Path `connection` is required"
+
+**Root Cause**: Message model schema didn't match what the controller code expected
+- Message model used `connection` field (referencing 'Connection')
+- Controller code used `conversation` field (referencing 'Conversation')
+- Content structure was nested (`content.text`) but controller sent plain string
+- Missing required fields: `recipient`, `recipientModel`, `messageType`, `read`
+
+**Files Modified**:
+
+### Backend: `/backend/src/models/Message.js`
+
+**Complete schema redesign** to match controller expectations:
+
+**Changed connection → conversation** (Line 5-9):
+```javascript
+// OLD
+connection: { type: ObjectId, ref: 'Connection', required: true }
+
+// NEW
+conversation: { type: ObjectId, ref: 'Conversation', required: true }
+```
+
+**Updated sender to use refPath** (Lines 10-14):
+```javascript
+// OLD
+sender: { type: ObjectId, ref: 'User', required: true }
+
+// NEW
+sender: { type: ObjectId, refPath: 'senderModel', required: true }
+```
+
+**Added recipient fields** (Lines 20-29):
+- `recipient` - ObjectId with refPath to 'recipientModel'
+- `recipientModel` - String enum ['Member', 'Creator']
+- Matches controller's usage pattern
+
+**Added messageType and read fields** (Lines 30-38):
+- `messageType` - Enum for text/media/image/video/audio/tip
+- `read` - Boolean for read status (controller uses this, not `isRead`)
+
+**Flattened content structure** (Lines 39-43):
+```javascript
+// OLD (nested)
+content: {
+  text: { type: String, maxlength: 1000 },
+  media: [...]
+}
+
+// NEW (flat)
+content: { type: String, maxlength: 1000, default: '' }
+media: [...]  // Moved to top level
+```
+
+**Updated media array** (Lines 44-69):
+- Moved from `content.media` to top-level `media`
+- Added `size` field for file size tracking
+- Kept `isLocked`, `price`, `unlockedBy` for paid content
+
+**Updated indexes** (Lines 100-104):
+```javascript
+// OLD
+messageSchema.index({ connection: 1, createdAt: -1 });
+messageSchema.index({ isRead: 1 });
+messageSchema.index({ 'content.media.isLocked': 1 });
+
+// NEW
+messageSchema.index({ conversation: 1, createdAt: -1 });
+messageSchema.index({ read: 1 });
+messageSchema.index({ recipient: 1 });
+messageSchema.index({ 'media.isLocked': 1 });
+```
+
+**Fixed virtual method** (Lines 107-109):
+```javascript
+// OLD
+return this.content.media.some(item => item.isLocked);
+
+// NEW
+return this.media && this.media.some(item => item.isLocked);
+```
+
+**Result**:
+- ✅ Message schema matches controller expectations
+- ✅ Messages can be created successfully
+- ✅ Proper relationships with Conversation model
+- ✅ Support for both Member and Creator as sender/recipient
+- ✅ Clean content structure (string, not nested object)
+- ✅ All required fields present
+- ✅ Proper indexes for query performance
+
+---
+
+# PREVIOUS CHANGES (2025-10-06) - Fix 400 Bad Request When Sending Messages
 
 ## Problem: POST to /api/v1/messages/conversations/{conversationId}/messages returning 400 error
 
