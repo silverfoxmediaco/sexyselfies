@@ -7,6 +7,7 @@ import {
   X
 } from 'lucide-react';
 import './TOS.css';
+import BottomNavigation from '../components/BottomNavigation';
 
 // Terms content
 const termsContent = {
@@ -402,6 +403,9 @@ const TOS = () => {
         </div>
 
       </main>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation />
     </div>
   );
 };

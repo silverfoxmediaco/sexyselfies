@@ -1,3 +1,72 @@
+# LATEST CHANGES (2025-10-06) - PWA Install Banner Re-enabled with Teal Branding
+
+## PWA Install Banner - Uncommented and Rebranded
+
+**Problem**: Install banner was commented out and not visible to users
+- Users couldn't install PWA easily
+- Banner was using old pink/red color scheme
+- Missing opportunity for app installations
+
+**Fix**: `/frontend/index.html`
+
+1. **Lines 534-550**: Uncommented the install banner HTML
+   - Removed `<!-- COMMENTED OUT: Non-functional -->` comment wrapper
+   - Banner now visible to users
+
+2. **Line 455**: Updated background gradient to teal brand colors
+   - Changed from: `linear-gradient(135deg, #ff006e 0%, #ff4b8c 100%)`
+   - Changed to: `linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%, #47e0d2 100%)`
+
+3. **Line 459**: Updated box-shadow to match teal theme
+   - Changed from: `rgba(255, 0, 110, 0.3)`
+   - Changed to: `rgba(23, 210, 194, 0.3)`
+
+4. **Line 513**: Updated primary button text color to teal
+   - Changed from: `color: #ff006e`
+   - Changed to: `color: #17d2c2`
+
+**Result**:
+- ✅ Install banner now visible after 30 seconds or on second visit
+- ✅ Teal gradient matches brand colors (#12b7ab → #17d2c2 → #47e0d2)
+- ✅ Professional teal branding throughout
+- ✅ "Install" and "Later" buttons fully functional
+- ✅ PWA installation experience enabled for all users
+
+**How it works**:
+- Shows banner after 30 seconds on first visit OR immediately on return visits
+- "Install" button triggers native PWA install prompt
+- "Later" button dismisses for 7 days
+- Banner hidden permanently after successful installation
+
+---
+
+# LATEST CHANGES (2025-10-06) - Added Bottom Navigation to Legal Pages
+
+## Terms of Service & Privacy Policy Pages - Bottom Navigation Added
+
+**Problem**: Legal pages (/terms and /privacy) were missing bottom navigation
+- Users couldn't easily navigate away from legal pages on mobile
+- Inconsistent UX compared to other pages
+- Mobile users had to use browser back button
+
+**Files Modified**:
+
+1. `/frontend/src/pages/TOS.jsx`
+   - **Line 10**: Imported `BottomNavigation` component
+   - **Line 408**: Added `<BottomNavigation />` component at bottom of page
+
+2. `/frontend/src/pages/PrivacyPolicy.jsx`
+   - **Line 15**: Imported `BottomNavigation` component
+   - **Line 773**: Added `<BottomNavigation />` component at bottom of page
+
+**Result**:
+- ✅ Both legal pages now have bottom navigation matching other pages
+- ✅ Consistent mobile navigation experience across entire app
+- ✅ Users can easily navigate to Browse, Connections, Menu, Chat, Profile from legal pages
+- ✅ Improved mobile UX - no need to rely on browser back button
+
+---
+
 # LATEST CHANGES (2025-10-05) - Critical API Fixes (500 & 404 Errors)
 
 ## Fixed Multiple Console Errors from Production

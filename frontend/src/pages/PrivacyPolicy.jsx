@@ -12,6 +12,7 @@ import {
   FileText
 } from 'lucide-react';
 import './PrivacyPolicy.css';
+import BottomNavigation from '../components/BottomNavigation';
 
 // Privacy Policy content structured
 const privacyPolicyContent = {
@@ -767,6 +768,9 @@ const PrivacyPolicy = () => {
           <span>{copyToast}</span>
         </div>
       )}
+
+      {/* Bottom Navigation */}
+      <BottomNavigation />
     </div>
   );
 };
