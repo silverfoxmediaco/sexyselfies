@@ -1468,8 +1468,9 @@ const createOrGetConversation = async (req, res) => {
       }
     }
 
-    // Determine current user's type based on role
-    const currentUserType = req.user.role === 'creator' ? 'Creator' : 'Member';
+    // Determine current user's type and role based on req.user.role
+    const currentUserRole = req.user.role; // 'member' or 'creator' (lowercase)
+    const currentUserModel = currentUserRole === 'creator' ? 'Creator' : 'Member'; // Capitalized
 
     // Check if conversation exists
     let conversation = await Conversation.findOne({
@@ -1478,11 +1479,19 @@ const createOrGetConversation = async (req, res) => {
     .populate('participants.user', 'username displayName profileImage isOnline lastActive');
 
     if (!conversation) {
-      // Create new conversation
+      // Create new conversation with both userModel and role
       conversation = await Conversation.create({
         participants: [
-          { user: currentUserId, userType: currentUserType },
-          { user: targetUserId, userType: userModel }
+          {
+            user: currentUserId,
+            userModel: currentUserModel,  // 'Member' or 'Creator' (capitalized)
+            role: currentUserRole          // 'member' or 'creator' (lowercase)
+          },
+          {
+            user: targetUserId,
+            userModel: userModel,           // 'Creator' from request
+            role: userModel.toLowerCase()   // 'creator' (lowercase)
+          }
         ]
       });
 

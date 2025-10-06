@@ -2,22 +2,36 @@
 
 ## Fixed Multiple Console Errors from Production
 
-### 1. **500 Error - Conversation Init** ✅ FIXED
-**Problem**: `POST /api/v1/messages/conversations/init` returning 500 error
-- Backend trying to access `req.user.role` incorrectly on line 1481
-- Should capitalize userType: 'Member' or 'Creator' (not lowercase 'member'/'creator')
+### 1. **500 Error - Conversation Init** ✅ FIXED (Updated Fix)
+**Problem**: `POST /api/v1/messages/conversations/init` returning 500 validation error
+- Conversation schema requires BOTH `userModel` (capitalized) AND `role` (lowercase)
+- Original fix only provided `userType` which doesn't exist in schema
+- Error: `Path 'role' is required, Path 'userModel' is required`
 
-**Fix**: `/backend/src/controllers/message.controller.js` (Lines 1471-1485)
+**Final Fix**: `/backend/src/controllers/message.controller.js` (Lines 1471-1496)
 ```javascript
-// Added proper userType determination
-const currentUserType = req.user.role === 'creator' ? 'Creator' : 'Member';
+// Determine both userModel and role
+const currentUserRole = req.user.role; // 'member' or 'creator' (lowercase)
+const currentUserModel = currentUserRole === 'creator' ? 'Creator' : 'Member'; // Capitalized
 
-// Used in conversation creation
+// Create conversation with both required fields
 participants: [
-  { user: currentUserId, userType: currentUserType },
-  { user: targetUserId, userType: userModel }
+  {
+    user: currentUserId,
+    userModel: currentUserModel,  // 'Member' or 'Creator' (capitalized)
+    role: currentUserRole          // 'member' or 'creator' (lowercase)
+  },
+  {
+    user: targetUserId,
+    userModel: userModel,           // 'Creator' from request
+    role: userModel.toLowerCase()   // 'creator' (lowercase)
+  }
 ]
 ```
+
+**Schema Requirements** (from Conversation.js lines 12-21):
+- `userModel`: String, enum: ['Member', 'Creator'], required
+- `role`: String, enum: ['member', 'creator'], required
 
 ### 2. **404 Error - Credit Balance** ✅ FIXED
 **Problem**: `GET /api/v1/payment/credits/balance` returning 404
