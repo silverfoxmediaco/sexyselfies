@@ -81,7 +81,8 @@ class MessageService {
           }
         }
       );
-      return response.data;
+      // Backend returns { success: true, data: message }, extract the message
+      return response.data.data || response.data;
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;

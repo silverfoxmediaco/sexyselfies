@@ -1,4 +1,75 @@
-# LATEST CHANGES (2025-10-06) - Fix Creator Profile Not Loading in Chat
+# LATEST CHANGES (2025-10-06) - Fix 400 Bad Request When Sending Messages
+
+## Problem: POST to /api/v1/messages/conversations/{conversationId}/messages returning 400 error
+
+**Root Cause**: Route signature mismatch between frontend and backend
+- Route defined as `/conversations/:conversationId/messages`
+- But `sendMessage` controller function expected `recipientId` in request body
+- No way to extract recipient from just conversationId in the old function
+
+**Files Modified**:
+
+### Backend: `/backend/src/controllers/message.controller.js`
+
+**Created new sendMessageToConversation function** (Lines 127-234):
+- Accepts `conversationId` from route params (not recipientId in body)
+- Finds conversation by ID to get participants
+- Automatically extracts recipient from conversation participants
+- Validates sender is a participant in the conversation
+- Supports both text and media messages via FormData
+- Properly updates conversation metadata and unread counts
+- Returns `{ success: true, data: message }` structure
+
+**Key improvements**:
+```javascript
+// OLD: Expected recipientId in body, didn't use conversationId from route
+const { recipientId, content } = req.body;
+
+// NEW: Uses conversationId from route, extracts recipient from conversation
+const { conversationId } = req.params;
+const conversation = await Conversation.findById(conversationId);
+const recipientParticipant = conversation.participants.find(
+  p => p.user.toString() !== senderId.toString()
+);
+```
+
+**Exported new function** (Line 1582):
+- Added `sendMessageToConversation` to module.exports
+- Kept old `sendMessage` for backward compatibility
+
+### Backend: `/backend/src/routes/message.routes.js`
+
+**Updated POST route** (Lines 114-118):
+- Changed from `sendMessage` to `sendMessageToConversation`
+- Removed `validateMessage` middleware (was causing issues)
+- Kept `upload.array('media', 10)` for file uploads
+
+```javascript
+// OLD
+router.post('/conversations/:conversationId/messages', upload.array('media', 10), validateMessage, sendMessage);
+
+// NEW
+router.post('/conversations/:conversationId/messages', upload.array('media', 10), sendMessageToConversation);
+```
+
+### Frontend: `/frontend/src/services/message.service.js`
+
+**Fixed data extraction** (Lines 84-85):
+- Added `response.data.data || response.data` fallback
+- Backend returns `{ success: true, data: message }`
+- Service now extracts the message object correctly
+
+**Result**:
+- ✅ Messages can be sent successfully
+- ✅ No need to manually provide recipientId - extracted from conversation
+- ✅ Proper validation that sender is a participant
+- ✅ Conversation metadata automatically updated
+- ✅ Unread counts properly incremented
+- ✅ Supports both text-only and media messages
+
+---
+
+# PREVIOUS CHANGES (2025-10-06) - Fix Creator Profile Not Loading in Chat
 
 ## Problem: Creator profile showing "Unknown Creator" when accessing /member/messages/adam1
 

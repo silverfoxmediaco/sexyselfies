@@ -124,7 +124,116 @@ const getConversation = async (req, res) => {
   }
 };
 
-// Send a text message
+// Send a message to a conversation (route handler for POST /conversations/:conversationId/messages)
+const sendMessageToConversation = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const senderId = req.user._id;
+    const senderType = req.user.role;
+
+    // Extract content from either FormData or JSON body
+    let content = req.body.content;
+    const media = req.files; // From multer upload
+
+    // Validate content
+    if (!content || !content.trim()) {
+      if (!media || media.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Message must have content or media'
+        });
+      }
+      content = ''; // Empty text with media is allowed
+    }
+
+    // Find the conversation
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+      return res.status(404).json({
+        success: false,
+        message: 'Conversation not found'
+      });
+    }
+
+    // Verify sender is a participant
+    const senderParticipant = conversation.participants.find(
+      p => p.user.toString() === senderId.toString()
+    );
+    if (!senderParticipant) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not a participant in this conversation'
+      });
+    }
+
+    // Find the recipient (the other participant)
+    const recipientParticipant = conversation.participants.find(
+      p => p.user.toString() !== senderId.toString()
+    );
+    if (!recipientParticipant) {
+      return res.status(400).json({
+        success: false,
+        message: 'No recipient found in conversation'
+      });
+    }
+
+    const recipientId = recipientParticipant.user;
+
+    // Create message document
+    const messageData = {
+      conversation: conversationId,
+      sender: senderId,
+      senderModel: senderParticipant.userModel,
+      recipient: recipientId,
+      recipientModel: recipientParticipant.userModel,
+      content: content.trim(),
+      messageType: media && media.length > 0 ? 'media' : 'text',
+      read: false
+    };
+
+    // Handle media uploads if present
+    if (media && media.length > 0) {
+      // TODO: Upload to Cloudinary and add media URLs
+      // For now, just mark as media type
+      messageData.media = media.map(file => ({
+        type: file.mimetype.startsWith('image') ? 'image' : 'video',
+        url: file.path, // Temporary - should be Cloudinary URL
+        size: file.size
+      }));
+    }
+
+    const message = await Message.create(messageData);
+
+    // Update conversation metadata
+    conversation.lastMessage = message._id;
+    conversation.lastMessageAt = new Date();
+    conversation.metadata.totalMessages += 1;
+
+    // Increment unread count for recipient
+    const recipientRole = recipientParticipant.role;
+    conversation.unreadCount[recipientRole] += 1;
+
+    await conversation.save();
+
+    // Populate sender info for response
+    await message.populate('sender', 'username displayName profileImage');
+
+    res.status(201).json({
+      success: true,
+      data: message
+    });
+
+  } catch (error) {
+    console.error('Send message to conversation error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send message',
+      error: error.message
+    });
+  }
+};
+
+// Send a text message (legacy function - kept for backward compatibility)
 const sendMessage = async (req, res) => {
   try {
     const { recipientId, content, tipAmount } = req.body;
@@ -1470,6 +1579,7 @@ module.exports = {
   getConversations,
   getConversation,
   sendMessage,
+  sendMessageToConversation,
   sendPaidMessage,
   unlockMessage,
   sendImage,

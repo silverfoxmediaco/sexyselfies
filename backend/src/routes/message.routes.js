@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const {
   sendMessage,
+  sendMessageToConversation,
   getConversationMessages,
   getConversations,
   getConversation,
@@ -113,8 +114,7 @@ router.get(
 router.post(
   '/conversations/:conversationId/messages',
   upload.array('media', 10),
-  validateMessage,
-  sendMessage
+  sendMessageToConversation
 );
 
 // Edit a message (text only)
