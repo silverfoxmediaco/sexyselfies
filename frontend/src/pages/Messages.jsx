@@ -314,28 +314,44 @@ const Messages = () => {
         ) : messages.length === 0 ? (
           <div className="no-messages">Start a conversation!</div>
         ) : (
-          messages.map(message => (
-            <div 
-              key={message._id} 
-              className={`message ${message.sender === localStorage.getItem('userId') ? 'sent' : 'received'}`}
-            >
-              <div className="message-content">
-                {message.messageType === 'tip' && (
-                  <div className="tip-message">
-                    💰 ${message.tip?.amount || message.tipAmount}
-                  </div>
-                )}
-                {message.content?.text && <p>{message.content.text}</p>}
-                {message.content?.media?.map((media, idx) => (
-                  <div key={idx} className="media-message">
-                    {media.type === 'image' && <img src={media.url} alt="" />}
-                    {media.type === 'video' && <video src={media.url} controls />}
-                  </div>
-                ))}
+          messages.map(message => {
+            // Get current user ID from token or localStorage
+            const currentUserId = localStorage.getItem('userId');
+            // Check if this message was sent by current user
+            const senderId = typeof message.sender === 'object' ? message.sender._id : message.sender;
+            const isSent = senderId === currentUserId;
+
+            return (
+              <div
+                key={message._id}
+                className={`message ${isSent ? 'sent' : 'received'}`}
+              >
+                <div className="message-content">
+                  {message.messageType === 'tip' && (
+                    <div className="tip-message">
+                      💰 ${message.tip?.amount || message.tipAmount}
+                    </div>
+                  )}
+                  {/* Handle both old nested structure (content.text) and new flat structure (content) */}
+                  {message.content && (
+                    <p>{typeof message.content === 'string' ? message.content : message.content.text}</p>
+                  )}
+                  {/* Handle both old nested media (content.media) and new top-level media */}
+                  {(message.media || message.content?.media)?.map((media, idx) => (
+                    <div key={idx} className="media-message">
+                      {(media.type === 'image' || media.url?.match(/\.(jpg|jpeg|png|gif|webp)$/i)) && (
+                        <img src={media.url} alt="" />
+                      )}
+                      {(media.type === 'video' || media.url?.match(/\.(mp4|webm|mov)$/i)) && (
+                        <video src={media.url} controls />
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <span className="message-time">{formatTime(message.createdAt)}</span>
               </div>
-              <span className="message-time">{formatTime(message.createdAt)}</span>
-            </div>
-          ))
+            );
+          })
         )}
         <div ref={messagesEndRef} />
       </div>

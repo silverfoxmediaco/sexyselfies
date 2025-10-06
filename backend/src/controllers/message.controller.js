@@ -1221,14 +1221,22 @@ const getConversationMessages = async (req, res) => {
     const { page = 1, limit = 50 } = req.query;
 
     const messages = await Message.find({ conversation: conversationId })
-      .sort('-createdAt')
+      .sort('createdAt') // Oldest first (chronological order)
       .limit(limit * 1)
       .skip((page - 1) * limit)
-      .populate('sender', 'username displayName profileImage')
+      .populate({
+        path: 'sender',
+        select: 'username displayName profileImage'
+      })
+      .populate({
+        path: 'recipient',
+        select: 'username displayName profileImage'
+      })
       .lean();
 
     res.json({ success: true, data: messages });
   } catch (error) {
+    console.error('Error fetching conversation messages:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 };

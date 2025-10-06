@@ -1,4 +1,91 @@
-# LATEST CHANGES (2025-10-06) - Connect Creator Messages Page to New Chat System
+# LATEST CHANGES (2025-10-06) - Fix Message Display: Sent Messages Not Showing
+
+## Problem: Messages sent by members not appearing in creator's chat view
+
+**Root Causes**:
+1. `getConversationMessages` not properly populating sender/recipient using refPath
+2. Frontend comparing ObjectId to string for sent/received determination
+3. Frontend expecting old nested content structure (`content.text`) vs new flat structure (`content`)
+4. Frontend looking for media in wrong location (`content.media` vs top-level `media`)
+
+**Files Modified**:
+
+### Backend: `/backend/src/controllers/message.controller.js`
+
+**Fixed getConversationMessages** (Lines 1218-1242):
+```javascript
+// OLD - Simple populate that didn't work with refPath
+.populate('sender', 'username displayName profileImage')
+
+// NEW - Proper populate with refPath support
+.populate({
+  path: 'sender',
+  select: 'username displayName profileImage'
+})
+.populate({
+  path: 'recipient',
+  select: 'username displayName profileImage'
+})
+```
+- Changed sort from `-createdAt` to `createdAt` (oldest first, chronological order)
+- Added recipient population
+- Now properly populates Creator/Member based on senderModel/recipientModel
+
+### Frontend: `/frontend/src/pages/Messages.jsx`
+
+**Fixed message rendering** (Lines 317-354):
+
+**1. Fixed sender comparison**:
+```javascript
+// OLD - Compared ObjectId object to string
+message.sender === localStorage.getItem('userId')
+
+// NEW - Extract ID from populated object
+const senderId = typeof message.sender === 'object' ? message.sender._id : message.sender;
+const isSent = senderId === currentUserId;
+```
+
+**2. Fixed content display**:
+```javascript
+// OLD - Only handled nested structure
+{message.content?.text && <p>{message.content.text}</p>}
+
+// NEW - Handles both flat and nested
+{message.content && (
+  <p>{typeof message.content === 'string' ? message.content : message.content.text}</p>
+)}
+```
+
+**3. Fixed media display**:
+```javascript
+// OLD - Only looked in content.media
+{message.content?.media?.map(...)}
+
+// NEW - Checks both locations
+{(message.media || message.content?.media)?.map(...)}
+```
+
+**Result**:
+- ✅ Messages sent by members now appear in creator's view
+- ✅ Messages appear in chronological order (oldest first)
+- ✅ Correct alignment (sent messages on right, received on left)
+- ✅ Sender/recipient info properly populated
+- ✅ Works with both old and new message schema formats
+- ✅ Media messages display correctly
+- ✅ Tip messages display correctly
+
+**Message Flow Working**:
+1. Member sends message "test" to creator adam1
+2. Message saved to DB with populated sender info
+3. Creator refreshes `/creator/messages` page
+4. `getConversationMessages` fetches and populates message
+5. Frontend extracts sender ID correctly
+6. Message displays on left (received) in creator's view
+7. Creator can reply, message displays on right (sent)
+
+---
+
+# PREVIOUS CHANGES (2025-10-06) - Connect Creator Messages Page to New Chat System
 
 ## Problem: Creator messages page (/creator/messages) not properly connected to new messaging system
 
