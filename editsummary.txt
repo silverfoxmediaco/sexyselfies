@@ -1,4 +1,62 @@
-# LATEST CHANGES (2025-10-06) - Fix Creator Not Seeing Conversations
+# LATEST CHANGES (2025-10-06) - Fix Chat Showing Wrong User Info
+
+## Problem: Chat component always showing "Unknown Creator" regardless of who is viewing
+
+**Root Cause**: Chat.jsx was hardcoded to find and display Creator participant info, even when a Creator was viewing messages FROM a Member.
+
+### The Issue:
+
+When Creator views conversation with Member, chat header showed:
+- ❌ "Unknown Creator" (wrong)
+- ❌ Creator's placeholder avatar (wrong)
+- ✅ Should show: Member's username and avatar
+
+**Files Modified**:
+
+### Frontend: `/frontend/src/pages/Chat.jsx`
+
+**Fixed initializeConversation** (Lines 73-106):
+```javascript
+// OLD - Always looked for Creator participant
+const creatorParticipant = conversationData.participants?.find(p => p.userModel === 'Creator');
+
+// NEW - Find the OTHER participant (not current user)
+const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+const currentUserId = userInfo.id;
+const otherParticipant = conversationData.participants?.find(
+  p => p.user._id !== currentUserId
+);
+```
+
+**Fixed fetchCreatorInfo** (Lines 238-276):
+```javascript
+// OLD - Always looked for Creator
+const otherUser = conversationData.participants?.find(p => p.userModel === 'Creator')?.user;
+
+// NEW - Find OTHER participant (not current user)
+const otherParticipant = conversationData.participants?.find(
+  p => p.user._id !== currentUserId
+);
+```
+
+**Changes**:
+1. Get current user ID from localStorage
+2. Find the participant that ISN'T the current user
+3. Display that participant's info (whether Member or Creator)
+4. Added `userModel` to the user object for future use
+5. Changed error message from "Unknown Creator" to "Unknown User"
+
+**Result**:
+- ✅ Member viewing Creator chat → Shows Creator's name/avatar
+- ✅ Creator viewing Member chat → Shows Member's name/avatar
+- ✅ Chat header displays correct participant info
+- ✅ Works for both Member and Creator roles
+- ✅ No more hardcoded "Unknown Creator" text
+- ✅ Avatar displays correctly for both user types
+
+---
+
+# PREVIOUS CHANGES (2025-10-06) - Fix Creator Not Seeing Conversations
 
 ## Problem: Creator can't see conversations even though messages exist in DB
 

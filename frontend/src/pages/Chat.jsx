@@ -70,30 +70,39 @@ const Chat = () => {
 
         console.log('🔍 Conversation Data:', conversationData); // Debug log
 
-        // Extract creator info from conversation participants
-        const creatorParticipant = conversationData.participants?.find(p => p.userModel === 'Creator');
-        console.log('🔍 Creator Participant:', creatorParticipant); // Debug log
+        // Get current user info to determine which participant to show
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        const currentUserId = userInfo.id;
+        const currentUserRole = userRole; // 'member' or 'creator' from getUserRole()
 
-        if (creatorParticipant?.user) {
-          const creatorData = creatorParticipant.user;
-          console.log('🔍 Creator Data:', creatorData); // Debug log
-          console.log('🔍 Creator displayName:', creatorData.displayName); // Debug log
-          console.log('🔍 Creator username:', creatorData.username); // Debug log
-          console.log('🔍 Creator profileImage:', creatorData.profileImage); // Debug log
+        // Find the OTHER participant (not the current user)
+        const otherParticipant = conversationData.participants?.find(
+          p => p.user._id !== currentUserId
+        );
 
-          const creatorInfo = {
-            id: creatorData._id,
-            name: creatorData.displayName || creatorData.username || 'Unknown Creator',
-            username: `@${creatorData.username || 'unknown'}`,
-            avatar: creatorData.profileImage || creatorData.profilePicture || creatorData.avatar || '/placeholders/beautifulbrunette2.png',
-            isOnline: creatorData.isOnline || false,
-            lastSeen: creatorData.lastActive || new Date(),
+        console.log('🔍 Other Participant:', otherParticipant); // Debug log
+
+        if (otherParticipant?.user) {
+          const userData = otherParticipant.user;
+          console.log('🔍 User Data:', userData); // Debug log
+          console.log('🔍 User displayName:', userData.displayName); // Debug log
+          console.log('🔍 User username:', userData.username); // Debug log
+          console.log('🔍 User profileImage:', userData.profileImage); // Debug log
+
+          const otherUserInfo = {
+            id: userData._id,
+            name: userData.displayName || userData.username || `Unknown ${otherParticipant.userModel}`,
+            username: `@${userData.username || 'unknown'}`,
+            avatar: userData.profileImage || userData.profilePicture || userData.avatar || '/placeholders/beautifulbrunette2.png',
+            isOnline: userData.isOnline || false,
+            lastSeen: userData.lastActive || new Date(),
+            userModel: otherParticipant.userModel, // 'Member' or 'Creator'
           };
 
-          console.log('🔍 Setting creator state to:', creatorInfo); // Debug log
-          setCreator(creatorInfo);
+          console.log('🔍 Setting other user state to:', otherUserInfo); // Debug log
+          setCreator(otherUserInfo); // Note: variable is called 'creator' but it's actually the other user
         } else {
-          console.error('❌ No creator participant found in conversation');
+          console.error('❌ No other participant found in conversation');
         }
       } else {
         // urlParam is already a conversationId
@@ -230,10 +239,17 @@ const Chat = () => {
     try {
       const conversationData = await messageService.getConversation(conversationId);
 
-      // Extract creator info from conversation
-      const otherUser = conversationData.participants?.find(p => p.userModel === 'Creator')?.user;
+      // Get current user ID to find the OTHER participant
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      const currentUserId = userInfo.id;
 
-      if (otherUser) {
+      // Find the OTHER participant (not current user)
+      const otherParticipant = conversationData.participants?.find(
+        p => p.user._id !== currentUserId
+      );
+
+      if (otherParticipant?.user) {
+        const otherUser = otherParticipant.user;
         setCreator({
           id: otherUser._id,
           name: otherUser.displayName || otherUser.username,
@@ -241,14 +257,15 @@ const Chat = () => {
           avatar: otherUser.profileImage || otherUser.profilePicture || otherUser.avatar || '/placeholders/beautifulbrunette2.png',
           isOnline: otherUser.isOnline || false,
           lastSeen: otherUser.lastActive || new Date(),
+          userModel: otherParticipant.userModel,
           connectionType: 'basic',
         });
       }
     } catch (error) {
-      console.error('Error fetching creator info:', error);
+      console.error('Error fetching other user info:', error);
       setCreator({
         id: 'unknown',
-        name: 'Unknown Creator',
+        name: 'Unknown User',
         username: '@unknown',
         avatar: '/placeholders/beautifulbrunette2.png',
         isOnline: false,
