@@ -16,9 +16,11 @@ const getConversations = async (req, res) => {
     const userType = req.user.role; // 'member' or 'creator'
 
     // Find all conversations for this user
+    const userRole = userType === 'member' ? 'member' : 'creator';
     const conversations = await Conversation.find({
       'participants.user': userId,
-      active: true
+      [`isDeleted.${userRole}`]: { $ne: true },
+      [`isArchived.${userRole}`]: { $ne: true }
     })
     .populate('participants.user', 'username displayName profileImage')
     .populate('lastMessage')
@@ -33,10 +35,10 @@ const getConversations = async (req, res) => {
           p => p.user._id.toString() !== userId.toString()
         );
 
-        // Get unread count based on user type
-        const unreadCount = userType === 'member' 
-          ? conv.memberUnreadCount 
-          : conv.creatorUnreadCount;
+        // Get unread count based on user type (from nested unreadCount object)
+        const unreadCount = userType === 'member'
+          ? (conv.unreadCount?.member || 0)
+          : (conv.unreadCount?.creator || 0);
 
         return {
           id: conv._id,
@@ -46,21 +48,19 @@ const getConversations = async (req, res) => {
             username: otherParticipant.user.username,
             displayName: otherParticipant.user.displayName,
             avatar: otherParticipant.user.profileImage,
-            userType: otherParticipant.userType,
+            userModel: otherParticipant.userModel,
+            role: otherParticipant.role,
             isOnline: await checkUserOnline(otherParticipant.user._id)
           },
           lastMessage: conv.lastMessage ? {
             content: conv.lastMessage.content,
             type: conv.lastMessage.messageType,
             createdAt: conv.lastMessage.createdAt,
-            isPaid: conv.lastMessage.isPaid,
             sender: conv.lastMessage.sender
           } : null,
           unreadCount,
-          totalSpent: conv.totalSpent,
-          totalEarned: conv.totalEarned,
-          isPinned: userType === 'creator' ? conv.creatorPinned : false,
-          isMuted: userType === 'member' ? conv.memberMuted : false,
+          isPinned: conv.priority === 'vip' || conv.priority === 'important',
+          isMuted: otherParticipant.notificationSettings?.muted || false,
           lastMessageAt: conv.lastMessageAt
         };
       })

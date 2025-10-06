@@ -1,4 +1,87 @@
-# LATEST CHANGES (2025-10-06) - Fix Message Display: Sent Messages Not Showing
+# LATEST CHANGES (2025-10-06) - Fix Creator Not Seeing Conversations
+
+## Problem: Creator can't see conversations even though messages exist in DB
+
+**Root Cause**: `getConversations` query was filtering by non-existent fields
+
+### Issues Found:
+
+1. **Query used `active: true` field that doesn't exist** - Schema has no top-level `active` field
+2. **Wrong unread count field names** - Used `memberUnreadCount`/`creatorUnreadCount` but schema has `unreadCount.member`/`unreadCount.creator`
+3. **Non-existent fields referenced** - `totalSpent`, `totalEarned`, `creatorPinned`, `memberMuted` don't exist in schema
+4. **Wrong participant field** - Used `userType` but schema has `userModel` and `role`
+
+**Files Modified**:
+
+### Backend: `/backend/src/controllers/message.controller.js`
+
+**Fixed getConversations query** (Lines 18-28):
+```javascript
+// OLD - filtered by non-existent 'active' field
+const conversations = await Conversation.find({
+  'participants.user': userId,
+  active: true  // ❌ This field doesn't exist!
+})
+
+// NEW - filter by actual schema fields
+const userRole = userType === 'member' ? 'member' : 'creator';
+const conversations = await Conversation.find({
+  'participants.user': userId,
+  [`isDeleted.${userRole}`]: { $ne: true },
+  [`isArchived.${userRole}`]: { $ne: true }
+})
+```
+
+**Fixed unread count access** (Lines 38-41):
+```javascript
+// OLD
+const unreadCount = userType === 'member'
+  ? conv.memberUnreadCount  // ❌ Doesn't exist
+  : conv.creatorUnreadCount  // ❌ Doesn't exist
+
+// NEW
+const unreadCount = userType === 'member'
+  ? (conv.unreadCount?.member || 0)  // ✅ Correct nested path
+  : (conv.unreadCount?.creator || 0)
+```
+
+**Fixed response object** (Lines 43-65):
+```javascript
+// Removed non-existent fields:
+- totalSpent (doesn't exist)
+- totalEarned (doesn't exist)
+- creatorPinned (doesn't exist)
+- memberMuted (doesn't exist)
+
+// Fixed field names:
+- userType → userModel (correct field name)
+- Added 'role' field
+
+// Fixed logic:
+- isPinned: Check 'priority' field instead
+- isMuted: Check participant's notificationSettings
+```
+
+**What This Fixes**:
+
+The `active: true` query filter was excluding ALL conversations because that field doesn't exist in the schema. The query returned empty array every time, making it look like the creator had no conversations.
+
+Now the query:
+1. ✅ Finds conversations where user is a participant
+2. ✅ Excludes deleted conversations (per-user)
+3. ✅ Excludes archived conversations (per-user)
+4. ✅ Accesses correct nested unreadCount fields
+5. ✅ Returns correct field names matching actual schema
+
+**Result**:
+- ✅ Creator 68d2b6758e72aae35ab19ca2 can now see conversation 68e32f82b370ac1e7485a1ec
+- ✅ Conversations list populates correctly for both members and creators
+- ✅ Unread counts display correctly
+- ✅ No more undefined field access errors
+
+---
+
+# PREVIOUS CHANGES (2025-10-06) - Fix Message Display: Sent Messages Not Showing
 
 ## Problem: Messages sent by members not appearing in creator's chat view
 
