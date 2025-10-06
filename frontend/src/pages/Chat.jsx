@@ -75,7 +75,7 @@ const Chat = () => {
         console.log('🔍 Conversation Data:', conversationData); // Debug log
 
         // Extract creator info from conversation participants
-        const creatorParticipant = conversationData.participants?.find(p => p.userType === 'Creator');
+        const creatorParticipant = conversationData.participants?.find(p => p.userModel === 'Creator');
         console.log('🔍 Creator Participant:', creatorParticipant); // Debug log
 
         if (creatorParticipant?.user) {

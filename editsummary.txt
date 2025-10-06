@@ -116,11 +116,18 @@ participants: [
 - Subtext shows: "@adam1"
 - Avatar shows: Cloudinary profile image URL
 
+**CRITICAL BUG FOUND & FIXED**:
+Line 78 was using wrong field name:
+- ❌ `p.userType === 'Creator'` (field doesn't exist)
+- ✅ `p.userModel === 'Creator'` (correct field name from schema)
+
+This caused the frontend to never find the creator participant, always falling back to "Unknown Creator".
+
 **Debugging Steps**:
 1. Open browser console at `/member/messages/adam1`
 2. Look for logs starting with 🔍
 3. Verify API is returning displayName, username, and profileImage
-4. If fields are missing, check Creator database record
+4. Should now show creator name and Cloudinary avatar
 
 ---
 
