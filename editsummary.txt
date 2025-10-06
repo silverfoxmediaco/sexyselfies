@@ -1,4 +1,150 @@
-# LATEST CHANGES (2025-10-06) - Registration Forms Spacing Fix
+# LATEST CHANGES (2025-10-06) - Fix Creator Profile Not Loading in Chat
+
+## Problem: Creator profile showing "Unknown Creator" when accessing /member/messages/adam1
+
+**Root Causes**:
+1. Backend `getConversation` function expected `:userId` but route passed `:conversationId`
+2. Message service not extracting data from nested response structure
+3. No proper error handling for missing/unverified creators
+
+**Files Modified**:
+
+### Backend: `/backend/src/controllers/message.controller.js`
+
+**Fixed getConversation function** (Lines 84-125):
+- Changed parameter from `userId` to `conversationId` to match route
+- Now finds conversation by ID instead of by user pair
+- Populates `participants.user` with Creator/Member data via refPath
+- Returns `{ success: true, data: conversation }` structure
+- Verifies user is participant before allowing access
+
+```javascript
+// OLD: Expected userId in params
+const { userId: otherUserId } = req.params;
+
+// NEW: Expects conversationId in params (matches route)
+const { conversationId } = req.params;
+const conversation = await Conversation.findById(conversationId)
+  .populate('participants.user', 'username displayName profileImage isOnline lastActive');
+```
+
+### Frontend: `/frontend/src/services/message.service.js`
+
+**Fixed data extraction** (Lines 17-26, 40-42, 51-62):
+- Added `response.data.data || response.data` extraction for all methods
+- Backend returns `{ success: true, data: X }`, service now extracts `X`
+- Fixed methods:
+  * `getConversation()` - extracts conversation from nested data
+  * `createOrGetConversation()` - extracts conversation from nested data
+  * `getMessages()` - extracts messages array from nested data
+
+### Frontend: `/frontend/src/pages/Chat.jsx`
+
+**Added error handling** (Lines 106-115):
+- Detects 404 error (creator not found)
+- Detects 403 error (creator not verified)
+- Shows appropriate alert messages
+- Redirects user back to messages list
+- No more "Unknown Creator" fallback for these cases
+
+**How Creator Lookup Works Now**:
+1. User visits `/member/messages/adam1`
+2. Frontend calls `messageService.createOrGetConversation(null, 'Creator', 'adam1')`
+3. Backend searches: `Creator.findOne({ username: 'adam1', isVerified: true, isPaused: { $ne: true } })`
+4. If found: Creates/gets conversation, populates participant data
+5. If not found: Returns 404 with error message
+6. Frontend extracts creator from `conversationData.participants.find(p => p.userModel === 'Creator').user`
+7. Creator profile displays with correct name, avatar, username
+
+**Result**:
+- ✅ Creator profiles load correctly from username
+- ✅ Proper population of displayName, username, profileImage
+- ✅ Works with refPath dynamic model references (Member/Creator)
+- ✅ Better error messages for missing/unverified creators
+- ✅ Consistent data structure across all message service methods
+
+---
+
+# PREVIOUS CHANGES (2025-10-06) - Messaging System Integration Fix
+
+## Backend: Fixed Auth Middleware Mismatch in message.controller.js
+
+**Problem**: Message controller using wrong field names from auth middleware
+- Used `req.userId` instead of `req.user._id`
+- Used `req.userType` instead of `req.user.role`
+- Caused 500 errors throughout messaging system
+
+**Files Modified**:
+
+1. `/backend/src/controllers/message.controller.js`
+   - Replaced ALL `req.userId` → `req.user._id` (13 occurrences)
+   - Replaced ALL `req.userType` → `req.user.role` (10 occurrences)
+   - Fixed in functions:
+     * getConversations
+     * getConversation
+     * sendMessage
+     * sendPaidMessage
+     * unlockMessage
+     * sendImage
+     * sendTip
+     * deleteMessage
+     * markAsRead
+     * getMediaMessages
+     * searchMessages
+     * archiveConversation
+     * muteConversation
+
+**Result**:
+- ✅ All message controller functions now use correct auth fields
+- ✅ Compatible with protect middleware from auth.middleware.js
+- ✅ 500 errors resolved
+
+---
+
+## Frontend: Updated Chat.jsx to Use Message Service
+
+**Problem**: Chat page making direct API calls instead of using service layer
+- No abstraction/consistency
+- Harder to maintain and update
+- Inconsistent error handling
+
+**Files Modified**:
+
+1. `/frontend/src/pages/Chat.jsx`
+   - Added import: `import messageService from '../services/message.service';`
+   - Replaced direct API calls with service methods:
+     * `api.post('/messages/conversations/init')` → `messageService.createOrGetConversation()`
+     * `api.get('/messages/conversations/${id}')` → `messageService.getConversation()`
+     * `api.get('/messages/conversations/${id}/messages')` → `messageService.getMessages()`
+     * `api.patch('/messages/conversations/${id}/read-all')` → `messageService.markAllAsRead()`
+     * `api.post('/v1/messages/conversations/${id}/messages')` → `messageService.sendMessage()`
+     * `api.post('/messages/${id}/unlock')` → `messageService.unlockMedia()`
+     * `api.delete('/messages/${id}')` → `messageService.deleteMessage()`
+
+**Result**:
+- ✅ Consistent service layer usage
+- ✅ Better error handling
+- ✅ Easier to maintain and test
+- ✅ Matches patterns in other pages
+
+---
+
+## Verification: Message Routes and Middleware
+
+**Verified**: All middleware and routes are properly configured
+- ✅ `validateMessage` middleware exists in validation.middleware.js
+- ✅ `validateTip` middleware exists in validation.middleware.js
+- ✅ All controller functions exist and are exported
+- ✅ Route mounting is correct with protect middleware
+
+**Files Checked**:
+- `/backend/src/routes/message.routes.js`
+- `/backend/src/middleware/validation.middleware.js`
+- `/backend/src/middleware/auth.middleware.js`
+
+---
+
+# PREVIOUS CHANGES (2025-10-06) - Registration Forms Spacing Fix
 
 ## Creator & Member Registration Forms - Added Bottom Margin
 

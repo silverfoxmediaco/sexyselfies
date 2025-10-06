@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import ChatInput from '../components/ChatInput';
 import MessageBubble from '../components/MessageBubble';
 import socketService from '../services/socket.service';
+import messageService from '../services/message.service';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import BottomNavigation from '../components/BottomNavigation';
@@ -62,16 +63,11 @@ const Chat = () => {
       // If urlParam is a username (not numeric), create or get conversation by username
       if (isNaN(urlParam)) {
         // Create or get conversation using username (backend will find creator)
-        const convResponse = await api.post('/messages/conversations/init', {
-          username: urlParam, // Send username instead of userId
-          userModel: 'Creator'
-        });
+        const conversationData = await messageService.createOrGetConversation(null, 'Creator', urlParam);
 
-        // Backend returns { success: true, data: conversation }
-        const conversationData = convResponse.data.data;
+        // Backend returns conversation data directly
         setConversationId(conversationData._id);
 
-        console.log('🔍 Full API Response:', convResponse.data); // Debug log
         console.log('🔍 Conversation Data:', conversationData); // Debug log
 
         // Extract creator info from conversation participants
@@ -106,6 +102,18 @@ const Chat = () => {
       }
     } catch (error) {
       console.error('Error initializing conversation:', error);
+
+      // Check if it's a 404 (creator not found) or 403 (creator not verified)
+      if (error.response?.status === 404) {
+        alert(`Creator '${urlParam}' not found or not available for messaging. They may not exist or haven't verified their account yet.`);
+        navigate('/member/messages');
+        return;
+      } else if (error.response?.status === 403) {
+        alert(`Creator '${urlParam}' is not verified and cannot receive messages yet.`);
+        navigate('/member/messages');
+        return;
+      }
+
       setCreator({
         id: 'unknown',
         name: 'Unknown Creator',
@@ -220,10 +228,10 @@ const Chat = () => {
 
   const fetchCreatorInfo = async () => {
     try {
-      const data = await api.get(`/messages/conversations/${conversationId}`);
+      const conversationData = await messageService.getConversation(conversationId);
 
       // Extract creator info from conversation
-      const otherUser = data.data.participants?.find(p => p.userType === 'Creator')?.user;
+      const otherUser = conversationData.participants?.find(p => p.userModel === 'Creator')?.user;
 
       if (otherUser) {
         setCreator({
@@ -253,9 +261,9 @@ const Chat = () => {
   const fetchMessages = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get(`/messages/conversations/${conversationId}/messages`);
+      const messagesData = await messageService.getMessages(conversationId);
       setMessages(
-        data.data.map(msg => ({
+        messagesData.map(msg => ({
           id: msg._id,
           text: msg.content?.text,
           type: msg.content?.media ? msg.content.media.type || 'image' : 'text',
@@ -281,7 +289,7 @@ const Chat = () => {
 
   const markMessagesAsRead = async () => {
     try {
-      await api.patch(`/messages/conversations/${conversationId}/read-all`);
+      await messageService.markAllAsRead(conversationId);
     } catch (error) {
       console.error('Error marking messages as read:', error);
     }
@@ -394,18 +402,10 @@ const Chat = () => {
 
   // Fallback API send method
   const fallbackToApiSend = async ({ text, replyTo }) => {
-    const messageToSend = {
-      content: { text: text, media: null },
-      replyTo: replyTo,
-    };
-
-    const data = await api.post(
-      `/v1/messages/conversations/${conversationId}/messages`,
-      messageToSend
-    );
+    const sentMessage = await messageService.sendMessage(conversationId, text, null);
 
     const newMsg = {
-      id: data.data._id || Date.now().toString(),
+      id: sentMessage._id || Date.now().toString(),
       text: text,
       type: 'text',
       senderId: currentUserId,
@@ -442,25 +442,11 @@ const Chat = () => {
       });
 
       // Then send message with media
-      const messageToSend = {
-        content: {
-          text: '',
-          media: {
-            type: file.type.startsWith('image') ? 'image' : 'video',
-            url: uploadData.url,
-            thumbnail: uploadData.thumbnail,
-          },
-        },
-      };
-
-      const data = await api.post(
-        `/v1/messages/conversations/${conversationId}/messages`,
-        messageToSend
-      );
+      const sentMessage = await messageService.sendMessage(conversationId, '', [file]);
 
       // Add message to local state
       const newMsg = {
-        id: data.data._id || Date.now().toString(),
+        id: sentMessage._id || Date.now().toString(),
         type: file.type.startsWith('image') ? 'image' : 'video',
         mediaUrl: uploadData.url,
         thumbnail: uploadData.thumbnail,
@@ -481,9 +467,7 @@ const Chat = () => {
     console.log(`Unlocking content for $${message.price}`);
 
     try {
-      await api.post(`/messages/${message.id}/unlock`, {
-        amount: message.price,
-      });
+      await messageService.unlockMedia(message.id);
       // Update the message to show it's unlocked
       setMessages(prev =>
         prev.map(msg =>
@@ -499,7 +483,7 @@ const Chat = () => {
 
   const handleDelete = async message => {
     try {
-      await api.delete(`/messages/${message.id}`);
+      await messageService.deleteMessage(message.id);
 
       // Remove from local state
       setMessages(prev => prev.filter(msg => msg.id !== message.id));

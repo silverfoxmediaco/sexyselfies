@@ -12,8 +12,8 @@ const cloudinary = require('../config/cloudinary');
 // Get all conversations for the logged-in user
 const getConversations = async (req, res) => {
   try {
-    const userId = req.userId;
-    const userType = req.userType; // 'member' or 'creator'
+    const userId = req.user._id;
+    const userType = req.user.role; // 'member' or 'creator'
 
     // Find all conversations for this user
     const conversations = await Conversation.find({
@@ -81,111 +81,38 @@ const getConversations = async (req, res) => {
   }
 };
 
-// Get messages for a specific conversation
+// Get single conversation by ID with populated participants
 const getConversation = async (req, res) => {
   try {
-    const { userId: otherUserId } = req.params;
-    const currentUserId = req.userId;
-    const userType = req.userType;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
+    const { conversationId } = req.params;
+    const currentUserId = req.user._id;
 
-    // Generate conversation ID
-    const conversationId = Message.getConversationId(currentUserId, otherUserId);
-
-    // Find or create conversation
-    let conversation = await Conversation.findOne({
-      'participants.user': { $all: [currentUserId, otherUserId] }
-    });
+    // Find conversation and populate participants
+    const conversation = await Conversation.findById(conversationId)
+      .populate('participants.user', 'username displayName profileImage isOnline lastActive');
 
     if (!conversation) {
-      // Create new conversation
-      const currentUser = userType === 'member' 
-        ? await Member.findById(currentUserId)
-        : await Creator.findById(currentUserId);
-        
-      const otherUser = userType === 'member'
-        ? await Creator.findById(otherUserId)
-        : await Member.findById(otherUserId);
-
-      if (!currentUser || !otherUser) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found'
-        });
-      }
-
-      conversation = await Conversation.create({
-        participants: [
-          { user: currentUserId, userType },
-          { user: otherUserId, userType: userType === 'member' ? 'creator' : 'member' }
-        ],
-        conversationId
+      return res.status(404).json({
+        success: false,
+        message: 'Conversation not found'
       });
     }
 
-    // Fetch messages with pagination
-    const messages = await Message.find({
-      conversationId,
-      deleted: false
-    })
-    .populate('sender', 'username displayName profileImage')
-    .populate('recipient', 'username displayName profileImage')
-    .sort('-createdAt')
-    .limit(limit)
-    .skip((page - 1) * limit)
-    .lean();
-
-    // Mark messages as read
-    await Message.updateMany(
-      {
-        conversationId,
-        recipient: currentUserId,
-        read: false
-      },
-      {
-        $set: {
-          read: true,
-          readAt: new Date()
-        }
-      }
+    // Verify user is part of conversation
+    const isParticipant = conversation.participants.some(
+      p => p.user._id.toString() === currentUserId.toString()
     );
 
-    // Update conversation unread count
-    if (userType === 'member') {
-      conversation.memberUnreadCount = 0;
-    } else {
-      conversation.creatorUnreadCount = 0;
+    if (!isParticipant) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied'
+      });
     }
-    await conversation.save();
-
-    // Get other user info
-    const otherUser = userType === 'member'
-      ? await Creator.findById(otherUserId).select('username displayName profileImage bio rates')
-      : await Member.findById(otherUserId).select('username displayName profileImage');
 
     res.json({
       success: true,
-      messages: messages.reverse(), // Return in chronological order
-      conversation: {
-        id: conversation._id,
-        conversationId,
-        otherUser: {
-          id: otherUser._id,
-          username: otherUser.username,
-          displayName: otherUser.displayName,
-          avatar: otherUser.profileImage,
-          bio: otherUser.bio,
-          rates: otherUser.rates
-        },
-        totalSpent: conversation.totalSpent,
-        totalEarned: conversation.totalEarned
-      },
-      pagination: {
-        page,
-        limit,
-        hasMore: messages.length === limit
-      }
+      data: conversation
     });
 
   } catch (error) {
@@ -201,8 +128,8 @@ const getConversation = async (req, res) => {
 const sendMessage = async (req, res) => {
   try {
     const { recipientId, content, tipAmount } = req.body;
-    const senderId = req.userId;
-    const senderType = req.userType;
+    const senderId = req.user._id;
+    const senderType = req.user.role;
 
     if (!content || !content.trim()) {
       return res.status(400).json({
@@ -349,9 +276,9 @@ const sendMessage = async (req, res) => {
 const sendPaidMessage = async (req, res) => {
   try {
     const { recipientId, content, creditCost, mediaUrl } = req.body;
-    const creatorId = req.userId;
+    const creatorId = req.user._id;
 
-    if (req.userType !== 'creator') {
+    if (req.user.role !== 'creator') {
       return res.status(403).json({
         success: false,
         message: 'Only creators can send paid messages'
@@ -457,9 +384,9 @@ const sendPaidMessage = async (req, res) => {
 const unlockMessage = async (req, res) => {
   try {
     const { messageId } = req.params;
-    const memberId = req.userId;
+    const memberId = req.user._id;
 
-    if (req.userType !== 'member') {
+    if (req.user.role !== 'member') {
       return res.status(403).json({
         success: false,
         message: 'Only members can unlock messages'
@@ -573,8 +500,8 @@ const unlockMessage = async (req, res) => {
 const sendImage = async (req, res) => {
   try {
     const { recipientId } = req.body;
-    const senderId = req.userId;
-    const senderType = req.userType;
+    const senderId = req.user._id;
+    const senderType = req.user.role;
     const imageFile = req.file;
 
     if (!imageFile) {
@@ -727,9 +654,9 @@ const sendImage = async (req, res) => {
 const sendTip = async (req, res) => {
   try {
     const { recipientId, amount, message: tipMessage } = req.body;
-    const memberId = req.userId;
+    const memberId = req.user._id;
 
-    if (req.userType !== 'member') {
+    if (req.user.role !== 'member') {
       return res.status(403).json({
         success: false,
         message: 'Only members can send tips'
@@ -864,7 +791,7 @@ const sendTip = async (req, res) => {
 const deleteMessage = async (req, res) => {
   try {
     const { messageId } = req.params;
-    const userId = req.userId;
+    const userId = req.user._id;
 
     const message = await Message.findById(messageId);
 
@@ -876,7 +803,7 @@ const deleteMessage = async (req, res) => {
     }
 
     // Only sender can delete their own messages
-    if (message.sender.toString() !== userId) {
+    if (message.sender.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,
         message: 'You can only delete your own messages'
@@ -924,8 +851,8 @@ const deleteMessage = async (req, res) => {
 const markAsRead = async (req, res) => {
   try {
     const { conversationId } = req.params;
-    const userId = req.userId;
-    const userType = req.userType;
+    const userId = req.user._id;
+    const userType = req.user.role;
 
     const result = await Message.updateMany(
       {
@@ -988,7 +915,7 @@ const markAsRead = async (req, res) => {
 const getMediaMessages = async (req, res) => {
   try {
     const { conversationId } = req.params;
-    const userId = req.userId;
+    const userId = req.user._id;
 
     // Verify user is part of conversation
     const conversation = await Conversation.findOne({
@@ -1031,7 +958,7 @@ const getMediaMessages = async (req, res) => {
 const searchMessages = async (req, res) => {
   try {
     const { query, conversationId } = req.query;
-    const userId = req.userId;
+    const userId = req.user._id;
 
     if (!query || query.length < 2) {
       return res.status(400).json({
@@ -1080,8 +1007,8 @@ const archiveConversation = async (req, res) => {
   try {
     const { conversationId } = req.params;
     const { archive } = req.body;
-    const userId = req.userId;
-    const userType = req.userType;
+    const userId = req.user._id;
+    const userType = req.user.role;
 
     const conversation = await Conversation.findOne({
       _id: conversationId,
@@ -1126,8 +1053,8 @@ const muteConversation = async (req, res) => {
   try {
     const { conversationId } = req.params;
     const { mute } = req.body;
-    const userId = req.userId;
-    const userType = req.userType;
+    const userId = req.user._id;
+    const userType = req.user.role;
 
     const conversation = await Conversation.findOne({
       _id: conversationId,

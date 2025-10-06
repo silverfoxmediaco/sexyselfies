@@ -17,7 +17,8 @@ class MessageService {
   async getConversation(conversationId) {
     try {
       const response = await api.get(`/messages/conversations/${conversationId}`);
-      return response.data;
+      // Backend returns { success: true, data: conversation }, extract the conversation
+      return response.data.data || response.data;
     } catch (error) {
       console.error('Error fetching conversation:', error);
       throw error;
@@ -38,7 +39,8 @@ class MessageService {
       }
 
       const response = await api.post('/messages/conversations/init', payload);
-      return response.data;
+      // Backend returns { success: true, data: conversation }, extract the conversation
+      return response.data.data || response.data;
     } catch (error) {
       console.error('Error creating conversation:', error);
       throw error;
@@ -51,7 +53,8 @@ class MessageService {
       const response = await api.get(`/messages/conversations/${conversationId}/messages`, {
         params: { page, limit }
       });
-      return response.data;
+      // Backend returns { success: true, data: messages }, extract the messages array
+      return response.data.data || response.data;
     } catch (error) {
       console.error('Error fetching messages:', error);
       throw error;
