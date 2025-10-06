@@ -1468,6 +1468,9 @@ const createOrGetConversation = async (req, res) => {
       }
     }
 
+    // Determine current user's type based on role
+    const currentUserType = req.user.role === 'creator' ? 'Creator' : 'Member';
+
     // Check if conversation exists
     let conversation = await Conversation.findOne({
       'participants.user': { $all: [currentUserId, targetUserId] }
@@ -1478,7 +1481,7 @@ const createOrGetConversation = async (req, res) => {
       // Create new conversation
       conversation = await Conversation.create({
         participants: [
-          { user: currentUserId, userType: req.user.role },
+          { user: currentUserId, userType: currentUserType },
           { user: targetUserId, userType: userModel }
         ]
       });

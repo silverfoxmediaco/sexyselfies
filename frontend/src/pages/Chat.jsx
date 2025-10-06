@@ -71,18 +71,33 @@ const Chat = () => {
         const conversationData = convResponse.data.data;
         setConversationId(conversationData._id);
 
+        console.log('🔍 Full API Response:', convResponse.data); // Debug log
+        console.log('🔍 Conversation Data:', conversationData); // Debug log
+
         // Extract creator info from conversation participants
         const creatorParticipant = conversationData.participants?.find(p => p.userType === 'Creator');
+        console.log('🔍 Creator Participant:', creatorParticipant); // Debug log
+
         if (creatorParticipant?.user) {
           const creatorData = creatorParticipant.user;
-          setCreator({
+          console.log('🔍 Creator Data:', creatorData); // Debug log
+          console.log('🔍 Creator displayName:', creatorData.displayName); // Debug log
+          console.log('🔍 Creator username:', creatorData.username); // Debug log
+          console.log('🔍 Creator profileImage:', creatorData.profileImage); // Debug log
+
+          const creatorInfo = {
             id: creatorData._id,
-            name: creatorData.displayName || creatorData.username,
-            username: `@${creatorData.username}`,
-            avatar: creatorData.profileImage || '/placeholders/beautifulbrunette2.png',
+            name: creatorData.displayName || creatorData.username || 'Unknown Creator',
+            username: `@${creatorData.username || 'unknown'}`,
+            avatar: creatorData.profileImage || creatorData.profilePicture || creatorData.avatar || '/placeholders/beautifulbrunette2.png',
             isOnline: creatorData.isOnline || false,
             lastSeen: creatorData.lastActive || new Date(),
-          });
+          };
+
+          console.log('🔍 Setting creator state to:', creatorInfo); // Debug log
+          setCreator(creatorInfo);
+        } else {
+          console.error('❌ No creator participant found in conversation');
         }
       } else {
         // urlParam is already a conversationId
@@ -215,7 +230,7 @@ const Chat = () => {
           id: otherUser._id,
           name: otherUser.displayName || otherUser.username,
           username: `@${otherUser.username}`,
-          avatar: otherUser.profileImage || '/placeholders/beautifulbrunette2.png',
+          avatar: otherUser.profileImage || otherUser.profilePicture || otherUser.avatar || '/placeholders/beautifulbrunette2.png',
           isOnline: otherUser.isOnline || false,
           lastSeen: otherUser.lastActive || new Date(),
           connectionType: 'basic',

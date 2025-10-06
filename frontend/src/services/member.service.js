@@ -540,7 +540,7 @@ class MemberService {
    */
   async getCreditBalance() {
     try {
-      const response = await api.get('/member/credits/balance');
+      const response = await api.get('/payment/credits/balance');
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -808,7 +808,7 @@ class MemberService {
    */
   async addToFavorites(creatorId) {
     try {
-      const response = await api.post(`/member/favorites/${creatorId}`);
+      const response = await api.post(`/members/favorites/${creatorId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -820,7 +820,7 @@ class MemberService {
    */
   async removeFromFavorites(creatorId) {
     try {
-      const response = await api.delete(`/member/favorites/${creatorId}`);
+      const response = await api.delete(`/members/favorites/${creatorId}`);
       return response;
     } catch (error) {
       throw this.handleError(error);
@@ -832,7 +832,7 @@ class MemberService {
    */
   async getFavorites(params = {}) {
     try {
-      const response = await api.get('/member/favorites', {
+      const response = await api.get('/members/favorites', {
         params: {
           page: params.page || 1,
           limit: params.limit || 20,

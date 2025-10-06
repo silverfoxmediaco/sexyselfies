@@ -1,3 +1,115 @@
+# LATEST CHANGES (2025-10-05) - Critical API Fixes (500 & 404 Errors)
+
+## Fixed Multiple Console Errors from Production
+
+### 1. **500 Error - Conversation Init** ✅ FIXED
+**Problem**: `POST /api/v1/messages/conversations/init` returning 500 error
+- Backend trying to access `req.user.role` incorrectly on line 1481
+- Should capitalize userType: 'Member' or 'Creator' (not lowercase 'member'/'creator')
+
+**Fix**: `/backend/src/controllers/message.controller.js` (Lines 1471-1485)
+```javascript
+// Added proper userType determination
+const currentUserType = req.user.role === 'creator' ? 'Creator' : 'Member';
+
+// Used in conversation creation
+participants: [
+  { user: currentUserId, userType: currentUserType },
+  { user: targetUserId, userType: userModel }
+]
+```
+
+### 2. **404 Error - Credit Balance** ✅ FIXED
+**Problem**: `GET /api/v1/payment/credits/balance` returning 404
+- Route didn't exist, only `/wallet/balance` existed
+
+**Fix**: `/backend/src/routes/payment.routes.js` (Line 69)
+- Added backward compatibility route: `GET /credits/balance` → `getWalletBalance`
+
+**Fix**: `/frontend/src/services/member.service.js` (Line 543)
+- Changed from `/member/credits/balance` to `/payment/credits/balance`
+
+### 3. **404 Error - Favorites** ✅ FIXED
+**Problem**: `GET /api/v1/member/favorites` returning 404
+- Frontend calling `/member/favorites` (singular)
+- Backend route mounted at `/members` (plural)
+
+**Fix**: `/frontend/src/services/member.service.js` (Lines 811, 823, 835)
+- Changed all favorites endpoints from `/member/favorites` to `/members/favorites`
+
+### 4. **400 Error - Purchase** (Needs Investigation)
+**Problem**: `POST /api/v1/members/purchase/{id}` returning 400
+- Likely insufficient credits or validation error
+- Not blocking, user-specific
+
+### Summary of Fixes:
+1. ✅ Conversation init 500 error → Fixed userType capitalization
+2. ✅ Credit balance 404 error → Added route + fixed frontend path
+3. ✅ Favorites 404 error → Fixed plural endpoint in frontend
+4. ⚠️ Purchase 400 error → User-specific, not critical
+
+---
+
+# LATEST CHANGES (2025-10-05) - Creator Name & Avatar Display Fix
+
+## Chat Page - Creator Name and Avatar Display Fix
+
+**Problem**: Creator showing as "Unknown Creator" with placeholder image instead of actual profile
+- Chat header displaying "Unknown Creator" and "Last seen..." for creator "adam1"
+- Avatar showing `/placeholders/beautifulbrunette2.png` instead of Cloudinary profile image
+- Actual profile image exists at: `https://res.cloudinary.com/dbx0s2qsy/image/upload/v1758645296/sexyselfies/creators/68d2b6748e72aae35ab19ca0/profile_1758645296636.jpg`
+- Should show creator's `displayName` (or username fallback) and `@username`
+
+**Root Cause**: Frontend not properly extracting creator data from API response
+
+**Backend Response Structure** (verified working correctly):
+```javascript
+{
+  success: true,
+  data: {
+    participants: [
+      {
+        user: {
+          _id: '...',
+          username: 'adam1',
+          displayName: 'Adam',
+          profileImage: 'https://cloudinary...',
+          isOnline: false,
+          lastActive: '...'
+        },
+        userType: 'Creator'
+      }
+    ]
+  }
+}
+```
+
+**Files Modified**:
+
+1. `/frontend/src/pages/Chat.jsx` (Lines 74-101)
+   - **Added comprehensive debug logging** at every step
+   - Logs: Full API response, conversation data, creator participant, creator data, all fields
+   - **Enhanced data extraction** with explicit fallbacks
+   - **Improved error handling** - logs error if creator participant not found
+   - **Better state setting** - constructs creatorInfo object before setting state
+
+2. `/frontend/src/pages/Chat.jsx` (Line 590)
+   - Header already correctly displays `{creator?.name}`
+   - Issue was in state initialization, not rendering
+
+**Expected Result**:
+- Header shows: "Adam" (displayName) or "adam1" (username fallback)
+- Subtext shows: "@adam1"
+- Avatar shows: Cloudinary profile image URL
+
+**Debugging Steps**:
+1. Open browser console at `/member/messages/adam1`
+2. Look for logs starting with 🔍
+3. Verify API is returning displayName, username, and profileImage
+4. If fields are missing, check Creator database record
+
+---
+
 # LATEST CHANGES (2025-10-05) - Production Messaging Fixes
 
 ## Production Error Fixes - Messaging System

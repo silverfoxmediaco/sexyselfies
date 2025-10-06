@@ -65,6 +65,9 @@ router.post(
 // Get credit packages
 router.get('/credits/packages', paymentController.getCreditPackages);
 
+// Get credit balance (alias for wallet balance for backward compatibility)
+router.get('/credits/balance', protect, paymentController.getWalletBalance);
+
 // ==========================================
 // PAYMENT METHOD MANAGEMENT
 // ==========================================
