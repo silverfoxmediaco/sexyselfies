@@ -97,6 +97,7 @@
   font-family: var(--memberlogin-font-sans);
   position: relative;
   z-index: 1;
+  margin-top: -60px; /* Move content up by 60px */
   /* PWA safe area support */
   padding-top: max(var(--memberlogin-space-md), env(safe-area-inset-top, 16px));
   padding-bottom: max(

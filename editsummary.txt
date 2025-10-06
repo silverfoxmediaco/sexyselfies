@@ -1,3 +1,54 @@
+# LATEST CHANGES (2025-10-06) - PWA Install Banner Position Fix
+
+## PWA Install Banner - Repositioned Above Bottom Navigation
+
+**Problem**: Install banner was hidden behind bottom navigation
+- Banner positioned at `bottom: 20px` conflicted with bottom nav
+- Users couldn't see or interact with install prompt
+- Poor UX - important functionality hidden
+
+**Fix**: `/frontend/index.html` (Line 452)
+- Changed from: `bottom: 20px;`
+- Changed to: `bottom: 100px;` (80px adjustment)
+- Banner now appears above bottom navigation on all pages
+
+**Result**:
+- ✅ Install banner fully visible above bottom nav
+- ✅ No overlap with navigation elements
+- ✅ Users can easily tap "Install" or "Later" buttons
+- ✅ Proper z-index layering maintained
+- ✅ Works across all pages with bottom navigation
+
+**Technical Details**:
+- Bottom navigation height: ~60-70px
+- Banner positioned at 100px from bottom
+- Provides ~30-40px clearance above nav
+- Fixed position ensures consistency across all pages
+
+---
+
+# LATEST CHANGES (2025-10-06) - Member Login Page Layout Adjustment
+
+## Member Login Page - Container Repositioned
+
+**Problem**: Login container was centered too low on viewport
+- Form appeared too far down the screen
+- Poor visual hierarchy on mobile
+- Unnecessary scrolling required
+
+**Fix**: `/frontend/src/pages/MemberLogin.css` (Line 100)
+- Added `margin-top: -60px;` to `.memberlogin-container`
+- Moves entire login form section up by 60px
+- Better viewport utilization on mobile devices
+
+**Result**:
+- ✅ Login form positioned higher on screen
+- ✅ Improved mobile UX - less scrolling needed
+- ✅ Better visual balance and hierarchy
+- ✅ More content visible above the fold
+
+---
+
 # LATEST CHANGES (2025-10-06) - PWA Install Banner Re-enabled with Teal Branding
 
 ## PWA Install Banner - Uncommented and Rebranded
