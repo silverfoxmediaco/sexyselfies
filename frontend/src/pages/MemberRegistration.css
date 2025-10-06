@@ -222,6 +222,7 @@
 .memberreg-form {
   width: 100%;
   margin: 0 auto;
+  margin-bottom: 20px; /* Space for install banner */
 }
 
 /* ========================

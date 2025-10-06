@@ -1,22 +1,25 @@
-# LATEST CHANGES (2025-10-06) - Creator Registration Form Spacing Fix
+# LATEST CHANGES (2025-10-06) - Registration Forms Spacing Fix
 
-## Creator Registration Form - Added Bottom Margin
+## Creator & Member Registration Forms - Added Bottom Margin
 
-**Problem**: Registration form too close to install banner
+**Problem**: Registration forms too close to install banner
 - Form content overlapped with install banner at bottom
-- No breathing room between form and banner
-- Poor visual hierarchy
+- No breathing room between forms and banner
+- Poor visual hierarchy on both registration pages
 
-**Fix**: `/frontend/src/pages/CreatorRegistration.css` (Line 171)
-- Added `margin-bottom: 20px;` to `.creator-registration-form`
-- Creates proper spacing between form and install banner
-- Prevents content overlap
+**Files Modified**:
+
+1. `/frontend/src/pages/CreatorRegistration.css` (Line 171)
+   - Added `margin-bottom: 20px;` to `.creator-registration-form`
+
+2. `/frontend/src/pages/MemberRegistration.css` (Line 225)
+   - Added `margin-bottom: 20px;` to `.memberreg-form`
 
 **Result**:
-- ✅ 20px clearance between form and install banner
-- ✅ Clean visual separation
+- ✅ 20px clearance between forms and install banner
+- ✅ Clean visual separation on both pages
 - ✅ Better readability and UX
-- ✅ Professional spacing consistency
+- ✅ Professional spacing consistency across all registration flows
 
 ---
 
