@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ChevronDown, ChevronUp, Mail, Download } from 'lucide-react';
+import BottomNavigation from '../components/BottomNavigation';
+import MainFooter from '../components/MainFooter';
 import './CreatorGuidelines.css';
 
 const CreatorGuidelines = () => {
@@ -9,7 +11,20 @@ const CreatorGuidelines = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showTOC, setShowTOC] = useState(false);
   const [activeSection, setActiveSection] = useState('');
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
   const contentRef = useRef(null);
+
+  // Detect viewport changes
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Last updated date
   const lastUpdated = 'January 15, 2025';
@@ -556,6 +571,12 @@ const CreatorGuidelines = () => {
         </div>
 
       </div>
+
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
+
+      {/* Mobile Bottom Navigation */}
+      {isMobile && <BottomNavigation userRole="guest" />}
     </div>
   );
 };
