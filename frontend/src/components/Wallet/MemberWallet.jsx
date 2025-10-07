@@ -37,12 +37,13 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
     try {
       setRefreshing(true);
 
-      // Fetch current credit balance
+      // Fetch current credit balance (includes test credits)
       const balanceResponse = await paymentService.getCreditBalance();
       if (balanceResponse.data?.balance !== undefined) {
-        setCredits(balanceResponse.data.balance);
+        const totalCredits = (balanceResponse.data.balance || 0) + (balanceResponse.data.testCredits || 0);
+        setCredits(totalCredits);
         if (onCreditUpdate) {
-          onCreditUpdate(balanceResponse.data.balance);
+          onCreditUpdate(totalCredits);
         }
       }
 

@@ -762,7 +762,33 @@ exports.createPromoCode = async (req, res) => {
   res.json({ success: true, code: 'PROMO123' });
 };
 exports.getWalletBalance = async (req, res) => {
-  res.json({ success: true, balance: 0 });
+  try {
+    const Member = require('../models/Member');
+
+    // Find member by user ID
+    const member = await Member.findOne({ user: req.user._id }).select('credits testCredits');
+
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        error: 'Member not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        balance: member.credits || 0,
+        testCredits: member.testCredits || 0
+      }
+    });
+  } catch (error) {
+    console.error('Get wallet balance error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch wallet balance'
+    });
+  }
 };
 exports.getWalletTransactions = async (req, res) => {
   res.json({ success: true, transactions: [] });

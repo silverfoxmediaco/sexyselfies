@@ -85,12 +85,14 @@ const MemberProfilePage = () => {
       if (response.success && response.data) {
         setCreditData({
           balance: response.data.balance || 0,
+          testCredits: response.data.testCredits || 0,
           lastPurchaseDate: response.data.lastPurchaseDate,
           loading: false
         });
       } else {
         setCreditData({
           balance: 0,
+          testCredits: 0,
           lastPurchaseDate: null,
           loading: false
         });
@@ -99,6 +101,7 @@ const MemberProfilePage = () => {
       console.error('Failed to load credit data:', error);
       setCreditData({
         balance: 0,
+        testCredits: 0,
         lastPurchaseDate: null,
         loading: false
       });
@@ -406,7 +409,7 @@ const MemberProfilePage = () => {
 
               <div className='mpp-credit-balance'>
                 <span className='mpp-credit-amount'>
-                  {creditData.loading ? '--' : creditData.balance.toLocaleString()}
+                  {creditData.loading ? '--' : (creditData.balance + creditData.testCredits).toLocaleString()}
                 </span>
                 <span className='mpp-credit-label'>credits</span>
               </div>
