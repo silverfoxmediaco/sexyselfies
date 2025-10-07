@@ -30,6 +30,9 @@ import {
   Plus,
   Link2,
   Sliders,
+  Mail,
+  Cookie,
+  Copyright,
 } from 'lucide-react';
 import authService from '../services/auth.service';
 import logo from '../assets/sexysselfies_logo.png';
@@ -247,17 +250,23 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
           label: 'Settings',
           path: `/creator/${creatorId}/settings`,
         },
-        {
-          icon: HelpCircle,
-          label: 'Creator Help',
-          path: `/creator/${creatorId}/help`,
-        },
 
         { section: 'divider' },
 
-        { section: 'Legal' },
+        { section: 'Support & Info' },
+        { icon: Shield, label: 'Safety Center', path: '/safety' },
+        { icon: Users, label: 'Community Guidelines', path: '/community-guidelines' },
+        { icon: HelpCircle, label: 'FAQ', path: '/faq' },
+        { icon: Mail, label: 'Contact Us', path: '/contact' },
+
+        { section: 'divider' },
+
+        { section: 'Legal & Policies' },
         { icon: FileText, label: 'Terms of Service', path: '/terms' },
         { icon: FileText, label: 'Privacy Policy', path: '/privacy' },
+        { icon: BookOpen, label: 'Creator Guidelines', path: '/creator-guidelines' },
+        { icon: Cookie, label: 'Cookie Policy', path: '#cookies' },
+        { icon: Copyright, label: 'DMCA', path: '/dmca' },
 
         { section: 'divider' },
 
@@ -311,13 +320,23 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         // Settings & Support
         { section: 'Account' },
         { icon: Settings, label: 'Settings', path: '/creator/settings' },
-        { icon: HelpCircle, label: 'Creator Help', path: '/creator/help' },
 
         { section: 'divider' },
 
-        { section: 'Legal' },
+        { section: 'Support & Info' },
+        { icon: Shield, label: 'Safety Center', path: '/safety' },
+        { icon: Users, label: 'Community Guidelines', path: '/community-guidelines' },
+        { icon: HelpCircle, label: 'FAQ', path: '/faq' },
+        { icon: Mail, label: 'Contact Us', path: '/contact' },
+
+        { section: 'divider' },
+
+        { section: 'Legal & Policies' },
         { icon: FileText, label: 'Terms of Service', path: '/terms' },
         { icon: FileText, label: 'Privacy Policy', path: '/privacy' },
+        { icon: BookOpen, label: 'Creator Guidelines', path: '/creator-guidelines' },
+        { icon: Cookie, label: 'Cookie Policy', path: '#cookies' },
+        { icon: Copyright, label: 'DMCA', path: '/dmca' },
 
         { section: 'divider' },
 
@@ -347,13 +366,23 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         { section: 'Account' },
         { icon: DollarSign, label: 'Billing', path: '/member/billing' },
         { icon: Settings, label: 'Settings', path: '/member/settings' },
-        { icon: HelpCircle, label: 'Help', path: '/member/help' },
 
         { section: 'divider' },
 
-        { section: 'Legal' },
+        { section: 'Support & Info' },
+        { icon: Shield, label: 'Safety Center', path: '/safety' },
+        { icon: Users, label: 'Community Guidelines', path: '/community-guidelines' },
+        { icon: HelpCircle, label: 'FAQ', path: '/faq' },
+        { icon: Mail, label: 'Contact Us', path: '/contact' },
+
+        { section: 'divider' },
+
+        { section: 'Legal & Policies' },
         { icon: FileText, label: 'Terms of Service', path: '/terms' },
         { icon: FileText, label: 'Privacy Policy', path: '/privacy' },
+        { icon: BookOpen, label: 'Creator Guidelines', path: '/creator-guidelines' },
+        { icon: Cookie, label: 'Cookie Policy', path: '#cookies' },
+        { icon: Copyright, label: 'DMCA', path: '/dmca' },
 
         { section: 'divider' },
 
@@ -370,13 +399,23 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
 
         { section: 'System' },
         { icon: Settings, label: 'Settings', path: '/admin/settings' },
-        { icon: HelpCircle, label: 'Admin Help', path: '/admin/help' },
 
         { section: 'divider' },
 
-        { section: 'Legal' },
+        { section: 'Support & Info' },
+        { icon: Shield, label: 'Safety Center', path: '/safety' },
+        { icon: Users, label: 'Community Guidelines', path: '/community-guidelines' },
+        { icon: HelpCircle, label: 'FAQ', path: '/faq' },
+        { icon: Mail, label: 'Contact Us', path: '/contact' },
+
+        { section: 'divider' },
+
+        { section: 'Legal & Policies' },
         { icon: FileText, label: 'Terms of Service', path: '/terms' },
         { icon: FileText, label: 'Privacy Policy', path: '/privacy' },
+        { icon: BookOpen, label: 'Creator Guidelines', path: '/creator-guidelines' },
+        { icon: Cookie, label: 'Cookie Policy', path: '#cookies' },
+        { icon: Copyright, label: 'DMCA', path: '/dmca' },
 
         { section: 'divider' },
 
@@ -392,10 +431,20 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
 
         { section: 'divider' },
 
-        { section: 'Information' },
-        { icon: FileText, label: 'Privacy Policy', path: '/privacy' },
+        { section: 'Support & Info' },
+        { icon: Shield, label: 'Safety Center', path: '/safety' },
+        { icon: Users, label: 'Community Guidelines', path: '/community-guidelines' },
+        { icon: HelpCircle, label: 'FAQ', path: '/faq' },
+        { icon: Mail, label: 'Contact Us', path: '/contact' },
+
+        { section: 'divider' },
+
+        { section: 'Legal & Policies' },
         { icon: FileText, label: 'Terms of Service', path: '/terms' },
-        { icon: HelpCircle, label: 'Help', path: '/help' },
+        { icon: FileText, label: 'Privacy Policy', path: '/privacy' },
+        { icon: BookOpen, label: 'Creator Guidelines', path: '/creator-guidelines' },
+        { icon: Cookie, label: 'Cookie Policy', path: '#cookies' },
+        { icon: Copyright, label: 'DMCA', path: '/dmca' },
       ];
     }
   };
