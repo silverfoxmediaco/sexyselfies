@@ -45,6 +45,12 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Determine role from URL if not provided
+  const effectiveUserRole = userRole ||
+    (location.pathname.startsWith('/admin') ? 'admin' :
+     location.pathname.startsWith('/creator') ? 'creator' :
+     location.pathname.startsWith('/member') ? 'member' : null);
+
   // Handle refresh action
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -57,7 +63,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
 
   // Main bottom nav items - Updated with Connections for members
   const getNavItems = () => {
-    if (userRole === 'creator' && creatorId) {
+    if (effectiveUserRole === 'creator' && creatorId) {
       return [
         {
           icon: Home,
@@ -85,7 +91,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
           color: '#3B82F6',
         },
       ];
-    } else if (userRole === 'creator') {
+    } else if (effectiveUserRole === 'creator') {
       // Fallback for when creatorId is not available
       return [
         {
@@ -114,7 +120,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
           color: '#3B82F6',
         },
       ];
-    } else if (userRole === 'member') {
+    } else if (effectiveUserRole === 'member') {
       return [
         {
           icon: Flame,
@@ -142,7 +148,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
           color: '#3B82F6',
         },
       ];
-    } else if (userRole === 'admin') {
+    } else if (effectiveUserRole === 'admin') {
       return [
         {
           icon: Home,
@@ -183,7 +189,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
 
   // Menu items in slideout - Updated with Connections in menu
   const getMenuItems = () => {
-    if (userRole === 'creator' && creatorId) {
+    if (effectiveUserRole === 'creator' && creatorId) {
       return [
         // Quick Actions Section
         { section: 'Quick Actions' },
@@ -272,7 +278,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
 
         { icon: LogOut, label: 'Logout', action: 'logout' },
       ];
-    } else if (userRole === 'creator') {
+    } else if (effectiveUserRole === 'creator') {
       // Fallback for when creatorId is not available
       return [
         // Quick Actions Section
@@ -342,7 +348,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
 
         { icon: LogOut, label: 'Logout', action: 'logout' },
       ];
-    } else if (userRole === 'member') {
+    } else if (effectiveUserRole === 'member') {
       return [
         { section: 'Browse & Connect' },
         { icon: Sliders, label: 'Browse Preferences', path: '/member/filters' },
@@ -388,7 +394,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
 
         { icon: LogOut, label: 'Logout', action: 'logout' },
       ];
-    } else if (userRole === 'admin') {
+    } else if (effectiveUserRole === 'admin') {
       return [
         { section: 'Management' },
         { icon: Bell, label: 'Reports', path: '/admin/reports' },
@@ -509,17 +515,17 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
           </div>
           <div className='menu-user-details'>
             <div className='menu-user-name'>
-              {userRole === 'admin'
+              {effectiveUserRole === 'admin'
                 ? 'Administrator'
-                : userRole === 'creator'
+                : effectiveUserRole === 'creator'
                   ? 'Creator Account'
-                  : userRole === 'member'
+                  : effectiveUserRole === 'member'
                     ? 'Member Account'
                     : 'Guest'}
             </div>
             <div className='menu-user-role'>
-              {userRole
-                ? userRole.charAt(0).toUpperCase() + userRole.slice(1)
+              {effectiveUserRole
+                ? effectiveUserRole.charAt(0).toUpperCase() + effectiveUserRole.slice(1)
                 : 'Not logged in'}
             </div>
           </div>
