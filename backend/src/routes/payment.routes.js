@@ -35,6 +35,14 @@ router.post(
   paymentController.processContentUnlock
 );
 
+// Process content unlock with TEST CREDITS (Development/QA)
+router.post(
+  '/unlock-content-test',
+  protect,
+  authorize('member'),
+  paymentController.processContentUnlockWithTestCredits
+);
+
 // Process message unlock payment
 router.post(
   '/unlock-message',

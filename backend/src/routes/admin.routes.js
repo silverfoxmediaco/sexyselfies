@@ -26,6 +26,9 @@ const {
   freezePayouts,
 } = require('../controllers/admin.moderation.controller');
 
+// Import test credits controller
+const testCreditsController = require('../controllers/admin.testCredits.controller');
+
 // Import middleware
 const {
   protectAdmin,
@@ -665,6 +668,70 @@ router.post(
       });
     }
   }
+);
+
+// ============================
+// TEST CREDITS MANAGEMENT (Development/QA)
+// ============================
+
+// Test credit operations
+router.post(
+  '/test-credits/grant',
+  requireAnyPermission('canAccessFinancials', 'canReviewContent'),
+  validateAdminRequest(['memberId', 'amount']),
+  logAdminAction('grant_test_credits'),
+  testCreditsController.grantTestCredits
+);
+
+router.post(
+  '/test-credits/deduct',
+  requireAnyPermission('canAccessFinancials', 'canReviewContent'),
+  validateAdminRequest(['memberId', 'amount']),
+  logAdminAction('deduct_test_credits'),
+  testCreditsController.deductTestCredits
+);
+
+router.post(
+  '/test-credits/set',
+  requireAnyPermission('canAccessFinancials', 'canReviewContent'),
+  validateAdminRequest(['memberId', 'amount']),
+  logAdminAction('set_test_credits'),
+  testCreditsController.setTestCredits
+);
+
+router.post(
+  '/test-credits/bulk-grant',
+  requirePermission('canAccessFinancials'),
+  validateAdminRequest(['memberIds', 'amount']),
+  logAdminAction('bulk_grant_test_credits'),
+  testCreditsController.bulkGrantTestCredits
+);
+
+router.post(
+  '/test-credits/reset-all',
+  requirePermission('canAccessFinancials'),
+  rateLimitAdminAction('reset_test_credits', 1, 60000),
+  logAdminAction('reset_all_test_credits'),
+  testCreditsController.resetAllTestCredits
+);
+
+// Get test credit info
+router.get(
+  '/test-credits/balance/:memberId',
+  requireAnyPermission('canAccessFinancials', 'canReviewContent'),
+  testCreditsController.getTestCreditBalance
+);
+
+router.get(
+  '/test-credits/members',
+  requireAnyPermission('canAccessFinancials', 'canReviewContent'),
+  testCreditsController.getMembersWithTestCredits
+);
+
+router.get(
+  '/test-credits/transactions',
+  requirePermission('canAccessFinancials'),
+  testCreditsController.getTestTransactions
 );
 
 // ============================

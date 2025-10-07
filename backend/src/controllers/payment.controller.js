@@ -179,6 +179,160 @@ exports.processContentUnlock = async (req, res) => {
   }
 };
 
+// Process content unlock with TEST CREDITS (Development/QA)
+exports.processContentUnlockWithTestCredits = async (req, res) => {
+  try {
+    const memberId = req.user.id;
+    const { contentId } = req.body;
+
+    // Get member
+    const member = await Member.findById(memberId);
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        message: 'Member not found',
+      });
+    }
+
+    // Get content
+    const content = await Content.findById(contentId);
+    if (!content) {
+      return res.status(404).json({
+        success: false,
+        message: 'Content not found',
+      });
+    }
+
+    // Check if already unlocked
+    const alreadyUnlocked = content.monetization?.unlocks?.find(
+      u => u.member?.toString() === memberId
+    );
+
+    if (alreadyUnlocked) {
+      return res.status(400).json({
+        success: false,
+        message: 'Content already unlocked',
+      });
+    }
+
+    const amount = content.pricing?.currentPrice || 4.99;
+
+    // Check test credits balance
+    if (member.testCredits < amount) {
+      return res.status(400).json({
+        success: false,
+        message: `Insufficient test credits. You have $${member.testCredits.toFixed(2)}, need $${amount.toFixed(2)}`,
+        availableTestCredits: member.testCredits,
+        requiredAmount: amount,
+      });
+    }
+
+    // Deduct test credits
+    member.testCredits -= amount;
+    await member.save();
+
+    // Create test transaction
+    const transaction = new Transaction({
+      transactionId: `TEST_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      memberId: memberId,
+      creatorId: content.creator,
+      creator: content.creator,
+      amount,
+      type: 'content_unlock',
+      contentId: contentId,
+      status: 'completed',
+      paymentMethod: 'test_credits',
+      isTestTransaction: true,
+      creatorEarnings: amount * 0.8, // 80% to creator (for testing calculations)
+      platformFee: 0.2,
+      paymentDetails: {
+        walletBalanceBefore: member.testCredits + amount,
+        walletBalanceAfter: member.testCredits,
+      },
+      unlockDetails: {
+        unlockedAt: new Date(),
+        viewCount: 0,
+      },
+      analytics: {
+        source: req.body.source || 'test',
+        memberSegment: 'test',
+      },
+      metadata: {
+        ip: req.ip,
+        userAgent: req.get('user-agent'),
+        notes: 'Test credit transaction - NOT REAL MONEY',
+      },
+    });
+
+    await transaction.save();
+
+    // Add member to content unlocks
+    if (!content.monetization) {
+      content.monetization = { unlocks: [], totalEarnings: 0 };
+    }
+
+    content.monetization.unlocks.push({
+      member: memberId,
+      unlockedAt: new Date(),
+      transactionId: transaction._id,
+      amount: amount,
+    });
+
+    content.monetization.totalEarnings += amount;
+    await content.save();
+
+    // Update creator earnings (mark as test)
+    const creatorEarnings = await CreatorEarnings.findOneAndUpdate(
+      { creator: content.creator },
+      {
+        $inc: {
+          availableBalance: amount * 0.8,
+          lifetimeEarnings: amount * 0.8,
+          testEarnings: amount * 0.8, // Track test earnings separately
+        },
+        $push: {
+          transactions: {
+            type: 'content_unlock',
+            amount: amount * 0.8,
+            transactionId: transaction._id,
+            isTest: true,
+            createdAt: new Date(),
+          },
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    console.log(
+      `✅ TEST CREDIT unlock - Member ${memberId} unlocked content ${contentId} for $${amount}. Balance: $${member.testCredits}`
+    );
+
+    res.json({
+      success: true,
+      message: `Content unlocked with test credits! Remaining: $${member.testCredits.toFixed(2)}`,
+      data: {
+        transactionId: transaction._id,
+        isTestTransaction: true,
+        amountCharged: amount,
+        remainingTestCredits: member.testCredits,
+        content: {
+          _id: content._id,
+          title: content.title,
+          type: content.type,
+          mediaUrl: content.mediaUrl,
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Process test credit unlock error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error processing test credit unlock',
+      error: error.message,
+    });
+  }
+};
+
 // Process message unlock payment
 exports.processMessageUnlock = async (req, res) => {
   try {
