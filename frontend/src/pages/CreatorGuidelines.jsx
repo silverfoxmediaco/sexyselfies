@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ChevronDown, ChevronUp, Mail, Download } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
+import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
 import './CreatorGuidelines.css';
 
@@ -101,6 +102,9 @@ const CreatorGuidelines = () => {
 
   return (
     <div className="creator-guidelines-page">
+      {/* Desktop Header */}
+      {isDesktop && <MainHeader />}
+
       {/* Progress Bar */}
       <div className="progress-bar-container">
         <div
