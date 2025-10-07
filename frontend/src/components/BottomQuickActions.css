@@ -37,6 +37,8 @@
 .BottomQuickActions {
   width: 100%;
   margin-bottom: 110px !important;
+  margin-left: 14px;
+  margin-right: 14px;
 }
 
 /* Header */
