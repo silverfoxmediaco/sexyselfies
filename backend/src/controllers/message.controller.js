@@ -24,8 +24,23 @@ const getConversations = async (req, res) => {
       [`isDeleted.${userRole}`]: { $ne: true },
       [`isArchived.${userRole}`]: { $ne: true }
     })
-    .populate('participants.user', 'username profileImage')
-    .populate('lastMessage')
+    .populate({
+      path: 'participants.user',
+      select: 'username displayName profileImage'
+    })
+    .populate({
+      path: 'lastMessage',
+      populate: [
+        {
+          path: 'sender',
+          select: 'username displayName profileImage'
+        },
+        {
+          path: 'recipient',
+          select: 'username displayName profileImage'
+        }
+      ]
+    })
     .sort('-lastMessageAt')
     .lean();
 
@@ -78,10 +93,17 @@ const getConversations = async (req, res) => {
             isOnline: await checkUserOnline(otherParticipant.user._id)
           },
           lastMessage: conv.lastMessage ? {
+            id: conv.lastMessage._id,
             content: conv.lastMessage.content,
             type: conv.lastMessage.messageType,
             createdAt: conv.lastMessage.createdAt,
-            sender: conv.lastMessage.sender
+            sender: conv.lastMessage.sender ? {
+              id: conv.lastMessage.sender._id,
+              username: conv.lastMessage.sender.username,
+              displayName: conv.lastMessage.sender.displayName || conv.lastMessage.sender.username
+            } : null,
+            senderModel: conv.lastMessage.senderModel,
+            isRead: conv.lastMessage.isRead || conv.lastMessage.read
           } : null,
           unreadCount,
           isPinned: conv.priority === 'vip' || conv.priority === 'important',
