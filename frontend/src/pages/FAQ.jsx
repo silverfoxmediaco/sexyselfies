@@ -319,9 +319,8 @@ const FAQ = () => {
             filteredFaqs.map(faq => (
               <div key={faq.id} className="faq-item">
                 <button
-                  type="button"
-                  onClick={() => toggleQuestion(faq.id)}
                   className="faq-question"
+                  onClick={() => toggleQuestion(faq.id)}
                 >
                   <span>{faq.question}</span>
                   {expandedQuestions[faq.id] ? (
