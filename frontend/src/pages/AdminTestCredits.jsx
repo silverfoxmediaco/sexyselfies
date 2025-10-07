@@ -93,15 +93,21 @@ const AdminTestCredits = () => {
       );
 
       if (response.success) {
-        showMessage('success', response.message);
+        showMessage(
+          'success',
+          response.message || `Successfully granted $${parseFloat(grantAmount).toFixed(2)} test credits!`
+        );
         setShowGrantModal(false);
         setGrantMemberId('');
         setGrantAmount('');
         setGrantNote('');
-        loadMembers();
+        await loadMembers();
+      } else {
+        showMessage('error', response.message || 'Failed to grant test credits');
       }
     } catch (error) {
-      showMessage('error', error.message);
+      console.error('Grant credits error:', error);
+      showMessage('error', error.message || 'Failed to grant test credits. Please check if the member ID is valid and try again.');
     } finally {
       setIsProcessing(false);
     }
