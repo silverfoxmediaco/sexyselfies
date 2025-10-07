@@ -24,7 +24,7 @@ const getConversations = async (req, res) => {
       [`isDeleted.${userRole}`]: { $ne: true },
       [`isArchived.${userRole}`]: { $ne: true }
     })
-    .populate('participants.user', 'username displayName profileImage')
+    .populate('participants.user', 'username profileImage')
     .populate('lastMessage')
     .sort('-lastMessageAt')
     .lean();
@@ -37,6 +37,12 @@ const getConversations = async (req, res) => {
           p => p.user._id.toString() !== userId.toString()
         );
 
+        // Skip if no other participant or user not populated
+        if (!otherParticipant || !otherParticipant.user) {
+          console.warn('Conversation missing other participant:', conv._id);
+          return null;
+        }
+
         // Get unread count based on user type (from nested unreadCount object)
         const unreadCount = userType === 'member'
           ? (conv.unreadCount?.member || 0)
@@ -48,8 +54,8 @@ const getConversations = async (req, res) => {
           otherUser: {
             id: otherParticipant.user._id,
             username: otherParticipant.user.username,
-            displayName: otherParticipant.user.displayName,
-            avatar: otherParticipant.user.profileImage,
+            displayName: otherParticipant.user.displayName || otherParticipant.user.username,
+            avatar: otherParticipant.user.profileImage || '/placeholders/default-avatar.png',
             userModel: otherParticipant.userModel,
             role: otherParticipant.role,
             isOnline: await checkUserOnline(otherParticipant.user._id)
@@ -66,7 +72,7 @@ const getConversations = async (req, res) => {
           lastMessageAt: conv.lastMessageAt
         };
       })
-    );
+    ).then(results => results.filter(r => r !== null)); // Filter out null results
 
     res.json({
       success: true,
@@ -76,9 +82,11 @@ const getConversations = async (req, res) => {
 
   } catch (error) {
     console.error('Get conversations error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch conversations'
+      message: 'Failed to fetch conversations',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
