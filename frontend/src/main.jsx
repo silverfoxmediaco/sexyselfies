@@ -99,6 +99,7 @@ import ContentView from './pages/ContentView';
 // Import Legal pages
 import TOS from './pages/TOS';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import CreatorGuidelines from './pages/CreatorGuidelines';
 
 // Import Cookie Consent
 import CookieConsent from './components/CookieConsent';
@@ -663,6 +664,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             {/* Legal Pages - Public routes */}
             <Route path='/terms' element={<TOS />} />
             <Route path='/privacy' element={<PrivacyPolicy />} />
+            <Route path='/creator-guidelines' element={<CreatorGuidelines />} />
           </Routes>
 
           {/* Cookie Consent Banner - Global */}
