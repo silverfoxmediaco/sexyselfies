@@ -27,7 +27,7 @@ const MainFooter = () => {
     support: [
       /*{ label: 'Help Center', href: '#help' },*/
       { label: 'Safety', href: '/safety' },
-      { label: 'Community Guidelines', href: '#community' },
+      { label: 'Community Guidelines', href: '/community-guidelines' },
       { label: 'FAQ', href: '/faq' },
     ],
   };

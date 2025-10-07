@@ -1,0 +1,452 @@
+/* CommunityGuidelines.css - Mobile-First PWA Design */
+
+/* Page Container */
+.community-page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #ffffff;
+  padding-bottom: 80px;
+}
+
+/* Progress Bar */
+.community-progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0, 255, 255, 0.1);
+  z-index: 1000;
+}
+
+.community-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #00ffff, #00d4d4);
+  transition: width 0.1s ease;
+}
+
+/* Sticky Header */
+.community-header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.community-header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #00ffff;
+}
+
+.community-back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #00ffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px;
+  margin: -8px;
+  transition: all 0.2s ease;
+}
+
+.community-back-button:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+.community-header-spacer {
+  width: 60px;
+}
+
+/* Main Content */
+.community-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+/* Hero Section */
+.community-hero {
+  text-align: center;
+  padding: 32px 16px;
+  margin-bottom: 32px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 255, 0.05),
+    rgba(0, 212, 212, 0.05)
+  );
+  border-radius: 16px;
+  border: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.community-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: #00ffff;
+}
+
+.community-hero h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: #00ffff;
+}
+
+.community-last-updated {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 16px;
+}
+
+.community-intro-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+/* Table of Contents */
+.community-toc-container {
+  background: rgba(28, 28, 30, 0.9);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.community-toc-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  color: #00ffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.community-toc-toggle:active {
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.community-toc-nav {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: communitySlideDown 0.3s ease;
+}
+
+@keyframes communitySlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.community-toc-item {
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.community-toc-item:active {
+  background: rgba(0, 255, 255, 0.1);
+  border-left-color: #00ffff;
+}
+
+.community-toc-item.active {
+  background: rgba(0, 255, 255, 0.1);
+  border-left-color: #00ffff;
+  color: #00ffff;
+  font-weight: 600;
+}
+
+/* Community Sections */
+.community-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.community-section {
+  background: rgba(28, 28, 30, 0.9);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.community-section-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  min-height: 44px;
+}
+
+.community-section-header:active {
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.community-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  text-align: left;
+}
+
+.community-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #00ffff;
+  flex-shrink: 0;
+}
+
+.community-section-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #00ffff;
+}
+
+.community-section-header > svg {
+  color: #00ffff;
+  flex-shrink: 0;
+}
+
+.community-section-content {
+  padding: 0 20px 20px 72px;
+  animation: communityExpandSection 0.3s ease;
+}
+
+@keyframes communityExpandSection {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+  }
+}
+
+.community-section-content p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+/* Call to Action Section */
+.community-cta-section {
+  background: rgba(28, 28, 30, 0.9);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.community-cta-section h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: #00ffff;
+}
+
+.community-cta-section p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 12px;
+}
+
+.community-cta-section p:last-child {
+  margin-bottom: 0;
+}
+
+.community-cta-section a {
+  color: #00ffff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+  transition: border-color 0.2s ease;
+}
+
+.community-cta-section a:hover {
+  border-bottom-color: #00ffff;
+}
+
+/* Desktop Actions */
+.community-desktop-actions {
+  display: none;
+}
+
+/* Tablet Responsive (768px - 1024px) */
+@media (min-width: 768px) {
+  .community-header h1 {
+    font-size: 22px;
+  }
+
+  .community-content {
+    padding: 32px 24px;
+  }
+
+  .community-hero {
+    padding: 48px 32px;
+  }
+
+  .community-hero h2 {
+    font-size: 28px;
+  }
+
+  .community-intro-text {
+    font-size: 17px;
+  }
+
+  .community-section-header h3 {
+    font-size: 18px;
+  }
+
+  .community-section-content p {
+    font-size: 16px;
+  }
+
+  .community-sections {
+    gap: 20px;
+  }
+}
+
+/* Desktop Responsive (1025px+) */
+@media (min-width: 1025px) {
+  .community-content {
+    max-width: 900px;
+    padding: 48px 32px;
+  }
+
+  .community-hero {
+    padding: 64px 48px;
+  }
+
+  .community-hero h2 {
+    font-size: 32px;
+  }
+
+  .community-section-header:hover {
+    background: rgba(0, 255, 255, 0.05);
+  }
+
+  .community-toc-item:hover {
+    background: rgba(0, 255, 255, 0.1);
+    border-left-color: #00ffff;
+  }
+
+  .community-desktop-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+  }
+
+  .community-download-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 8px;
+    color: #00ffff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .community-download-btn:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: #00ffff;
+    transform: translateY(-2px);
+  }
+
+  /* Show TOC by default on desktop */
+  .community-toc-container.expanded .community-toc-nav,
+  .community-toc-nav {
+    display: flex;
+  }
+}
+
+/* Accessibility */
+.community-section-header:focus-visible,
+.community-toc-item:focus-visible,
+.community-download-btn:focus-visible {
+  outline: 2px solid #00ffff;
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .community-progress-bar,
+  .community-section-content,
+  .community-toc-nav,
+  .community-section-header {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .community-section,
+  .community-toc-container,
+  .community-cta-section {
+    border-width: 2px;
+  }
+
+  .community-toc-item.active,
+  .community-section-header h3 {
+    text-decoration: underline;
+  }
+}
