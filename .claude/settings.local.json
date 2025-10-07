@@ -12,7 +12,8 @@
       "Bash(git add:*)",
       "Bash(curl:*)",
       "Bash(npm run dev:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []
