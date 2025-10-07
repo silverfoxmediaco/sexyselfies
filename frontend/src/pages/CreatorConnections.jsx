@@ -430,11 +430,11 @@ const CreatorConnections = () => {
               key={connection._id || connection.id}
               className={`connection-card ${connection.status || 'pending'}`}
               onClick={() => {
-                // Navigate to messages page for this creator
-                if (creatorId) {
-                  navigate(`/creator/${creatorId}/messages`);
-                } else {
-                  navigate('/creator/messages');
+                // Navigate to member's profile page
+                const memberData = connection.member || connection.otherUser;
+                const memberId = memberData?._id || memberData?.id;
+                if (memberId) {
+                  navigate(`/creator/members/${memberId}`);
                 }
               }}
             >
