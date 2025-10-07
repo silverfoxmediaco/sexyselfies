@@ -201,7 +201,23 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 }
               />
               <Route
+                path='messages/:conversationId'
+                element={
+                  <ProtectedCreatorRoute>
+                    <Messages />
+                  </ProtectedCreatorRoute>
+                }
+              />
+              <Route
                 path=':creatorId/messages'
+                element={
+                  <ProtectedCreatorRoute>
+                    <Messages />
+                  </ProtectedCreatorRoute>
+                }
+              />
+              <Route
+                path=':creatorId/messages/:conversationId'
                 element={
                   <ProtectedCreatorRoute>
                     <Messages />

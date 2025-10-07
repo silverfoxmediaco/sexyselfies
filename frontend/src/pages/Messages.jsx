@@ -175,6 +175,18 @@ const Messages = () => {
     }
   };
 
+  // Auto-select conversation from URL if conversationId is present
+  useEffect(() => {
+    if (conversationId && conversations.length > 0 && !selectedConversation) {
+      const conversation = conversations.find(
+        c => c.conversationId === conversationId || c.id === conversationId
+      );
+      if (conversation) {
+        handleConversationClick(conversation);
+      }
+    }
+  }, [conversationId, conversations, selectedConversation, handleConversationClick]);
+
   // Initialize real-time updates
   useEffect(() => {
     const initializeSocket = () => {

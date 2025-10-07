@@ -243,6 +243,27 @@ const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
     }
   };
 
+  const handleOpenChat = async () => {
+    setActionLoading(true);
+    try {
+      // Create or get conversation with this member
+      const conversation = await messageService.createOrGetConversation(
+        memberId,
+        'Member',  // We're messaging a Member (creator messaging member)
+        member.username
+      );
+
+      // Navigate to the chat page with this conversation
+      const conversationId = conversation._id || conversation.id;
+      navigate(`/creator/messages/${conversationId}`);
+    } catch (err) {
+      console.error('Failed to open chat:', err);
+      alert('Failed to open chat. Please try again.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleSayHi = () => {
     setShowMessageModal(true);
   };
@@ -572,6 +593,24 @@ const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
         <BottomQuickActions
           actions={[
             {
+              id: 'chat',
+              icon: <MessageCircle size={24} />,
+              label: 'Open Chat',
+              color: 'teal',
+              description: 'Start chatting with this member',
+              disabled: actionLoading,
+              onClick: handleOpenChat,
+            },
+            {
+              id: 'message',
+              icon: <Send size={24} />,
+              label: hasSentMessage ? 'Message Sent!' : 'Send Message',
+              color: 'blue',
+              description: 'Send a personal message',
+              disabled: actionLoading,
+              onClick: handleSayHi,
+            },
+            {
               id: 'poke',
               icon: <HandHeart size={24} />,
               label: hasPoked ? 'Poked!' : 'Poke',
@@ -588,23 +627,6 @@ const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
               description: 'Show appreciation',
               disabled: hasLiked || actionLoading,
               onClick: handleLike,
-            },
-            {
-              id: 'message',
-              icon: <MessageCircle size={24} />,
-              label: hasSentMessage ? 'Message Sent!' : 'Say Hi',
-              color: 'blue',
-              description: 'Send a personal message',
-              disabled: actionLoading,
-              onClick: handleSayHi,
-            },
-            {
-              id: 'offer',
-              icon: <Send size={24} />,
-              label: 'Send Special Offer',
-              color: 'teal',
-              description: 'Create exclusive offer',
-              onClick: () => navigate(`/creator/special-offer/${memberId}`),
             },
           ]}
           onActionClick={(action) => action.onClick && action.onClick()}
