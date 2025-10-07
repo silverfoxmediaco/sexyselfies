@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, DollarSign, Users, Trash2, RefreshCw } from 'lucide-react';
 import adminService from '../services/admin.service';
+import AdminHeader from '../components/AdminHeader';
+import MainFooter from '../components/MainFooter';
+import BottomNavigation from '../components/BottomNavigation';
+import {
+  useIsMobile,
+  useIsDesktop,
+  getUserRole,
+} from '../utils/mobileDetection';
 import './AdminTestCredits.css';
 
 const AdminTestCredits = () => {
+  const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
+  const userRole = getUserRole();
   const [members, setMembers] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [transactionStats, setTransactionStats] = useState(null);
@@ -169,6 +180,8 @@ const AdminTestCredits = () => {
 
   return (
     <div className="admin-test-credits-container">
+      <AdminHeader />
+
       {/* Header */}
       <div className="admin-test-credits-header">
         <div>
@@ -446,6 +459,12 @@ const AdminTestCredits = () => {
           </div>
         </div>
       )}
+
+      {/* Desktop Footer */}
+      {isDesktop && <MainFooter />}
+
+      {/* Bottom Navigation - Mobile Only */}
+      {isMobile && <BottomNavigation userRole={userRole} />}
     </div>
   );
 };
