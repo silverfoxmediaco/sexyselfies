@@ -103,6 +103,7 @@ import CreatorGuidelines from './pages/CreatorGuidelines';
 import DMCA from './pages/DMCA';
 import ContactUs from './pages/ContactUs';
 import FAQ from './pages/FAQ';
+import Safety from './pages/Safety';
 import NotFound from './pages/NotFound';
 
 // Import Cookie Consent
@@ -672,6 +673,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path='/dmca' element={<DMCA />} />
             <Route path='/contact' element={<ContactUs />} />
             <Route path='/faq' element={<FAQ />} />
+            <Route path='/safety' element={<Safety />} />
 
             {/* 404 Catch-all Route */}
             <Route path='*' element={<NotFound />} />
