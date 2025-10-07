@@ -5,21 +5,19 @@ const Admin = require('../models/Admin');
 exports.protectAdmin = async (req, res, next) => {
   let token;
 
-  // Check for token in headers or cookies
+  // Check for token in Authorization header only (admin uses headers, not cookies)
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies && req.cookies.adminToken) {
-    token = req.cookies.adminToken;
   }
 
   // Make sure token exists
   if (!token) {
     return res.status(401).json({
       success: false,
-      error: 'Not authorized to access this route',
+      error: 'Not authorized to access this route - missing token',
     });
   }
 
