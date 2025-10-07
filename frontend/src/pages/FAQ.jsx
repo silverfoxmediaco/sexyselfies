@@ -311,14 +311,14 @@ const FAQ = () => {
         </div>
 
         {/* FAQ List */}
-        <section className="faq-list">
+        <div className="faq-list">
           {filteredFaqs.length === 0 ? (
             <div className="faq-no-results">
               <p>No questions found matching your search.</p>
             </div>
           ) : (
             filteredFaqs.map(faq => (
-              <div key={faq.id} className="faq-item">
+              <section key={faq.id} id={faq.id} className="faq-item">
                 <button
                   type="button"
                   className="faq-question"
@@ -334,10 +334,10 @@ const FAQ = () => {
                 {expandedQuestions[faq.id] && (
                   <div className="faq-answer">{faq.answer}</div>
                 )}
-              </div>
+              </section>
             ))
           )}
-        </section>
+        </div>
 
         {/* Contact Support */}
         <section className="faq-contact">
