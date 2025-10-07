@@ -23,6 +23,7 @@ import {
 import api from '../services/api.config';
 import messageService from '../services/message.service';
 import BottomQuickActions from '../components/BottomQuickActions';
+import BottomNavigation from '../components/BottomNavigation';
 import './MemberProfile.css';
 
 const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
@@ -629,6 +630,9 @@ const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
           title="Quick Actions"
           loading={false}
         />
+
+        {/* Bottom Navigation */}
+        <BottomNavigation userRole="creator" />
       </div>
     </div>
   );
