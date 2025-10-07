@@ -10,7 +10,7 @@ const MainFooter = () => {
       /* { label: 'About Us', href: '#about' },
       { label: 'Careers', href: '#careers' }, */
       { label: 'Press', href: '#press' },
-      { label: 'Contact', href: '#contact' },
+      { label: 'Contact', href: '/contact' },
     ],
     creators: [
       { label: 'Become a Creator', href: '#create' },

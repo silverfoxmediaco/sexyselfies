@@ -1,0 +1,453 @@
+/* ContactUs.css - Mobile-First PWA Design */
+
+/* Page Container */
+.contactus-page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #ffffff;
+  padding-bottom: 80px;
+}
+
+/* Sticky Header */
+.contactus-header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.contactus-header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #00ffff;
+}
+
+.contactus-back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #00ffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px;
+  margin: -8px;
+  transition: all 0.2s ease;
+}
+
+.contactus-back-button:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+.contactus-header-spacer {
+  width: 60px;
+}
+
+/* Main Content */
+.contactus-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+/* Hero Section */
+.contactus-hero {
+  text-align: center;
+  padding: 32px 16px;
+  margin-bottom: 32px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 255, 0.05),
+    rgba(0, 212, 212, 0.05)
+  );
+  border-radius: 16px;
+  border: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.contactus-hero h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: #00ffff;
+}
+
+.contactus-intro-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+/* Contact Methods */
+.contactus-methods {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.contactus-method-card {
+  background: rgba(28, 28, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.contactus-method-card:active {
+  transform: translateY(-2px);
+  border-color: rgba(0, 255, 255, 0.3);
+}
+
+.contactus-method-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #00ffff, #00d4d4);
+  border-radius: 50%;
+  color: #001310;
+}
+
+.contactus-method-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #00ffff;
+}
+
+.contactus-method-card p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 16px;
+}
+
+.contactus-copy-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid #00ffff;
+  border-radius: 8px;
+  color: #00ffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contactus-copy-btn:active {
+  background: rgba(0, 255, 255, 0.2);
+  transform: scale(0.98);
+}
+
+.contactus-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid #00ffff;
+  border-radius: 12px;
+  color: #00ffff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Contact Form Section */
+.contactus-form-section {
+  background: rgba(28, 28, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.contactus-form-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.contactus-form-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #00ffff;
+}
+
+.contactus-form-header p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* Success State */
+.contactus-success {
+  text-align: center;
+  padding: 48px 24px;
+  animation: contactusFadeIn 0.5s ease;
+}
+
+.contactus-success svg {
+  color: #22c55e;
+  margin-bottom: 16px;
+}
+
+.contactus-success h4 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #00ffff;
+}
+
+.contactus-success p {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  line-height: 1.6;
+}
+
+@keyframes contactusFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form Styles */
+.contactus-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contactus-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contactus-form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #00ffff;
+}
+
+.contactus-form-group input,
+.contactus-form-group select,
+.contactus-form-group textarea {
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 15px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.contactus-form-group input:focus,
+.contactus-form-group select:focus,
+.contactus-form-group textarea:focus {
+  outline: none;
+  border-color: #00ffff;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.contactus-form-group input::placeholder,
+.contactus-form-group textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.contactus-form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.contactus-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #00ffff, #00d4d4);
+  border: none;
+  border-radius: 12px;
+  color: #001310;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.contactus-submit-btn:active:not(:disabled) {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.contactus-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.contactus-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 19, 16, 0.3);
+  border-top-color: #001310;
+  border-radius: 50%;
+  animation: contactusSpin 0.8s linear infinite;
+}
+
+@keyframes contactusSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* FAQ Section */
+.contactus-faq-section {
+  margin-bottom: 32px;
+}
+
+.contactus-faq-section h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px;
+  color: #00ffff;
+  text-align: center;
+}
+
+.contactus-faq-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.contactus-faq-card {
+  background: rgba(28, 28, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.contactus-faq-card h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #00ffff;
+}
+
+.contactus-faq-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+/* Tablet Responsive (768px - 1024px) */
+@media (min-width: 768px) {
+  .contactus-header h1 {
+    font-size: 22px;
+  }
+
+  .contactus-content {
+    padding: 32px 24px;
+  }
+
+  .contactus-hero {
+    padding: 48px 32px;
+  }
+
+  .contactus-hero h2 {
+    font-size: 28px;
+  }
+
+  .contactus-intro-text {
+    font-size: 17px;
+  }
+
+  .contactus-methods {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .contactus-faq-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop Responsive (1025px+) */
+@media (min-width: 1025px) {
+  .contactus-content {
+    max-width: 900px;
+    padding: 48px 32px;
+  }
+
+  .contactus-hero {
+    padding: 64px 48px;
+  }
+
+  .contactus-hero h2 {
+    font-size: 32px;
+  }
+
+  .contactus-method-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 255, 255, 0.3);
+  }
+
+  .contactus-copy-btn:hover {
+    background: rgba(0, 255, 255, 0.2);
+  }
+
+  .contactus-submit-btn:hover:not(:disabled) {
+    transform: scale(1.02);
+  }
+}
+
+/* Accessibility */
+.contactus-back-button:focus-visible,
+.contactus-copy-btn:focus-visible,
+.contactus-submit-btn:focus-visible,
+.contactus-form-group input:focus-visible,
+.contactus-form-group select:focus-visible,
+.contactus-form-group textarea:focus-visible {
+  outline: 2px solid #00ffff;
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .contactus-method-card,
+  .contactus-copy-btn,
+  .contactus-submit-btn,
+  .contactus-success {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .contactus-method-card,
+  .contactus-form-section,
+  .contactus-faq-card {
+    border-width: 2px;
+  }
+}

@@ -1,0 +1,351 @@
+/* NotFound.css - Mobile-First PWA Design */
+
+/* Page Container */
+.notfound-page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #ffffff;
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main Content */
+.notfound-content {
+  flex: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 404 Hero */
+.notfound-hero {
+  text-align: center;
+  margin-bottom: 48px;
+  animation: notfoundFadeIn 0.6s ease;
+}
+
+@keyframes notfoundFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notfound-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: rgba(0, 255, 255, 0.6);
+  animation: notfoundFloat 3s ease-in-out infinite;
+}
+
+@keyframes notfoundFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.notfound-title {
+  font-size: 80px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  background: linear-gradient(135deg, #00ffff, #00d4d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.notfound-subtitle {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: #00ffff;
+}
+
+.notfound-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 16px;
+  max-width: 500px;
+}
+
+.notfound-path {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+.notfound-path code {
+  display: inline-block;
+  padding: 4px 8px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #00ffff;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+/* Quick Actions */
+.notfound-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.notfound-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.notfound-back-btn {
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid #00ffff;
+  color: #00ffff;
+}
+
+.notfound-back-btn:active {
+  background: rgba(0, 255, 255, 0.2);
+  transform: scale(0.98);
+}
+
+.notfound-home-btn {
+  background: linear-gradient(135deg, #00ffff, #00d4d4);
+  color: #001310;
+}
+
+.notfound-home-btn:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* Suggested Pages */
+.notfound-suggestions {
+  width: 100%;
+  margin-bottom: 48px;
+}
+
+.notfound-suggestions h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px;
+  color: #00ffff;
+  text-align: center;
+}
+
+.notfound-suggestions-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.notfound-suggestion-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(28, 28, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.notfound-suggestion-card:active {
+  transform: translateY(-2px);
+  border-color: rgba(0, 255, 255, 0.3);
+  background: rgba(28, 28, 30, 1);
+}
+
+.notfound-suggestion-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #00ffff;
+  flex-shrink: 0;
+}
+
+.notfound-suggestion-content {
+  flex: 1;
+}
+
+.notfound-suggestion-content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: #ffffff;
+}
+
+.notfound-suggestion-content p {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+/* Help Section */
+.notfound-help {
+  text-align: center;
+  padding: 32px 24px;
+  background: rgba(28, 28, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  width: 100%;
+}
+
+.notfound-help h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #00ffff;
+}
+
+.notfound-help p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 24px;
+}
+
+.notfound-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #00ffff, #00d4d4);
+  border: none;
+  border-radius: 12px;
+  color: #001310;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.notfound-contact-btn:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* Tablet Responsive (768px - 1024px) */
+@media (min-width: 768px) {
+  .notfound-content {
+    padding: 60px 24px;
+  }
+
+  .notfound-title {
+    font-size: 120px;
+  }
+
+  .notfound-subtitle {
+    font-size: 32px;
+  }
+
+  .notfound-description {
+    font-size: 18px;
+  }
+
+  .notfound-suggestions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop Responsive (1025px+) */
+@media (min-width: 1025px) {
+  .notfound-content {
+    max-width: 900px;
+    padding: 80px 32px;
+  }
+
+  .notfound-title {
+    font-size: 140px;
+  }
+
+  .notfound-subtitle {
+    font-size: 36px;
+  }
+
+  .notfound-back-btn:hover {
+    background: rgba(0, 255, 255, 0.2);
+  }
+
+  .notfound-home-btn:hover {
+    transform: scale(1.02);
+  }
+
+  .notfound-suggestion-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 255, 255, 0.3);
+    background: rgba(28, 28, 30, 1);
+  }
+
+  .notfound-contact-btn:hover {
+    transform: scale(1.02);
+  }
+}
+
+/* Accessibility */
+.notfound-action-btn:focus-visible,
+.notfound-suggestion-card:focus-visible,
+.notfound-contact-btn:focus-visible {
+  outline: 2px solid #00ffff;
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .notfound-hero,
+  .notfound-icon,
+  .notfound-action-btn,
+  .notfound-suggestion-card,
+  .notfound-contact-btn {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .notfound-suggestion-card,
+  .notfound-help {
+    border-width: 2px;
+  }
+
+  .notfound-title,
+  .notfound-subtitle {
+    text-decoration: underline;
+  }
+}
