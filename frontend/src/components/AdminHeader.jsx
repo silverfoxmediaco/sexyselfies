@@ -337,7 +337,8 @@ const AdminHeader = () => {
         location.pathname !== '/admin/reports' &&
         location.pathname !== '/admin/payouts' &&
         location.pathname !== '/admin/content' &&
-        location.pathname !== '/admin/verifications' && (
+        location.pathname !== '/admin/verifications' &&
+        location.pathname !== '/admin/test-credits' && (
           <div className='admin-header-page-header'>
             <h1>{getPageTitle()}</h1>
             <p className='admin-header-page-subtitle'>

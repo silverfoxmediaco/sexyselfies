@@ -168,16 +168,16 @@ const AdminTestCredits = () => {
   });
 
   return (
-    <div className="admin-test-credits">
+    <div className="admin-test-credits-container">
       {/* Header */}
       <div className="admin-test-credits-header">
-        <div className="header-content">
+        <div>
           <h1>Test Credits Management</h1>
-          <p>Grant and manage test credits for QA/development testing</p>
+          <p className="admin-test-credits-subtitle">Grant and manage test credits for QA/development testing</p>
         </div>
-        <div className="header-actions">
+        <div className="admin-test-credits-header-controls">
           <button
-            className="btn-primary"
+            className="admin-test-credits-btn-primary"
             onClick={() => setShowGrantModal(true)}
             disabled={isProcessing}
           >
@@ -185,7 +185,7 @@ const AdminTestCredits = () => {
             Grant Credits
           </button>
           <button
-            className="btn-danger"
+            className="admin-test-credits-btn-danger"
             onClick={handleResetAll}
             disabled={isProcessing}
           >
@@ -193,7 +193,7 @@ const AdminTestCredits = () => {
             Reset All
           </button>
           <button
-            className="btn-secondary"
+            className="admin-test-credits-btn-secondary"
             onClick={loadData}
             disabled={loading || isProcessing}
           >
@@ -205,7 +205,7 @@ const AdminTestCredits = () => {
 
       {/* Action Message */}
       {actionMessage && (
-        <div className={`action-message ${actionMessage.type}`}>
+        <div className={`admin-test-credits-action-message ${actionMessage.type}`}>
           {actionMessage.message}
         </div>
       )}
@@ -213,14 +213,14 @@ const AdminTestCredits = () => {
       {/* Tabs */}
       <div className="admin-test-credits-tabs">
         <button
-          className={`tab ${activeTab === 'members' ? 'active' : ''}`}
+          className={`admin-test-credits-tab ${activeTab === 'members' ? 'active' : ''}`}
           onClick={() => setActiveTab('members')}
         >
           <Users size={18} />
           Members with Test Credits
         </button>
         <button
-          className={`tab ${activeTab === 'transactions' ? 'active' : ''}`}
+          className={`admin-test-credits-tab ${activeTab === 'transactions' ? 'active' : ''}`}
           onClick={() => setActiveTab('transactions')}
         >
           <DollarSign size={18} />
@@ -229,10 +229,11 @@ const AdminTestCredits = () => {
       </div>
 
       {/* Search */}
-      <div className="search-bar">
+      <div className="admin-test-credits-search-bar">
         <Search size={20} />
         <input
           type="text"
+          className="admin-test-credits-search-input"
           placeholder={`Search ${activeTab === 'members' ? 'members' : 'transactions'}...`}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -241,35 +242,35 @@ const AdminTestCredits = () => {
 
       {/* Content */}
       {loading ? (
-        <div className="loading-state">
-          <RefreshCw size={40} className="spinning" />
+        <div className="admin-test-credits-loading">
+          <RefreshCw size={40} className="admin-test-credits-spinner" />
           <p>Loading...</p>
         </div>
       ) : activeTab === 'members' ? (
-        <div className="members-section">
+        <div className="admin-test-credits-members-section">
           {/* Summary Card */}
-          <div className="summary-card">
-            <div className="summary-stat">
-              <span className="stat-label">Total Members</span>
-              <span className="stat-value">{members.length}</span>
+          <div className="admin-test-credits-summary-card">
+            <div className="admin-test-credits-summary-stat">
+              <span className="admin-test-credits-stat-label">Total Members</span>
+              <span className="admin-test-credits-stat-value">{members.length}</span>
             </div>
-            <div className="summary-stat">
-              <span className="stat-label">Total Test Credits</span>
-              <span className="stat-value">
+            <div className="admin-test-credits-summary-stat">
+              <span className="admin-test-credits-stat-label">Total Test Credits</span>
+              <span className="admin-test-credits-stat-value">
                 ${members.reduce((sum, m) => sum + (m.testCredits || 0), 0).toFixed(2)}
               </span>
             </div>
           </div>
 
           {/* Members Table */}
-          <div className="table-container">
+          <div className="admin-test-credits-table-container">
             {filteredMembers.length === 0 ? (
-              <div className="empty-state">
+              <div className="admin-test-credits-empty-state">
                 <Users size={48} />
                 <p>No members with test credits</p>
               </div>
             ) : (
-              <table className="data-table">
+              <table className="admin-test-credits-data-table">
                 <thead>
                   <tr>
                     <th>Username</th>
@@ -285,10 +286,10 @@ const AdminTestCredits = () => {
                     <tr key={member._id}>
                       <td>{member.username}</td>
                       <td>{member.email}</td>
-                      <td className="credit-amount">
+                      <td className="admin-test-credits-credit-amount">
                         ${(member.testCredits || 0).toFixed(2)}
                       </td>
-                      <td className="credit-amount">
+                      <td className="admin-test-credits-credit-amount">
                         ${(member.credits || 0).toFixed(2)}
                       </td>
                       <td>
@@ -297,9 +298,9 @@ const AdminTestCredits = () => {
                           : 'Never'}
                       </td>
                       <td>
-                        <div className="action-buttons">
+                        <div className="admin-test-credits-action-buttons">
                           <button
-                            className="btn-icon"
+                            className="admin-test-credits-btn-icon"
                             onClick={() =>
                               handleSetCredits(member._id, member.testCredits)
                             }
@@ -317,23 +318,23 @@ const AdminTestCredits = () => {
           </div>
         </div>
       ) : (
-        <div className="transactions-section">
+        <div className="admin-test-credits-transactions-section">
           {/* Transaction Stats */}
           {transactionStats && (
-            <div className="summary-card">
-              <div className="summary-stat">
-                <span className="stat-label">Total Transactions</span>
-                <span className="stat-value">{transactionStats.count || 0}</span>
+            <div className="admin-test-credits-summary-card">
+              <div className="admin-test-credits-summary-stat">
+                <span className="admin-test-credits-stat-label">Total Transactions</span>
+                <span className="admin-test-credits-stat-value">{transactionStats.count || 0}</span>
               </div>
-              <div className="summary-stat">
-                <span className="stat-label">Total Amount</span>
-                <span className="stat-value">
+              <div className="admin-test-credits-summary-stat">
+                <span className="admin-test-credits-stat-label">Total Amount</span>
+                <span className="admin-test-credits-stat-value">
                   ${(transactionStats.totalAmount || 0).toFixed(2)}
                 </span>
               </div>
-              <div className="summary-stat">
-                <span className="stat-label">Average Amount</span>
-                <span className="stat-value">
+              <div className="admin-test-credits-summary-stat">
+                <span className="admin-test-credits-stat-label">Average Amount</span>
+                <span className="admin-test-credits-stat-value">
                   ${(transactionStats.avgAmount || 0).toFixed(2)}
                 </span>
               </div>
@@ -341,14 +342,14 @@ const AdminTestCredits = () => {
           )}
 
           {/* Transactions Table */}
-          <div className="table-container">
+          <div className="admin-test-credits-table-container">
             {filteredTransactions.length === 0 ? (
-              <div className="empty-state">
+              <div className="admin-test-credits-empty-state">
                 <DollarSign size={48} />
                 <p>No test transactions found</p>
               </div>
             ) : (
-              <table className="data-table">
+              <table className="admin-test-credits-data-table">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -371,11 +372,11 @@ const AdminTestCredits = () => {
                         {transaction.contentId?.title || 'Content'} (
                         {transaction.contentId?.type || 'unknown'})
                       </td>
-                      <td className="credit-amount">
+                      <td className="admin-test-credits-credit-amount">
                         ${transaction.amount.toFixed(2)}
                       </td>
                       <td>
-                        <span className="source-badge">
+                        <span className="admin-test-credits-source-badge">
                           {transaction.analytics?.source || 'unknown'}
                         </span>
                       </td>
@@ -390,10 +391,10 @@ const AdminTestCredits = () => {
 
       {/* Grant Modal */}
       {showGrantModal && (
-        <div className="modal-overlay" onClick={() => setShowGrantModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="admin-test-credits-modal-overlay" onClick={() => setShowGrantModal(false)}>
+          <div className="admin-test-credits-modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>Grant Test Credits</h2>
-            <div className="form-group">
+            <div className="admin-test-credits-form-group">
               <label>Member ID</label>
               <input
                 type="text"
@@ -403,7 +404,7 @@ const AdminTestCredits = () => {
                 disabled={isProcessing}
               />
             </div>
-            <div className="form-group">
+            <div className="admin-test-credits-form-group">
               <label>Amount ($)</label>
               <input
                 type="number"
@@ -416,7 +417,7 @@ const AdminTestCredits = () => {
                 disabled={isProcessing}
               />
             </div>
-            <div className="form-group">
+            <div className="admin-test-credits-form-group">
               <label>Note (Optional)</label>
               <textarea
                 placeholder="Reason for granting credits..."
@@ -426,16 +427,16 @@ const AdminTestCredits = () => {
                 rows={3}
               />
             </div>
-            <div className="modal-actions">
+            <div className="admin-test-credits-modal-actions">
               <button
-                className="btn-secondary"
+                className="admin-test-credits-btn-secondary"
                 onClick={() => setShowGrantModal(false)}
                 disabled={isProcessing}
               >
                 Cancel
               </button>
               <button
-                className="btn-primary"
+                className="admin-test-credits-btn-primary"
                 onClick={handleGrantCredits}
                 disabled={isProcessing}
               >
