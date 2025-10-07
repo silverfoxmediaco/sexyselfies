@@ -428,7 +428,13 @@ const CreatorConnections = () => {
             <div
               key={connection._id || connection.id}
               className={`connection-card ${connection.status || 'pending'}`}
-              onClick={() => navigate(`/creator/chat/${connection._id || connection.id}`)}
+              onClick={() => {
+                const memberData = connection.member || connection.otherUser;
+                const memberUsername = memberData?.username || memberData?.user?.username;
+                if (memberUsername) {
+                  navigate(`/creator/member/${memberUsername}`);
+                }
+              }}
             >
               <div className='connection-select'>
                 <input

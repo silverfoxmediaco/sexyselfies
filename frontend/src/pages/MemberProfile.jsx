@@ -20,6 +20,7 @@ import {
   Zap,
 } from 'lucide-react';
 import api from '../services/api.config';
+import messageService from '../services/message.service';
 import './MemberProfile.css';
 
 const MemberProfile = ({ memberId, onBack }) => {
@@ -245,19 +246,32 @@ const MemberProfile = ({ memberId, onBack }) => {
 
     setActionLoading(true);
     try {
-      // API call to send message
-      // await fetch(`/api/creator/members/${memberId}/message`, {
-      //   method: 'POST',
-      //   body: JSON.stringify({ message: specialOffer })
-      // });
+      // Step 1: Create or get conversation with this member
+      const conversation = await messageService.createOrGetConversation(
+        memberId,
+        'Member',  // We're messaging a Member (creator messaging member)
+        member.username
+      );
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Step 2: Send the message to the conversation
+      await messageService.sendMessage(
+        conversation._id || conversation.id,
+        specialOffer.trim(),
+        null  // no media
+      );
+
+      // Success!
       setHasSentMessage(true);
       setShowMessageModal(false);
       setSpecialOffer('');
-      setActionLoading(false);
+
+      // Optionally navigate to the conversation after sending
+      // window.location.href = `/creator/messages/${conversation._id}`;
+
     } catch (err) {
       console.error('Failed to send message:', err);
+      alert('Failed to send message. Please try again.');
+    } finally {
       setActionLoading(false);
     }
   };
