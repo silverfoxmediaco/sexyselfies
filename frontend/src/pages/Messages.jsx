@@ -437,116 +437,133 @@ const Messages = () => {
           renderChatView()
         ) : (
           <>
-            {/* Header */}
-            <div className='messages-header'>
-              <div className='header-top'>
-                <h1>Messages</h1>
-                {getTotalUnread() > 0 && (
-                  <span className='total-unread-badge'>{getTotalUnread()}</span>
-                )}
-              </div>
+            {/* Conversations Sidebar (Desktop: Left Panel, Mobile: Full Screen) */}
+            <div className={`conversations-sidebar ${isDesktop && selectedConversation ? 'desktop-has-chat' : ''}`}>
+              {/* Header */}
+              <div className='messages-header'>
+                <div className='header-top'>
+                  <h1>Messages</h1>
+                  {getTotalUnread() > 0 && (
+                    <span className='total-unread-badge'>{getTotalUnread()}</span>
+                  )}
+                </div>
 
-              {/* Search Bar */}
-              <div className='messages-search'>
-                <svg width='20' height='20' viewBox='0 0 20 20' fill='none'>
-                  <path
-                    d='M9 17A8 8 0 109 1a8 8 0 000 16zm8-8h3m-1 0l-2 2'
-                    stroke='currentColor'
-                    strokeWidth='2'
+                {/* Search Bar */}
+                <div className='messages-search'>
+                  <svg width='20' height='20' viewBox='0 0 20 20' fill='none'>
+                    <path
+                      d='M9 17A8 8 0 109 1a8 8 0 000 16zm8-8h3m-1 0l-2 2'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                    />
+                  </svg>
+                  <input
+                    type='text'
+                    placeholder='Search conversations...'
+                    value={searchQuery}
+                    onChange={e => handleSearch(e.target.value)}
                   />
-                </svg>
-                <input
-                  type='text'
-                  placeholder='Search conversations...'
-                  value={searchQuery}
-                  onChange={e => handleSearch(e.target.value)}
-                />
+                </div>
               </div>
-            </div>
 
-            {/* Filter Tabs */}
-            <div className='messages-filters'>
-              <button
-                className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('all')}
-              >
-                All
-              </button>
-              <button
-                className={`filter-btn ${activeFilter === 'unread' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('unread')}
-              >
-                Unread {getTotalUnread() > 0 && <span className='filter-badge'>{getTotalUnread()}</span>}
-              </button>
-              <button
-                className={`filter-btn ${activeFilter === 'online' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('online')}
-              >
-                Online Now
-              </button>
-            </div>
+              {/* Filter Tabs */}
+              <div className='messages-filters'>
+                <button
+                  className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => setActiveFilter('all')}
+                >
+                  All
+                </button>
+                <button
+                  className={`filter-btn ${activeFilter === 'unread' ? 'active' : ''}`}
+                  onClick={() => setActiveFilter('unread')}
+                >
+                  Unread {getTotalUnread() > 0 && <span className='filter-badge'>{getTotalUnread()}</span>}
+                </button>
+                <button
+                  className={`filter-btn ${activeFilter === 'online' ? 'active' : ''}`}
+                  onClick={() => setActiveFilter('online')}
+                >
+                  Online Now
+                </button>
+              </div>
 
-            {/* Conversations List */}
-            <div className='conversations-list'>
-              {isLoading ? (
-                <div className='loading-state'>
-                  <div className='loading-spinner'></div>
-                  <p>Loading conversations...</p>
-                </div>
-              ) : conversations.length === 0 ? (
-                <div className='empty-state'>
-                  <h3>No messages yet</h3>
-                  <p>Start a conversation!</p>
-                </div>
-              ) : (
-                conversations.map(conversation => (
-                  <div
-                    key={conversation.id || conversation.conversationId}
-                    className={`conversation-item ${conversation.unreadCount > 0 ? 'unread' : ''}`}
-                    onClick={() => handleConversationClick(conversation)}
-                  >
-                    <div className='conversation-avatar'>
-                      <img 
-                        src={conversation.otherUser?.avatar || '/placeholders/beautifulbrunette2.png'} 
-                        alt={conversation.otherUser?.username} 
-                      />
-                      {conversation.otherUser?.isOnline && (
-                        <span className='online-indicator'></span>
+              {/* Conversations List */}
+              <div className='conversations-list'>
+                {isLoading ? (
+                  <div className='loading-state'>
+                    <div className='loading-spinner'></div>
+                    <p>Loading conversations...</p>
+                  </div>
+                ) : conversations.length === 0 ? (
+                  <div className='empty-state'>
+                    <h3>No messages yet</h3>
+                    <p>Start a conversation!</p>
+                  </div>
+                ) : (
+                  conversations.map(conversation => (
+                    <div
+                      key={conversation.id || conversation.conversationId}
+                      className={`conversation-item ${conversation.unreadCount > 0 ? 'unread' : ''} ${selectedConversation?.conversationId === conversation.conversationId ? 'active' : ''}`}
+                      onClick={() => handleConversationClick(conversation)}
+                    >
+                      <div className='conversation-avatar'>
+                        <img
+                          src={conversation.otherUser?.avatar || '/placeholders/beautifulbrunette2.png'}
+                          alt={conversation.otherUser?.username}
+                        />
+                        {conversation.otherUser?.isOnline && (
+                          <span className='online-indicator'></span>
+                        )}
+                      </div>
+
+                      <div className='conversation-content'>
+                        <div className='conversation-header'>
+                          <h3>{conversation.otherUser?.displayName || conversation.otherUser?.username}</h3>
+                          <span className='conversation-time'>
+                            {formatTime(conversation.lastMessageAt)}
+                          </span>
+                        </div>
+                        <div className='conversation-preview'>
+                          <p>{formatLastMessage(conversation.lastMessage)}</p>
+                        </div>
+                      </div>
+
+                      {conversation.unreadCount > 0 && (
+                        <div className='conversation-actions'>
+                          <div className='unread-badge'>{conversation.unreadCount}</div>
+                          <button
+                            className='mark-read-btn'
+                            onClick={e => markAsRead(conversation.conversationId, e)}
+                          >
+                            ✓
+                          </button>
+                        </div>
                       )}
                     </div>
-
-                    <div className='conversation-content'>
-                      <div className='conversation-header'>
-                        <h3>{conversation.otherUser?.displayName || conversation.otherUser?.username}</h3>
-                        <span className='conversation-time'>
-                          {formatTime(conversation.lastMessageAt)}
-                        </span>
-                      </div>
-                      <div className='conversation-preview'>
-                        <p>{formatLastMessage(conversation.lastMessage)}</p>
-                      </div>
-                    </div>
-
-                    {conversation.unreadCount > 0 && (
-                      <div className='conversation-actions'>
-                        <div className='unread-badge'>{conversation.unreadCount}</div>
-                        <button
-                          className='mark-read-btn'
-                          onClick={e => markAsRead(conversation.conversationId, e)}
-                        >
-                          ✓
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </div>
+
+            {/* Desktop Chat View - Always visible on desktop */}
+            {isDesktop && (
+              <div className='desktop-chat-container'>
+                {selectedConversation ? (
+                  renderChatView()
+                ) : (
+                  <div className='desktop-empty-chat'>
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <h2>Select a conversation</h2>
+                    <p>Choose a conversation from the list to start messaging</p>
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
-
-        {/* Desktop Chat View */}
-        {isDesktop && selectedConversation && renderChatView()}
 
         {/* Bottom Navigation - Mobile Only */}
         {isMobile && !showChatView && <BottomNavigation userRole={userRole} />}

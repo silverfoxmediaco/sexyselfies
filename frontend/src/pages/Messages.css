@@ -556,23 +556,148 @@
 @media (min-width: 1025px) {
   .messages-container {
     display: flex;
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
+    padding-bottom: 0;
   }
 
-  .conversations-list {
-    width: 400px;
+  /* Conversations Sidebar */
+  .conversations-sidebar {
+    width: 420px;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
     height: calc(100vh - 70px);
+    flex-shrink: 0;
+  }
+
+  .conversations-sidebar .messages-header {
+    position: relative;
+    top: auto;
+  }
+
+  .conversations-sidebar .conversations-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  /* Active conversation highlighting */
+  .conversation-item.active {
+    background: rgba(23, 210, 194, 0.08);
+    border-left: 3px solid #17d2c2;
+  }
+
+  .conversation-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .conversation-item.active:hover {
+    background: rgba(23, 210, 194, 0.1);
+  }
+
+  /* Desktop Chat Container */
+  .desktop-chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #0a0a0a;
+    height: calc(100vh - 70px);
+  }
+
+  .desktop-chat-container .chat-view {
+    height: 100%;
+  }
+
+  .desktop-chat-container .back-button {
+    display: none;
+  }
+
+  /* Empty Chat State */
+  .desktop-empty-chat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #8e8e93;
+    gap: 16px;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .desktop-empty-chat svg {
+    opacity: 0.3;
+  }
+
+  .desktop-empty-chat h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .desktop-empty-chat p {
+    font-size: 15px;
+    color: #8e8e93;
+    margin: 0;
+    max-width: 300px;
+  }
+
+  /* Adjust chat view for desktop */
+  .desktop-chat-container .chat-header {
+    position: relative;
+    top: auto;
+  }
+
+  .desktop-chat-container .messages-area {
+    flex: 1;
     overflow-y: auto;
   }
 
-  .chat-view {
-    flex: 1;
-    height: calc(100vh - 70px);
+  .desktop-chat-container .message-input-container {
+    position: relative;
+    bottom: auto;
   }
 
-  .back-button {
-    display: none;
+  /* Better message sizing on desktop */
+  .desktop-chat-container .message {
+    max-width: 55%;
+  }
+
+  /* Scrollbar styling for conversations list */
+  .conversations-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .conversations-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .conversations-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  .conversations-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Messages area scrollbar */
+  .messages-area::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .messages-area::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .messages-area::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  .messages-area::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
 }
