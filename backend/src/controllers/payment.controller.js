@@ -9,6 +9,8 @@ const CreatorConnection = require('../models/CreatorConnection');
 const Member = require('../models/Member');
 const Creator = require('../models/Creator');
 const Transaction = require('../models/Transaction');
+const MemberAnalytics = require('../models/MemberAnalytics');
+const analyticsService = require('../services/analytics.service');
 
 // Stub utility functions - create these files as needed
 const sendNotification = async (userId, notification) => {
@@ -281,6 +283,15 @@ exports.processContentUnlockWithTestCredits = async (req, res) => {
     content.monetization.totalEarnings += amount;
     await content.save();
 
+    // Add to member's purchased content for Library
+    member.purchasedContent.push({
+      creator: content.creator,
+      content: contentId,
+      purchaseDate: new Date(),
+      amount: amount,
+    });
+    await member.save();
+
     // Update creator earnings (mark as test)
     const creatorEarnings = await CreatorEarnings.findOneAndUpdate(
       { creator: content.creator },
@@ -302,6 +313,61 @@ exports.processContentUnlockWithTestCredits = async (req, res) => {
       },
       { upsert: true, new: true }
     );
+
+    // Track analytics event for purchase
+    try {
+      await analyticsService.trackEvent({
+        category: 'conversion',
+        action: 'content_unlock',
+        label: `test_credits`,
+        value: amount,
+        userId: content.creator,
+        userType: 'creator',
+        metadata: {
+          contentId: contentId,
+          contentType: content.type,
+          memberId: memberId,
+          amount: amount,
+          paymentMethod: 'test_credits',
+          isTestTransaction: true,
+          source: req.body.source || 'browse',
+        },
+      });
+    } catch (analyticsError) {
+      console.error('Analytics tracking error:', analyticsError);
+      // Don't fail the purchase if analytics fails
+    }
+
+    // Update member analytics
+    try {
+      await MemberAnalytics.findOneAndUpdate(
+        { member: memberId },
+        {
+          $inc: {
+            'spending.totalSpent': amount,
+            'spending.contentPurchases': 1,
+            'engagement.contentUnlocks': 1,
+          },
+          $set: {
+            'spending.lastPurchaseDate': new Date(),
+          },
+          $push: {
+            'spending.purchaseHistory': {
+              date: new Date(),
+              amount: amount,
+              type: 'content_unlock',
+              contentId: contentId,
+              creatorId: content.creator,
+              isTestTransaction: true,
+            },
+          },
+        },
+        { upsert: true, new: true }
+      );
+    } catch (memberAnalyticsError) {
+      console.error('Member analytics update error:', memberAnalyticsError);
+      // Don't fail the purchase if analytics fails
+    }
 
     console.log(
       `✅ TEST CREDIT unlock - Member ${memberId} unlocked content ${contentId} for $${amount}. Balance: $${member.testCredits}`

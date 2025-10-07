@@ -156,8 +156,10 @@ const CreatorProfileModal = ({
       let response;
 
       if (paymentMethod === 'test_credits') {
+        // Track source as 'profile' for analytics
         response = await memberService.purchaseContentWithTestCredits(
-          selectedContent._id || selectedContent.id
+          selectedContent._id || selectedContent.id,
+          'profile'
         );
       } else {
         response = await memberService.purchaseContent(

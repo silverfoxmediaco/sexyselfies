@@ -418,8 +418,8 @@ const BrowseCreators = () => {
       let response;
 
       if (paymentMethod === 'test_credits') {
-        // Use test credits
-        response = await memberService.purchaseContentWithTestCredits(pendingPurchase._id);
+        // Use test credits - track source as 'browse' for analytics
+        response = await memberService.purchaseContentWithTestCredits(pendingPurchase._id, 'browse');
       } else {
         // Use real payment (CCBill)
         response = await memberService.purchaseContent(pendingPurchase._id, 'ccbill');

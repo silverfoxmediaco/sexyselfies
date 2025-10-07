@@ -472,10 +472,11 @@ class MemberService {
   /**
    * Purchase content with test credits (Development/QA)
    */
-  async purchaseContentWithTestCredits(contentId) {
+  async purchaseContentWithTestCredits(contentId, source = 'browse') {
     try {
       const response = await api.post('/payments/unlock-content-test', {
         contentId: contentId,
+        source: source, // Track where purchase originated: 'browse' or 'profile'
       });
       return response;
     } catch (error) {
