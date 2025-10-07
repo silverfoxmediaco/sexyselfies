@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Users,
@@ -33,6 +33,7 @@ import './CreatorConnections.css';
 
 const CreatorConnections = () => {
   const navigate = useNavigate();
+  const { creatorId } = useParams();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const userRole = getUserRole();
@@ -429,10 +430,11 @@ const CreatorConnections = () => {
               key={connection._id || connection.id}
               className={`connection-card ${connection.status || 'pending'}`}
               onClick={() => {
-                const memberData = connection.member || connection.otherUser;
-                const memberUsername = memberData?.username || memberData?.user?.username;
-                if (memberUsername) {
-                  navigate(`/creator/member/${memberUsername}`);
+                // Navigate to messages page for this creator
+                if (creatorId) {
+                  navigate(`/creator/${creatorId}/messages`);
+                } else {
+                  navigate('/creator/messages');
                 }
               }}
             >
