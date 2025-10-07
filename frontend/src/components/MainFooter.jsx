@@ -9,14 +9,14 @@ const MainFooter = () => {
     company: [
       /* { label: 'About Us', href: '#about' },
       { label: 'Careers', href: '#careers' }, */
-      { label: 'Press', href: '#press' },
+      /*{ label: 'Press', href: '#press' },*/
       { label: 'Contact', href: '/contact' },
     ],
     creators: [
-      { label: 'Become a Creator', href: '#create' },
+      /*{ label: 'Become a Creator', href: '#create' },*/
       { label: 'Creator Guidelines', href: '/creator-guidelines' },
       /*{ label: 'Success Stories', href: '#stories' },*/
-      { label: 'Creator Support', href: '#support' },
+      /*{ label: 'Creator Support', href: '#support' },*/
     ],
     legal: [
       { label: 'Terms of Service', href: '/terms' },
@@ -25,10 +25,10 @@ const MainFooter = () => {
       { label: 'DMCA', href: '/dmca' },
     ],
     support: [
-      { label: 'Help Center', href: '#help' },
+      /*{ label: 'Help Center', href: '#help' },*/
       { label: 'Safety', href: '#safety' },
       { label: 'Community Guidelines', href: '#community' },
-      { label: 'FAQ', href: '#faq' },
+      { label: 'FAQ', href: '/faq' },
     ],
   };
 
