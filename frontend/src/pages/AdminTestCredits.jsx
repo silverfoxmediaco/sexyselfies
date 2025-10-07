@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Minus, DollarSign, Users, Trash2, RefreshCw } from 'lucide-react';
+import { Search, Plus, DollarSign, Users, Trash2, RefreshCw } from 'lucide-react';
 import adminService from '../services/admin.service';
 import './AdminTestCredits.css';
 
