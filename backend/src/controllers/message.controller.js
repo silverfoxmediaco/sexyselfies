@@ -55,7 +55,10 @@ const getConversations = async (req, res) => {
             id: otherParticipant.user._id,
             username: otherParticipant.user.username,
             displayName: otherParticipant.user.displayName || otherParticipant.user.username,
-            avatar: otherParticipant.user.profileImage || '/placeholders/default-avatar.png',
+            // Only show avatar for Creators, not Members (members don't post photos)
+            avatar: otherParticipant.userModel === 'Creator'
+              ? (otherParticipant.user.profileImage || '/placeholders/default-avatar.png')
+              : null,
             userModel: otherParticipant.userModel,
             role: otherParticipant.role,
             isOnline: await checkUserOnline(otherParticipant.user._id)
