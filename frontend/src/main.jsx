@@ -70,6 +70,7 @@ import MemberRegistration from './pages/MemberRegistration';
 import MemberLogin from './pages/MemberLogin';
 import BrowseCreators from './pages/BrowseCreators';
 import CreatorProfile from './pages/CreatorProfile';
+import MemberProfile from './pages/MemberProfile';
 import MemberProfilePage from './pages/MemberProfilePage';
 import MemberSettingsPage from './pages/MemberSettingsPage';
 import MyConnections from './pages/MyConnections';
@@ -222,6 +223,24 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorConnections />
+                  </ProtectedCreatorRoute>
+                }
+              />
+
+              {/* MEMBER PROFILE ROUTE - Creators view individual member profiles */}
+              <Route
+                path='members/:memberId'
+                element={
+                  <ProtectedCreatorRoute>
+                    <MemberProfile />
+                  </ProtectedCreatorRoute>
+                }
+              />
+              <Route
+                path=':creatorId/members/:memberId'
+                element={
+                  <ProtectedCreatorRoute>
+                    <MemberProfile />
                   </ProtectedCreatorRoute>
                 }
               />

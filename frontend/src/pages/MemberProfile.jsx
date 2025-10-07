@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   User,
   DollarSign,
@@ -23,9 +24,12 @@ import api from '../services/api.config';
 import messageService from '../services/message.service';
 import './MemberProfile.css';
 
-const MemberProfile = ({ memberId, onBack }) => {
-  // Remove useParams and useNavigate since they're not available in artifacts
-  // These would be passed as props in production
+const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
+  // Get memberId from URL params or props
+  const params = useParams();
+  const navigate = useNavigate();
+  const memberId = propMemberId || params.memberId;
+  const onBack = propOnBack || (() => navigate(-1));
 
   // State management
   const [member, setMember] = useState(null);
@@ -51,8 +55,9 @@ const MemberProfile = ({ memberId, onBack }) => {
       let memberData;
 
       if (memberId) {
-        // Fetch specific member data from API
-        memberData = await api.get(`/members/${memberId}`);
+        // Fetch specific member data from API (creator viewing member)
+        const response = await api.get(`/creator/members/profile/${memberId}`);
+        memberData = response.data || response;
       } else {
         // If no memberId provided, fetch current user data
         memberData = await api.get('/auth/me');

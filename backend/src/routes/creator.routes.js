@@ -698,9 +698,7 @@ router.post('/members/search', (req, res) => {
 });
 
 // Get specific member profile for creators
-router.get('/members/profile/:memberId', (req, res) => {
-  res.status(501).json({ message: 'Member profile details coming soon' });
-});
+router.get('/members/profile/:memberId', creatorMembersController.getMemberProfile);
 
 // Send message to member
 router.post('/members/:memberId/message', (req, res) => {
