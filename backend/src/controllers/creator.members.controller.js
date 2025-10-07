@@ -163,7 +163,6 @@ const getMemberProfile = async (req, res) => {
       id: member._id,
       username: member.username || `Member_${member._id.toString().slice(-4)}`,
       displayName: member.displayName || member.username,
-      profileImage: member.profileImage || '/placeholders/default-avatar.png',
       bio: member.bio || 'No bio yet',
 
       // User info

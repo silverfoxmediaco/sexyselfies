@@ -68,10 +68,6 @@ const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
       const transformedMember = {
         id: memberData._id || memberData.id || 'user-1',
         username: memberData.username || memberData.displayName || 'User',
-        avatar:
-          memberData.profileImage ||
-          memberData.avatar ||
-          '/api/placeholder/150/150',
         joinDate: memberData.createdAt || new Date().toISOString(),
         lastActive:
           memberData.lastActive ||
@@ -150,7 +146,6 @@ const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
         const fallbackMember = {
           id: userData._id || 'user-1',
           username: userData.username || 'User',
-          avatar: userData.profileImage || '/api/placeholder/150/150',
           joinDate: userData.createdAt || new Date().toISOString(),
           lastActive: new Date().toISOString(),
           isOnline: true,

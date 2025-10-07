@@ -14,10 +14,6 @@ const memberSchema = new mongoose.Schema(
       unique: true,
       maxlength: [30, 'Username cannot be more than 30 characters'],
     },
-    profileImage: {
-      type: String,
-      default: 'default-avatar.jpg',
-    },
     credits: {
       type: Number,
       default: 0,
