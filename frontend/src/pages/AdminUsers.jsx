@@ -346,6 +346,34 @@ const AdminUsers = () => {
                     <label>User ID</label>
                     <p className='admin-users-monospace'>{selectedUser._id}</p>
                   </div>
+                  {selectedUser.role === 'member' && selectedUser.memberId && (
+                    <div className='admin-users-info-item'>
+                      <label>Member ID (for Test Credits)</label>
+                      <p style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <code style={{ fontSize: '12px', background: '#1c1c1e', padding: '4px 8px', borderRadius: '4px' }}>
+                          {selectedUser.memberId}
+                        </code>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(selectedUser.memberId);
+                            alert('Member ID copied to clipboard!');
+                          }}
+                          style={{
+                            background: '#17d2c2',
+                            border: 'none',
+                            color: '#0a0a0a',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '11px',
+                            fontWeight: '600'
+                          }}
+                        >
+                          Copy
+                        </button>
+                      </p>
+                    </div>
+                  )}
                   <div className='admin-users-info-item'>
                     <label>Joined</label>
                     <p>{new Date(selectedUser.createdAt).toLocaleString()}</p>
@@ -356,7 +384,13 @@ const AdminUsers = () => {
                   </div>
                   <div className='admin-users-info-item'>
                     <label>ID Verified</label>
-                    <p>{selectedUser.isVerified ? 'Yes' : 'No'}</p>
+                    <p>
+                      {selectedUser.role === 'member'
+                        ? 'N/A'
+                        : selectedUser.isVerified
+                          ? 'Yes'
+                          : 'No'}
+                    </p>
                   </div>
                   <div className='admin-users-info-item'>
                     <label>Strikes</label>

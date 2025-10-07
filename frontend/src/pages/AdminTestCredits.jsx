@@ -29,6 +29,8 @@ const AdminTestCredits = () => {
   const [grantNote, setGrantNote] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [actionMessage, setActionMessage] = useState(null);
+  const [memberSearchTerm, setMemberSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -294,6 +296,7 @@ const AdminTestCredits = () => {
                   <tr>
                     <th>Username</th>
                     <th>Email</th>
+                    <th>Member ID</th>
                     <th>Test Credits</th>
                     <th>Real Credits</th>
                     <th>Last Active</th>
@@ -305,6 +308,26 @@ const AdminTestCredits = () => {
                     <tr key={member._id}>
                       <td>{member.username}</td>
                       <td>{member.email}</td>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <code style={{ fontSize: '11px', color: '#8e8e93' }}>
+                            {member._id.substring(0, 8)}...
+                          </code>
+                          <button
+                            className="admin-test-credits-btn-icon"
+                            onClick={() => {
+                              navigator.clipboard.writeText(member._id);
+                              showMessage('success', 'Member ID copied to clipboard!');
+                            }}
+                            title="Copy Full Member ID"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
                       <td className="admin-test-credits-credit-amount">
                         ${(member.testCredits || 0).toFixed(2)}
                       </td>
@@ -417,11 +440,14 @@ const AdminTestCredits = () => {
               <label>Member ID</label>
               <input
                 type="text"
-                placeholder="Enter member ID"
+                placeholder="Paste Member ID from table below or Members tab"
                 value={grantMemberId}
                 onChange={(e) => setGrantMemberId(e.target.value)}
                 disabled={isProcessing}
               />
+              <small style={{ color: '#8e8e93', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                Tip: Click "Copy ID" button next to a member in the table to get their ID
+              </small>
             </div>
             <div className="admin-test-credits-form-group">
               <label>Amount ($)</label>

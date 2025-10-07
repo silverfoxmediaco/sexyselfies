@@ -575,9 +575,27 @@ exports.searchUsers = async (req, res) => {
       violationMap[v.user.toString()] = v;
     });
 
+    // Get Member/Creator IDs for each user
+    const Member = require('../models/Member');
+    const Creator = require('../models/Creator');
+
+    const members = await Member.find({ user: { $in: userIds } }).select('_id user');
+    const creators = await Creator.find({ user: { $in: userIds } }).select('_id user');
+
+    const memberMap = {};
+    const creatorMap = {};
+    members.forEach(m => {
+      memberMap[m.user.toString()] = m._id;
+    });
+    creators.forEach(c => {
+      creatorMap[c.user.toString()] = c._id;
+    });
+
     const usersWithViolations = users.map(user => ({
       ...user.toObject(),
       violations: violationMap[user._id.toString()] || null,
+      memberId: memberMap[user._id.toString()] || null,
+      creatorId: creatorMap[user._id.toString()] || null,
     }));
 
     const total = await User.countDocuments(searchQuery);
