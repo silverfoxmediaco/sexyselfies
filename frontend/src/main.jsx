@@ -100,6 +100,7 @@ import ContentView from './pages/ContentView';
 import TOS from './pages/TOS';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import CreatorGuidelines from './pages/CreatorGuidelines';
+import DMCA from './pages/DMCA';
 
 // Import Cookie Consent
 import CookieConsent from './components/CookieConsent';
@@ -665,6 +666,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path='/terms' element={<TOS />} />
             <Route path='/privacy' element={<PrivacyPolicy />} />
             <Route path='/creator-guidelines' element={<CreatorGuidelines />} />
+            <Route path='/dmca' element={<DMCA />} />
           </Routes>
 
           {/* Cookie Consent Banner - Global */}

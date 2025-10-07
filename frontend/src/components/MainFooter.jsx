@@ -22,7 +22,7 @@ const MainFooter = () => {
       { label: 'Terms of Service', href: '/terms' },
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Cookie Policy', href: '#cookies' },
-      { label: 'DMCA', href: '#dmca' },
+      { label: 'DMCA', href: '/dmca' },
     ],
     support: [
       { label: 'Help Center', href: '#help' },
