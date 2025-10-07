@@ -7,20 +7,20 @@ const MainFooter = () => {
 
   const footerLinks = {
     company: [
-      { label: 'About Us', href: '#about' },
-      { label: 'Careers', href: '#careers' },
+      /* { label: 'About Us', href: '#about' },
+      { label: 'Careers', href: '#careers' }, */
       { label: 'Press', href: '#press' },
       { label: 'Contact', href: '#contact' },
     ],
     creators: [
       { label: 'Become a Creator', href: '#create' },
       { label: 'Creator Guidelines', href: '/creator-guidelines' },
-      { label: 'Success Stories', href: '#stories' },
+      /*{ label: 'Success Stories', href: '#stories' },*/
       { label: 'Creator Support', href: '#support' },
     ],
     legal: [
-      { label: 'Terms of Service', href: '#terms' },
-      { label: 'Privacy Policy', href: '#privacy' },
+      { label: 'Terms of Service', href: '/terms' },
+      { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Cookie Policy', href: '#cookies' },
       { label: 'DMCA', href: '#dmca' },
     ],
