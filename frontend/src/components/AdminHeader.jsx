@@ -55,6 +55,7 @@ const AdminHeader = () => {
     if (path === '/admin/reports') return 'Reports Management';
     if (path === '/admin/users') return 'User Management';
     if (path === '/admin/content') return 'Content Moderation';
+    if (path === '/admin/test-credits') return 'Test Credits Management';
     if (path === '/admin/admins') return 'Admin Management';
     return 'Admin Panel';
   };
@@ -259,6 +260,24 @@ const AdminHeader = () => {
                     )}
                   </Link>
                 )}
+
+                <Link
+                  to='/admin/test-credits'
+                  className={`admin-header-nav-link ${isActive('/admin/test-credits') ? 'active' : ''}`}
+                >
+                  <svg
+                    className='admin-header-nav-icon'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                  >
+                    <path
+                      d='M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z'
+                      strokeWidth='2'
+                    />
+                  </svg>
+                  <span>Test Credits</span>
+                </Link>
 
                 {/* Temporarily commented out - page showing blank content
                 {adminData?.role === 'superAdmin' && (

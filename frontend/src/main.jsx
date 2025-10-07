@@ -44,6 +44,7 @@ import AdminUsers from './pages/AdminUsers';
 import AdminContent from './pages/AdminContent';
 import AdminPayouts from './pages/AdminPayouts';
 import AdminManagement from './pages/AdminManagement';
+import AdminTestCredits from './pages/AdminTestCredits';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 
 // Import Creator pages (all that exist)
@@ -657,6 +658,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 element={
                   <ProtectedAdminRoute>
                     <AdminManagement />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path='test-credits'
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminTestCredits />
                   </ProtectedAdminRoute>
                 }
               />
