@@ -1,0 +1,473 @@
+/* PurchaseConfirmationModal.css - Mobile-First Design */
+
+/* Overlay */
+.purchase-confirmation-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 16px;
+  animation: purchase-modal-fade-in 0.2s ease;
+}
+
+@keyframes purchase-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Container */
+.purchase-confirmation-modal {
+  background: #1c1c1e;
+  border-radius: 20px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: purchase-modal-slide-up 0.3s ease;
+  position: relative;
+}
+
+@keyframes purchase-modal-slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Header */
+.purchase-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.purchase-modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #00ffff;
+  flex-shrink: 0;
+}
+
+.purchase-modal-header h2 {
+  flex: 1;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
+}
+
+.purchase-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.purchase-modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.purchase-modal-close:active {
+  transform: scale(0.95);
+}
+
+.purchase-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Content Preview */
+.purchase-modal-content-preview {
+  padding: 20px;
+}
+
+.purchase-preview-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #2a2a2c;
+  margin-bottom: 16px;
+}
+
+.purchase-preview-img-blurred {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(20px);
+}
+
+.purchase-preview-video-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.6);
+  gap: 8px;
+}
+
+.purchase-preview-video-indicator span {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.purchase-preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: #00ffff;
+}
+
+.purchase-content-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.purchase-creator-name {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  text-align: center;
+}
+
+/* Price Display */
+.purchase-modal-price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(0, 255, 255, 0.05);
+  border-top: 1px solid rgba(0, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.purchase-price-label {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.purchase-price-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #00ffff;
+}
+
+/* Payment Methods */
+.purchase-payment-methods {
+  padding: 20px;
+}
+
+.purchase-payment-methods h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #ffffff;
+}
+
+.purchase-payment-option {
+  display: block;
+  padding: 16px;
+  background: rgba(28, 28, 30, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.purchase-payment-option:last-child {
+  margin-bottom: 0;
+}
+
+.purchase-payment-option:hover {
+  border-color: rgba(0, 255, 255, 0.3);
+  background: rgba(28, 28, 30, 1);
+}
+
+.purchase-payment-option.selected {
+  border-color: #00ffff;
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.purchase-payment-option.insufficient {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.purchase-payment-option input[type="radio"] {
+  display: none;
+}
+
+.purchase-payment-option-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.purchase-payment-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.purchase-payment-icon.test-credits-icon {
+  background: rgba(0, 255, 255, 0.1);
+  color: #00ffff;
+}
+
+.purchase-payment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.purchase-payment-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.purchase-payment-balance {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Error Message */
+.purchase-modal-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  margin: 0 20px 16px;
+  color: #ef4444;
+  font-size: 14px;
+}
+
+.purchase-modal-error svg {
+  flex-shrink: 0;
+}
+
+/* Action Buttons */
+.purchase-modal-actions {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px 20px;
+}
+
+.purchase-modal-cancel,
+.purchase-modal-confirm {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-height: 48px;
+}
+
+.purchase-modal-cancel {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.purchase-modal-cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.purchase-modal-cancel:active {
+  transform: scale(0.98);
+}
+
+.purchase-modal-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.purchase-modal-confirm {
+  background: linear-gradient(135deg, #00ffff, #00d4d4);
+  color: #001310;
+}
+
+.purchase-modal-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+}
+
+.purchase-modal-confirm:active {
+  transform: scale(0.98);
+}
+
+.purchase-modal-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.purchase-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #001310;
+  border-radius: 50%;
+  animation: purchase-spinner-spin 0.8s linear infinite;
+}
+
+@keyframes purchase-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Payment Info */
+.purchase-modal-info {
+  padding: 0 20px 24px;
+}
+
+.purchase-modal-info p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 8px;
+}
+
+.purchase-modal-info p:last-child {
+  margin-bottom: 0;
+}
+
+.purchase-modal-note {
+  font-style: italic;
+}
+
+/* Tablet Responsive */
+@media (min-width: 768px) {
+  .purchase-confirmation-modal {
+    max-width: 520px;
+  }
+
+  .purchase-modal-header {
+    padding: 28px 28px 20px;
+  }
+
+  .purchase-modal-content-preview {
+    padding: 24px;
+  }
+
+  .purchase-content-title {
+    font-size: 20px;
+  }
+
+  .purchase-price-amount {
+    font-size: 32px;
+  }
+
+  .purchase-payment-methods {
+    padding: 24px;
+  }
+
+  .purchase-modal-actions {
+    padding: 0 24px 24px;
+  }
+
+  .purchase-modal-info {
+    padding: 0 24px 28px;
+  }
+}
+
+/* Desktop Responsive */
+@media (min-width: 1025px) {
+  .purchase-confirmation-modal {
+    max-width: 560px;
+  }
+}
+
+/* Accessibility */
+.purchase-modal-close:focus-visible,
+.purchase-modal-cancel:focus-visible,
+.purchase-modal-confirm:focus-visible,
+.purchase-payment-option:focus-visible {
+  outline: 2px solid #00ffff;
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .purchase-confirmation-modal-overlay,
+  .purchase-confirmation-modal,
+  .purchase-modal-close,
+  .purchase-modal-cancel,
+  .purchase-modal-confirm,
+  .purchase-payment-option {
+    animation: none;
+    transition: none;
+  }
+
+  .purchase-spinner {
+    animation: none;
+    border: 2px solid #001310;
+  }
+}
