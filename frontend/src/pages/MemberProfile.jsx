@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import api from '../services/api.config';
 import messageService from '../services/message.service';
+import BottomQuickActions from '../components/BottomQuickActions';
 import './MemberProfile.css';
 
 const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
@@ -507,59 +508,6 @@ const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
             </div>
           </div>
 
-          {/* Action Buttons Card */}
-          <div className='member-profile-card member-profile-actions-card'>
-            <div className='member-profile-card-header'>
-              <h3>
-                <Sparkles size={18} />
-                Quick Actions
-              </h3>
-            </div>
-
-            <div className='action-buttons-grid'>
-              <button
-                className={`member-profile-action-btn member-profile-poke-btn ${hasPoked ? 'member-profile-completed' : ''}`}
-                onClick={handlePoke}
-                disabled={hasPoked || actionLoading}
-              >
-                <HandHeart size={20} />
-                <span>{hasPoked ? 'Poked!' : 'Poke'}</span>
-              </button>
-
-              <button
-                className={`member-profile-action-btn member-profile-like-btn ${hasLiked ? 'member-profile-completed' : ''}`}
-                onClick={handleLike}
-                disabled={hasLiked || actionLoading}
-              >
-                <Heart size={20} />
-                <span>{hasLiked ? 'Liked!' : 'Like'}</span>
-              </button>
-
-              <button
-                className={`member-profile-action-btn member-profile-message-btn ${hasSentMessage ? 'member-profile-completed' : ''}`}
-                onClick={handleSayHi}
-                disabled={actionLoading}
-              >
-                <MessageCircle size={20} />
-                <span>{hasSentMessage ? 'Message Sent!' : 'Say Hi'}</span>
-              </button>
-
-              <button
-                className='member-profile-action-btn member-profile-special-offer-btn'
-                onClick={() => navigate(`/creator/special-offer/${memberId}`)}
-              >
-                <Send size={20} />
-                <span>Send Special Offer</span>
-              </button>
-            </div>
-
-            <div className='action-tip'>
-              <Eye size={14} />
-              <span>
-                Engaging with high-value members increases your visibility!
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Message Modal */}
@@ -619,6 +567,51 @@ const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
             </div>
           </div>
         )}
+
+        {/* Quick Actions */}
+        <BottomQuickActions
+          actions={[
+            {
+              id: 'poke',
+              icon: <HandHeart size={24} />,
+              label: hasPoked ? 'Poked!' : 'Poke',
+              color: 'pink',
+              description: 'Send a friendly poke',
+              disabled: hasPoked || actionLoading,
+              onClick: handlePoke,
+            },
+            {
+              id: 'like',
+              icon: <Heart size={24} />,
+              label: hasLiked ? 'Liked!' : 'Like',
+              color: 'red',
+              description: 'Show appreciation',
+              disabled: hasLiked || actionLoading,
+              onClick: handleLike,
+            },
+            {
+              id: 'message',
+              icon: <MessageCircle size={24} />,
+              label: hasSentMessage ? 'Message Sent!' : 'Say Hi',
+              color: 'blue',
+              description: 'Send a personal message',
+              disabled: actionLoading,
+              onClick: handleSayHi,
+            },
+            {
+              id: 'offer',
+              icon: <Send size={24} />,
+              label: 'Send Special Offer',
+              color: 'teal',
+              description: 'Create exclusive offer',
+              onClick: () => navigate(`/creator/special-offer/${memberId}`),
+            },
+          ]}
+          onActionClick={(action) => action.onClick && action.onClick()}
+          showHeader={true}
+          title="Quick Actions"
+          loading={false}
+        />
       </div>
     </div>
   );
