@@ -5,6 +5,7 @@ import axios from 'axios';
 import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
 import CreditPurchaseModal from '../components/Wallet/CreditPurchaseModal';
+import PurchaseConfirmationModal from '../components/PurchaseConfirmationModal';
 import ReportModal from '../components/ReportModal';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
@@ -33,9 +34,12 @@ const BrowseCreators = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingError, setLoadingError] = useState(null);
   const [showCreditPurchaseModal, setShowCreditPurchaseModal] = useState(false);
+  const [showPurchaseConfirmation, setShowPurchaseConfirmation] = useState(false);
   const [pendingPurchase, setPendingPurchase] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [testCreditsBalance, setTestCreditsBalance] = useState(0);
+  const [memberBalance, setMemberBalance] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreContent, setHasMoreContent] = useState(true);
 
@@ -67,6 +71,7 @@ const BrowseCreators = () => {
       loadFilters();
       loadContentFeed();
       loadExistingConnections();
+      loadBalances();
     }
   }, [isAuthenticated]);
 
@@ -240,6 +245,21 @@ const BrowseCreators = () => {
     }
   };
 
+  // Load member balances (test credits and real credits)
+  const loadBalances = async () => {
+    try {
+      const profile = await memberService.getProfile();
+      if (profile?.success && profile?.data) {
+        const memberData = profile.data.member || profile.data;
+        setTestCreditsBalance(memberData.testCredits || 0);
+        setMemberBalance(memberData.credits || 0);
+        console.log('✅ Balances loaded - Test:', memberData.testCredits, 'Real:', memberData.credits);
+      }
+    } catch (error) {
+      console.error('❌ Error loading balances:', error);
+    }
+  };
+
   // Apply filters to content
   const applyFiltersToContent = () => {
     console.log('🔍 Applying filters to content...');
@@ -376,32 +396,57 @@ const BrowseCreators = () => {
     }, 300);
   };
 
-  // Handle content purchase
+  // Handle content purchase - Show confirmation modal
   const handleContentPurchase = async (content) => {
-    console.log('💰 Purchasing content:', content.title, 'for', content.price, 'credits');
+    console.log('💰 Initiating purchase for:', content.title, 'Price:', content.price);
+
+    // Show confirmation modal
+    setPendingPurchase(content);
+    setShowPurchaseConfirmation(true);
+  };
+
+  // Handle purchase confirmation from modal
+  const handlePurchaseConfirm = async (paymentMethod) => {
+    console.log('✅ Purchase confirmed with payment method:', paymentMethod);
 
     try {
-      // Attempt to purchase content with credits
-      const response = await memberService.purchaseContent(content._id, 'credits');
+      let response;
+
+      if (paymentMethod === 'test_credits') {
+        // Use test credits
+        response = await memberService.purchaseContentWithTestCredits(pendingPurchase._id);
+      } else {
+        // Use real payment (CCBill)
+        response = await memberService.purchaseContent(pendingPurchase._id, 'ccbill');
+      }
 
       if (response.success) {
         console.log('✅ Content purchased successfully!');
-        // Refresh content to show unlocked state
-        loadContentFeed();
+
+        // Close modal
+        setShowPurchaseConfirmation(false);
+        setPendingPurchase(null);
+
+        // Reload balances
+        await loadBalances();
+
+        // Reload content feed to show unlocked state
+        await loadContentFeed();
+
+        // Show success message
+        alert(`Content unlocked! ${paymentMethod === 'test_credits' ? 'Test credits used.' : 'Payment processed.'} Check your Library to view it anytime.`);
       }
 
     } catch (error) {
       console.error('❌ Error purchasing content:', error);
-
-      // Check if this is an insufficient funds error
-      if (error.message && error.message.includes('Insufficient credits')) {
-        console.log('💳 Insufficient credits, showing purchase modal');
-        setPendingPurchase(content);
-        setShowCreditPurchaseModal(true);
-      } else {
-        alert('Purchase failed. Please try again.');
-      }
+      throw new Error(error.message || 'Purchase failed. Please try again.');
     }
+  };
+
+  // Handle purchase modal close
+  const handlePurchaseClose = () => {
+    setShowPurchaseConfirmation(false);
+    setPendingPurchase(null);
   };
 
   // Handle successful credit purchase - retry content purchase
@@ -738,6 +783,18 @@ const BrowseCreators = () => {
           connectionType={connectionType}
           connectionData={connectionData}
           userRole='member'
+        />
+      )}
+
+      {/* Purchase Confirmation Modal - shown when member taps on content */}
+      {showPurchaseConfirmation && pendingPurchase && (
+        <PurchaseConfirmationModal
+          isOpen={showPurchaseConfirmation}
+          onClose={handlePurchaseClose}
+          onConfirm={handlePurchaseConfirm}
+          content={pendingPurchase}
+          memberBalance={memberBalance}
+          testCreditsBalance={testCreditsBalance}
         />
       )}
 
