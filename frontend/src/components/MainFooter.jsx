@@ -14,7 +14,7 @@ const MainFooter = () => {
     ],
     creators: [
       { label: 'Become a Creator', href: '#create' },
-      { label: 'Creator Guidelines', href: '#guidelines' },
+      { label: 'Creator Guidelines', href: '/creator-guidelines' },
       { label: 'Success Stories', href: '#stories' },
       { label: 'Creator Support', href: '#support' },
     ],
