@@ -1,33 +1,33 @@
 /* AdminTestCredits.css - Matching Admin Panel Design */
 
 .admin-test-credits {
-  background: #0a0a0a;
-  min-height: 100vh;
+  background: var(--bg-primary, #0a0a0a);
+  min-height: calc(100vh - 80px);
   padding: 0;
   margin: 0;
 }
 
 /* Header Section */
 .admin-test-credits-header {
-  padding: 24px 32px;
-  background: #121212;
-  border-bottom: 1px solid #2a2a2c;
+  padding: var(--spacing-lg, 24px) var(--spacing-xl, 32px);
+  background: var(--bg-secondary, #121212);
+  border-bottom: 1px solid var(--border-color, #2a2a2c);
 }
 
-.header-content h1 {
-  font-size: 28px;
+.admin-test-credits-header .header-content h1 {
+  font-size: 24px;
   font-weight: 600;
-  color: #ffffff;
-  margin: 0 0 4px 0;
+  color: var(--text-primary, #ffffff);
+  margin: 0 0 var(--spacing-xs, 4px) 0;
 }
 
-.header-content p {
+.admin-test-credits-header .header-content p {
   font-size: 14px;
-  color: #8e8e93;
+  color: var(--text-muted, #8e8e93);
   margin: 0;
 }
 
-.header-actions {
+.admin-test-credits .header-actions {
   display: flex;
   gap: 12px;
   margin-top: 16px;
@@ -35,9 +35,9 @@
 }
 
 /* Buttons */
-.btn-primary,
-.btn-secondary,
-.btn-danger {
+.admin-test-credits .btn-primary,
+.admin-test-credits .btn-secondary,
+.admin-test-credits .btn-danger {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -51,43 +51,43 @@
   white-space: nowrap;
 }
 
-.btn-primary {
-  background: #17d2c2;
+.admin-test-credits .btn-primary {
+  background: var(--primary-color, #17d2c2);
   color: #0a0a0a;
 }
 
-.btn-primary:hover:not(:disabled) {
+.admin-test-credits .btn-primary:hover:not(:disabled) {
   background: #12b7ab;
 }
 
-.btn-secondary {
+.admin-test-credits .btn-secondary {
   background: #1c1c1e;
   color: #ffffff;
   border: 1px solid #2a2a2c;
 }
 
-.btn-secondary:hover:not(:disabled) {
+.admin-test-credits .btn-secondary:hover:not(:disabled) {
   background: #2a2a2c;
 }
 
-.btn-danger {
+.admin-test-credits .btn-danger {
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.btn-danger:hover:not(:disabled) {
+.admin-test-credits .btn-danger:hover:not(:disabled) {
   background: rgba(239, 68, 68, 0.2);
 }
 
-.btn-primary:disabled,
-.btn-secondary:disabled,
-.btn-danger:disabled {
+.admin-test-credits .btn-primary:disabled,
+.admin-test-credits .btn-secondary:disabled,
+.admin-test-credits .btn-danger:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.btn-icon {
+.admin-test-credits .btn-icon {
   background: #1c1c1e;
   border: 1px solid #2a2a2c;
   border-radius: 6px;
@@ -97,7 +97,7 @@
   transition: all 0.2s ease;
 }
 
-.btn-icon:hover {
+.admin-test-credits .btn-icon:hover {
   background: #2a2a2c;
   color: #17d2c2;
 }
@@ -216,20 +216,20 @@
   border: 1px solid #2a2a2c;
 }
 
-.stat-label {
+.admin-test-credits .stat-label {
   display: block;
   font-size: 12px;
-  color: #8e8e93;
+  color: var(--text-muted, #8e8e93) !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 8px;
 }
 
-.stat-value {
+.admin-test-credits .stat-value {
   display: block;
   font-size: 28px;
   font-weight: 600;
-  color: #17d2c2;
+  color: var(--primary-color, #17d2c2) !important;
 }
 
 /* Sections */
