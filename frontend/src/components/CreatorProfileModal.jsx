@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import './CreatorProfileModal.css';
 import playCircleIcon from '../assets/play_circle_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png';
+import PurchaseConfirmationModal from './PurchaseConfirmationModal';
+import memberService from '../services/member.service';
 
 const CreatorProfileModal = ({
   creator,
@@ -29,11 +31,17 @@ const CreatorProfileModal = ({
   onLike,
   onPass,
   onSuperLike,
+  onContentPurchased,
 }) => {
   const [activeTab, setActiveTab] = useState('about');
   const [selectedContent, setSelectedContent] = useState(null);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [showPurchaseConfirmation, setShowPurchaseConfirmation] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
+  const [testCreditsBalance, setTestCreditsBalance] = useState(0);
+  const [memberBalance, setMemberBalance] = useState(0);
+  const [isProcessingPurchase, setIsProcessingPurchase] = useState(false);
+  const [creatorContent, setCreatorContent] = useState([]);
 
   // Mock content for demonstration
   const mockContent = [
@@ -92,6 +100,8 @@ const CreatorProfileModal = ({
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      loadBalances();
+      loadCreatorContent();
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -100,9 +110,98 @@ const CreatorProfileModal = ({
     };
   }, [isOpen]);
 
+  const loadBalances = async () => {
+    try {
+      const profile = await memberService.getProfile();
+      const memberData = profile.data.member || profile.data;
+      setTestCreditsBalance(memberData.testCredits || 0);
+      setMemberBalance(memberData.credits || 0);
+    } catch (error) {
+      console.error('Failed to load balances:', error);
+    }
+  };
+
+  const loadCreatorContent = async () => {
+    if (!creator?._id) return;
+
+    try {
+      // TODO: Replace with actual API call to fetch creator's content
+      // const response = await contentService.getCreatorContent(creator._id);
+      // setCreatorContent(response.data.content);
+
+      // For now, use mock content
+      setCreatorContent(mockContent);
+    } catch (error) {
+      console.error('Failed to load creator content:', error);
+      setCreatorContent(mockContent);
+    }
+  };
+
   const handleContentClick = content => {
+    if (!content.locked) {
+      // Content already unlocked, just view it
+      // TODO: Implement content viewer
+      return;
+    }
+
+    // Show purchase confirmation modal
     setSelectedContent(content);
-    setShowUnlockModal(true);
+    setShowPurchaseConfirmation(true);
+  };
+
+  const handlePurchaseConfirm = async (paymentMethod) => {
+    setIsProcessingPurchase(true);
+
+    try {
+      let response;
+
+      if (paymentMethod === 'test_credits') {
+        response = await memberService.purchaseContentWithTestCredits(
+          selectedContent._id || selectedContent.id
+        );
+      } else {
+        response = await memberService.purchaseContent(
+          selectedContent._id || selectedContent.id,
+          'ccbill'
+        );
+      }
+
+      // Reload balances
+      await loadBalances();
+
+      // Update content in the list to mark as unlocked
+      setCreatorContent((prevContent) =>
+        prevContent.map((item) =>
+          (item._id || item.id) === (selectedContent._id || selectedContent.id)
+            ? { ...item, locked: false }
+            : item
+        )
+      );
+
+      // Notify parent component
+      if (onContentPurchased) {
+        onContentPurchased(selectedContent);
+      }
+
+      // Close modals
+      setShowPurchaseConfirmation(false);
+      setSelectedContent(null);
+
+      // Success message (parent component should handle this)
+      console.log('Content unlocked successfully!');
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      throw error; // Let PurchaseConfirmationModal handle error display
+    } finally {
+      setIsProcessingPurchase(false);
+    }
+  };
+
+  const handlePurchaseClose = () => {
+    if (!isProcessingPurchase) {
+      setShowPurchaseConfirmation(false);
+      setSelectedContent(null);
+    }
   };
 
   const handleSwipeImage = direction => {
@@ -276,14 +375,14 @@ const CreatorProfileModal = ({
 
                 {activeTab === 'content' && (
                   <div className='content-grid'>
-                    {mockContent.map(content => (
+                    {creatorContent.map(content => (
                       <div
-                        key={content.id}
+                        key={content._id || content.id}
                         className='content-item'
                         onClick={() => handleContentClick(content)}
                       >
                         <img
-                          src={content.thumbnail}
+                          src={content.thumbnail || content.url}
                           alt=''
                           className={`content-thumbnail ${content.locked ? 'locked' : ''}`}
                         />
@@ -377,47 +476,22 @@ const CreatorProfileModal = ({
             </button>
           </div>
 
-          {/* Unlock Modal */}
-          <AnimatePresence>
-            {showUnlockModal && selectedContent && (
-              <motion.div
-                className='unlock-modal-overlay'
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowUnlockModal(false)}
-              >
-                <motion.div
-                  className='unlock-modal'
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.9, opacity: 0 }}
-                  onClick={e => e.stopPropagation()}
-                >
-                  <div className='unlock-icon'>
-                    <Unlock size={32} color='#17D2C2' />
-                  </div>
-
-                  <h3 className='unlock-title'>Unlock Content</h3>
-
-                  <p className='unlock-description'>
-                    Get instant access to this exclusive {selectedContent.type}
-                  </p>
-
-                  <div className='unlock-price'>${selectedContent.price}</div>
-
-                  <button className='unlock-btn'>Unlock Now</button>
-
-                  <button
-                    onClick={() => setShowUnlockModal(false)}
-                    className='unlock-cancel'
-                  >
-                    Maybe Later
-                  </button>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Purchase Confirmation Modal */}
+          {showPurchaseConfirmation && selectedContent && (
+            <PurchaseConfirmationModal
+              isOpen={showPurchaseConfirmation}
+              onClose={handlePurchaseClose}
+              onConfirm={handlePurchaseConfirm}
+              content={{
+                ...selectedContent,
+                title: selectedContent.title || `${selectedContent.type === 'video' ? 'Video' : 'Photo'} Content`,
+                url: selectedContent.thumbnail || selectedContent.url,
+                creator: creator,
+              }}
+              memberBalance={memberBalance}
+              testCreditsBalance={testCreditsBalance}
+            />
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>

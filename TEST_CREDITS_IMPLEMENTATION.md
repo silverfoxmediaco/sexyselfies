@@ -89,7 +89,9 @@ All routes require admin authentication and log actions for audit trail.
 - Reloads content feed to show unlocked state
 - Shows success alert with Library mention
 
-## 🎯 User Flow (Option 1 - Complete)
+## 🎯 User Flows
+
+### Option 1 - Browse/Swipe Purchase (Complete)
 
 1. **Member browses content** in BrowseCreators
 2. **Member taps on blurred image/video**
@@ -107,6 +109,32 @@ All routes require admin authentication and log actions for audit trail.
 7. **Success notification** shows:
    - "Content unlocked! Test credits used. Check your Library to view it anytime."
 
+### Option 2 - Creator Profile Purchase (Complete)
+
+1. **Member opens creator profile** by tapping Info button or swiping up
+2. **CreatorProfileModal opens** showing:
+   - Creator's profile images (swipeable gallery)
+   - Bio and stats (followers, content count, rating)
+   - Three tabs: About, Content, Details
+3. **Member switches to "Content" tab** to see creator's content grid
+4. **Member taps on locked content** (blurred thumbnail with price)
+5. **PurchaseConfirmationModal appears** with:
+   - Content preview (blurred)
+   - Price display
+   - Payment method selection (test credits auto-selected if available)
+6. **Member confirms purchase**
+7. **System processes purchase**:
+   - Deducts test credits or processes CCBill payment
+   - Unlocks content immediately
+   - Updates content grid (removes blur/lock)
+   - Saves to member's Library
+8. **Content unlocks in profile modal**:
+   - Lock icon disappears
+   - Content thumbnail becomes clear
+   - Member can continue browsing creator's content
+9. **Success notification** (in console):
+   - "Content unlocked! Check your Library to view it anytime."
+
 ## 📋 Testing Checklist
 
 ### Admin Tests
@@ -117,7 +145,7 @@ All routes require admin authentication and log actions for audit trail.
 - [ ] View test transaction history
 - [ ] Reset all test credits
 
-### Member Tests
+### Member Tests - Option 1 (Browse/Swipe)
 - [ ] View test credits balance in profile
 - [ ] Tap on blurred content to see confirmation modal
 - [ ] Purchase content with test credits
@@ -126,6 +154,20 @@ All routes require admin authentication and log actions for audit trail.
 - [ ] Verify content appears in Library
 - [ ] Try to purchase with insufficient test credits
 - [ ] Fallback to CCBill payment option
+
+### Member Tests - Option 2 (Creator Profile)
+- [ ] Tap Info button to open creator profile modal
+- [ ] Swipe through creator's profile images
+- [ ] Switch to "Content" tab
+- [ ] View content grid with locked/unlocked items
+- [ ] Tap on locked content to see purchase confirmation
+- [ ] Purchase content with test credits from profile modal
+- [ ] Verify balance decreases
+- [ ] Verify content unlocks immediately in grid (blur/lock removed)
+- [ ] Verify content appears in Library
+- [ ] Try to purchase with insufficient test credits
+- [ ] Close profile modal and verify main feed still works
+- [ ] Like/Pass/Super Like from profile modal
 
 ### Integration Tests
 - [ ] Test credits transaction flagged correctly
@@ -143,8 +185,11 @@ Create admin dashboard page for test credit management:
 - Transaction history view
 - Reset all button
 
-### Option 2 (Future)
-Second purchase method via special button/icon in SwipeCard
+### Future Enhancements
+- Content viewer for unlocked content (currently just unlocks in grid)
+- Real-time content loading from API (currently using mock data in CreatorProfileModal)
+- Video playback within profile modal
+- Share creator profile functionality
 
 ## 📝 Notes
 
@@ -156,6 +201,6 @@ Second purchase method via special button/icon in SwipeCard
 
 ---
 
-**Status**: Option 1 Complete ✅
+**Status**: Options 1 & 2 Complete ✅
 **Date**: 2025
-**Version**: 1.0
+**Version**: 1.1

@@ -6,6 +6,7 @@ import SwipeCard from '../components/SwipeCard';
 import ConnectionModal from '../components/ConnectionModal';
 import CreditPurchaseModal from '../components/Wallet/CreditPurchaseModal';
 import PurchaseConfirmationModal from '../components/PurchaseConfirmationModal';
+import CreatorProfileModal from '../components/CreatorProfileModal';
 import ReportModal from '../components/ReportModal';
 import MainHeader from '../components/MainHeader';
 import MainFooter from '../components/MainFooter';
@@ -59,6 +60,10 @@ const BrowseCreators = () => {
   // Report Modal States
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportContext, setReportContext] = useState(null);
+
+  // Creator Profile Modal States
+  const [showCreatorProfileModal, setShowCreatorProfileModal] = useState(false);
+  const [selectedCreator, setSelectedCreator] = useState(null);
 
   // Check authentication on mount
   useEffect(() => {
@@ -500,22 +505,26 @@ const BrowseCreators = () => {
   };
 
   const handleViewCreatorProfile = creator => {
-    // Defensive check for creator and username
+    // Defensive check for creator
     if (!creator) {
       console.error('No creator provided to handleViewCreatorProfile');
       return;
     }
 
-    // Use username if available, otherwise fall back to _id for backwards compatibility
-    const identifier = creator.username || creator._id;
+    // Show the creator profile modal instead of navigating
+    setSelectedCreator(creator);
+    setShowCreatorProfileModal(true);
+  };
 
-    if (!identifier) {
-      console.error('Creator has no username or _id:', creator);
-      return;
-    }
+  // Handle content purchased from within CreatorProfileModal
+  const handleCreatorProfileContentPurchased = async (content) => {
+    console.log('Content purchased from creator profile:', content);
 
-    console.log('Navigating to creator profile:', identifier);
-    navigate(`/creator/${identifier}`);
+    // Reload content feed to show unlocked state
+    await loadContentFeed();
+
+    // Show success message
+    alert('Content unlocked! Check your Library to view it anytime.');
   };
 
   // Handle report content from SwipeCard
@@ -805,6 +814,37 @@ const BrowseCreators = () => {
           onClose={handleCreditPurchaseClose}
           onSuccess={handleCreditPurchaseSuccess}
           pendingPurchase={pendingPurchase}
+        />
+      )}
+
+      {/* Creator Profile Modal - shown when member taps info button or swipes up */}
+      {showCreatorProfileModal && selectedCreator && (
+        <CreatorProfileModal
+          creator={selectedCreator}
+          isOpen={showCreatorProfileModal}
+          onClose={() => {
+            setShowCreatorProfileModal(false);
+            setSelectedCreator(null);
+          }}
+          onLike={() => {
+            // Handle like action - same as swiping right
+            handleSwipe('right', selectedCreator._id);
+            setShowCreatorProfileModal(false);
+            setSelectedCreator(null);
+          }}
+          onPass={() => {
+            // Handle pass action - same as swiping left
+            handleSwipe('left', selectedCreator._id);
+            setShowCreatorProfileModal(false);
+            setSelectedCreator(null);
+          }}
+          onSuperLike={() => {
+            // Handle super like action
+            console.log('Super Like from profile modal');
+            setShowCreatorProfileModal(false);
+            setSelectedCreator(null);
+          }}
+          onContentPurchased={handleCreatorProfileContentPurchased}
         />
       )}
 
