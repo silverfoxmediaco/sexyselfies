@@ -1497,31 +1497,50 @@ const createOrGetConversation = async (req, res) => {
     const currentUserId = req.user._id;
     let targetUserId = userId;
 
-    // If username provided instead of userId, look up the creator
+    // If username provided instead of userId, look up the user based on userModel
     if (username && !userId) {
-      // CRITICAL: Only allow messaging to VERIFIED and NOT PAUSED creators
-      const creator = await Creator.findOne({
-        username,
-        isVerified: true,        // Must be verified (age + identity confirmed)
-        isPaused: { $ne: true }  // Must not be paused
-      }).select('_id username isVerified');
+      if (userModel === 'Creator') {
+        // CRITICAL: Only allow messaging to VERIFIED and NOT PAUSED creators
+        const creator = await Creator.findOne({
+          username,
+          isVerified: true,        // Must be verified (age + identity confirmed)
+          isPaused: { $ne: true }  // Must not be paused
+        }).select('_id username isVerified');
 
-      if (!creator) {
-        return res.status(404).json({
+        if (!creator) {
+          return res.status(404).json({
+            success: false,
+            message: 'Creator not found or not available for messaging. Creators must be verified to receive messages.'
+          });
+        }
+
+        // Double-check verification status for safety
+        if (!creator.isVerified) {
+          return res.status(403).json({
+            success: false,
+            message: 'This creator is not verified and cannot receive messages'
+          });
+        }
+
+        targetUserId = creator._id;
+      } else if (userModel === 'Member') {
+        // Look up member by username
+        const member = await Member.findOne({ username }).select('_id username');
+
+        if (!member) {
+          return res.status(404).json({
+            success: false,
+            message: 'Member not found'
+          });
+        }
+
+        targetUserId = member._id;
+      } else {
+        return res.status(400).json({
           success: false,
-          message: 'Creator not found or not available for messaging. Creators must be verified to receive messages.'
+          message: 'Invalid userModel. Must be "Creator" or "Member"'
         });
       }
-
-      // Double-check verification status for safety
-      if (!creator.isVerified) {
-        return res.status(403).json({
-          success: false,
-          message: 'This creator is not verified and cannot receive messages'
-        });
-      }
-
-      targetUserId = creator._id;
     }
 
     if (!targetUserId) {
@@ -1531,19 +1550,29 @@ const createOrGetConversation = async (req, res) => {
       });
     }
 
-    // If userId was provided directly, verify the creator
-    if (userId && userModel === 'Creator') {
-      const creator = await Creator.findOne({
-        _id: userId,
-        isVerified: true,
-        isPaused: { $ne: true }
-      }).select('_id isVerified');
+    // If userId was provided directly, verify the user exists
+    if (userId) {
+      if (userModel === 'Creator') {
+        const creator = await Creator.findOne({
+          _id: userId,
+          isVerified: true,
+          isPaused: { $ne: true }
+        }).select('_id isVerified');
 
-      if (!creator || !creator.isVerified) {
-        return res.status(403).json({
-          success: false,
-          message: 'This creator is not verified and cannot receive messages'
-        });
+        if (!creator || !creator.isVerified) {
+          return res.status(403).json({
+            success: false,
+            message: 'This creator is not verified and cannot receive messages'
+          });
+        }
+      } else if (userModel === 'Member') {
+        const member = await Member.findById(userId).select('_id');
+        if (!member) {
+          return res.status(404).json({
+            success: false,
+            message: 'Member not found'
+          });
+        }
       }
     }
 
