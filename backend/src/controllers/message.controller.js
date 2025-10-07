@@ -1591,6 +1591,22 @@ const createOrGetConversation = async (req, res) => {
     const currentUserRole = req.user.role; // 'member' or 'creator' (lowercase)
     const currentUserModel = currentUserRole === 'creator' ? 'Creator' : 'Member'; // Capitalized
 
+    // CRITICAL: Prevent creator-to-creator conversations
+    // Creators can ONLY message Members, Members can ONLY message Creators
+    if (currentUserModel === 'Creator' && userModel === 'Creator') {
+      return res.status(403).json({
+        success: false,
+        message: 'Creators cannot message other creators'
+      });
+    }
+
+    if (currentUserModel === 'Member' && userModel === 'Member') {
+      return res.status(403).json({
+        success: false,
+        message: 'Members cannot message other members'
+      });
+    }
+
     // Check if conversation exists
     let conversation = await Conversation.findOne({
       'participants.user': { $all: [currentUserId, targetUserId] }
