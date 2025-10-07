@@ -332,14 +332,6 @@ const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
           {/* Member Identity Card */}
           <div className='member-profile-card member-profile-identity-card'>
             <div className='member-avatar-section'>
-              <div className='member-profile-avatar-wrapper'>
-                <img
-                  src={member.avatar}
-                  alt={member.username}
-                  className='member-avatar'
-                />
-                {member.isOnline && <div className='online-indicator'></div>}
-              </div>
               <div className='member-basic-info'>
                 <h2 className='member-username'>{member.username}</h2>
                 <div
