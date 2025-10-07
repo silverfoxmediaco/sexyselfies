@@ -32,14 +32,28 @@ const getConversations = async (req, res) => {
     // Format conversations for response
     const formattedConversations = await Promise.all(
       conversations.map(async (conv) => {
-        // Get the other participant
-        const otherParticipant = conv.participants.find(
+        // Check if participants array exists and has valid data
+        if (!conv.participants || !Array.isArray(conv.participants)) {
+          console.warn('Conversation has invalid participants array:', conv._id);
+          return null;
+        }
+
+        // Filter out null/deleted participants first
+        const validParticipants = conv.participants.filter(p => p && p.user && p.user._id);
+
+        if (validParticipants.length < 2) {
+          console.warn('Conversation missing valid participants (possibly deleted users):', conv._id);
+          return null;
+        }
+
+        // Get the other participant (now safe to access _id)
+        const otherParticipant = validParticipants.find(
           p => p.user._id.toString() !== userId.toString()
         );
 
-        // Skip if no other participant or user not populated
-        if (!otherParticipant || !otherParticipant.user) {
-          console.warn('Conversation missing other participant:', conv._id);
+        // Skip if no other participant found
+        if (!otherParticipant) {
+          console.warn('Could not find other participant in conversation:', conv._id);
           return null;
         }
 
