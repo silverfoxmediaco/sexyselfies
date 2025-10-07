@@ -258,7 +258,7 @@ const FAQ = () => {
 
       {/* Sticky Header */}
       <header className="faq-header">
-        <button onClick={() => navigate(-1)} className="faq-back-button">
+        <button type="button" onClick={() => navigate(-1)} className="faq-back-button">
           <ArrowLeft size={20} />
           Back
         </button>
@@ -298,6 +298,7 @@ const FAQ = () => {
         <div className="faq-categories">
           {faqCategories.map(category => (
             <button
+              type="button"
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
               className={`faq-category-btn ${
@@ -319,6 +320,7 @@ const FAQ = () => {
             filteredFaqs.map(faq => (
               <div key={faq.id} className="faq-item">
                 <button
+                  type="button"
                   className="faq-question"
                   onClick={() => toggleQuestion(faq.id)}
                 >
@@ -345,6 +347,7 @@ const FAQ = () => {
             24-48 hours.
           </p>
           <button
+            type="button"
             onClick={() => navigate('/contact')}
             className="faq-contact-btn"
           >
