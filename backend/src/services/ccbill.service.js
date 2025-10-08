@@ -27,6 +27,8 @@ class CCBillService {
     const credentials = type === 'frontend' ? this.config.frontend : this.config.backend;
     const { appId, secret } = credentials;
 
+    console.log(`Generating ${type} bearer token with appId:`, appId);
+
     // Base64 encode credentials for OAuth
     const authString = `${appId}:${secret}`;
     const base64Auth = Buffer.from(authString).toString('base64');
@@ -43,6 +45,7 @@ class CCBillService {
         }
       );
 
+      console.log(`✅ ${type} OAuth token generated successfully`);
       return response.data.access_token;
     } catch (error) {
       console.error('OAuth token generation error:', error.response?.data || error.message);
