@@ -19,26 +19,35 @@ class CCBillService {
   }
 
   /**
-   * Generate authentication bearer token
+   * Generate authentication bearer token using OAuth 2.0
    * @param {string} type - 'frontend' or 'backend'
-   * @returns {string} Bearer token
+   * @returns {Promise<string>} Bearer token
    */
-  generateBearerToken(type = 'backend') {
+  async generateBearerToken(type = 'backend') {
     const credentials = type === 'frontend' ? this.config.frontend : this.config.backend;
     const { appId, secret } = credentials;
 
-    // Create timestamp
-    const timestamp = Math.floor(Date.now() / 1000);
+    // Base64 encode credentials for OAuth
+    const authString = `${appId}:${secret}`;
+    const base64Auth = Buffer.from(authString).toString('base64');
 
-    // Create signature: HMAC-SHA256(appId + timestamp, secret)
-    const message = `${appId}${timestamp}`;
-    const signature = crypto
-      .createHmac('sha256', secret)
-      .update(message)
-      .digest('hex');
+    try {
+      const response = await axios.post(
+        'https://api.ccbill.com/ccbill-auth/oauth/token',
+        'grant_type=client_credentials',
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': `Basic ${base64Auth}`
+          }
+        }
+      );
 
-    // Bearer token format: appId:timestamp:signature
-    return `${appId}:${timestamp}:${signature}`;
+      return response.data.access_token;
+    } catch (error) {
+      console.error('OAuth token generation error:', error.response?.data || error.message);
+      throw new Error('Failed to generate OAuth token');
+    }
   }
 
   /**
@@ -47,7 +56,7 @@ class CCBillService {
    */
   async getFrontendToken() {
     try {
-      const token = this.generateBearerToken('frontend');
+      const token = await this.generateBearerToken('frontend');
 
       return {
         success: true,
@@ -69,7 +78,7 @@ class CCBillService {
    */
   async createPaymentToken(cardData) {
     try {
-      const token = this.generateBearerToken('backend');
+      const token = await this.generateBearerToken('backend');
 
       const response = await this.axiosInstance.post(
         this.config.endpoints.createToken,
@@ -117,7 +126,7 @@ class CCBillService {
    */
   async chargePaymentToken(chargeData) {
     try {
-      const token = this.generateBearerToken('backend');
+      const token = await this.generateBearerToken('backend');
 
       const response = await this.axiosInstance.post(
         this.config.endpoints.chargeToken,
@@ -158,7 +167,7 @@ class CCBillService {
    */
   async createSubscription(subscriptionData) {
     try {
-      const token = this.generateBearerToken('backend');
+      const token = await this.generateBearerToken('backend');
 
       const response = await this.axiosInstance.post(
         this.config.endpoints.createSubscription,
@@ -202,7 +211,7 @@ class CCBillService {
    */
   async cancelSubscription(subscriptionId) {
     try {
-      const token = this.generateBearerToken('backend');
+      const token = await this.generateBearerToken('backend');
 
       const response = await this.axiosInstance.delete(
         `${this.config.endpoints.cancelSubscription}/${subscriptionId}`,
@@ -232,7 +241,7 @@ class CCBillService {
    */
   async getTransaction(transactionId) {
     try {
-      const token = this.generateBearerToken('backend');
+      const token = await this.generateBearerToken('backend');
 
       const response = await this.axiosInstance.get(
         `${this.config.endpoints.getTransaction}/${transactionId}`,

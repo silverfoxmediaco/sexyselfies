@@ -43,23 +43,26 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
     try {
       setRefreshing(true);
 
-      // Fetch current credit balance (includes test credits)
-      const balanceResponse = await paymentService.getCreditBalance();
-      if (balanceResponse.data?.balance !== undefined) {
-        const totalCredits = (balanceResponse.data.balance || 0) + (balanceResponse.data.testCredits || 0);
-        setCredits(totalCredits);
-        if (onCreditUpdate) {
-          onCreditUpdate(totalCredits);
-        }
+      // Get credits from user prop (passed from parent)
+      const currentCredits = user?.credits || 0;
+      setCredits(currentCredits);
+      if (onCreditUpdate) {
+        onCreditUpdate(currentCredits);
       }
 
-      // Fetch recent credit transactions
-      const historyResponse = await paymentService.getCreditHistory({
-        limit: 10,
-        type: 'all'
-      });
-      if (historyResponse.data?.transactions) {
-        setTransactions(historyResponse.data.transactions);
+      // Fetch recent credit transactions (this endpoint needs to be implemented)
+      try {
+        const historyResponse = await paymentService.getCreditHistory({
+          limit: 10,
+          type: 'all'
+        });
+        if (historyResponse.data?.transactions) {
+          setTransactions(historyResponse.data.transactions);
+        }
+      } catch (error) {
+        // Transaction history not yet implemented, use empty array
+        console.log('Credit history not yet available');
+        setTransactions([]);
       }
     } catch (error) {
       console.error('Error fetching wallet data:', error);
