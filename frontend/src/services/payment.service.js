@@ -126,7 +126,7 @@ class PaymentService {
    */
   async getCreditPackages() {
     try {
-      const response = await api.get('/payment/credits/packages');
+      const response = await api.get('/payments/credits/packages');
 
       // Add bonus calculations for UI display
       if (response.data?.packages) {
