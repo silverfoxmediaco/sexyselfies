@@ -28,6 +28,8 @@ const CreditPurchaseModal = ({
   const [purchasing, setPurchasing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('ccbill');
   const [step, setStep] = useState('packages'); // 'packages', 'payment', 'processing'
+  const [customAmount, setCustomAmount] = useState('');
+  const [useCustomAmount, setUseCustomAmount] = useState(false);
 
   useEffect(() => {
     fetchCreditPackages();
@@ -53,24 +55,47 @@ const CreditPurchaseModal = ({
 
   const handlePackageSelect = (pkg) => {
     setSelectedPackage(pkg);
+    setUseCustomAmount(false);
+    setCustomAmount('');
+  };
+
+  const handleCustomAmountChange = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, ''); // Only numbers
+    setCustomAmount(value);
+    if (value) {
+      setUseCustomAmount(true);
+      setSelectedPackage(null);
+    }
+  };
+
+  const getSelectedAmount = () => {
+    if (useCustomAmount && customAmount) {
+      return {
+        credits: parseInt(customAmount),
+        price: parseInt(customAmount), // $1 = 1 credit
+        id: 'custom'
+      };
+    }
+    return selectedPackage;
   };
 
   const handlePurchase = async () => {
-    if (!selectedPackage) return;
+    const selectedAmount = getSelectedAmount();
+    if (!selectedAmount) return;
 
     try {
       setPurchasing(true);
       setStep('processing');
 
       // Use the payment service directly for credit purchases
-      const response = await paymentService.purchaseCredits(selectedPackage);
+      const response = await paymentService.purchaseCredits(selectedAmount);
 
       if (response.success) {
         // Call onSuccess for insufficient credits flow, or onPurchase for backward compatibility
         if (onSuccess) {
           onSuccess(response);
         } else if (onPurchase) {
-          onPurchase(selectedPackage);
+          onPurchase(selectedAmount);
         }
       }
 
@@ -224,6 +249,30 @@ const CreditPurchaseModal = ({
                 )}
               </div>
 
+              {/* Custom Amount Input */}
+              <div className="CreditPurchaseModal-custom-section">
+                <div className="CreditPurchaseModal-custom-divider">
+                  <span>or enter custom amount</span>
+                </div>
+                <div className="CreditPurchaseModal-custom-input-wrapper">
+                  <span className="CreditPurchaseModal-custom-currency">$</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Enter amount (e.g. 1000)"
+                    value={customAmount}
+                    onChange={handleCustomAmountChange}
+                    className={`CreditPurchaseModal-custom-input ${useCustomAmount ? 'active' : ''}`}
+                  />
+                  <span className="CreditPurchaseModal-custom-credits">
+                    {customAmount ? `= ${parseInt(customAmount).toLocaleString()} credits` : 'credits'}
+                  </span>
+                </div>
+                <p className="CreditPurchaseModal-custom-note">
+                  💡 $1 = 1 credit • Minimum $5
+                </p>
+              </div>
+
               {/* Security Info */}
               <div className="CreditPurchaseModal-security">
                 <ShieldCheck size={16} />
@@ -233,15 +282,26 @@ const CreditPurchaseModal = ({
               {/* Purchase Button */}
               <button
                 className="CreditPurchaseModal-purchase-btn"
-                disabled={!selectedPackage || loading}
+                disabled={(!selectedPackage && !useCustomAmount) || loading || (useCustomAmount && (!customAmount || parseInt(customAmount) < 5))}
                 onClick={handlePurchase}
               >
                 <Lock size={18} />
-                Purchase {selectedPackage?.credits} Credits
-                {selectedPackage && (
-                  <span className="CreditPurchaseModal-purchase-price">
-                    {formatCurrency(selectedPackage.price)}
-                  </span>
+                {useCustomAmount && customAmount ? (
+                  <>
+                    Purchase {parseInt(customAmount).toLocaleString()} Credits
+                    <span className="CreditPurchaseModal-purchase-price">
+                      {formatCurrency(parseInt(customAmount))}
+                    </span>
+                  </>
+                ) : selectedPackage ? (
+                  <>
+                    Purchase {selectedPackage.credits} Credits
+                    <span className="CreditPurchaseModal-purchase-price">
+                      {formatCurrency(selectedPackage.price)}
+                    </span>
+                  </>
+                ) : (
+                  'Select Amount or Enter Custom'
                 )}
               </button>
             </motion.div>
