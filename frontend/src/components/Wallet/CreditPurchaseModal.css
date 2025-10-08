@@ -375,6 +375,7 @@
 /* Footer */
 .CreditPurchaseModal-footer {
   padding: var(--space-lg) var(--space-xl);
+  padding-bottom: 80px;
   border-top: 1px solid var(--border-600);
   background: var(--surface-700);
 }
