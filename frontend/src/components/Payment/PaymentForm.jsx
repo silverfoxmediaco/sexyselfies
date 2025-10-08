@@ -57,6 +57,11 @@ const PaymentForm = ({ onSuccess, onCancel, amount = null, description = '' }) =
       formattedValue = value.replace(/[^0-9-]/g, '').slice(0, 10);
     }
 
+    // Uppercase state code
+    if (name === 'state') {
+      formattedValue = value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2);
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: formattedValue
@@ -205,6 +210,7 @@ const PaymentForm = ({ onSuccess, onCancel, amount = null, description = '' }) =
               placeholder="1234 5678 9012 3456"
               className={errors.cardNumber ? 'error' : ''}
               autoComplete="cc-number"
+              inputMode="numeric"
             />
             {cardType && (
               <span className={`PaymentForm-card-type ${cardType.toLowerCase().replace(/\s/g, '-')}`}>
@@ -233,6 +239,7 @@ const PaymentForm = ({ onSuccess, onCancel, amount = null, description = '' }) =
               placeholder="MM/YY"
               className={errors.expiryDate ? 'error' : ''}
               autoComplete="cc-exp"
+              inputMode="numeric"
             />
             {errors.expiryDate && (
               <span className="PaymentForm-error">
@@ -263,6 +270,7 @@ const PaymentForm = ({ onSuccess, onCancel, amount = null, description = '' }) =
               placeholder={cardType === 'American Express' ? '1234' : '123'}
               className={errors.cvv ? 'error' : ''}
               autoComplete="cc-csc"
+              inputMode="numeric"
             />
             {showCVVInfo && (
               <div className="PaymentForm-cvv-tooltip">
@@ -368,6 +376,7 @@ const PaymentForm = ({ onSuccess, onCancel, amount = null, description = '' }) =
               name="state"
               value={formData.state}
               onChange={handleInputChange}
+              placeholder="CA"
               className={errors.state ? 'error' : ''}
               autoComplete="address-level1"
               maxLength="2"
@@ -390,6 +399,7 @@ const PaymentForm = ({ onSuccess, onCancel, amount = null, description = '' }) =
               onChange={handleInputChange}
               className={errors.zipCode ? 'error' : ''}
               autoComplete="postal-code"
+              inputMode="numeric"
             />
             {errors.zipCode && (
               <span className="PaymentForm-error">
