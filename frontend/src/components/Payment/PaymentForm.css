@@ -63,13 +63,15 @@
 }
 
 .PaymentForm-field label {
-  display: block;
+  display: flex;
+  align-items: center;
   font-size: 13px;
   font-weight: 600;
   color: #e5e5e5;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   margin-bottom: 0;
+  min-height: 20px;
 }
 
 /* All Inputs - Professional Styling */
@@ -167,6 +169,7 @@
 /* CVV Info Button */
 .PaymentForm-cvv-info {
   background: none;
+  border: 1px solid #6b7280;
   color: #6b7280;
   width: 16px;
   height: 16px;
@@ -179,7 +182,8 @@
   justify-content: center;
   margin-left: 6px;
   transition: all 0.2s;
-  vertical-align: middle;
+  flex-shrink: 0;
+  padding: 0;
 }
 
 .PaymentForm-cvv-info:hover {
