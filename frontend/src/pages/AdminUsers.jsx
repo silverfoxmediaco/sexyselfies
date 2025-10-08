@@ -382,6 +382,18 @@ const AdminUsers = () => {
                     <label>Email Verified</label>
                     <p>{selectedUser.emailVerified ? 'Yes' : 'No'}</p>
                   </div>
+                  {selectedUser.role === 'member' && (
+                    <>
+                      <div className='admin-users-info-item'>
+                        <label>Real Credits</label>
+                        <p>${(selectedUser.credits || 0).toFixed(2)}</p>
+                      </div>
+                      <div className='admin-users-info-item'>
+                        <label>Test Credits</label>
+                        <p style={{ color: '#17d2c2' }}>${(selectedUser.testCredits || 0).toFixed(2)}</p>
+                      </div>
+                    </>
+                  )}
                   <div className='admin-users-info-item'>
                     <label>Strikes</label>
                     <p className='admin-users-strikes-value'>
