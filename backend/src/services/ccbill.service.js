@@ -80,24 +80,28 @@ class CCBillService {
     try {
       const token = await this.generateBearerToken('backend');
 
+      const requestData = {
+        clientAccnum: this.config.subAccounts.token.split('-')[0],
+        clientSubacc: this.config.subAccounts.token.split('-')[1],
+        cardNum: cardData.cardNumber.replace(/\s/g, ''), // Remove spaces
+        expMonth: String(cardData.expiryMonth).padStart(2, '0'), // Ensure 2 digits
+        expYear: String(cardData.expiryYear), // Full year (2025)
+        cvv2: cardData.cvv,
+        firstName: cardData.firstName,
+        lastName: cardData.lastName,
+        address1: cardData.address1,
+        city: cardData.city,
+        state: cardData.state,
+        zipCode: cardData.zipCode,
+        country: cardData.country || 'US',
+        email: cardData.email
+      };
+
+      console.log('CCBill request data:', JSON.stringify(requestData, null, 2));
+
       const response = await this.axiosInstance.post(
         this.config.endpoints.createToken,
-        {
-          clientAccnum: this.config.subAccounts.token.split('-')[0],
-          clientSubacc: this.config.subAccounts.token.split('-')[1],
-          cardNum: cardData.cardNumber,
-          expMonth: cardData.expiryMonth,
-          expYear: cardData.expiryYear,
-          cvv2: cardData.cvv,
-          firstName: cardData.firstName,
-          lastName: cardData.lastName,
-          address1: cardData.address1,
-          city: cardData.city,
-          state: cardData.state,
-          zipCode: cardData.zipCode,
-          country: cardData.country || 'US',
-          email: cardData.email
-        },
+        requestData,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -115,7 +119,8 @@ class CCBillService {
       };
     } catch (error) {
       console.error('Create payment token error:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || 'Failed to create payment token');
+      console.error('Full error:', JSON.stringify(error.response?.data, null, 2));
+      throw new Error(error.response?.data?.generalMessage || 'Failed to create payment token');
     }
   }
 
