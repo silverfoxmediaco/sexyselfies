@@ -130,7 +130,7 @@ const MemberProfilePage = () => {
       };
 
       const memberData = {
-        id: userData._id || userData.id,
+        id: userData.profile?._id || userData._id || userData.id,
         username:
           userData.username ||
           userData.displayName ||
@@ -365,6 +365,9 @@ const MemberProfilePage = () => {
                     <span className='mpp-join-date'>
                       <Calendar size={14} />
                       Joined {new Date(member.joinDate).toLocaleDateString()}
+                    </span>
+                    <span className='mpp-member-id' style={{ fontSize: '11px', color: '#8e8e93', marginTop: '4px' }}>
+                      Member ID: <code style={{ background: '#1c1c1e', padding: '2px 6px', borderRadius: '3px' }}>{member.id}</code>
                     </span>
                   </div>
                   <button
