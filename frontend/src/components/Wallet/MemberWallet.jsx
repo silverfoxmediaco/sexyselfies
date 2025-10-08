@@ -403,7 +403,7 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
       {showPurchaseModal && (
         <CreditPurchaseModal
           onClose={() => setShowPurchaseModal(false)}
-          onPurchase={handleCreditPurchase}
+          onPurchase={handleQuickPurchase}
           currentCredits={credits}
         />
       )}

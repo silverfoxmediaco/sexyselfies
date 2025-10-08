@@ -83,26 +83,15 @@ const CreditPurchaseModal = ({
     const selectedAmount = getSelectedAmount();
     if (!selectedAmount) return;
 
-    try {
-      setPurchasing(true);
-      setStep('processing');
+    // Close this modal and trigger the parent to handle the purchase
+    // This will open the PaymentForm in MemberWallet
+    if (onPurchase) {
+      onPurchase(selectedAmount.price);
+    }
 
-      // Use the payment service directly for credit purchases
-      const response = await paymentService.purchaseCredits(selectedAmount);
-
-      if (response.success) {
-        // Call onSuccess for insufficient credits flow, or onPurchase for backward compatibility
-        if (onSuccess) {
-          onSuccess(response);
-        } else if (onPurchase) {
-          onPurchase(selectedAmount);
-        }
-      }
-
-    } catch (error) {
-      console.error('Purchase error:', error);
-      setPurchasing(false);
-      setStep('packages');
+    // Close the modal
+    if (onClose) {
+      onClose();
     }
   };
 
