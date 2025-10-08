@@ -412,10 +412,9 @@
 
   .PaymentForm-btn-cancel,
   .PaymentForm-btn-submit {
-    padding: 19px;
+    padding: 18px;
     font-size: 17px;
     border-radius: 16px;
-    min-height: 58px;
     font-weight: 700;
   }
 
