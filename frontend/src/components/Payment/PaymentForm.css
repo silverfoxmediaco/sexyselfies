@@ -396,6 +396,12 @@
     padding: 5px 10px;
   }
 
+  .PaymentForm-cvv-info {
+    min-height: 14px !important;
+    height: 14px;
+    width: 14px;
+  }
+
   .PaymentForm-security {
     padding: 18px 16px;
     border-radius: 14px;
