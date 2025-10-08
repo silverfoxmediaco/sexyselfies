@@ -78,7 +78,7 @@ class CCBillService {
    */
   async createPaymentToken(cardData) {
     try {
-      const token = await this.generateBearerToken('backend');
+      const token = await this.generateBearerToken('frontend');
 
       const requestData = {
         clientAccnum: this.config.subAccounts.token.split('-')[0],
