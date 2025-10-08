@@ -463,3 +463,24 @@
     box-shadow: 0 4px 20px rgba(23, 210, 194, 0.08);
   }
 }
+/* Modal Overlay for Payment Form */
+.MemberWallet-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.MemberWallet-modal-overlay > * {
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}

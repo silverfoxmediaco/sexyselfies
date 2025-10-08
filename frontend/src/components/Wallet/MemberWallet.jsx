@@ -12,16 +12,22 @@ import {
   Zap
 } from 'lucide-react';
 import paymentService from '../../services/payment.service';
+import ccbillService from '../../services/ccbill.service';
 import CreditPurchaseModal from './CreditPurchaseModal';
+import PaymentForm from '../Payment/PaymentForm';
 import './MemberWallet.css';
 
 const MemberWallet = ({ user, onCreditUpdate }) => {
   const [credits, setCredits] = useState(user?.credits || 0);
   const [transactions, setTransactions] = useState([]);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState(null);
+  const [paymentMethods, setPaymentMethods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lowBalance, setLowBalance] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   // Check for low balance (less than 200 credits)
   useEffect(() => {
@@ -72,20 +78,61 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
 
   const handleQuickPurchase = async (creditAmount) => {
     try {
-      // Find matching package or create custom amount
-      const packages = await paymentService.getCreditPackages();
-      const matchingPackage = packages.data?.packages?.find(
-        pkg => pkg.credits === creditAmount
-      );
+      setSelectedAmount(creditAmount);
 
-      if (matchingPackage) {
-        await handleCreditPurchase(matchingPackage);
+      // Check if user has saved payment methods
+      const methodsResponse = await ccbillService.getPaymentMethods();
+      const methods = methodsResponse.data || [];
+
+      if (methods.length > 0) {
+        // Use default payment method or first available
+        const defaultMethod = methods.find(m => m.isDefault) || methods[0];
+        await processPayment(creditAmount, defaultMethod.id);
       } else {
-        // Custom amount - open purchase modal
-        setShowPurchaseModal(true);
+        // No payment methods - show payment form
+        setShowPaymentForm(true);
       }
     } catch (error) {
       console.error('Quick purchase error:', error);
+      alert('Failed to process payment. Please try again.');
+    }
+  };
+
+  const processPayment = async (amount, paymentMethodId) => {
+    setProcessing(true);
+    try {
+      // This will be a new endpoint to add credits using CCBill
+      // For now, we'll use the tip endpoint as a placeholder
+      // You'll need to create a dedicated "add credits" endpoint
+
+      const response = await ccbillService.sendTip(
+        'platform', // Special creator ID for platform credits
+        amount,
+        paymentMethodId,
+        'Credit purchase'
+      );
+
+      if (response.success) {
+        // Refresh wallet data
+        await fetchWalletData();
+        alert(`Successfully added ${amount} credits!`);
+        setShowPaymentForm(false);
+        setSelectedAmount(null);
+      }
+    } catch (error) {
+      console.error('Process payment error:', error);
+      alert(error.error || 'Payment failed. Please try again.');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handlePaymentFormSuccess = async (paymentMethod) => {
+    // Payment method added successfully, now process the purchase
+    if (selectedAmount) {
+      await processPayment(selectedAmount, paymentMethod.paymentMethodId);
+    } else {
+      setShowPaymentForm(false);
     }
   };
 
@@ -336,6 +383,21 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
           )}
         </div>
       </motion.div>
+
+      {/* CCBill Payment Form */}
+      {showPaymentForm && (
+        <div className="MemberWallet-modal-overlay">
+          <PaymentForm
+            amount={selectedAmount}
+            description={`Add ${selectedAmount} credits to your account`}
+            onSuccess={handlePaymentFormSuccess}
+            onCancel={() => {
+              setShowPaymentForm(false);
+              setSelectedAmount(null);
+            }}
+          />
+        </div>
+      )}
 
       {/* Credit Purchase Modal */}
       {showPurchaseModal && (
