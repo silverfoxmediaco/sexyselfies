@@ -4,6 +4,7 @@
  */
 
 const ccbillService = require('../services/ccbill.service');
+const ccbillWidgetService = require('../services/ccbill.widget.service');
 const Payment = require('../models/Payment');
 const PaymentMethod = require('../models/PaymentMethod');
 const Subscription = require('../models/Subscription');
@@ -674,6 +675,152 @@ exports.getUserSubscriptions = async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to retrieve subscriptions'
+    });
+  }
+};
+
+/**
+ * Generate CCBill widget payment URL for credit purchase
+ * @route POST /api/v1/payments/ccbill/widget/credits
+ */
+exports.generateCreditPurchaseURL = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { credits, firstName, lastName } = req.body;
+
+    // Validate credits
+    if (!credits || credits < 5) {
+      return res.status(400).json({
+        success: false,
+        error: 'Minimum credit purchase is 5 credits ($5.00)'
+      });
+    }
+
+    // Generate payment URL
+    const paymentData = ccbillWidgetService.createCreditPurchaseURL(
+      userId,
+      credits,
+      req.user.email,
+      {
+        firstName: firstName || req.user.firstName,
+        lastName: lastName || req.user.lastName,
+        returnUrl: `${process.env.CLIENT_URL}/member/wallet`,
+        declineUrl: `${process.env.CLIENT_URL}/member/wallet?status=declined`
+      }
+    );
+
+    // Create pending payment record
+    const payment = new Payment({
+      user: userId,
+      amount: paymentData.amount,
+      type: 'credits',
+      status: 'pending',
+      metadata: {
+        credits,
+        transactionId: paymentData.transactionId,
+        paymentURL: paymentData.paymentURL,
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent')
+      }
+    });
+
+    await payment.save();
+
+    res.json({
+      success: true,
+      data: {
+        paymentURL: paymentData.paymentURL,
+        transactionId: paymentData.transactionId,
+        amount: paymentData.amount,
+        credits: paymentData.credits,
+        expiresIn: paymentData.expiresIn
+      }
+    });
+  } catch (error) {
+    console.error('Generate credit purchase URL error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to generate payment URL'
+    });
+  }
+};
+
+/**
+ * Handle CCBill widget webhook (payment confirmation)
+ * @route POST /api/v1/payments/ccbill/widget/webhook
+ */
+exports.handleWidgetWebhook = async (req, res) => {
+  try {
+    console.log('CCBill widget webhook received:', req.body);
+
+    // Parse webhook data
+    const webhookData = ccbillWidgetService.parseWebhookData(req.body);
+
+    // Verify webhook signature
+    if (!ccbillWidgetService.verifyWebhookSignature(req.body)) {
+      console.error('Invalid webhook signature');
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid signature'
+      });
+    }
+
+    // Find the payment record
+    const payment = await Payment.findOne({
+      'metadata.transactionId': webhookData.transactionId
+    });
+
+    if (!payment) {
+      console.error('Payment not found for transaction:', webhookData.transactionId);
+      return res.status(404).json({
+        success: false,
+        error: 'Payment not found'
+      });
+    }
+
+    // Update payment record
+    payment.ccbillTransactionId = webhookData.ccbillTransactionId;
+    payment.status = 'completed';
+    payment.completedAt = new Date();
+    await payment.save();
+
+    // Add credits to user
+    const Member = require('../models/Member');
+    const member = await Member.findOne({ user: payment.user });
+
+    if (member) {
+      member.credits = (member.credits || 0) + webhookData.credits;
+      await member.save();
+
+      console.log(`✅ Added ${webhookData.credits} credits to user ${payment.user}`);
+    }
+
+    // Create transaction record
+    const transaction = new Transaction({
+      user: payment.user,
+      type: 'credit_purchase',
+      amount: webhookData.amount,
+      credits: webhookData.credits,
+      status: 'completed',
+      paymentProvider: 'ccbill',
+      transactionId: webhookData.ccbillTransactionId,
+      metadata: {
+        paymentId: payment._id,
+        ccbillData: webhookData
+      }
+    });
+
+    await transaction.save();
+
+    res.json({
+      success: true,
+      message: 'Webhook processed successfully'
+    });
+  } catch (error) {
+    console.error('Widget webhook error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to process webhook'
     });
   }
 };

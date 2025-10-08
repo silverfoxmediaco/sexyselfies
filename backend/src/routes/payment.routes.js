@@ -113,6 +113,16 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // ==========================================
+// CCBILL WIDGET/FLEXFORMS ROUTES (New Payment Flow)
+// ==========================================
+
+// Generate CCBill widget payment URL for credit purchase
+router.post('/ccbill/widget/credits', protect, ccbillPaymentController.generateCreditPurchaseURL);
+
+// CCBill widget webhook (no auth - verified by signature)
+router.post('/ccbill/widget/webhook', express.urlencoded({ extended: true }), ccbillPaymentController.handleWidgetWebhook);
+
+// ==========================================
 // PAYMENT METHOD MANAGEMENT
 // ==========================================
 

@@ -81,23 +81,35 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
 
   const handleQuickPurchase = async (creditAmount) => {
     try {
+      setProcessing(true);
       setSelectedAmount(creditAmount);
 
-      // Check if user has saved payment methods
-      const methodsResponse = await ccbillService.getPaymentMethods();
-      const methods = methodsResponse.data || [];
+      // Call backend to generate CCBill widget payment URL
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payments/ccbill/widget/credits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          credits: creditAmount,
+          firstName: user?.firstName || '',
+          lastName: user?.lastName || ''
+        })
+      });
 
-      if (methods.length > 0) {
-        // Use default payment method or first available
-        const defaultMethod = methods.find(m => m.isDefault) || methods[0];
-        await processPayment(creditAmount, defaultMethod.id);
+      const data = await response.json();
+
+      if (data.success && data.data.paymentURL) {
+        // Redirect to CCBill hosted payment page
+        window.location.href = data.data.paymentURL;
       } else {
-        // No payment methods - show payment form
-        setShowPaymentForm(true);
+        throw new Error(data.error || 'Failed to generate payment URL');
       }
     } catch (error) {
       console.error('Quick purchase error:', error);
-      alert('Failed to process payment. Please try again.');
+      alert(error.message || 'Failed to process payment. Please try again.');
+      setProcessing(false);
     }
   };
 

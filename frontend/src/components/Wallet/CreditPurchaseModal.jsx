@@ -83,15 +83,38 @@ const CreditPurchaseModal = ({
     const selectedAmount = getSelectedAmount();
     if (!selectedAmount) return;
 
-    // Close this modal and trigger the parent to handle the purchase
-    // This will open the PaymentForm in MemberWallet
-    if (onPurchase) {
-      onPurchase(selectedAmount.price);
-    }
+    setPurchasing(true);
+    setStep('processing');
 
-    // Close the modal
-    if (onClose) {
-      onClose();
+    try {
+      // Call backend to generate CCBill widget payment URL
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payments/ccbill/widget/credits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          credits: selectedAmount.price
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.data.paymentURL) {
+        // Small delay for UX (show processing animation)
+        setTimeout(() => {
+          // Redirect to CCBill hosted payment page
+          window.location.href = data.data.paymentURL;
+        }, 1000);
+      } else {
+        throw new Error(data.error || 'Failed to generate payment URL');
+      }
+    } catch (error) {
+      console.error('Purchase error:', error);
+      alert(error.message || 'Failed to process payment. Please try again.');
+      setPurchasing(false);
+      setStep('packages');
     }
   };
 
