@@ -5,6 +5,10 @@ const { validatePayment } = require('../middleware/validation.middleware');
 const paymentController = require('../controllers/payment.controller');
 const webhookController = require('../controllers/webhook.controller');
 
+// CCBill REST API controllers
+const ccbillPaymentController = require('../controllers/ccbill.payment.controller');
+const ccbillWebhookController = require('../controllers/ccbill.webhook.controller');
+
 // ==========================================
 // MEMBER PAYMENT ROUTES
 // ==========================================
@@ -75,6 +79,38 @@ router.get('/credits/packages', paymentController.getCreditPackages);
 
 // Get credit balance (alias for wallet balance for backward compatibility)
 router.get('/credits/balance', protect, paymentController.getWalletBalance);
+
+// ==========================================
+// CCBILL REST API ROUTES (New Payment System)
+// ==========================================
+
+// Get CCBill frontend token for payment form
+router.get('/ccbill/token', protect, ccbillPaymentController.getFrontendToken);
+
+// CCBill payment methods
+router.post('/ccbill/methods/add', protect, ccbillPaymentController.addPaymentMethod);
+router.get('/ccbill/methods', protect, ccbillPaymentController.getPaymentMethods);
+router.delete('/ccbill/methods/:id', protect, ccbillPaymentController.removePaymentMethod);
+
+// CCBill payment processing
+router.post('/ccbill/tip', protect, authorize('member'), ccbillPaymentController.processTip);
+router.post('/ccbill/purchase', protect, authorize('member'), ccbillPaymentController.purchaseContent);
+
+// CCBill subscription management
+router.post('/ccbill/subscribe', protect, authorize('member'), ccbillPaymentController.createSubscription);
+router.delete('/ccbill/subscription/:id', protect, ccbillPaymentController.cancelSubscription);
+router.get('/ccbill/subscriptions', protect, ccbillPaymentController.getUserSubscriptions);
+
+// CCBill payment history
+router.get('/ccbill/history', protect, ccbillPaymentController.getPaymentHistory);
+
+// CCBill webhook (REST API version - uses signature verification)
+router.post('/webhooks/ccbill-rest', ccbillWebhookController.handleWebhook);
+
+// CCBill test webhook (development only)
+if (process.env.NODE_ENV !== 'production') {
+  router.post('/webhooks/ccbill-rest/test', ccbillWebhookController.testWebhook);
+}
 
 // ==========================================
 // PAYMENT METHOD MANAGEMENT

@@ -1,0 +1,278 @@
+/* PaymentForm.css */
+
+.PaymentForm {
+  background: var(--surface-700, #1c1c1e);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.PaymentForm-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.PaymentForm-header-icon {
+  color: var(--primary, #17d2c2);
+}
+
+.PaymentForm-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  flex: 1;
+}
+
+.PaymentForm-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary, #17d2c2);
+}
+
+.PaymentForm-description {
+  color: var(--text-secondary, #c7c7cc);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.PaymentForm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.PaymentForm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.PaymentForm-field label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #ffffff);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.PaymentForm-field input {
+  background: var(--bg-800, #121212);
+  border: 1px solid var(--border-600, #2a2a2c);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  color: var(--text-primary, #ffffff);
+  transition: all 0.2s;
+}
+
+.PaymentForm-field input:focus {
+  outline: none;
+  border-color: var(--primary, #17d2c2);
+  box-shadow: 0 0 0 3px rgba(23, 210, 194, 0.1);
+}
+
+.PaymentForm-field input.error {
+  border-color: var(--error, #ef4444);
+}
+
+.PaymentForm-field input::placeholder {
+  color: var(--muted, #8e8e93);
+}
+
+.PaymentForm-card-input {
+  position: relative;
+}
+
+.PaymentForm-card-type {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary, #17d2c2);
+  background: rgba(23, 210, 194, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.PaymentForm-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.PaymentForm-row-3 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+}
+
+.PaymentForm-cvv-info {
+  background: none;
+  border: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--text-secondary, #c7c7cc);
+  color: var(--text-secondary, #c7c7cc);
+  font-size: 10px;
+  cursor: help;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.PaymentForm-cvv-info:hover {
+  border-color: var(--primary, #17d2c2);
+  color: var(--primary, #17d2c2);
+}
+
+.PaymentForm-cvv-tooltip {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: var(--bg-900, #0a0a0a);
+  border: 1px solid var(--border-600, #2a2a2c);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-secondary, #c7c7cc);
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.PaymentForm-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--error, #ef4444);
+}
+
+.PaymentForm-submit-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--error, #ef4444);
+  border-radius: 8px;
+  color: var(--error, #ef4444);
+  font-size: 14px;
+}
+
+.PaymentForm-security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(23, 210, 194, 0.05);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-secondary, #c7c7cc);
+}
+
+.PaymentForm-security svg {
+  color: var(--primary, #17d2c2);
+}
+
+.PaymentForm-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.PaymentForm-btn-cancel {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid var(--border-600, #2a2a2c);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.PaymentForm-btn-cancel:hover:not(:disabled) {
+  background: var(--surface-700, #1c1c1e);
+}
+
+.PaymentForm-btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.PaymentForm-btn-submit {
+  flex: 2;
+  padding: 14px;
+  background: var(--primary, #17d2c2);
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--bg-900, #0a0a0a);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.PaymentForm-btn-submit:hover:not(:disabled) {
+  background: var(--primary-600, #12b7ab);
+  transform: translateY(-1px);
+}
+
+.PaymentForm-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+  .PaymentForm {
+    padding: 20px;
+  }
+
+  .PaymentForm-row-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .PaymentForm-header h2 {
+    font-size: 18px;
+  }
+
+  .PaymentForm-amount {
+    font-size: 20px;
+  }
+}
+
+/* Card type icons */
+.PaymentForm-card-type.visa {
+  background: #1A1F71;
+  color: #F7B600;
+}
+
+.PaymentForm-card-type.mastercard {
+  background: #EB001B;
+  color: #F79E1B;
+}
+
+.PaymentForm-card-type.american-express {
+  background: #006FCF;
+  color: #ffffff;
+}
+
+.PaymentForm-card-type.discover {
+  background: #FF6000;
+  color: #ffffff;
+}
