@@ -264,6 +264,7 @@
   border: 1px solid var(--border-600);
   border-radius: 16px;
   padding: var(--space-lg);
+  margin-bottom: 80px;
 }
 
 .MemberWallet-activity-header {
