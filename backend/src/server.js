@@ -430,6 +430,7 @@ console.log('Admin routes mounted at:', `${API_V1}/admin`);
 app.use(`${API_V1}/notifications`, notificationRoutes);
 app.use(`${API_V1}/verification`, verificationRoutes);
 app.use(`${API_V1}/payments`, paymentRoutes);
+console.log('Payment routes mounted at:', `${API_V1}/payments`);
 app.use(`${API_V1}/public`, publicRoutes);
 app.use(`${API_V1}/payouts`, payoutRoutes);
 app.use(`${API_V1}/sessions`, sessionRoutes);
