@@ -383,16 +383,6 @@ const AdminUsers = () => {
                     <p>{selectedUser.emailVerified ? 'Yes' : 'No'}</p>
                   </div>
                   <div className='admin-users-info-item'>
-                    <label>ID Verified</label>
-                    <p>
-                      {selectedUser.role === 'member'
-                        ? 'N/A'
-                        : selectedUser.isVerified
-                          ? 'Yes'
-                          : 'No'}
-                    </p>
-                  </div>
-                  <div className='admin-users-info-item'>
                     <label>Strikes</label>
                     <p className='admin-users-strikes-value'>
                       {selectedUser.strikes || 0}/3
@@ -452,14 +442,6 @@ const AdminUsers = () => {
                       </span>
                       <span className='admin-users-stat-value'>
                         ${selectedUser.spent || 0}
-                      </span>
-                    </div>
-                    <div className='admin-users-stat-box'>
-                      <span className='admin-users-stat-label'>
-                        Subscriptions
-                      </span>
-                      <span className='admin-users-stat-value'>
-                        {selectedUser.subscriptionCount || 0}
                       </span>
                     </div>
                     <div className='admin-users-stat-box'>
