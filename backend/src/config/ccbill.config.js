@@ -39,9 +39,9 @@ const ccbillConfig = {
 
   // Sub-accounts
   subAccounts: {
-    token: process.env.CCBILL_SUBACCOUNT_TOKEN || '948700-0503',
-    oneTime: process.env.CCBILL_SUBACCOUNT_ONETIME || '948700-0504',
-    subscription: process.env.CCBILL_SUBACCOUNT_SUBSCRIPTION || '948700-0505'
+    token: process.env.CCBILL_SUBACCOUNT_TOKEN || '0503',
+    oneTime: process.env.CCBILL_SUBACCOUNT_ONETIME || '0504',
+    subscription: process.env.CCBILL_SUBACCOUNT_SUBSCRIPTION || '0505'
   },
 
   // Whitelisted origin

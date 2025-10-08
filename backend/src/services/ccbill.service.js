@@ -85,7 +85,7 @@ class CCBillService {
 
       const requestData = {
         clientAccnum: process.env.CCBILL_ACCOUNT_NUMBER || '948700',
-        clientSubacc: this.config.subAccounts.token,
+        clientSubacc: String(this.config.subAccounts.token).padStart(4, '0'),
         cardNum: cardData.cardNumber.replace(/\s/g, ''), // Remove spaces
         expMonth: String(cardData.expiryMonth).padStart(2, '0'), // Ensure 2 digits
         expYear: String(cardData.expiryYear), // Full year (2025)
@@ -140,7 +140,7 @@ class CCBillService {
         this.config.endpoints.chargeToken,
         {
           clientAccnum: process.env.CCBILL_ACCOUNT_NUMBER || '948700',
-          clientSubacc: this.config.subAccounts.oneTime,
+          clientSubacc: String(this.config.subAccounts.oneTime).padStart(4, '0'),
           paymentToken: chargeData.paymentToken,
           amount: chargeData.amount,
           currencyCode: chargeData.currency || this.config.currency,
@@ -181,7 +181,7 @@ class CCBillService {
         this.config.endpoints.createSubscription,
         {
           clientAccnum: process.env.CCBILL_ACCOUNT_NUMBER || '948700',
-          clientSubacc: this.config.subAccounts.subscription,
+          clientSubacc: String(this.config.subAccounts.subscription).padStart(4, '0'),
           paymentToken: subscriptionData.paymentToken,
           recurringPrice: subscriptionData.amount,
           recurringPeriod: subscriptionData.period || 30, // days
