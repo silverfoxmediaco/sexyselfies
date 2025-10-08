@@ -84,8 +84,8 @@ class CCBillService {
       const token = await this.generateBearerToken('frontend');
 
       const requestData = {
-        clientAccnum: this.config.subAccounts.token.split('-')[0],
-        clientSubacc: this.config.subAccounts.token.split('-')[1],
+        clientAccnum: process.env.CCBILL_ACCOUNT_NUMBER || '948700',
+        clientSubacc: this.config.subAccounts.token,
         cardNum: cardData.cardNumber.replace(/\s/g, ''), // Remove spaces
         expMonth: String(cardData.expiryMonth).padStart(2, '0'), // Ensure 2 digits
         expYear: String(cardData.expiryYear), // Full year (2025)
@@ -139,8 +139,8 @@ class CCBillService {
       const response = await this.axiosInstance.post(
         this.config.endpoints.chargeToken,
         {
-          clientAccnum: this.config.subAccounts.oneTime.split('-')[0],
-          clientSubacc: this.config.subAccounts.oneTime.split('-')[1],
+          clientAccnum: process.env.CCBILL_ACCOUNT_NUMBER || '948700',
+          clientSubacc: this.config.subAccounts.oneTime,
           paymentToken: chargeData.paymentToken,
           amount: chargeData.amount,
           currencyCode: chargeData.currency || this.config.currency,
@@ -180,8 +180,8 @@ class CCBillService {
       const response = await this.axiosInstance.post(
         this.config.endpoints.createSubscription,
         {
-          clientAccnum: this.config.subAccounts.subscription.split('-')[0],
-          clientSubacc: this.config.subAccounts.subscription.split('-')[1],
+          clientAccnum: process.env.CCBILL_ACCOUNT_NUMBER || '948700',
+          clientSubacc: this.config.subAccounts.subscription,
           paymentToken: subscriptionData.paymentToken,
           recurringPrice: subscriptionData.amount,
           recurringPeriod: subscriptionData.period || 30, // days
