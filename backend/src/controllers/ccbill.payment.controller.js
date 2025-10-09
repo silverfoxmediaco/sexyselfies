@@ -709,18 +709,31 @@ exports.generateCreditPurchaseURL = async (req, res) => {
       }
     );
 
-    // Create pending transaction record (using Transaction model instead of Payment)
+    // Find or create Member record for this user
+    const Member = require('../models/Member');
+    let member = await Member.findOne({ user: userId });
+    if (!member) {
+      member = new Member({ user: userId, credits: 0 });
+      await member.save();
+    }
+
+    // Create pending transaction using wallet_topup type (platform purchase, no creator)
+    // Use platform/system ID for creator fields (required by schema)
+    const PLATFORM_ID = '000000000000000000000000'; // System/platform ID
+
     const transaction = new Transaction({
-      user: userId,
-      type: 'credit_purchase',
+      transactionId: paymentData.transactionId,
+      memberId: member._id,
+      creatorId: PLATFORM_ID, // Platform as "creator" for wallet topups
+      creator: PLATFORM_ID,
+      type: 'wallet_topup',
       amount: paymentData.amount,
-      credits: paymentData.credits,
       status: 'pending',
-      paymentProvider: 'ccbill',
+      paymentMethod: 'ccbill',
       metadata: {
-        transactionId: paymentData.transactionId,
+        credits: paymentData.credits,
         paymentURL: paymentData.paymentURL,
-        ipAddress: req.ip,
+        ip: req.ip,
         userAgent: req.get('user-agent')
       }
     });
@@ -766,52 +779,36 @@ exports.handleWidgetWebhook = async (req, res) => {
       });
     }
 
-    // Find the payment record
-    const payment = await Payment.findOne({
-      'metadata.transactionId': webhookData.transactionId
+    // Find the transaction record by transactionId
+    const transaction = await Transaction.findOne({
+      transactionId: webhookData.transactionId
     });
 
-    if (!payment) {
-      console.error('Payment not found for transaction:', webhookData.transactionId);
+    if (!transaction) {
+      console.error('Transaction not found:', webhookData.transactionId);
       return res.status(404).json({
         success: false,
-        error: 'Payment not found'
+        error: 'Transaction not found'
       });
     }
 
-    // Update payment record
-    payment.ccbillTransactionId = webhookData.ccbillTransactionId;
-    payment.status = 'completed';
-    payment.completedAt = new Date();
-    await payment.save();
+    // Update transaction status
+    transaction.status = 'completed';
+    transaction.metadata.ccbillTransactionId = webhookData.ccbillTransactionId;
+    transaction.metadata.ccbillData = webhookData;
+    await transaction.save();
 
-    // Add credits to user
+    // Add credits to member
     const Member = require('../models/Member');
-    const member = await Member.findOne({ user: payment.user });
+    const member = await Member.findById(transaction.memberId);
 
     if (member) {
-      member.credits = (member.credits || 0) + webhookData.credits;
+      const creditsToAdd = webhookData.credits || transaction.metadata.credits;
+      member.credits = (member.credits || 0) + creditsToAdd;
       await member.save();
 
-      console.log(`✅ Added ${webhookData.credits} credits to user ${payment.user}`);
+      console.log(`✅ Added ${creditsToAdd} credits to member ${member._id}`);
     }
-
-    // Create transaction record
-    const transaction = new Transaction({
-      user: payment.user,
-      type: 'credit_purchase',
-      amount: webhookData.amount,
-      credits: webhookData.credits,
-      status: 'completed',
-      paymentProvider: 'ccbill',
-      transactionId: webhookData.ccbillTransactionId,
-      metadata: {
-        paymentId: payment._id,
-        ccbillData: webhookData
-      }
-    });
-
-    await transaction.save();
 
     res.json({
       success: true,
