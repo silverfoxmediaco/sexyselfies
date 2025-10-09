@@ -88,7 +88,7 @@ const CreditPurchaseModal = ({
 
     try {
       // Call backend to generate CCBill widget payment URL
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payments/ccbill/widget/credits`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/payments/ccbill/widget/credits`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
