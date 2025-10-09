@@ -13,7 +13,9 @@
       "Bash(curl:*)",
       "Bash(npm run dev:*)",
       "Bash(mv:*)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:ccbill.com)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
