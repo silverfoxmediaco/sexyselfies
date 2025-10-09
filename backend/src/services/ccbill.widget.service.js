@@ -79,7 +79,7 @@ class CCBillWidgetService {
       // Required CCBill parameters
       clientAccnum: this.accountNumber,
       clientSubacc: this.config.subAccounts.oneTime,
-      formName: this.formName,
+      // NOTE: formName is NOT included as a parameter because Flex ID is in the URL path
 
       // Pricing
       initialPrice: amount.toFixed(2),
