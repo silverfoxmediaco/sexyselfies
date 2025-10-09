@@ -80,6 +80,9 @@ router.get('/credits/packages', paymentController.getCreditPackages);
 // Get credit balance (alias for wallet balance for backward compatibility)
 router.get('/credits/balance', protect, paymentController.getWalletBalance);
 
+// Get credit history (alias for wallet transactions)
+router.get('/credits/history', protect, paymentController.getWalletTransactions);
+
 // ==========================================
 // CCBILL REST API ROUTES (New Payment System)
 // ==========================================
