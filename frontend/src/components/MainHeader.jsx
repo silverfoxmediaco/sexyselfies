@@ -35,13 +35,31 @@ const MainHeader = () => {
   const [scrolled, setScrolled] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get user info from localStorage
-  const userRole = localStorage.getItem('userRole');
-  const token = localStorage.getItem('token');
-  const isLoggedIn = !!token;
+  // Listen for storage changes (logout from another tab or localStorage updates)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const token = localStorage.getItem('token');
+      const role = localStorage.getItem('userRole');
+      setIsLoggedIn(!!token);
+      setUserRole(role);
+    };
+
+    // Listen for storage events
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also check periodically (for same-tab updates)
+    const interval = setInterval(handleStorageChange, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
