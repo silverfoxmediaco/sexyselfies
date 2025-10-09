@@ -709,14 +709,15 @@ exports.generateCreditPurchaseURL = async (req, res) => {
       }
     );
 
-    // Create pending payment record
-    const payment = new Payment({
+    // Create pending transaction record (using Transaction model instead of Payment)
+    const transaction = new Transaction({
       user: userId,
+      type: 'credit_purchase',
       amount: paymentData.amount,
-      type: 'credits',
+      credits: paymentData.credits,
       status: 'pending',
+      paymentProvider: 'ccbill',
       metadata: {
-        credits,
         transactionId: paymentData.transactionId,
         paymentURL: paymentData.paymentURL,
         ipAddress: req.ip,
@@ -724,7 +725,7 @@ exports.generateCreditPurchaseURL = async (req, res) => {
       }
     });
 
-    await payment.save();
+    await transaction.save();
 
     res.json({
       success: true,
