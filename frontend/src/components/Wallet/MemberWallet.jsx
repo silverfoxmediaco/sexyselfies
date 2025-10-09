@@ -12,18 +12,14 @@ import {
   Zap
 } from 'lucide-react';
 import paymentService from '../../services/payment.service';
-import ccbillService from '../../services/ccbill.service';
 import CreditPurchaseModal from './CreditPurchaseModal';
-import PaymentForm from '../Payment/PaymentForm';
 import './MemberWallet.css';
 
 const MemberWallet = ({ user, onCreditUpdate }) => {
   const [credits, setCredits] = useState(user?.credits || 0);
   const [transactions, setTransactions] = useState([]);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState(null);
-  const [paymentMethods, setPaymentMethods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lowBalance, setLowBalance] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -113,63 +109,6 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
     }
   };
 
-  const processPayment = async (amount, paymentMethodId) => {
-    setProcessing(true);
-    try {
-      // This will be a new endpoint to add credits using CCBill
-      // For now, we'll use the tip endpoint as a placeholder
-      // You'll need to create a dedicated "add credits" endpoint
-
-      const response = await ccbillService.sendTip(
-        'platform', // Special creator ID for platform credits
-        amount,
-        paymentMethodId,
-        'Credit purchase'
-      );
-
-      if (response.success) {
-        // Refresh wallet data
-        await fetchWalletData();
-        alert(`Successfully added ${amount} credits!`);
-        setShowPaymentForm(false);
-        setSelectedAmount(null);
-      }
-    } catch (error) {
-      console.error('Process payment error:', error);
-      alert(error.error || 'Payment failed. Please try again.');
-    } finally {
-      setProcessing(false);
-    }
-  };
-
-  const handlePaymentFormSuccess = async (paymentMethod) => {
-    // Payment method added successfully, now process the purchase
-    if (selectedAmount) {
-      await processPayment(selectedAmount, paymentMethod.paymentMethodId);
-    } else {
-      setShowPaymentForm(false);
-    }
-  };
-
-  const handleCreditPurchase = async (packageData) => {
-    try {
-      // This connects to existing payment.service.js
-      const response = await paymentService.purchaseCredits(
-        packageData.id,
-        'ccbill'
-      );
-
-      if (response.data?.redirect_url) {
-        // CCBill will redirect to purchase page
-        window.location.href = response.data.redirect_url;
-      } else {
-        // Refresh wallet data after successful purchase
-        await fetchWalletData();
-      }
-    } catch (error) {
-      console.error('Credit purchase error:', error);
-    }
-  };
 
   const formatDate = (date) => {
     if (!date) return '';
@@ -398,21 +337,6 @@ const MemberWallet = ({ user, onCreditUpdate }) => {
           )}
         </div>
       </motion.div>
-
-      {/* CCBill Payment Form */}
-      {showPaymentForm && (
-        <div className="MemberWallet-modal-overlay">
-          <PaymentForm
-            amount={selectedAmount}
-            description={`Add ${selectedAmount} credits to your account`}
-            onSuccess={handlePaymentFormSuccess}
-            onCancel={() => {
-              setShowPaymentForm(false);
-              setSelectedAmount(null);
-            }}
-          />
-        </div>
-      )}
 
       {/* Credit Purchase Modal */}
       {showPurchaseModal && (
