@@ -110,14 +110,8 @@ const transactionSchema = new mongoose.Schema(
     // Payment method
     paymentMethod: {
       type: String,
-      enum: ['card', 'wallet', 'ccbill', 'paypal', 'crypto', 'test_credits'],
+      enum: ['card', 'wallet', 'ccbill', 'paypal', 'crypto'],
       default: 'ccbill',
-    },
-    isTestTransaction: {
-      type: Boolean,
-      default: false,
-      index: true,
-      comment: 'Flag for test credit transactions - not real money',
     },
     paymentDetails: {
       last4: String,

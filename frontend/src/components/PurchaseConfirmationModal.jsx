@@ -8,26 +8,13 @@ const PurchaseConfirmationModal = ({
   onConfirm,
   content,
   memberBalance = 0,
-  testCreditsBalance = 0,
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('test_credits'); // 'test_credits' or 'real_payment'
+  const [paymentMethod, setPaymentMethod] = useState('real_payment');
   const [error, setError] = useState(null);
 
   const price = content?.price || 0;
-  const hasTestCredits = testCreditsBalance >= price;
   const hasRealCredits = memberBalance >= price;
-
-  // Auto-select payment method based on availability
-  useEffect(() => {
-    if (hasTestCredits) {
-      setPaymentMethod('test_credits');
-    } else if (hasRealCredits) {
-      setPaymentMethod('real_payment');
-    } else {
-      setPaymentMethod('real_payment'); // Default to real payment for CCBill flow
-    }
-  }, [hasTestCredits, hasRealCredits, price]);
 
   if (!isOpen || !content) return null;
 
@@ -123,40 +110,13 @@ const PurchaseConfirmationModal = ({
         <div className="purchase-payment-methods">
           <h4>Payment Method</h4>
 
-          {/* Test Credits Option */}
-          {testCreditsBalance > 0 && (
-            <label className={`purchase-payment-option ${paymentMethod === 'test_credits' ? 'selected' : ''} ${!hasTestCredits ? 'insufficient' : ''}`}>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="test_credits"
-                checked={paymentMethod === 'test_credits'}
-                onChange={() => setPaymentMethod('test_credits')}
-                disabled={!hasTestCredits || isProcessing}
-              />
-              <div className="purchase-payment-option-content">
-                <div className="purchase-payment-icon test-credits-icon">
-                  <Zap size={20} />
-                </div>
-                <div className="purchase-payment-details">
-                  <span className="purchase-payment-name">Test Credits</span>
-                  <span className="purchase-payment-balance">
-                    Balance: ${testCreditsBalance.toFixed(2)}
-                    {!hasTestCredits && ' (Insufficient)'}
-                  </span>
-                </div>
-              </div>
-            </label>
-          )}
-
           {/* Real Payment Option */}
-          <label className={`purchase-payment-option ${paymentMethod === 'real_payment' ? 'selected' : ''}`}>
+          <label className="purchase-payment-option selected">
             <input
               type="radio"
               name="paymentMethod"
               value="real_payment"
-              checked={paymentMethod === 'real_payment'}
-              onChange={() => setPaymentMethod('real_payment')}
+              checked={true}
               disabled={isProcessing}
             />
             <div className="purchase-payment-option-content">
@@ -193,10 +153,7 @@ const PurchaseConfirmationModal = ({
           <button
             className="purchase-modal-confirm"
             onClick={handleConfirm}
-            disabled={
-              isProcessing ||
-              (paymentMethod === 'test_credits' && !hasTestCredits)
-            }
+            disabled={isProcessing}
           >
             {isProcessing ? (
               <>
@@ -215,9 +172,7 @@ const PurchaseConfirmationModal = ({
         {/* Payment Info */}
         <div className="purchase-modal-info">
           <p>
-            {paymentMethod === 'test_credits'
-              ? `After purchase, you'll have $${(testCreditsBalance - price).toFixed(2)} test credits remaining.`
-              : 'You will be redirected to CCBill secure payment page.'}
+            You will be redirected to CCBill secure payment page.
           </p>
           <p className="purchase-modal-note">
             Once unlocked, this content will be saved in your Library.

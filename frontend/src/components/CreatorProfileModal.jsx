@@ -38,7 +38,6 @@ const CreatorProfileModal = ({
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [showPurchaseConfirmation, setShowPurchaseConfirmation] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
-  const [testCreditsBalance, setTestCreditsBalance] = useState(0);
   const [memberBalance, setMemberBalance] = useState(0);
   const [isProcessingPurchase, setIsProcessingPurchase] = useState(false);
   const [creatorContent, setCreatorContent] = useState([]);
@@ -114,7 +113,6 @@ const CreatorProfileModal = ({
     try {
       const profile = await memberService.getProfile();
       const memberData = profile.data.member || profile.data;
-      setTestCreditsBalance(memberData.testCredits || 0);
       setMemberBalance(memberData.credits || 0);
     } catch (error) {
       console.error('Failed to load balances:', error);
@@ -153,20 +151,10 @@ const CreatorProfileModal = ({
     setIsProcessingPurchase(true);
 
     try {
-      let response;
-
-      if (paymentMethod === 'test_credits') {
-        // Track source as 'profile' for analytics
-        response = await memberService.purchaseContentWithTestCredits(
-          selectedContent._id || selectedContent.id,
-          'profile'
-        );
-      } else {
-        response = await memberService.purchaseContent(
-          selectedContent._id || selectedContent.id,
-          'ccbill'
-        );
-      }
+      const response = await memberService.purchaseContent(
+        selectedContent._id || selectedContent.id,
+        'ccbill'
+      );
 
       // Reload balances
       await loadBalances();
@@ -491,7 +479,6 @@ const CreatorProfileModal = ({
                 creator: creator,
               }}
               memberBalance={memberBalance}
-              testCreditsBalance={testCreditsBalance}
             />
           )}
         </motion.div>

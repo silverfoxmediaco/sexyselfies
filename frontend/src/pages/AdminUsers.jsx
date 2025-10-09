@@ -346,34 +346,6 @@ const AdminUsers = () => {
                     <label>User ID</label>
                     <p className='admin-users-monospace'>{selectedUser._id}</p>
                   </div>
-                  {selectedUser.role === 'member' && selectedUser.memberId && (
-                    <div className='admin-users-info-item'>
-                      <label>Member ID (for Test Credits)</label>
-                      <p style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <code style={{ fontSize: '12px', background: '#1c1c1e', padding: '4px 8px', borderRadius: '4px' }}>
-                          {selectedUser.memberId}
-                        </code>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(selectedUser.memberId);
-                            alert('Member ID copied to clipboard!');
-                          }}
-                          style={{
-                            background: '#17d2c2',
-                            border: 'none',
-                            color: '#0a0a0a',
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '11px',
-                            fontWeight: '600'
-                          }}
-                        >
-                          Copy
-                        </button>
-                      </p>
-                    </div>
-                  )}
                   <div className='admin-users-info-item'>
                     <label>Joined</label>
                     <p>{new Date(selectedUser.createdAt).toLocaleString()}</p>
@@ -383,16 +355,10 @@ const AdminUsers = () => {
                     <p>{selectedUser.emailVerified ? 'Yes' : 'No'}</p>
                   </div>
                   {selectedUser.role === 'member' && (
-                    <>
-                      <div className='admin-users-info-item'>
-                        <label>Real Credits</label>
-                        <p>${(selectedUser.credits || 0).toFixed(2)}</p>
-                      </div>
-                      <div className='admin-users-info-item'>
-                        <label>Test Credits</label>
-                        <p style={{ color: '#17d2c2' }}>${(selectedUser.testCredits || 0).toFixed(2)}</p>
-                      </div>
-                    </>
+                    <div className='admin-users-info-item'>
+                      <label>Credits</label>
+                      <p>${(selectedUser.credits || 0).toFixed(2)}</p>
+                    </div>
                   )}
                   <div className='admin-users-info-item'>
                     <label>Strikes</label>

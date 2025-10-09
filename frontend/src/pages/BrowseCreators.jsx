@@ -39,7 +39,6 @@ const BrowseCreators = () => {
   const [pendingPurchase, setPendingPurchase] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [testCreditsBalance, setTestCreditsBalance] = useState(0);
   const [memberBalance, setMemberBalance] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreContent, setHasMoreContent] = useState(true);
@@ -250,15 +249,14 @@ const BrowseCreators = () => {
     }
   };
 
-  // Load member balances (test credits and real credits)
+  // Load member balances
   const loadBalances = async () => {
     try {
       const profile = await memberService.getProfile();
       if (profile?.success && profile?.data) {
         const memberData = profile.data.member || profile.data;
-        setTestCreditsBalance(memberData.testCredits || 0);
         setMemberBalance(memberData.credits || 0);
-        console.log('✅ Balances loaded - Test:', memberData.testCredits, 'Real:', memberData.credits);
+        console.log('✅ Balances loaded - Credits:', memberData.credits);
       }
     } catch (error) {
       console.error('❌ Error loading balances:', error);
@@ -415,15 +413,7 @@ const BrowseCreators = () => {
     console.log('✅ Purchase confirmed with payment method:', paymentMethod);
 
     try {
-      let response;
-
-      if (paymentMethod === 'test_credits') {
-        // Use test credits - track source as 'browse' for analytics
-        response = await memberService.purchaseContentWithTestCredits(pendingPurchase._id, 'browse');
-      } else {
-        // Use real payment (CCBill)
-        response = await memberService.purchaseContent(pendingPurchase._id, 'ccbill');
-      }
+      const response = await memberService.purchaseContent(pendingPurchase._id, 'ccbill');
 
       if (response.success) {
         console.log('✅ Content purchased successfully!');
@@ -439,7 +429,7 @@ const BrowseCreators = () => {
         await loadContentFeed();
 
         // Show success message
-        alert(`Content unlocked! ${paymentMethod === 'test_credits' ? 'Test credits used.' : 'Payment processed.'} Check your Library to view it anytime.`);
+        alert('Content unlocked! Payment processed. Check your Library to view it anytime.');
       }
 
     } catch (error) {
@@ -803,7 +793,6 @@ const BrowseCreators = () => {
           onConfirm={handlePurchaseConfirm}
           content={pendingPurchase}
           memberBalance={memberBalance}
-          testCreditsBalance={testCreditsBalance}
         />
       )}
 

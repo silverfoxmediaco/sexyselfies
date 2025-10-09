@@ -469,33 +469,6 @@ class MemberService {
     }
   }
 
-  /**
-   * Purchase content with test credits (Development/QA)
-   */
-  async purchaseContentWithTestCredits(contentId, source = 'browse') {
-    try {
-      const response = await api.post('/payments/unlock-content-test', {
-        contentId: contentId,
-        source: source, // Track where purchase originated: 'browse' or 'profile'
-      });
-      return response;
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
-
-  /**
-   * Get member's test credits balance
-   */
-  async getTestCreditsBalance() {
-    try {
-      const profile = await this.getProfile();
-      return profile?.data?.member?.testCredits || 0;
-    } catch (error) {
-      console.error('Error getting test credits balance:', error);
-      return 0;
-    }
-  }
 
   /**
    * Purchase message

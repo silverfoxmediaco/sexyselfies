@@ -19,12 +19,6 @@ const memberSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
-    testCredits: {
-      type: Number,
-      default: 0,
-      min: 0,
-      comment: 'Test credits for development/QA testing - not real money',
-    },
     preferences: {
       ageRange: {
         min: {
