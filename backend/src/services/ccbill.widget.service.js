@@ -18,12 +18,15 @@ class CCBillWidgetService {
   /**
    * Generate MD5 hash for CCBill payment link
    * Formula: MD5(initialPrice + initialPeriod + currencyCode + salt)
+   * NOTE: initialPrice should be INTEGER without decimals (e.g., "10" not "10.00")
    * @param {number} amount - Payment amount
    * @returns {string} MD5 hash
    */
   generateHash(amount) {
     const initialPeriod = '2'; // 2 days initial period (CCBill requirement)
-    const stringToHash = `${amount}${initialPeriod}${this.currencyCode}${this.salt}`;
+    // CCBill expects integer amount without decimal points for hash
+    const amountInt = Math.floor(amount).toString();
+    const stringToHash = `${amountInt}${initialPeriod}${this.currencyCode}${this.salt}`;
 
     return crypto
       .createHash('md5')

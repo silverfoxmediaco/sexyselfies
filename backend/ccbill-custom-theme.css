@@ -1,0 +1,389 @@
+/*
+ * SexySelfies CCBill FlexForms Custom Theme
+ * Brand Colors: Primary Teal (#17d2c2), Dark BG (#0a0a0a, #121212)
+ */
+
+/* Page Background
+----------------------------------*/
+html {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+/* Header, Body and Footer Backgrounds
+----------------------------------*/
+.header {
+    background: linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%, #47e0d2 100%);
+    border-bottom: 2px solid #17d2c2;
+}
+
+.body {
+    background-color: #1c1c1e;
+}
+
+.footer_background {
+    background: #0a0a0a;
+}
+
+/* Borders and Divider Lines
+----------------------------------*/
+.header,
+.body {
+    border: 1px solid #2a2a2c;
+}
+
+.body {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+}
+
+.footer_text {
+    border-left: 1px solid #2a2a2c;
+}
+
+.vertical_divider {
+    border-left: 1px solid #2a2a2c;
+}
+
+.bottom_section {
+    border-top: 1px solid #2a2a2c;
+    background-color: #121212;
+    border-radius: 0 0 8px 8px;
+}
+
+.special_offers,
+.secured_payment,
+.site_details,
+.contact_info,
+.access_details,
+.pay_by,
+.res_ccbill_account_create {
+    border-top: 1px solid #2a2a2c;
+}
+
+ul.directpay li span.field {
+    border-bottom: 1px solid #2a2a2c;
+}
+
+.two .two-col-v-divider {
+    border-right-color: #2a2a2c;
+}
+
+/* Text Styles
+----------------------------------*/
+h2 {
+    color: #ffffff;
+}
+
+.product_description {
+    color: #17d2c2;
+}
+
+a,
+a:link,
+a:visited,
+a:hover,
+a:active,
+.create_wallet_guest .learnMoreFlyout_trigger {
+    color: #17d2c2;
+}
+
+.footer,
+.footer a:link,
+.footer a:visited,
+.footer a:hover {
+    color: #c7c7cc;
+}
+
+ul.list li span.label {
+    color: #8e8e93;
+}
+
+/* Input Elements
+----------------------------------*/
+input[type="text"].error,
+input[type="tel"].error,
+input[type="password"].error,
+input[type="email"].error,
+input[type="number"].error,
+select.error {
+    border: 1px solid #ef4444;
+    background: #2a1515;
+    border-radius: 4px;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+select {
+    background: #1c1c1e;
+    border: 1px solid #2a2a2c;
+    color: #ffffff;
+    border-radius: 4px;
+}
+
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+select:focus {
+    border-color: #17d2c2;
+    background: #1c1c1e;
+    outline: 0;
+    box-shadow: 0 0 0 2px rgba(23, 210, 194, 0.2);
+}
+
+input#walletPassword,
+input#walletUserName {
+    background: #1c1c1e;
+}
+
+.full-width-row .select-pricing {
+    background: #1c1c1e;
+}
+
+.full-width-row .language_options select {
+    background: #1c1c1e;
+}
+
+.full-width-row .language_options {
+    border: 1px solid #2a2a2c;
+    background: #1c1c1e;
+}
+
+/* Pay By Options
+----------------------------------*/
+.navbar-border {
+    border: 1px solid #2a2a2c;
+}
+
+.navbar ul li a,
+.navbar ul li a.disabled:hover {
+    border: 1px solid #2a2a2c;
+    color: #ffffff;
+    background: #1c1c1e;
+}
+
+.navbar ul li a:hover {
+    background: #252527;
+}
+
+.navbar ul li a.active {
+    font-weight: bold;
+    border: 1px solid #17d2c2;
+    color: #0a0a0a;
+    background: #17d2c2;
+}
+
+/* Icon Styling
+----------------------------------*/
+.icon-language_selector,
+.icon-help,
+.icon-info,
+.icon-chat,
+.icon-exit {
+    color: #17d2c2;
+}
+
+/* Panel Styling
+----------------------------------*/
+.order_details,
+.access_details {
+    background: #1c1c1e;
+}
+
+.special_offers_status_details {
+    background: #121212;
+}
+
+/* Submit Button - Brand Primary Color
+----------------------------------*/
+a.submit_button {
+    background: linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%, #47e0d2 100%);
+    border: 1px solid #17d2c2;
+    border-radius: 8px;
+    color: #0a0a0a;
+    text-shadow: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+a.submit_button:hover {
+    background: linear-gradient(135deg, #0fa093 0%, #12b7ab 50%, #17d2c2 100%);
+    box-shadow: 0 4px 12px rgba(23, 210, 194, 0.3);
+    transform: translateY(-1px);
+    cursor: pointer;
+    color: #0a0a0a;
+}
+
+a.submit_button:active {
+    background: #0fa093;
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(23, 210, 194, 0.2);
+    color: #0a0a0a;
+}
+
+/* Cancel Button
+----------------------------------*/
+a.submit_button.cancel_button {
+    background-color: #2a2a2c;
+    border: 1px solid #3a3a3c;
+    color: #ffffff;
+    text-shadow: none;
+}
+
+a.submit_button.cancel_button:hover {
+    color: #ffffff;
+    background-color: #3a3a3c;
+    cursor: pointer;
+}
+
+a.submit_button.cancel_button:active {
+    color: #ffffff;
+    background: #1c1c1e;
+}
+
+/* Decline and Approval Messages
+----------------------------------*/
+.decline_content {
+    background: #2a1515;
+    color: #ff9999;
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+}
+
+.processing_content {
+    background-color: #152a2a;
+    border: 1px solid #17d2c2;
+    border-radius: 8px;
+}
+
+.soft_decline_content {
+    background-color: #2a1515;
+    border: 1px solid #ef4444;
+}
+
+.approval_content .approval_color {
+    color: #22c55e;
+}
+
+.decline_content .decline_color,
+.soft_decline_content .decline_color {
+    color: #ef4444;
+}
+
+/* Message Boxes
+----------------------------------*/
+.message_box.info {
+    color: #38bdf8;
+}
+
+.message_box.alert,
+#msg_paymentMethod_maxNumberReached {
+    color: #f59e0b;
+}
+
+.validation,
+.required,
+.message_box.error,
+.advisory {
+    color: #ef4444;
+}
+
+/* Expanding area for payment methods
+----------------------------------*/
+.expander a {
+    color: #ffffff;
+}
+
+.closed_view {
+    background: #1c1c1e;
+    color: #ffffff;
+    border: 1px solid #2a2a2c;
+}
+
+.closed_view:after {
+    border-color: #17d2c2 transparent;
+}
+
+.expanded_view {
+    background: #1c1c1e;
+    border: 1px solid #2a2a2c;
+}
+
+.expanded_view li a {
+    color: #ffffff;
+    border-bottom: 1px solid #2a2a2c;
+}
+
+.expanded_view li:hover a,
+.expanded_view li.selected a:hover {
+    background: #252527;
+}
+
+.expanded_view li.selected a {
+    background: #1c1c1e;
+}
+
+/* Flyout for CCBill Contact Info
+----------------------------------*/
+.flyout_support .flyout {
+    background: #1c1c1e;
+    border: 1px solid #2a2a2c;
+}
+
+.flyout_support .flyout li a {
+    color: #ffffff;
+    border-bottom: 1px solid #2a2a2c;
+}
+
+.flyout_support.active {
+    color: #17d2c2;
+}
+
+.flyout_support a .icon-info {
+    color: #ffffff;
+}
+
+.flyout_support .flyout li:hover a,
+.flyout_support a:hover .icon-info {
+    color: #17d2c2;
+}
+
+/* CCBill Account section
+----------------------------------*/
+.pay_by_ccbill_login {
+    border: 1px solid #2a2a2c;
+    background-color: #1c1c1e;
+}
+
+.pay_by.wallet_addPaymentMethod_active #paymentOptionFields > div.subscription_selector {
+    background-color: #1c1c1e;
+}
+
+#create_new_wallet > #cancel_ccbill_account_link {
+    color: #17d2c2;
+}
+
+.existing_payment_methods #btn_edit {
+    color: #17d2c2;
+}
+
+.existing_payment_methods .cancel_edit_link {
+    color: #ef4444;
+}
+
+@media only screen and (max-width: 1028px) {
+    .one_center .bottom_spacing .bottom_section,
+    .one_left .bottom_spacing .bottom_section,
+    .one_right .bottom_spacing .bottom_section,
+    .two .bottom_spacing .bottom_section {
+        background: none;
+        border-left: 0px;
+        border-right: 0px;
+        border-bottom: 0px;
+    }
+}
