@@ -791,8 +791,80 @@ exports.getWalletBalance = async (req, res) => {
   }
 };
 exports.getWalletTransactions = async (req, res) => {
-  res.json({ success: true, transactions: [] });
+  try {
+    const userId = req.user._id;
+    const { type, page = 1, limit = 20 } = req.query;
+
+    // Find member record
+    const Member = require('../models/Member');
+    const member = await Member.findOne({ user: userId });
+
+    if (!member) {
+      return res.json({ success: true, transactions: [], total: 0 });
+    }
+
+    // Build query
+    const query = { memberId: member._id };
+
+    // Filter by type if specified
+    if (type && type !== 'all') {
+      if (type === 'purchased') {
+        query.type = 'wallet_topup';
+      } else if (type === 'spent') {
+        query.type = { $in: ['content_unlock', 'message_unlock', 'tip', 'profile_unlock'] };
+      } else if (type === 'earned') {
+        // For creators earning from members
+        query.type = { $in: ['content_unlock', 'message_unlock', 'tip'] };
+      }
+    }
+
+    const Transaction = require('../models/Transaction');
+
+    // Get transactions
+    const transactions = await Transaction.find(query)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip((parseInt(page) - 1) * parseInt(limit))
+      .select('type amount credits status createdAt metadata transactionId');
+
+    const total = await Transaction.countDocuments(query);
+
+    res.json({
+      success: true,
+      transactions: transactions.map(t => ({
+        _id: t._id,
+        type: t.type,
+        amount: t.amount,
+        credits: t.metadata?.credits || t.amount,
+        status: t.status,
+        date: t.createdAt,
+        createdAt: t.createdAt,
+        description: getTransactionDescription(t.type)
+      })),
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / parseInt(limit))
+    });
+  } catch (error) {
+    console.error('Get wallet transactions error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fetch transactions'
+    });
+  }
 };
+
+function getTransactionDescription(type) {
+  const descriptions = {
+    'wallet_topup': 'Credits Added',
+    'content_unlock': 'Content Unlock',
+    'message_unlock': 'Message Unlock',
+    'tip': 'Creator Tip',
+    'profile_unlock': 'Profile Unlock',
+    'bundle_unlock': 'Bundle Unlock'
+  };
+  return descriptions[type] || 'Transaction';
+}
 exports.transferFunds = async (req, res) => {
   res.json({ success: true, message: 'Transfer completed' });
 };
