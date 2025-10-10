@@ -489,13 +489,13 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         authService.logout().catch(err => console.error('Logout API error:', err));
 
         // Force complete page reload to landing page
-        window.location.href = window.location.origin + '/';
+        window.location.href = window.location.origin + '/landing';
       } catch (error) {
         console.error('Logout failed:', error);
         // Force logout anyway
         localStorage.clear();
         sessionStorage.clear();
-        window.location.href = window.location.origin + '/';
+        window.location.href = window.location.origin + '/landing';
       }
     } else if (item.action === 'refresh') {
       handleRefresh();
