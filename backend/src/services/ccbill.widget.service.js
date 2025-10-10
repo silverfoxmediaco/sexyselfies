@@ -136,7 +136,7 @@ class CCBillWidgetService {
       email,
       firstName: options.firstName,
       lastName: options.lastName,
-      returnUrl: options.returnUrl || process.env.CLIENT_URL,
+      returnUrl: options.returnUrl || `${process.env.CLIENT_URL}/member/billing`,
       declineUrl: options.declineUrl
     });
   }
