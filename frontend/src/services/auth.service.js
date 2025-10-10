@@ -315,19 +315,13 @@ class AuthService {
       // Clear cache
       apiHelpers.clearCache();
 
-      // Redirect to appropriate login
-      if (userRole === 'admin') {
-        window.location.href = '/admin/login';
-      } else if (userRole === 'creator') {
-        window.location.href = '/creator/login';
-      } else {
-        window.location.href = '/member/login';
-      }
+      // Don't redirect here - let the calling component handle redirect
+      // This allows different logout handlers to redirect to different pages
     } catch (error) {
       console.error('Logout error:', error);
       // Force logout even if API call fails
       localStorage.clear();
-      window.location.href = '/';
+      // Don't redirect here either - let calling component handle it
     }
   }
 
