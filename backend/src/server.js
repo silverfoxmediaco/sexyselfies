@@ -36,6 +36,9 @@ const giftRoutes = require('./routes/gift.routes');
 // ADD THIS: Import message routes
 const messageRoutes = require('./routes/message.routes');
 
+// Import blog routes
+const blogRoutes = require('./routes/blog.routes');
+
 // Import middleware
 const errorMiddleware = require('./middleware/error.middleware');
 const { requestLogger } = require('./middleware/logging.middleware');
@@ -439,6 +442,10 @@ console.log('Session routes mounted at:', `${API_V1}/sessions`);
 // Gift routes
 app.use(`${API_V1}/member/gifts`, giftRoutes);
 console.log('Gift routes mounted at:', `${API_V1}/member/gifts`);
+
+// Blog routes
+app.use(`${API_V1}/blog`, blogRoutes);
+console.log('Blog routes mounted at:', `${API_V1}/blog`);
 
 console.log('All API routes mounted successfully');
 

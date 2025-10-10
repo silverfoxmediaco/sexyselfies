@@ -8,6 +8,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { HelmetProvider } from 'react-helmet-async';
 import './index.css';
 
 console.log('SexySelfies App Starting...');
@@ -96,6 +97,11 @@ import OnboardingFlow from './pages/OnboardingFlow';
 // Import Content View
 import ContentView from './pages/ContentView';
 
+// Import Blog pages
+import BlogArchive from './pages/BlogArchive';
+import BlogPost from './pages/BlogPost';
+import BlogRedirect from './components/BlogRedirect';
+
 // Import Legal pages
 import TOS from './pages/TOS';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -113,11 +119,12 @@ import CookieConsent from './components/CookieConsent';
 console.log('Mounting React App to root element...');
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthProvider>
-      <BrowserRouter
-        future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
-      >
-        <RedirectHandler />
+    <HelmetProvider>
+      <AuthProvider>
+        <BrowserRouter
+          future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
+        >
+          <RedirectHandler />
         <Routes>
             {/* Default Route - Onboarding Flow */}
             <Route path='/' element={<OnboardingFlow />} />
@@ -667,6 +674,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               />
             </Route>
 
+            {/* Blog Routes - Public */}
+            <Route path='/blog' element={<BlogArchive />} />
+            <Route path='/blog/:slug' element={<BlogPost />} />
+
             {/* Legal Pages - Public routes */}
             <Route path='/terms' element={<TOS />} />
             <Route path='/privacy' element={<PrivacyPolicy />} />
@@ -677,6 +688,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path='/safety' element={<Safety />} />
             <Route path='/community-guidelines' element={<CommunityGuidelines />} />
 
+            {/* Blog Redirect - 301 redirect for old WordPress URLs */}
+            {/* Must be BEFORE 404 to catch old blog post URLs */}
+            <Route path='/:slug' element={<BlogRedirect />} />
+
             {/* 404 Catch-all Route */}
             <Route path='*' element={<NotFound />} />
           </Routes>
@@ -685,5 +700,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <CookieConsent />
       </BrowserRouter>
     </AuthProvider>
+    </HelmetProvider>
   </React.StrictMode>
 );
