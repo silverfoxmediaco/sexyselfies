@@ -85,14 +85,25 @@ const MainHeader = () => {
 
   const handleLogout = async () => {
     try {
-      await authService.logout();
+      // Clear state immediately
+      setIsLoggedIn(false);
+      setUserRole(null);
+      setShowUserMenu(false);
+
+      // Clear localStorage
+      localStorage.clear();
+
+      // Call logout endpoint (don't wait for it)
+      authService.logout().catch(err => console.error('Logout API error:', err));
+
+      // Redirect to landing page immediately
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout failed:', error);
-      // Fallback
+      // Force logout anyway
       localStorage.clear();
       window.location.href = '/';
     }
-    setShowUserMenu(false);
   };
 
   // Get navigation items based on user role
