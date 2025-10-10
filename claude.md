@@ -20,6 +20,7 @@
 - **Approach**: User-centric UX/UI with mobile-first responsive design
 - **Responsiveness**: 100% mobile and tablet responsive required
 - **CSS Classes**: ALWAYS use unique className identifiers for each component to avoid global styling conflicts (e.g., `CreatorProfile-header` not just `header`)
+- **Testing Environment**: ALL testing is done in PRODUCTION only (https://sexyselfies-frontend.onrender.com). Do NOT test changes locally - push all changes directly to production for testing
 
 ## 📁 Complete Project Structure (423 files)
 
