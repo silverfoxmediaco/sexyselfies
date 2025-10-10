@@ -46,10 +46,15 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
   const [refreshing, setRefreshing] = useState(false);
 
   // Determine role from URL if not provided
+  // BUT: Don't infer role from URL on login/register pages
+  const isAuthPage = location.pathname.includes('/login') ||
+                     location.pathname.includes('/register') ||
+                     location.pathname === '/';
+
   const effectiveUserRole = userRole ||
-    (location.pathname.startsWith('/admin') ? 'admin' :
-     location.pathname.startsWith('/creator') ? 'creator' :
-     location.pathname.startsWith('/member') ? 'member' : null);
+    (!isAuthPage && location.pathname.startsWith('/admin') ? 'admin' :
+     !isAuthPage && location.pathname.startsWith('/creator') ? 'creator' :
+     !isAuthPage && location.pathname.startsWith('/member') ? 'member' : null);
 
   // Handle refresh action
   const handleRefresh = async () => {
