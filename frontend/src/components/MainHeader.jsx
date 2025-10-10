@@ -85,24 +85,19 @@ const MainHeader = () => {
 
   const handleLogout = async () => {
     try {
-      // Clear state immediately
-      setIsLoggedIn(false);
-      setUserRole(null);
-      setShowUserMenu(false);
-
-      // Clear localStorage
-      localStorage.clear();
-
-      // Call logout endpoint (don't wait for it)
+      // Call logout endpoint first (don't wait for it)
       authService.logout().catch(err => console.error('Logout API error:', err));
 
-      // Redirect to landing page immediately
-      window.location.href = '/';
+      // Clear localStorage completely
+      localStorage.clear();
+
+      // Force page reload to landing page (this clears all React state)
+      window.location.replace('/');
     } catch (error) {
       console.error('Logout failed:', error);
       // Force logout anyway
       localStorage.clear();
-      window.location.href = '/';
+      window.location.replace('/');
     }
   };
 
