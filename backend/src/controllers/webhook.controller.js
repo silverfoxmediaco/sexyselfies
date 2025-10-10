@@ -384,9 +384,29 @@ async function handleVoid(data) {
 // Utility functions
 
 function verifyCCBillWebhook(body, headers) {
-  // CCBill webhook verification with improved security
+  // CCBill webhook verification using DataLink HTTP Basic Auth
 
-  // 1. Check CCBill IP ranges (whitelist known CCBill IPs)
+  // 1. Check for DataLink credentials (HTTP Basic Auth)
+  const authHeader = headers.authorization || headers.Authorization;
+
+  if (authHeader && authHeader.startsWith('Basic ')) {
+    const base64Credentials = authHeader.split(' ')[1];
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+    const [username, password] = credentials.split(':');
+
+    const expectedUser = process.env.CCBILL_DATALINK_USER;
+    const expectedPass = process.env.CCBILL_DATALINK_PASS;
+
+    if (username === expectedUser && password === expectedPass) {
+      console.log('✅ CCBill webhook verified via DataLink credentials');
+      return true;
+    } else {
+      console.error('❌ Invalid DataLink credentials');
+      return false;
+    }
+  }
+
+  // 2. Check CCBill IP ranges (whitelist known CCBill IPs)
   const ccbillIPs = [
     '64.38.215.0/24',
     '64.38.212.0/24',
@@ -395,7 +415,7 @@ function verifyCCBillWebhook(body, headers) {
     '64.38.241.0/24',
   ];
 
-  // 2. For development, require explicit bypass flag and warn
+  // 3. For development, require explicit bypass flag and warn
   if (
     process.env.NODE_ENV === 'development' &&
     process.env.CCBILL_WEBHOOK_BYPASS === 'true'
@@ -407,55 +427,8 @@ function verifyCCBillWebhook(body, headers) {
     return true;
   }
 
-  // 3. Check for required CCBill headers
-  const clientAccnum = headers['x-ccbill-client-accnum'] || body.clientAccnum;
-  const timestamp = headers['x-ccbill-timestamp'] || body.timestamp;
-  const signature = headers['x-ccbill-signature'] || headers['x-ccbill-digest'];
-
-  if (!signature) {
-    console.error('❌ Missing CCBill webhook signature');
-    return false;
-  }
-
-  // 4. Verify timestamp (prevent replay attacks)
-  if (timestamp) {
-    const webhookTime = new Date(parseInt(timestamp) * 1000);
-    const currentTime = new Date();
-    const timeDiff = Math.abs(currentTime - webhookTime) / 1000; // seconds
-
-    if (timeDiff > 300) {
-      // 5 minutes tolerance
-      console.error('❌ CCBill webhook timestamp too old:', timeDiff);
-      return false;
-    }
-  }
-
-  // 5. Verify signature using CCBill salt
-  if (CCBILL_CONFIG.salt) {
-    try {
-      const bodyString = typeof body === 'string' ? body : JSON.stringify(body);
-      const expectedSignature = crypto
-        .createHash('md5')
-        .update(bodyString + CCBILL_CONFIG.salt)
-        .digest('hex');
-
-      if (expectedSignature.toLowerCase() !== signature.toLowerCase()) {
-        console.error('❌ CCBill webhook signature verification failed');
-        return false;
-      }
-
-      console.log('✅ CCBill webhook signature verified');
-      return true;
-    } catch (error) {
-      console.error('❌ Error verifying CCBill signature:', error);
-      return false;
-    }
-  }
-
-  console.warn(
-    '⚠️  CCBill salt not configured, skipping signature verification'
-  );
-  return true;
+  console.warn('⚠️  No DataLink auth found and bypass not enabled');
+  return false;
 }
 
 function parseCustomFields(customFields) {
