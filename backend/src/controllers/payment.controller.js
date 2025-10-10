@@ -1116,27 +1116,9 @@ async function completeCreditsAdd(transaction) {
       throw new Error('Member not found');
     }
 
-    // 2. Add credits to member account
-    if (!member.wallet) {
-      member.wallet = { balance: 0, credits: 0 };
-    }
-
+    // 2. Add credits to member account (Member model has credits field directly, not wallet.credits)
     const creditsToAdd = transaction.credits || 0;
-    member.wallet.credits += creditsToAdd;
-
-    // 3. Add transaction to member's wallet history
-    if (!member.wallet.transactions) {
-      member.wallet.transactions = [];
-    }
-
-    member.wallet.transactions.push({
-      type: 'credit_purchase',
-      amount: transaction.amount,
-      credits: creditsToAdd,
-      transactionId: transaction._id,
-      createdAt: new Date(),
-      description: `Purchased ${creditsToAdd} credits`,
-    });
+    member.credits = (member.credits || 0) + creditsToAdd;
 
     await member.save();
 
