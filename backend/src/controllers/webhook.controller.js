@@ -413,6 +413,9 @@ function verifyCCBillWebhook(body, headers) {
     '64.38.217.0/24',
     '64.38.240.0/24',
     '64.38.241.0/24',
+    '3.134.238.10',
+    '3.129.111.220',
+    '52.15.118.168',
   ];
 
   // 3. For development, require explicit bypass flag and warn
