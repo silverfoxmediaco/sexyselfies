@@ -92,14 +92,14 @@ const MainHeader = () => {
       // Call logout endpoint (don't wait for it)
       authService.logout().catch(err => console.error('Logout API error:', err));
 
-      // Force complete page reload to landing page
-      window.location.href = window.location.origin + '/landing';
+      // Force complete page reload to home page (OnboardingFlow)
+      window.location.href = window.location.origin + '/';
     } catch (error) {
       console.error('Logout failed:', error);
       // Force logout anyway
       localStorage.clear();
       sessionStorage.clear();
-      window.location.href = window.location.origin + '/landing';
+      window.location.href = window.location.origin + '/';
     }
   };
 
