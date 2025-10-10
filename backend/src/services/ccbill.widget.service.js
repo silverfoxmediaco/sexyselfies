@@ -84,7 +84,7 @@ class CCBillWidgetService {
 
       // Pricing
       initialPrice: amount.toFixed(2),
-      initialPeriod: '2', // 2 days (CCBill requirement for one-time)
+      initialPeriod: '30', // MUST match hash calculation (30 days)
       currencyCode: this.currencyCode,
       formDigest: formDigest,
 
