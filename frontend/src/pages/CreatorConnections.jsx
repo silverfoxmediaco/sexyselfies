@@ -5,7 +5,6 @@ import {
   Users,
   MessageCircle,
   Search,
-  Filter,
   Star,
   Heart,
   Clock,
@@ -39,7 +38,6 @@ const CreatorConnections = () => {
   const userRole = getUserRole();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [connections, setConnections] = useState([]);
   const [stats, setStats] = useState({
     totalConnections: 0,
@@ -263,14 +261,6 @@ const CreatorConnections = () => {
             <Users size={24} />
             My Connections
           </h1>
-          <div className='connections-header-actions'>
-            <button
-              className='connections-filter-btn'
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter size={18} />
-            </button>
-          </div>
         </div>
       </div>
 
