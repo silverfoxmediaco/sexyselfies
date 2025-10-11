@@ -4,7 +4,8 @@
   min-height: 100vh;
   background: #0a0a0a;
   color: #ffffff;
-  padding-bottom: 80px;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
 /* Header Section */

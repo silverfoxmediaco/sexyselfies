@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import BottomNavigation from '../components/BottomNavigation';
 import './BlogPost.css';
 
 /**
@@ -512,6 +513,9 @@ const BlogPost = () => {
           </div>
         </section>
       )}
+
+      {/* Bottom Navigation for Mobile */}
+      <BottomNavigation />
     </div>
   );
 };
