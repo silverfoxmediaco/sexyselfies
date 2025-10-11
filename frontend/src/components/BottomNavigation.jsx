@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import {
   Flame,
@@ -44,6 +44,26 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
   const { creatorId } = useParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [storedRole, setStoredRole] = useState(null);
+
+  // Get user role from localStorage
+  useEffect(() => {
+    const getStoredUserRole = () => {
+      // Check for userRole key (stored by auth service)
+      const role = localStorage.getItem('userRole');
+      if (role) return role;
+
+      // Fallback: check user object
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        return user?.role || null;
+      } catch {
+        return null;
+      }
+    };
+
+    setStoredRole(getStoredUserRole());
+  }, [location.pathname]); // Re-check on route change
 
   // Determine role from URL if not provided
   // BUT: Don't infer role from URL on login/register pages
@@ -51,26 +71,11 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
                      location.pathname.includes('/register') ||
                      location.pathname === '/';
 
-  // Get user role from localStorage if not provided as prop
-  const getStoredUserRole = () => {
-    // Check for userRole key (stored by auth service)
-    const storedRole = localStorage.getItem('userRole');
-    if (storedRole) return storedRole;
-
-    // Fallback: check user object
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      return user?.role || null;
-    } catch {
-      return null;
-    }
-  };
-
   const effectiveUserRole = userRole ||
     (!isAuthPage && location.pathname.startsWith('/admin') ? 'admin' :
      !isAuthPage && location.pathname.startsWith('/creator') ? 'creator' :
      !isAuthPage && location.pathname.startsWith('/member') ? 'member' :
-     getStoredUserRole()); // Check localStorage for logged-in user
+     storedRole); // Use state variable from localStorage
 
   // Handle refresh action
   const handleRefresh = async () => {
