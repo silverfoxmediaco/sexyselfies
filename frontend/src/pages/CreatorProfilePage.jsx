@@ -328,6 +328,25 @@ const CreatorProfilePage = () => {
             </div>
           </div>
         </div>
+
+        {/* Account Information */}
+        <div className='details-section'>
+          <h3>Account Information</h3>
+          <div className='pricing-grid'>
+            <div className='pricing-item'>
+              <span className='pricing-label'>Creator ID</span>
+              <span className='pricing-value' style={{ fontFamily: 'monospace', fontSize: '0.9em' }}>
+                {profileData?._id || 'Loading...'}
+              </span>
+            </div>
+            <div className='pricing-item'>
+              <span className='pricing-label'>Username</span>
+              <span className='pricing-value'>
+                @{profileData?.username || 'N/A'}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Profile Status */}
