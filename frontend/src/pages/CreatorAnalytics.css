@@ -650,6 +650,6 @@
 /* Mobile: Add extra margin to last section */
 @media (max-width: 768px) {
   .demographics-section {
-    margin-bottom: 2rem;
+    margin-bottom: 120px;
   }
 }
