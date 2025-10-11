@@ -10,7 +10,6 @@ import {
   Clock,
   ChevronRight,
   Eye,
-  Gift,
   DollarSign,
   Calendar,
   MapPin,
@@ -64,14 +63,6 @@ const CreatorConnections = () => {
       path: '/creator/upload',
       color: 'teal',
       description: 'Add new photos and videos'
-    },
-    {
-      id: 'offers',
-      icon: <Gift size={24} />,
-      label: 'Send Offers',
-      path: '/creator/offers',
-      color: 'purple',
-      description: 'Create special offers for members'
     },
     {
       id: 'profile',
