@@ -83,24 +83,7 @@ const CreatorAnalytics = () => {
           videos: 0,
           messages: 0,
         },
-        topContent: [
-          {
-            id: 'demo1',
-            title: 'Sample Content 1',
-            type: 'photo',
-            views: 245,
-            engagement: 12,
-            earnings: 89.50,
-          },
-          {
-            id: 'demo2',
-            title: 'Sample Content 2',
-            type: 'video',
-            views: 189,
-            engagement: 18,
-            earnings: 156.25,
-          },
-        ],
+        topContent: [],
         goals: {
           monthlyEarnings: {
             current: 0,
@@ -119,17 +102,8 @@ const CreatorAnalytics = () => {
           },
         },
         demographics: {
-          ageGroups: [
-            { range: '18-24', percentage: 25 },
-            { range: '25-34', percentage: 45 },
-            { range: '35-44', percentage: 20 },
-            { range: '45+', percentage: 10 },
-          ],
-          topLocations: [
-            { country: 'United States', count: 150, percentage: 35 },
-            { country: 'Canada', count: 80, percentage: 20 },
-            { country: 'United Kingdom', count: 65, percentage: 15 },
-          ],
+          ageGroups: [],
+          topLocations: [],
         },
         performance: {
           topContent: [],
