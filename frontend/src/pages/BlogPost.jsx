@@ -35,7 +35,7 @@ const BlogPost = () => {
   const fetchPost = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/api/v1/blog/${slug}`);
+      const response = await fetch(`${API_BASE}/blog/${slug}`);
       const data = await response.json();
 
       if (data.success) {
@@ -57,7 +57,7 @@ const BlogPost = () => {
   const fetchRelatedPosts = async () => {
     try {
       const response = await fetch(
-        `${API_BASE}/api/v1/blog/category/${post.category}?limit=3`
+        `${API_BASE}/blog/category/${post.category}?limit=3`
       );
       const data = await response.json();
 
@@ -75,7 +75,7 @@ const BlogPost = () => {
     if (liked) return; // Already liked
 
     try {
-      const response = await fetch(`${API_BASE}/api/v1/blog/${slug}/like`, {
+      const response = await fetch(`${API_BASE}/blog/${slug}/like`, {
         method: 'POST',
       });
       const data = await response.json();

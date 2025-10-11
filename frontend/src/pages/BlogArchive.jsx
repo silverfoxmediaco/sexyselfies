@@ -49,10 +49,10 @@ const BlogArchive = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      let url = `${API_BASE}/api/v1/blog?page=${page}&limit=12`;
+      let url = `${API_BASE}/blog?page=${page}&limit=12`;
 
       if (selectedCategory !== 'all') {
-        url = `${API_BASE}/api/v1/blog/category/${selectedCategory}?page=${page}&limit=12`;
+        url = `${API_BASE}/blog/category/${selectedCategory}?page=${page}&limit=12`;
       }
 
       const response = await fetch(url);
@@ -75,7 +75,7 @@ const BlogArchive = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/v1/blog/categories`);
+      const response = await fetch(`${API_BASE}/blog/categories`);
       const data = await response.json();
 
       if (data.success) {

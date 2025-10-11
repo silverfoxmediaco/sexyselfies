@@ -20,7 +20,7 @@ const BlogRedirect = () => {
         const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
         // Check if this slug exists as a blog post
-        const response = await fetch(`${API_BASE}/api/v1/blog/${slug}`);
+        const response = await fetch(`${API_BASE}/blog/${slug}`);
         const data = await response.json();
 
         if (data.success && data.post) {
