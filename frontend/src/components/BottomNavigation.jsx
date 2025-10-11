@@ -265,6 +265,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         { section: 'divider' },
 
         { section: 'Support & Info' },
+        { icon: BookOpen, label: 'Blog', path: '/blog' },
         { icon: Shield, label: 'Safety Center', path: '/safety' },
         { icon: Users, label: 'Community Guidelines', path: '/community-guidelines' },
         { icon: HelpCircle, label: 'FAQ', path: '/faq' },
@@ -335,6 +336,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         { section: 'divider' },
 
         { section: 'Support & Info' },
+        { icon: BookOpen, label: 'Blog', path: '/blog' },
         { icon: Shield, label: 'Safety Center', path: '/safety' },
         { icon: Users, label: 'Community Guidelines', path: '/community-guidelines' },
         { icon: HelpCircle, label: 'FAQ', path: '/faq' },
@@ -381,6 +383,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         { section: 'divider' },
 
         { section: 'Support & Info' },
+        { icon: BookOpen, label: 'Blog', path: '/blog' },
         { icon: Shield, label: 'Safety Center', path: '/safety' },
         { icon: Users, label: 'Community Guidelines', path: '/community-guidelines' },
         { icon: HelpCircle, label: 'FAQ', path: '/faq' },
@@ -414,6 +417,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         { section: 'divider' },
 
         { section: 'Support & Info' },
+        { icon: BookOpen, label: 'Blog', path: '/blog' },
         { icon: Shield, label: 'Safety Center', path: '/safety' },
         { icon: Users, label: 'Community Guidelines', path: '/community-guidelines' },
         { icon: HelpCircle, label: 'FAQ', path: '/faq' },
@@ -443,6 +447,7 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
         { section: 'divider' },
 
         { section: 'Support & Info' },
+        { icon: BookOpen, label: 'Blog', path: '/blog' },
         { icon: Shield, label: 'Safety Center', path: '/safety' },
         { icon: Users, label: 'Community Guidelines', path: '/community-guidelines' },
         { icon: HelpCircle, label: 'FAQ', path: '/faq' },
