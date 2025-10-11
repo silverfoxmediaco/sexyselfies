@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import BottomNavigation from '../components/BottomNavigation';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import './BlogPost.css';
 
 /**
@@ -233,9 +235,13 @@ const BlogPost = () => {
   };
 
   return (
-    <div className="BlogPost-container">
-      {/* SEO Meta Tags */}
-      <Helmet>
+    <>
+      {/* Desktop Header */}
+      <MainHeader />
+
+      <div className="BlogPost-container">
+        {/* SEO Meta Tags */}
+        <Helmet>
         {/* Primary Meta Tags */}
         <title>{post.title} | SexySelfies Blog</title>
         <meta name="title" content={`${post.title} | SexySelfies Blog`} />
@@ -514,9 +520,13 @@ const BlogPost = () => {
         </section>
       )}
 
-      {/* Bottom Navigation for Mobile */}
-      <BottomNavigation />
-    </div>
+        {/* Bottom Navigation for Mobile */}
+        <BottomNavigation />
+      </div>
+
+      {/* Desktop Footer */}
+      <MainFooter />
+    </>
   );
 };
 

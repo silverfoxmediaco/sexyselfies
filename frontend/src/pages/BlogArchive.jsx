@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import BottomNavigation from '../components/BottomNavigation';
+import MainHeader from '../components/MainHeader';
+import MainFooter from '../components/MainFooter';
 import './BlogArchive.css';
 
 /**
@@ -112,9 +114,13 @@ const BlogArchive = () => {
   };
 
   return (
-    <div className="BlogArchive-container">
-      {/* SEO Meta Tags */}
-      <Helmet>
+    <>
+      {/* Desktop Header */}
+      <MainHeader />
+
+      <div className="BlogArchive-container">
+        {/* SEO Meta Tags */}
+        <Helmet>
         <title>Sex Talk Blog - Dating, Relationships & Romance | SexySelfies</title>
         <meta name="title" content="Sex Talk Blog - Dating, Relationships & Romance | SexySelfies" />
         <meta name="description" content="Explore articles about dating, relationships, modern romance, and adult content creation. Tips, advice, and insights from the SexySelfies community." />
@@ -299,9 +305,13 @@ const BlogArchive = () => {
         )}
       </section>
 
-      {/* Bottom Navigation for Mobile */}
-      <BottomNavigation />
-    </div>
+        {/* Bottom Navigation for Mobile */}
+        <BottomNavigation />
+      </div>
+
+      {/* Desktop Footer */}
+      <MainFooter />
+    </>
   );
 };
 
