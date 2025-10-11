@@ -208,9 +208,10 @@
 .BlogPost-ctaMid {
   margin: 48px 0;
   padding: 32px;
-  background: linear-gradient(135deg, rgba(18, 183, 171, 0.1) 0%, rgba(23, 210, 194, 0.1) 100%);
-  border: 1px solid rgba(23, 210, 194, 0.3);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .BlogPost-ctaCard {
@@ -220,13 +221,13 @@
 .BlogPost-ctaTitle {
   font-size: 24px;
   font-weight: 700;
-  color: #ffffff;
+  color: #0a0a0a;
   margin: 0 0 12px 0;
 }
 
 .BlogPost-ctaText {
   font-size: 16px;
-  color: #c7c7cc;
+  color: #2a2a2c;
   line-height: 1.6;
   margin: 0 0 20px 0;
   max-width: 600px;
@@ -239,7 +240,7 @@
   background: linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%, #47e0d2 100%);
   border: none;
   border-radius: 8px;
-  color: #0a0a0a;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
