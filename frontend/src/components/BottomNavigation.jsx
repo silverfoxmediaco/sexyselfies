@@ -53,6 +53,11 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
 
   // Get user role from localStorage if not provided as prop
   const getStoredUserRole = () => {
+    // Check for userRole key (stored by auth service)
+    const storedRole = localStorage.getItem('userRole');
+    if (storedRole) return storedRole;
+
+    // Fallback: check user object
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       return user?.role || null;
