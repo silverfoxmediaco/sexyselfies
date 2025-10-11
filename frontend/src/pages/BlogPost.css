@@ -259,9 +259,10 @@
 
 .BlogPost-ctaEndCard {
   padding: 48px 32px;
-  background: linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%, #47e0d2 100%);
+  background: #ffffff;
   border-radius: 16px;
   text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .BlogPost-ctaEndTitle {
@@ -273,7 +274,7 @@
 
 .BlogPost-ctaEndText {
   font-size: 18px;
-  color: rgba(10, 10, 10, 0.8);
+  color: #2a2a2c;
   line-height: 1.6;
   margin: 0 0 32px 0;
   max-width: 700px;
@@ -299,23 +300,25 @@
 }
 
 .BlogPost-ctaEndButton.primary {
-  background: #0a0a0a;
-  color: #17d2c2;
+  background: linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%, #47e0d2 100%);
+  color: #ffffff;
 }
 
 .BlogPost-ctaEndButton.primary:hover {
-  background: #121212;
+  background: linear-gradient(135deg, #0fa093 0%, #12b7ab 50%, #17d2c2 100%);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(23, 210, 194, 0.3);
 }
 
 .BlogPost-ctaEndButton.secondary {
-  background: rgba(10, 10, 10, 0.2);
+  background: transparent;
   color: #0a0a0a;
   border: 2px solid #0a0a0a;
 }
 
 .BlogPost-ctaEndButton.secondary:hover {
-  background: rgba(10, 10, 10, 0.3);
+  background: #0a0a0a;
+  color: #ffffff;
   transform: translateY(-2px);
 }
 
