@@ -350,23 +350,6 @@ const BlogPost = () => {
         {/* Content */}
         <div className="BlogPost-content">
           <div dangerouslySetInnerHTML={{ __html: post.content }} />
-
-          {/* Mid-Content CTA - Insert after content loads */}
-          <div className="BlogPost-ctaMid">
-            <div className="BlogPost-ctaCard">
-              <h3 className="BlogPost-ctaTitle">Ready to Start Your Journey?</h3>
-              <p className="BlogPost-ctaText">
-                Join thousands of creators and members connecting on SexySelfies.
-                Create content, build connections, and monetize your presence.
-              </p>
-              <button
-                onClick={() => navigate('/')}
-                className="BlogPost-ctaButton"
-              >
-                Become a Member
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Tags */}
