@@ -51,10 +51,21 @@ const BottomNavigation = ({ userRole, onRefresh, notificationCount = 0 }) => {
                      location.pathname.includes('/register') ||
                      location.pathname === '/';
 
+  // Get user role from localStorage if not provided as prop
+  const getStoredUserRole = () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      return user?.role || null;
+    } catch {
+      return null;
+    }
+  };
+
   const effectiveUserRole = userRole ||
     (!isAuthPage && location.pathname.startsWith('/admin') ? 'admin' :
      !isAuthPage && location.pathname.startsWith('/creator') ? 'creator' :
-     !isAuthPage && location.pathname.startsWith('/member') ? 'member' : null);
+     !isAuthPage && location.pathname.startsWith('/member') ? 'member' :
+     getStoredUserRole()); // Check localStorage for logged-in user
 
   // Handle refresh action
   const handleRefresh = async () => {
