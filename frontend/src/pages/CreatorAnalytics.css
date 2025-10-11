@@ -638,3 +638,11 @@
     gap: 4px;
   }
 }
+
+/* Desktop: Remove bottom nav padding */
+@media (min-width: 769px) {
+  .creator-analytics {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
