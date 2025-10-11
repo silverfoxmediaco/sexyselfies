@@ -278,53 +278,74 @@ const BlogPost = () => {
         </script>
       </Helmet>
 
-      {/* Back Button */}
-      <div className="BlogPost-nav">
-        <button onClick={() => navigate('/blog')} className="BlogPost-navBtn">
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M12 5L7 10L12 15"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          Back to Blog
-        </button>
+      {/* Hero Section with Featured Image Background */}
+      <div
+        className="BlogPost-hero"
+        style={{
+          backgroundImage: post.featuredImage
+            ? `linear-gradient(rgba(10, 10, 10, 0.6), rgba(10, 10, 10, 0.8)), url(${post.featuredImage})`
+            : 'linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%, #47e0d2 100%)'
+        }}
+      >
+        {/* Back Button */}
+        <div className="BlogPost-heroNav">
+          <button onClick={() => navigate('/blog')} className="BlogPost-navBtn">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 5L7 10L12 15"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Back to Blog
+          </button>
+        </div>
+
+        {/* Hero Content */}
+        <div className="BlogPost-heroContent">
+          <div className="BlogPost-categoryBadge">{post.category}</div>
+          <h1 className="BlogPost-heroTitle">{post.title}</h1>
+
+          <div className="BlogPost-heroMeta">
+            <div className="BlogPost-metaItem">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 8a3 3 0 100-6 3 3 0 000 6zM14 13c0-2.21-2.69-4-6-4s-6 1.79-6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              <span>{post.author.name}</span>
+            </div>
+            <div className="BlogPost-metaItem">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M2 6h12M5 1v2M11 1v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              <span>{formatDate(post.publishDate)}</span>
+            </div>
+            <div className="BlogPost-metaItem">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3c2.76 0 5 1.79 5 4s-2.24 4-5 4a5.72 5.72 0 01-2.24-.45L3 11l.45-2.76A3.92 3.92 0 013 7c0-2.21 2.24-4 5-4z" stroke="currentColor" strokeWidth="1.5"/>
+              </svg>
+              <span>{post.views} views</span>
+            </div>
+            <div className="BlogPost-metaItem">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 14s-5-3.5-5-7a4.5 4.5 0 019 0c0 3.5-5 7-5 7z" stroke="currentColor" strokeWidth="1.5"/>
+              </svg>
+              <span>{post.likes} likes</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Article */}
       <article className="BlogPost-article">
-        {/* Header */}
-        <header className="BlogPost-header">
-          <div className="BlogPost-categoryBadge">{post.category}</div>
-          <h1 className="BlogPost-title">{post.title}</h1>
-
-          <div className="BlogPost-meta">
-            <div className="BlogPost-metaLeft">
-              <span className="BlogPost-author">{post.author.name}</span>
-              <span className="BlogPost-date">{formatDate(post.publishDate)}</span>
-            </div>
-            <div className="BlogPost-metaRight">
-              <span className="BlogPost-views">{post.views} views</span>
-              <span className="BlogPost-likes">{post.likes} likes</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Featured Image */}
-        {post.featuredImage && (
-          <div className="BlogPost-featuredImage">
-            <img src={post.featuredImage} alt={post.title} />
-          </div>
-        )}
 
         {/* Content */}
         <div className="BlogPost-content">
