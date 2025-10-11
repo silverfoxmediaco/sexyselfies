@@ -639,10 +639,17 @@
   }
 }
 
-/* Desktop: Remove bottom nav padding */
+/* Desktop: Remove bottom nav padding but keep spacing */
 @media (min-width: 769px) {
   .creator-analytics {
     padding-top: 0;
-    padding-bottom: 0;
+    padding-bottom: 2rem;
+  }
+}
+
+/* Mobile: Add extra margin to last section */
+@media (max-width: 768px) {
+  .demographics-section {
+    margin-bottom: 2rem;
   }
 }
