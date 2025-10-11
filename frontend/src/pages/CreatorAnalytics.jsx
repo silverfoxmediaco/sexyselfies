@@ -21,7 +21,6 @@ import {
 import CreatorMainHeader from '../components/CreatorMainHeader';
 import CreatorMainFooter from '../components/CreatorMainFooter';
 import BottomNavigation from '../components/BottomNavigation';
-import BottomQuickActions from '../components/BottomQuickActions';
 import PerformanceGoals from '../components/PerformanceGoals';
 import AnalyticsOverview from '../components/AnalyticsOverview';
 import RevenueBreakdown from '../components/RevenueBreakdown';
@@ -387,55 +386,6 @@ const CreatorAnalytics = () => {
           </div>
         </div>
       </div>
-
-      {/* Quick Actions */}
-      <BottomQuickActions
-        title="Analytics Actions"
-        actions={[
-          {
-            id: 'export',
-            icon: <Download size={24} />,
-            label: 'Export Report',
-            description: 'Download analytics data',
-            color: 'blue',
-            path: '/creator/analytics/export'
-          },
-          {
-            id: 'filters',
-            icon: <Filter size={24} />,
-            label: 'Custom Filters',
-            description: 'Create custom analytics views',
-            color: 'purple',
-            path: '/creator/analytics/filters'
-          },
-          {
-            id: 'goals',
-            icon: <Award size={24} />,
-            label: 'Set Goals',
-            description: 'Configure performance targets',
-            color: 'orange',
-            path: '/creator/analytics/goals'
-          },
-          {
-            id: 'optimize',
-            icon: <Zap size={24} />,
-            label: 'Optimize Profile',
-            description: 'Get improvement suggestions',
-            color: 'green',
-            path: '/creator/profile-setup'
-          }
-        ]}
-        onActionClick={(action) => {
-          if (action.path) {
-            // Navigate to the action's path
-            console.log('Navigate to:', action.path);
-          } else {
-            console.log('Action clicked:', action.label);
-          }
-        }}
-        showHeader={true}
-        loading={false}
-      />
 
       {/* Desktop Footer */}
       {isDesktop && <CreatorMainFooter />}
