@@ -292,7 +292,7 @@ const PrivacyPolicy = () => {
       {isDesktop && <MainFooter />}
 
       {/* Mobile Bottom Navigation */}
-      {isMobile && <BottomNavigation userRole="guest" />}
+      {isMobile && <BottomNavigation />}
     </div>
   );
 };
