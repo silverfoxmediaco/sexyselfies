@@ -61,7 +61,7 @@ const CreatorConnections = () => {
       id: 'upload',
       icon: <Camera size={24} />,
       label: 'Upload Content',
-      path: '/creator/content-upload',
+      path: '/creator/upload',
       color: 'teal',
       description: 'Add new photos and videos'
     },
