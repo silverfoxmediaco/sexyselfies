@@ -8,6 +8,26 @@
   padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
+/* Mobile: Hide header/footer, show bottom nav */
+@media (max-width: 768px) {
+  .MainHeader,
+  .MainFooter {
+    display: none !important;
+  }
+}
+
+/* Desktop: Show header/footer, hide bottom nav */
+@media (min-width: 769px) {
+  .BottomNavigation {
+    display: none !important;
+  }
+
+  .BlogArchive-container {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
 /* Header Section */
 .BlogArchive-header {
   background: linear-gradient(135deg, #12b7ab 0%, #17d2c2 50%, #47e0d2 100%);

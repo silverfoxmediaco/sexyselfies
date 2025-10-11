@@ -8,6 +8,26 @@
   padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
+/* Mobile: Hide header/footer, show bottom nav */
+@media (max-width: 768px) {
+  .MainHeader,
+  .MainFooter {
+    display: none !important;
+  }
+}
+
+/* Desktop: Show header/footer, hide bottom nav */
+@media (min-width: 769px) {
+  .BottomNavigation {
+    display: none !important;
+  }
+
+  .BlogPost-container {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
 /* Hero Section */
 .BlogPost-hero {
   position: relative;
@@ -109,7 +129,7 @@
 /* Article */
 .BlogPost-article {
   max-width: 900px;
-  margin: -60px auto 48px;
+  margin: 50px auto 48px;
   background: #121212;
   border-radius: 16px;
   padding: 40px;
