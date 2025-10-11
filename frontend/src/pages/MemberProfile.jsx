@@ -632,7 +632,7 @@ const MemberProfile = ({ memberId: propMemberId, onBack: propOnBack }) => {
         />
 
         {/* Bottom Navigation */}
-        <BottomNavigation userRole="creator" />
+        <BottomNavigation />
       </div>
     </div>
   );
