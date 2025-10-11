@@ -784,4 +784,22 @@
     font-size: 14px;
     padding: 8px 12px;
   }
+
+  /* Mobile: Hide header/footer, show bottom nav */
+  .MainHeader,
+  .MainFooter {
+    display: none !important;
+  }
+}
+
+/* Desktop: Show header/footer, hide bottom nav */
+@media (min-width: 769px) {
+  .BottomNavigation {
+    display: none !important;
+  }
+
+  .BlogPost-container {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 }

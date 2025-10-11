@@ -400,10 +400,28 @@
   .BlogArchive-pageInfo {
     font-size: 14px;
   }
+
+  /* Mobile: Hide header/footer, show bottom nav */
+  .MainHeader,
+  .MainFooter {
+    display: none !important;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
   .BlogArchive-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop: Show header/footer, hide bottom nav */
+@media (min-width: 769px) {
+  .BottomNavigation {
+    display: none !important;
+  }
+
+  .BlogArchive-container {
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
