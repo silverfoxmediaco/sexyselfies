@@ -785,9 +785,12 @@ const BrowseMembers = () => {
                     <MessageCircle size={18} />
                     <span>Send Personal Message</span>
                   </button>
-                  <button className='special-offer-btn'>
+                  <button
+                    className='special-offer-btn'
+                    onClick={() => handleOpenGiftModal(selectedMember)}
+                  >
                     <Gift size={18} />
-                    <span>Create Special Offer</span>
+                    <span>Send Gift</span>
                   </button>
                   <button className='view-history-btn'>
                     <Clock size={18} />
